@@ -106,7 +106,7 @@ TREES = [
     ("system-plugins/dsh-ble", DSH / "system-plugins" / "dsh-ble"),
     ("system-plugins/dsh-device-plane", DSH / "system-plugins" / "dsh-device-plane"),
     ("system-plugins/dsh-plugin-manager-tools", DSH / "system-plugins" / "dsh-plugin-manager-tools"),
-    ("system-plugins/dsh-shell-wasm", DSH / "system-plugins" / "dsh-shell-wasm"),
+    ("system-plugins/dsh-shell-js", DSH / "system-plugins" / "dsh-shell-js"),
     ("system-plugins/dsh-create", DSH / "system-plugins" / "dsh-create"),
     ("upstream/shims", DSH / "upstream" / "shims"),
     ("scenario", DSH / "scenario"),
@@ -115,6 +115,13 @@ TREES = [
     ("vendor/npm/cosmokit@1.8.3/package.json", DSH / "vendor" / "npm" / "cosmokit@1.8.3" / "package.json"),
     ("vendor/npm/schemastery@3.18.2/package.json", DSH / "vendor" / "npm" / "schemastery@3.18.2" / "package.json"),
     ("vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json", DSH / "vendor" / "npm" / "@deepseek-ai" / "dsh-client-modules@0.1.6-alpha.2" / "package.json"),
+    ("vendor/npm/shelljs@0.10.0", DSH / "vendor" / "npm" / "shelljs@0.10.0"),
+    ("vendor/npm/minimatch@10.0.3/dist/commonjs", DSH / "vendor" / "npm" / "minimatch@10.0.3" / "dist" / "commonjs"),
+    ("vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs", DSH / "vendor" / "npm" / "@isaacs" / "brace-expansion@5.0.1" / "dist" / "commonjs"),
+    ("vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs", DSH / "vendor" / "npm" / "@isaacs" / "balanced-match@4.0.1" / "dist" / "commonjs"),
+    ("vendor/npm/minimatch@10.0.3/package.json", DSH / "vendor" / "npm" / "minimatch@10.0.3" / "package.json"),
+    ("vendor/npm/@isaacs/brace-expansion@5.0.1/package.json", DSH / "vendor" / "npm" / "@isaacs" / "brace-expansion@5.0.1" / "package.json"),
+    ("vendor/npm/@isaacs/balanced-match@4.0.1/package.json", DSH / "vendor" / "npm" / "@isaacs" / "balanced-match@4.0.1" / "package.json"),
 ]
 
 # The pinned zod's runtime closure: `zod` → index.js → the classic build's

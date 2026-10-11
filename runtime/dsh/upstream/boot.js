@@ -70,20 +70,21 @@ import * as RetryTelemetry from 'upstream/retry-telemetry.js';
 // continue (the desktop controller's api-session/error relay + the followup
 // semantics the mobile compose lacked).
 import * as TurnRecovery from 'upstream/turn-recovery.js';
-// The outboard WebAssembly tool (contract v1.2.0). It is a staged system
-// plugin, not a vendored upstream package: the closure has no WebAssembly tool
-// to port, and an in-house implementation package is where a host-specific
+// The outboard shell tool: ONE bash-subset shell executor over the host's
+// scoped workspace fs face — dsh-shell-js. The seat switch (2026-10-11): it
+// takes the `shell` tool registration the retired dsh-shell-wasm (contract
+// v1.2.0 `wasmRun`) and dsh-shell-ish (contract v1.3.0 `ishRun`) plugins used
+// to hold; their source trees stay under runtime/dsh/system-plugins for the
+// local engine gates and workspace installs, but no host stages or mounts
+// them any more. It is a staged system plugin, not a vendored upstream
+// package: an in-house implementation package is where a host-specific
 // capability belongs (D6) — `system-plugins/dsh-fs` beside it is the same
 // shape. Mounted after `tools`, which its `inject` waits for.
-import * as ShellWasm from 'system-plugins/dsh-shell-wasm/index.js';
-// The in-process Linux userland tool (contract v1.3.0): the same shell seam as
-// the WebAssembly executor beside it, backed by a real Alpine userland the host
-// emulates inside its own process. A host that staged no guest root answers
-// nothing here — the plugin declines to register a tool it cannot honour.
-import * as ShellIsh from 'system-plugins/dsh-shell-ish/index.js';
+import * as ShellJs from 'system-plugins/dsh-shell-js/index.js';
 // The Open Design client (the design daemon's REST surface over gateway
 // httpFetch): projects, BYOK generate, artifact save/lint. A host with no
-// configured daemon mounts nothing — the same decline shape as shell-ish.
+// configured daemon mounts nothing — the same decline shape as dsh-shell-js
+// against a host with no fs face.
 import * as OpenDesign from 'system-plugins/dsh-open-design/index.js';
 // The PLUGIN-MANAGER row (#346): the plugin_manager tool over the
 // workspace dsh.plugins/1 registry — outboard implementation (D6). The
@@ -143,9 +144,9 @@ export const AGENT_PRESETS_DEFAULT = 'mobile';
  * global plane). Every row is answered from live context facts, never from
  * the declaration alone: a spine service is enabled when its service is
  * actually mounted on the context, and a tool plugin is enabled when its
- * tool is actually registered in the tool table (the ish tool declines to
- * register when the host stages no Linux guest root — that host sees the
- * row disabled, exactly what the tool layer does). `fiberPhase: 'active'`
+ * tool is actually registered in the tool table (the open-design tool
+ * declines to register when the host has no daemon configured — that host
+ * sees the row disabled, exactly what the tool layer does). `fiberPhase: 'active'`
  * names the mounted truth (demandServices proved the spine); a declined
  * plugin carries `null` — it has no fiber. */
 export const spineInventory = (ctx) => {
@@ -174,8 +175,7 @@ export const spineInventory = (ctx) => {
     service('agent-loop', '@deepseek-ai/dsh-agent-loop', 'agentLoop'),
     service('llm', '@deepseek-ai/dsh-llm', 'llm'),
     tool('tool-todo', '@deepseek-ai/dsh-tool-todo', 'todo_write'),
-    tool('shell-wasm', 'system-plugins/dsh-shell-wasm', 'shell'),
-    tool('shell-ish', 'system-plugins/dsh-shell-ish', 'ish'),
+    tool('shell-js', 'system-plugins/dsh-shell-js', 'shell'),
     tool('open-design', 'system-plugins/dsh-open-design', 'open_design_projects'),
     tool('tool-plugin-manager', 'system-plugins/dsh-plugin-manager-tools', 'plugin_manager'),
     // The create-approve-hotmount loop's product face: chat-authored plugin
@@ -292,8 +292,7 @@ const mountRecoveryRings = async (ctx) => {
  * `fflate`/turndown need the bridges body registered first. */
 const mountToolRows = async (ctx, cwd) => {
     await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
-    await ctx.plugin(ShellWasm);
-    await ctx.plugin(ShellIsh);
+    await ctx.plugin(ShellJs);
     await ctx.plugin(OpenDesign);
     await ctx.plugin(PluginManagerTools);
     await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)

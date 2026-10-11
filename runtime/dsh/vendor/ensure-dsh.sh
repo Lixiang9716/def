@@ -244,6 +244,27 @@ terminal|0.1.6-alpha.2|cb9b07571654bcfe6877f8ff860a3ebd17564fe17994a9e905aea0ef4
 # domino (served through the shims' cjs-loader), and the GFM rules plugin.
 # Shas mirror the suite-side pins in ensure-dsh-tests.sh (same bytes, one
 # pin per face).
+# The dsh-shell-js system plugin's vendor faces (2026-10-11): shelljs
+# 0.10.0 — the applet bodies, pristine behind outboard seams — plus its
+# minimatch@10.0.3 glob chain (@isaacs/brace-expansion,
+# @isaacs/balanced-match). The bash-parser@0.5.0 parser closure (29 trees)
+# left with the hand-written-parser swap of the same date: the parser is
+# runtime/dsh/system-plugins/dsh-shell-js/parser-syntax.js now, so the
+# only remaining requires from this block are shelljs → (its own src tree)
+# and minimatch → @isaacs/* — verified at swap time by grepping the
+# require graph of every kept tree.
+# minimatch is pinned at 10.0.3, the ISC ceiling: 10.1.0+ relicenses
+# BlueOak-1.0.0, so a bump past it is a license-policy decision, not a
+# routine re-pin (DECISION §3). shelljs@0.10.0 is BSD-3-Clause (LICENSE)
+# with an embedded wrench-js MIT notice that must survive vendoring
+# verbatim — the pristine bytes carry it; a hand edit would break both D6
+# and the notice. Notice text, verified verbatim at src/cp.js:90-96 and
+# src/rm.js:12-19:
+#   Adapted from https://github.com/ryanmcgrath/wrench-js
+#   Copyright (c) 2010 Ryan McGrath
+#   Copyright (c) 2012 Artur Adib
+#   Licensed under the MIT License
+#   http://www.opensource.org/licenses/mit-license.php
 # The SESSION-PERSISTENCE family (2026-10-11, the resume leg): the vendored
 # dsh-session-persistence seam's concrete JSONL backend plus the session-log
 # format readers the backend links (catalog's own deps already pinned —
@@ -294,6 +315,10 @@ pngjs@5.0.0|pngjs/-/pngjs-5.0.0.tgz|4d960bbbe078022d7a36822e2874f884c7410ead111f
 turndown@7.2.4|turndown/-/turndown-7.2.4.tgz|05f61bc3f0aeca5e5cd7f1b5492e26b9040bb00708cd41fb1b0f7b216e296fa0
 @mixmark-io/domino@2.2.0|@mixmark-io/domino/-/domino-2.2.0.tgz|b829bcca09544649f6432020dd6915b6fb054154d7a77eb6f8b3fb1f4165afec
 @joplin/turndown-plugin-gfm@1.0.67|@joplin/turndown-plugin-gfm/-/turndown-plugin-gfm-1.0.67.tgz|59f5c59b28bb690bc1cb2d00c67b5e798ce5b29032989892b27a491093e6cde5
+shelljs@0.10.0|shelljs/-/shelljs-0.10.0.tgz|0908d4921a9e304cbf0aacf161f31aafaa7d5920b403c1493d1c99646ace9ff2
+minimatch@10.0.3|minimatch/-/minimatch-10.0.3.tgz|5c531a1fcdfab89b67470063e99d392d701027c41774f6ba957c819f91656ee4
+@isaacs/brace-expansion@5.0.1|@isaacs/brace-expansion/-/brace-expansion-5.0.1.tgz|c908309f6735b002952f2b02563e68d98cba0375322a189ebc4f6f47637ee95b
+@isaacs/balanced-match@4.0.1|@isaacs/balanced-match/-/balanced-match-4.0.1.tgz|b4593f0b61a94bb72521b5868b9da79e5f26b353d2cb958a1822adc3759915b0
 @deepseek-ai/dsh-launch-environment@0.1.6-alpha.2|@deepseek-ai/dsh-launch-environment/-/dsh-launch-environment-0.1.6-alpha.2.tgz|5dab2fac358f02b91a07107e2692a7e9ba8e694fc27f44de39f394d1817701c6
 @deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2|@deepseek-ai/dsh-llm-pi-ai/-/dsh-llm-pi-ai-0.1.6-alpha.2.tgz|ba7b73b5d7eb7570e1195aebb4325d2dd83ae4e939de82ec4f5fc0fc5c176854
 @deepseek-ai/dsh-session-format-v0-to-v1@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v0-to-v1/-/dsh-session-format-v0-to-v1-0.1.6-alpha.2.tgz|f3d458503007a986ca7ba8510c92e30425fb3d56d282b937fc8c342e7aa13952

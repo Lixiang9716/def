@@ -43,6 +43,19 @@ MODE=stage
 ZOD_SRC=$DSH/vendor/npm/zod@4.4.3
 ZOD_DST=$ASSETS/vendor/npm/zod@4.4.3
 
+# The dsh-shell-js parser closure's staged faces (the formal vendor round,
+# 2026-10-11; shrunk the same date by the hand-written-parser swap, which
+# retired bash-parser's 29-tree closure): the npm faces the plugin's CJS
+# seam resolves, staged with the same production faces the harmony CLOSURE
+# rows carry (relative-require closure of each main + package.json; the
+# minimatch chain rides its dist/commonjs face). The plugin tree itself rides the whole-dir
+# system-plugins mirror; THESE are the faces its parser.js map probes — a
+# face staged without a --check twin below is a drift the closures gate is
+# blind to (the anti-drift rule), so every loop here has a twin there.
+SHELLJS_FACE_DIRS="shelljs@0.10.0/src minimatch@10.0.3/dist/commonjs @isaacs/brace-expansion@5.0.1/dist/commonjs @isaacs/balanced-match@4.0.1/dist/commonjs"
+SHELLJS_SINGLE_FILES="@isaacs/balanced-match@4.0.1/dist/commonjs/index.js @isaacs/brace-expansion@5.0.1/dist/commonjs/index.js shelljs@0.10.0/shell.js"
+SHELLJS_PKGS="shelljs@0.10.0 minimatch@10.0.3 @isaacs/brace-expansion@5.0.1 @isaacs/balanced-match@4.0.1"
+
 if [ "$MODE" != "check" ]; then
 
 # One vendored spine package: LICENSE + package.json + lib/** minus .d.ts,
@@ -261,6 +274,27 @@ mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data"
 cp "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.json" \
     "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/manifest.json"
 
+
+# The dsh-shell-js parser closure (the faces above): dir faces ride their
+# production tree, single-file mains copy by name, and every package's
+# package.json rides (the loader's main probe reads it).
+say "staging the dsh-shell-js parser closure (shelljs + minimatch chain — the hand-written parser retired bash-parser)"
+for dir_face in $SHELLJS_FACE_DIRS; do
+    pkg=${dir_face%%/*}; face=${dir_face#*/}
+    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/vendor/npm/$pkg/$(dirname "$rel")"
+            cp "$DSH/vendor/npm/$pkg/$rel" "$ASSETS/vendor/npm/$pkg/$rel"
+        done
+done
+for f in $SHELLJS_SINGLE_FILES; do
+    mkdir -p "$ASSETS/vendor/npm/$(dirname "$f")"
+    cp "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f"
+done
+for p in $SHELLJS_PKGS; do
+    cp "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json"
+done
+
 # The pinned zod's runtime closure (the iOS embedder's ZOD_FILES list).
 say "staging vendor/npm/zod@4.4.3 (classic runtime closure)"
 mkdir -p "$ZOD_DST/v4/classic" "$ZOD_DST/v4/core" "$ZOD_DST/v4/locales"
@@ -306,9 +340,9 @@ done
 # grants, so it rides the same byte-identity sync as the runtime files.
 cmp -s "$DSH/manifest.json" "$ASSETS/manifest.json" || cp "$DSH/manifest.json" "$ASSETS/manifest.json"
 
-# The system-plugins the boot's static graph imports (the two shell tools;
-# the three older plugins are committed in assets directly and refreshed
-# here too — byte-identical to runtime/dsh, the single source).
+# The system-plugins the boot's static graph imports (dsh-shell-js, the one
+# shell seat; the three older plugins are committed in assets directly and
+# refreshed here too — byte-identical to runtime/dsh, the single source).
 # The TEST closure: every additional vendored package the upstream suites
 # import (same tag; materialized by vendor/ensure-dsh-tests.sh). Untracked
 # in assets by the same accepted pattern as the Gradle-materialized staged
@@ -330,8 +364,17 @@ done
 say "staged the test closure ($(find "$ASSETS/vendor/dsh" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ') packages total)"
 
 say "staging system-plugins (whole directories — a plugin joins by existing)"
+# The RETIRED seats (the dsh-shell-js takeover, 2026-10-11): a plugin leaves
+# the staged seat by joining this hand-declared list IN THE SAME COMMIT its
+# boot.js registry row leaves the composition — the source tree stays under
+# runtime/dsh/system-plugins (the local engine gates + workspace installs
+# still read it), but the mirror no longer stages it, so assets never carry
+# a plugin nothing mounts. A name here that boot.js still imports is a boot
+# that cannot load — the seat grep in the agent note is the audit.
+RETIRED_PLUGINS="dsh-shell-wasm dsh-shell-ish"
 for src in "$DSH"/system-plugins/*/; do
     p=$(basename "$src")
+    case " $RETIRED_PLUGINS " in *" $p "*) continue ;; esac
     mkdir -p "$ASSETS/system-plugins/$p"
     (cd "$src" && find . -type f) |
         while IFS= read -r rel; do
@@ -478,6 +521,32 @@ else cmp -s "$DSH/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plu
         "$ASSETS/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" ||
     note_drift "vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js"
 fi
+
+# The dsh-shell-js parser closure's verify twin (the stage block above): the
+# same three loops as cmps — a staged face the check never judges is a drift
+# the closures gate is blind to.
+for dir_face in $SHELLJS_FACE_DIRS; do
+    pkg=${dir_face%%/*}; face=${dir_face#*/}
+    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+        while IFS= read -r rel; do
+            path="vendor/npm/$pkg/$rel"
+            if [ "$MODE" = "check" ] && ! is_tracked "$path"; then note_skip; continue; fi
+            cmp -s "$DSH/$path" "$ASSETS/$path" || note_drift "$path"
+        done
+done
+for f in $SHELLJS_SINGLE_FILES; do
+    if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$f"; then note_skip
+    else cmp -s "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f" ||
+        note_drift "vendor/npm/$f"
+    fi
+done
+for p in $SHELLJS_PKGS; do
+    if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$p/package.json"; then note_skip
+    else cmp -s "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json" ||
+        note_drift "vendor/npm/$p/package.json"
+    fi
+done
+
 (cd "$DSH/vendor/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/diff@9.0.0/libesm/$rel"; then note_skip; continue; fi

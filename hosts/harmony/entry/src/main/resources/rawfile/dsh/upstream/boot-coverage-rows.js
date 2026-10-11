@@ -88,9 +88,10 @@ export const joinDefaultPreset = async (ctx, agent) => {
  * `jobs` is the ABSTRACT registry seam (its constructor refuses) — the LOCAL
  * implementation backs it (the npm face staged at the dsh rel path, the
  * tool-web convention). `shell` is likewise the abstract executor seam: the
- * wasm executor (dsh-shell-wasm's exported `shellExecutor` — the backend the
- * ported dsh-shell subclass was always meant to wrap) backs the vendored
- * ShellExecutor here, background `start` refusing honestly (wasm runs are
+ * js executor (dsh-shell-js's exported `shellExecutor` — the backend the
+ * ported dsh-shell subclass was always meant to wrap; the seat the retired
+ * dsh-shell-wasm executor used to back) backs the vendored
+ * ShellExecutor here, background `start` refusing honestly (js-shell runs are
  * foreground; background jobs still work through job-less direct calls).
  * `shellEnv` resolves its DSH_HOME onto the profile container the skills
  * plane already pins. The tool-workflow row is NOT backed: its engine rides
@@ -98,22 +99,22 @@ export const joinDefaultPreset = async (ctx, agent) => {
  * row for) — no stub here would be honest. */
 export const mountCompositionHostPlane = async (ctx, identity) => {
   const [TokenMeter, JobsLocal, UserQuestions, SubagentModelSelection,
-    DshShell, DshShellEnv, ShellWasmPlugin] = await Promise.all([
+    DshShell, DshShellEnv, ShellJsPlugin] = await Promise.all([
     import('@deepseek-ai/dsh-token-meter'),
     import('@deepseek-ai/dsh-jobs-local'),
     import('@deepseek-ai/dsh-user-questions'),
     import('@deepseek-ai/dsh-tool-subagent/model-selection-settings'),
     import('@deepseek-ai/dsh-shell'),
     import('@deepseek-ai/dsh-shell-env'),
-    import('system-plugins/dsh-shell-wasm/index.js'),
+    import('system-plugins/dsh-shell-js/index.js'),
   ]);
-  const WasmShellExecutor = class extends (DshShell.ShellExecutor ?? DshShell.default) {
-    get sandboxMode() { return ShellWasmPlugin.shellExecutor.sandboxMode; }
-    resolve(request) { return ShellWasmPlugin.shellExecutor.resolve(request); }
-    run(request) { return ShellWasmPlugin.shellExecutor.run(request); }
+  const JsShellExecutor = class extends (DshShell.ShellExecutor ?? DshShell.default) {
+    get sandboxMode() { return ShellJsPlugin.shellExecutor.sandboxMode; }
+    resolve(request) { return ShellJsPlugin.shellExecutor.resolve(request); }
+    run(request) { return ShellJsPlugin.shellExecutor.run(request); }
     start() {
       return Promise.reject(new Error(
-        'dsh-shell-wasm: background shell processes are not implemented on the wasm executor'));
+        'dsh-shell-js: background shell processes are not implemented on the js executor'));
     }
   };
   await ctx.plugin(TokenMeter.default ?? TokenMeter.TokenMeter, {});
@@ -124,7 +125,7 @@ export const mountCompositionHostPlane = async (ctx, identity) => {
   // session enables it.
   await ctx.plugin(SubagentModelSelection.default
     ?? SubagentModelSelection.SubagentModelSelectionConfig, {});
-  await ctx.plugin(WasmShellExecutor, {});
+  await ctx.plugin(JsShellExecutor, {});
   const dshHome = identity.skills?.dshHome ?? globalThis.__dshProfileHome;
   await ctx.plugin(DshShellEnv.default ?? DshShellEnv.ShellEnvRegistry, { dshHome });
   const missing = ['tokenMeter', 'jobs', 'userQuestions', 'subagentModelSelection',

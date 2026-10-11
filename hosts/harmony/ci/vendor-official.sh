@@ -584,6 +584,65 @@ vendor/npm/zod@4.4.3/v4/locales/vi.js
 vendor/npm/zod@4.4.3/v4/locales/yo.js
 vendor/npm/zod@4.4.3/v4/locales/zh-CN.js
 vendor/npm/zod@4.4.3/v4/locales/zh-TW.js"
+# The dsh-shell-js system plugin's vendor faces (the formal vendor round,
+# 2026-10-11; shrunk the same date by the hand-written-parser swap, which
+# retired bash-parser's 29-tree closure): shelljs's shell.js + src face
+# (the embedded wrench-js MIT notice in src/cp.js / src/rm.js rides
+# verbatim: never hand-edit these bytes, D6), and the minimatch chain's
+# dist/commonjs CJS face. Production faces only: the relative-require
+# closure of each package main + package.json (no tests/bin/maps).
+# Index.ets's BUNDLE_FILES mirrors every row one-for-one
+# (check-bundle-files.mjs pins the pair in both directions).
+SHELLJS_PARSER_FACES="
+
+vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js
+vendor/npm/@isaacs/balanced-match@4.0.1/package.json
+vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js
+vendor/npm/@isaacs/brace-expansion@5.0.1/package.json
+vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js
+vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js
+vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js
+vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js
+vendor/npm/minimatch@10.0.3/dist/commonjs/index.js
+vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js
+vendor/npm/minimatch@10.0.3/package.json
+vendor/npm/shelljs@0.10.0/package.json
+vendor/npm/shelljs@0.10.0/shell.js
+vendor/npm/shelljs@0.10.0/src/cat.js
+vendor/npm/shelljs@0.10.0/src/cd.js
+vendor/npm/shelljs@0.10.0/src/chmod.js
+vendor/npm/shelljs@0.10.0/src/cmd.js
+vendor/npm/shelljs@0.10.0/src/common.js
+vendor/npm/shelljs@0.10.0/src/cp.js
+vendor/npm/shelljs@0.10.0/src/dirs.js
+vendor/npm/shelljs@0.10.0/src/echo.js
+vendor/npm/shelljs@0.10.0/src/error.js
+vendor/npm/shelljs@0.10.0/src/errorCode.js
+vendor/npm/shelljs@0.10.0/src/exec-child.js
+vendor/npm/shelljs@0.10.0/src/exec.js
+vendor/npm/shelljs@0.10.0/src/find.js
+vendor/npm/shelljs@0.10.0/src/grep.js
+vendor/npm/shelljs@0.10.0/src/head.js
+vendor/npm/shelljs@0.10.0/src/ln.js
+vendor/npm/shelljs@0.10.0/src/ls.js
+vendor/npm/shelljs@0.10.0/src/mkdir.js
+vendor/npm/shelljs@0.10.0/src/mv.js
+vendor/npm/shelljs@0.10.0/src/popd.js
+vendor/npm/shelljs@0.10.0/src/pushd.js
+vendor/npm/shelljs@0.10.0/src/pwd.js
+vendor/npm/shelljs@0.10.0/src/rm.js
+vendor/npm/shelljs@0.10.0/src/sed.js
+vendor/npm/shelljs@0.10.0/src/set.js
+vendor/npm/shelljs@0.10.0/src/sort.js
+vendor/npm/shelljs@0.10.0/src/tail.js
+vendor/npm/shelljs@0.10.0/src/tempdir.js
+vendor/npm/shelljs@0.10.0/src/test.js
+vendor/npm/shelljs@0.10.0/src/to.js
+vendor/npm/shelljs@0.10.0/src/toEnd.js
+vendor/npm/shelljs@0.10.0/src/touch.js
+vendor/npm/shelljs@0.10.0/src/uniq.js
+vendor/npm/shelljs@0.10.0/src/which.js
+"
 CLOSURE="$CLOSURE
 $SPINE_OURS
 llm.js
@@ -612,15 +671,23 @@ system-plugins/dsh-open-design/manifest.json
 system-plugins/dsh-open-design/index.js
 system-plugins/dsh-plugin-manager-tools/manifest.json
 system-plugins/dsh-plugin-manager-tools/index.js
-system-plugins/dsh-shell-ish/manifest.json
-system-plugins/dsh-shell-ish/index.js
-system-plugins/dsh-shell-wasm/manifest.json
-system-plugins/dsh-shell-wasm/index.js
-system-plugins/dsh-shell-wasm/programs.js
+system-plugins/dsh-shell-js/applets-hand.js
+system-plugins/dsh-shell-js/applets-shelljs-cmds.js
+system-plugins/dsh-shell-js/applets-shelljs.js
+system-plugins/dsh-shell-js/applets-snapshot.js
+system-plugins/dsh-shell-js/applets-support.js
+system-plugins/dsh-shell-js/applets.js
+system-plugins/dsh-shell-js/exec.js
+system-plugins/dsh-shell-js/index.js
+system-plugins/dsh-shell-js/manifest.json
+system-plugins/dsh-shell-js/parser.js
+system-plugins/dsh-shell-js/parser-syntax.js
+system-plugins/dsh-shell-js/stream.js
 system-plugins/dsh-subprocess-quickjs/manifest.json
 system-plugins/dsh-subprocess-quickjs/index.js
 system-plugins/dsh-ui/manifest.json
-system-plugins/dsh-ui/index.js"
+system-plugins/dsh-ui/index.js
+$SHELLJS_PARSER_FACES"
 if [ "$MODE" != "check" ]; then
     for rel in $CLOSURE; do
         mkdir -p "$RAW/$(dirname "$rel")"
