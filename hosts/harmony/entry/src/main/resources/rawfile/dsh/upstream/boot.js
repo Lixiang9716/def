@@ -34,14 +34,23 @@ import { SettingsMemory } from 'upstream/settings-memory.js';
 import { mountSubagentRows } from 'upstream/boot-subagent-rows.js';
 import { providerSettingsNs } from 'upstream/web-write-settings.js';
 import { mountWebPlane } from 'upstream/web-search-keyless.js';
-import { LlmRuntime, attributionHeaders } from '@deepseek-ai/dsh-llm';
-import { createGatewayLlmAdapter } from 'upstream/llm-transport.js';
-import { registerRouteDisposer, registerDirectoryHandle } from 'upstream/llm-route.js';
+// The llm row split at the file-size gate (2026-10-11, the llm-pi-ai leg):
+// the gateway mount (llm-gateway-mount.js) and the GATED multi-protocol
+// mount (llm-piai-mount.js) both register into the ONE vendored LlmRuntime.
+import { mountGatewayLlm } from 'upstream/llm-gateway-mount.js';
+import { mountPiAiProviders } from 'upstream/llm-piai-mount.js';
 import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
 import { mountCompositionHostPlane, mountCoverageRows } from 'upstream/boot-coverage-rows.js';
+import { maybeMountSessionPersistence } from 'upstream/boot-session-persistence.js'; // the SESSION-PERSISTENCE row (gated, default off)
 export { joinDefaultPreset } from 'upstream/boot-coverage-rows.js';
+// The COMPACTION row (gated, 2026-10-11): the host-plane token meter plus the
+// vendored compaction-basic engine — only when options.compaction is set.
+import { mountCompactionPlane } from 'upstream/boot-compaction.js';
+// The spine demand-FACTS (the layer list + the fail-loud demand checks), split
+// out at the file-size gate (2026-10-11) with the compaction row's landing.
+import { MOBILE_LAYERS, MOUNTED_SERVICES, demandServices, demandPresetServices } from 'upstream/boot-demand.js';
 // The FIRST ported tool package (D9): its namespace object IS the plugin.
 import * as ToolTodo from '@deepseek-ai/dsh-tool-todo';
 // The per-tool-run deadline (#323 ring 1): a wall-clock budget around
@@ -129,41 +138,6 @@ export const AGENT_PRESETS_BASE_URL = `file://${AGENT_PRESETS_VENDOR_ROOT}/`;
 /** The deployment default preset (the shipped roster: cordis/minimal/ptc/
  * standard; the package README's own deployment example pins `standard`). */
 export const AGENT_PRESETS_DEFAULT = 'mobile';
-
-/** The dsh-base rows the mobile profile mounts, in base-patch order. */
-const MOBILE_LAYERS = [
-  ['session', '@deepseek-ai/dsh-session'],
-  ['agent', '@deepseek-ai/dsh-agent'],
-  ['system-prompt', '@deepseek-ai/dsh-system-prompt'],
-  ['tools', '@deepseek-ai/dsh-tools'],
-  ['session-projection', '@deepseek-ai/dsh-session-projection'],
-  ['settings', 'in-memory SettingsProvider (no settings-file on mobile)'],
-  ['agent-loop', '@deepseek-ai/dsh-agent-loop'],
-];
-
-/** The service keys the mobile profile must provide after the spine mounts. */
-const MOUNTED_SERVICES = ['sessions', 'agents', 'systemPrompt', 'tools', 'sessionProjections', 'settings', 'agentLoop', 'llm'];
-
-/** Fail loud naming any spine service that failed to mount (rule 5). */
-const demandServices = async (ctx) => {
-  const missing = MOUNTED_SERVICES.filter((name) => ctx.get(name) === undefined);
-  if (missing.length > 0) {
-    throw new Error(`boot: services failed to mount: ${missing.join(', ')}`);
-  }
-};
-
-/** The settings-plane services (the Agent 预设 data source) the boot demands
- * BESIDE the spine: demanded separately so the `upstream/services` record
- * keeps its published spine shape (the E2E manifests pin it). */
-const PRESET_SERVICES = ['loader', 'agentPresets'];
-
-/** Fail loud when the Agent 预设 mount chain did not land (rule 5). */
-const demandPresetServices = (ctx) => {
-  const missing = PRESET_SERVICES.filter((name) => ctx.get(name) === undefined);
-  if (missing.length > 0) {
-    throw new Error(`boot: preset services failed to mount: ${missing.join(', ')}`);
-  }
-};
 
 /** The REAL spine mounts, as plugin-inventory rows (the settings 插件 list's
  * global plane). Every row is answered from live context facts, never from
@@ -312,6 +286,22 @@ const mountRecoveryRings = async (ctx) => {
   await ctx.plugin(TurnRecovery, {});
 };
 
+
+/** Ported tool packages (D9): after `tools`; `allowParallelInProgress: false`
+ * is the mobile one-agent shape. The OFFICE and WEB rows are dynamic — bare
+ * `fflate`/turndown need the bridges body registered first. */
+const mountToolRows = async (ctx, cwd) => {
+    await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
+    await ctx.plugin(ShellWasm);
+    await ctx.plugin(ShellIsh);
+    await ctx.plugin(OpenDesign);
+    await ctx.plugin(PluginManagerTools);
+    await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
+    await ctx.plugin(await import('system-plugins/dsh-office/index.js'));
+    await mountWebPlane(ctx);
+  await mountFileTools(ctx, cwd);
+};
+
 const mountSpine = async (ctx, identity) => {
   await ctx.plugin(SessionStore);
   await ctx.plugin(AgentRegistry);
@@ -320,21 +310,8 @@ const mountSpine = async (ctx, identity) => {
   await ctx.plugin(ToolDeadline, {}); // Ring 1 (inject waits for `tools`).
   await ctx.plugin(SessionProjectionRegistry);
   await ctx.plugin(SettingsMemory);
-  // The SUBAGENT row (T-0050 item 2; boot-subagent-rows.js).
   await mountSubagentRows(ctx);
-  // Ported tool packages (D9): after `tools` (apply registers into it);
-  // `allowParallelInProgress: false` is the mobile one-agent shape.
-    await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
-    await ctx.plugin(ShellWasm);
-    await ctx.plugin(ShellIsh);
-    await ctx.plugin(OpenDesign);
-    await ctx.plugin(PluginManagerTools);
-    await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
-    await ctx.plugin(await import('system-plugins/dsh-office/index.js')); // the OFFICE row — dynamic: bare `fflate` needs the bridges body first
-    // The WEB row (#335 B5): dynamic import — the bridges must have
-    // registered turndown/domino before tool-web's static graph links.
-    await mountWebPlane(ctx);
-  await mountFileTools(ctx, identity.cwd);
+  await mountToolRows(ctx, identity.cwd);
   // The SKILL row (agent-flow E2E): after the file tools (its
   // discovery prefers the `fs` service) and before the agent loop (the
   // tool-skill catalog registers its `agent/pre-step` listeners on the
@@ -344,6 +321,10 @@ const mountSpine = async (ctx, identity) => {
   // order; presetJoin boots the composition host plane first (same module).
   if (identity.presetJoin) await mountCompositionHostPlane(ctx, identity);
   await mountCoverageRows(ctx, identity);
+  // Both gated rows ride before agent-loop: persistence resumes a stored
+  // session at config start; compaction arms pressure from the first turn.
+  await maybeMountSessionPersistence(ctx, identity);
+  if (identity.compaction) await mountCompactionPlane(ctx, identity.compaction);
   // dsh-base row `agent-loop` with ONE configured agent (config.agents create
   // path — no persistence backend is mounted, matching the base default).
   await ctx.plugin(AgentLoop, {
@@ -362,7 +343,6 @@ const mountSpine = async (ctx, identity) => {
   await mountRecoveryRings(ctx);
   await mountPresetPlane(ctx);
 };
-
 /**
  * @param options.scenario - E2E scenario id the caller logs under (used for
  *   the boot evidence events the caller emits).
@@ -373,7 +353,11 @@ const mountSpine = async (ctx, identity) => {
  * @param options.llm - the llm route {baseURL, apiKey, provider, model,
  *   onWire?, onSse?, readIdleTimeoutMs? (the loop-u2 attempt-level stall guard; absent = the 120s default),
  *   contextWindow? (the compaction capacity, consumed through resolveModelInfo;
- *   BYOK always carries one, staged only when runtime.config stages llmContextWindow)};
+ *   BYOK always carries one, staged only when runtime.config stages llmContextWindow),
+ *   piaiProviders? (the vendored @deepseek-ai/dsh-llm-pi-ai plugin's providers
+ *   dict — the GATED multi-protocol row: an absent field mounts nothing, a
+ *   present one registers one LlmAdapter for every named route besides the
+ *   gateway route above)};
  *   required, no transport-free fallback.
  * @param options.systemPrompt - optional override seam: {personaPrefix} —
  *   the vendored SystemPrompt's own config (the prompt's persona section),
@@ -384,6 +368,11 @@ const mountSpine = async (ctx, identity) => {
  * the vendored dsh-file-reference-local service under `fileReferences`, the
  * composer's @-mention lexicon). Absent = the historical spine.
  * @param options.creation - optional CREATION-row flag (the present tool).
+ * @param options.compaction - optional COMPACTION-row configuration: {config?}
+ *   mounts the host-plane token meter (dsh-token-meter) plus the vendored
+ *   compaction-basic engine (auto step-pressure + overflow recovery) under
+ *   `compaction`; config rides BasicCompactionConfig (thresholdRatio,
+ *   retainTokens, ...). Absent = the historical spine (upstream/boot-compaction.js).
  * @param options.skills - optional SKILL-row configuration: {dshHome,
  *   agentsHome, customSkillDirs?} — the vendored skill family. Absent = the
  *   historical spine (the parity/session manifests pin that shape).
@@ -393,45 +382,6 @@ const mountSpine = async (ctx, identity) => {
  * @param options.onEvent - observability hook: (event, fields) => void; boot
  *   emits `upstream.profile`, `llm/runtime`, `upstream.services`.
  */
-/** Mount the dsh-base row `llm`: the VENDORED LlmRuntime with the gateway transport
- * adapter registered for the caller's provider route, DECLARED in the configurable-
- * provider directory under the route's settings namespace (upstream/preset — the
- * models 设置页 renders a provider only when the directory names it; the namespace
- * itself is registered by the settings legs, web-write-settings.js). */
-const mountLlm = async (ctx, llm, onEvent) => {
-  await ctx.plugin(LlmRuntime);
-  const runtime = ctx.get('llm');
-  if (runtime === undefined) throw new Error('boot: the LlmRuntime failed to mount under "llm"');
-  const routeDisposer = runtime.registerAdapter([llm.provider], createGatewayLlmAdapter({
-    baseURL: llm.baseURL,
-    apiKey: llm.apiKey,
-    provider: llm.provider,
-    name: llm.adapterName ?? 'mock loopback chat-completions (dsh-llm-mock-server)',
-    userEndpoint: llm.userEndpoint === true,
-    onWire: llm.onWire,
-    onSse: llm.onSse,
-    onRequestBody: llm.onRequestBody, readIdleTimeoutMs: llm.readIdleTimeoutMs, // loop-u2's attempt-level stall guard; undefined = the 120s default
-    contextWindow: llm.contextWindow, // the compaction capacity (resolveModel's context); undefined = the route stages none
-  }));
-  registerRouteDisposer(ctx, routeDisposer); // the BYOK rebind seam (upstream/llm-route.js)
-  // The directory handle rides the same seam: a rebind/restore atomically replaces the
-  // models 设置页 row. Both registries key on the boot CONTEXT — ctx.get('llm') hands
-  // out a fresh wrapper per access, so the service object is not an identity.
-  registerDirectoryHandle(ctx, runtime.registerConfigurableProviders([{
-    provider: llm.provider,
-    displayName: llm.displayName ?? 'OpenAI 兼容',
-    settingsNs: providerSettingsNs(llm.provider),
-    settingsPath: ['providers', 'default'],
-  }]));
-  onEvent('llm/runtime', {
-    provider: llm.provider,
-    model: llm.model,
-    service: 'vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)',
-    transport: llm.transportLabel
-      ?? 'gateway httpFetch → loopback chat-completions mock server',
-    userAgent: attributionHeaders()['user-agent'],
-  });
-};
 
 /** The post-spine leg (split from bootUpstream at the function-size gate):
  * fail loud on missing mounts, then mount the modelSelection plane (the
@@ -445,12 +395,29 @@ const mountModelSelectionPlane = async (ctx, agentRoute, sessionId) => {
 
 /** Boot the mobile profile: empty root, the dsh-base-equivalent spine over
  * the pinned vendored packages, the vendored LlmRuntime under `llm`. */
+
+/** The mountSpine identity row: the boot options folded into the one spine
+ * fact (extracted at the function-size gate — the shape, not the sequence). */
+const spineIdentity = (options, agentRoute) => ({
+  agentId: options.agentId,
+  sessionId: options.sessionId,
+  cwd: options.cwd,
+  ...agentRoute,
+  personaPrefix: options.systemPrompt?.personaPrefix,
+  skills: options.skills,
+  commands: options.commands,
+  goals: options.goals,
+  fileReferences: options.fileReferences,
+  creation: options.creation,
+  // presetJoin boots the composition host plane; the join itself is the
+  // seat's runtime half, after the presets seed has landed.
+  presetJoin: options.presetJoin,
+});
+
 export async function bootUpstream(options) {
-  const { scenario, container, agentId, sessionId, cwd, onEvent } = options;
+  const { container, onEvent } = options;
   const llm = options.llm ?? {};
-  if (!llm.baseURL || !llm.apiKey || !llm.provider || !llm.model) {
-    throw new Error('boot: options.llm {baseURL, apiKey, provider, model} is required — the profile boots the vendored LlmRuntime over the gateway transport');
-  }
+  if (!llm.baseURL || !llm.apiKey || !llm.provider || !llm.model) throw new Error('boot: options.llm {baseURL, apiKey, provider, model} is required — the profile boots the vendored LlmRuntime over the gateway transport');
   // The loop agent's route as ONE fact (mountSpine's row + the holder's fallback read it).
   const agentRoute = { provider: llm.provider, model: llm.model, reasoningEffort: 'off' };
   pinProfileContainer(container);
@@ -460,7 +427,7 @@ export async function bootUpstream(options) {
   // Lifecycle listeners first, so boot-time creation events are observable.
   for (const [type, fn] of Object.entries(options.listeners ?? {})) ctx.on(type, fn);
 
-  await mountLlm(ctx, llm, onEvent);
+  await mountGatewayLlm(ctx, llm, onEvent);
 
   onEvent('upstream/profile', {
     profile: 'mobile',
@@ -469,20 +436,15 @@ export async function bootUpstream(options) {
     layers: MOBILE_LAYERS.map(([id]) => id),
   });
 
-  await mountSpine(ctx, {
-    agentId, sessionId, cwd,
-    ...agentRoute,
-    personaPrefix: options.systemPrompt?.personaPrefix,
-    skills: options.skills,
-    commands: options.commands,
-    goals: options.goals,
-    fileReferences: options.fileReferences,
-    creation: options.creation,
-    // presetJoin boots the composition host plane; the join itself is the
-    // seat's runtime half, after the presets seed has landed.
-    presetJoin: options.presetJoin,
-  });
-  await mountModelSelectionPlane(ctx, agentRoute, sessionId);
+  // The mountSpine identity row: persist's spineIdentity fold + compact's
+  // gated compaction row + piai's gated multi-protocol adapter row (absent
+  // piaiProviders = nothing mounts, the empty boot-list precedent).
+  const identity = spineIdentity(options, agentRoute);
+  identity.compaction = options.compaction;
+  identity.sessionPersistence = options.sessionPersistence; // the resume gate; absent = off
+  await mountSpine(ctx, identity);
+  await mountModelSelectionPlane(ctx, agentRoute, options.sessionId);
+  if (llm.piaiProviders !== undefined) await mountPiAiProviders(ctx, llm.piaiProviders, onEvent);
 
   onEvent('upstream/services', {
     kernel: '@deepseek-ai/cordis@4.0.2',
@@ -493,5 +455,5 @@ export async function bootUpstream(options) {
   // The cordis.yml-insert equivalent: ENABLED workspace rows mount at boot.
   await mountBootRows(ctx, onEvent);
 
-  return { ctx, sessionId, agentId };
+  return { ctx, sessionId: options.sessionId, agentId: options.agentId };
 }

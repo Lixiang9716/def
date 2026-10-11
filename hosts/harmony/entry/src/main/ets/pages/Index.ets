@@ -169,9 +169,14 @@ const BUNDLE_FILES: string[] = [
   'transport-tokens.mjs',
   'workspace-registry.js',
   'upstream/boot-coverage-rows.js',
+  'upstream/boot-session-persistence.js',
+  'upstream/boot-compaction.js',
+  'upstream/boot-demand.js',
   'upstream/boot.js',
   'upstream/llm-route.js',
   'upstream/llm-transport.js',
+  'upstream/llm-piai-mount.js',
+  'upstream/llm-gateway-mount.js',
   'upstream/llm-read-idle.js',
   'upstream/llm-retry-pacing.js',
   'upstream/model-selection-holder.js',
@@ -1238,6 +1243,7 @@ const BUNDLE_FILES: string[] = [
   'webclient/dsh-web-client/manifest.json',
   'webclient/dsh-web-client/web/index.html',
   'webclient/dsh-web-client/web/main.js',
+  'upstream/shims/node-stream-readable.js',
 ];
 
 // Custom approval dialog — presentApproval's native surface (contract §4:

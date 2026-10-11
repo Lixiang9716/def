@@ -1,0 +1,14 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @deepseek-ai/dsh-launch-environment@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "scenario": "llm.piai-probe",
+  "events": 12,
+  "proves": [
+    "the vendored dsh-llm-pi-ai plugin loads VERBATIM inside quickjs-ng behind the GATED boot option (options.llm.piaiProviders): absent option mounts nothing, present option registers its PiAiAdapter for the named routes through ctx.llm.registerAdapter — one LlmRuntime registry serving the gateway adapter family AND the pi-ai family",
+    "the LlmAdapter base-class contract answers through the public faces: listProviders reflects the adapter's providerInfo (id piai-test, displayName from the profile), listModels serves the configured catalog, resolveModelInfo carries the context capacity, prepareCall returns the frozen prepared call with the route's captured retry policy",
+    "the credential path is real: the profile's apiKeyEnv reference resolves through the launch environment (the no-credentials-service mobile shape) and reaches the wire as the Bearer token the scripted server demands",
+    "the transport is pi-ai's REAL openai-completions wire layer over the in-process loopback (the runtime fetch's only served face): the request is the library's own JSON wire shape (path /v1/chat/completions, stream:true) and the SSE reply translates into the harness StreamChunk vocabulary (block-start, text-delta, block-end, usage, finish stop) with the assembled text asserted"
+  ]
+}

@@ -1,0 +1,340 @@
+{
+  "scenario": "upstream.compaction",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → loopback chat-completions mock server",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "session/created",
+      "match": {
+        "sessionId": "s-m2-upstream-compaction-0001"
+      }
+    },
+    {
+      "event": "agent/created",
+      "match": {
+        "id": "main",
+        "sessionId": "s-m2-upstream-compaction-0001"
+      }
+    },
+    {
+      "event": "compaction/pressure/before",
+      "match": {
+        "totalTokens": 6764
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 0
+      }
+    },
+    {
+      "event": "turn/start",
+      "match": {
+        "turn": 1
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 2
+      }
+    },
+    {
+      "event": "step/start",
+      "match": {
+        "turn": 1,
+        "step": 1
+      }
+    },
+    {
+      "event": "system/message",
+      "match": {
+        "seq": 4,
+        "plugin": "@deepseek-ai/dsh-system-prompt"
+      }
+    },
+    {
+      "event": "user/message",
+      "match": {
+        "seq": 5,
+        "source": "user",
+        "plugin": null
+      }
+    },
+    {
+      "event": "request/header",
+      "match": {
+        "seq": 6
+      }
+    },
+    {
+      "event": "request/context",
+      "match": {
+        "seq": 7
+      }
+    },
+    {
+      "event": "assistant/message",
+      "match": {
+        "seq": 8,
+        "blocks": [
+          "text"
+        ],
+        "text": "Hello from upstream",
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "event": "step/end",
+      "match": {
+        "turn": 1,
+        "step": 1
+      }
+    },
+    {
+      "event": "turn/end",
+      "match": {
+        "seq": 10
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 11
+      }
+    },
+    {
+      "event": "turn/start",
+      "match": {
+        "turn": 2
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 13
+      }
+    },
+    {
+      "event": "compaction/start",
+      "match": {
+        "seq": 14,
+        "turn": 2
+      }
+    },
+    {
+      "event": "compaction/summary",
+      "match": {
+        "seq": 15,
+        "summaryText": "Hello from upstream",
+        "shadowedRange": {
+          "start": 5,
+          "end": 5
+        },
+        "shadowedSeqs": 1,
+        "shadowedTokenCount": 1304,
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "event": "user/message",
+      "match": {
+        "seq": 16,
+        "source": "plugin",
+        "plugin": "compact"
+      }
+    },
+    {
+      "event": "compaction/end",
+      "match": {
+        "seq": 17,
+        "turn": 2,
+        "errored": false
+      }
+    },
+    {
+      "event": "step/start",
+      "match": {
+        "turn": 2,
+        "step": 1
+      }
+    },
+    {
+      "event": "user/message",
+      "match": {
+        "seq": 19,
+        "source": "user",
+        "plugin": null
+      }
+    },
+    {
+      "event": "request/header",
+      "match": {
+        "seq": 20
+      }
+    },
+    {
+      "event": "assistant/message",
+      "match": {
+        "seq": 21,
+        "blocks": [
+          "text"
+        ],
+        "text": "Hello from upstream",
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "event": "step/end",
+      "match": {
+        "turn": 2,
+        "step": 1
+      }
+    },
+    {
+      "event": "turn/end",
+      "match": {
+        "seq": 23
+      }
+    },
+    {
+      "event": "session/log/asserted",
+      "match": {
+        "count": 24,
+        "types": [
+          "agent/inbox/spliced",
+          "turn/start",
+          "agent/inbox/spliced",
+          "step/start",
+          "system/message",
+          "user/message",
+          "request/header",
+          "request/context",
+          "assistant/message",
+          "step/end",
+          "turn/end",
+          "agent/inbox/spliced",
+          "turn/start",
+          "agent/inbox/spliced",
+          "compaction/start",
+          "compaction/summary",
+          "user/message",
+          "compaction/end",
+          "step/start",
+          "user/message",
+          "request/header",
+          "assistant/message",
+          "step/end",
+          "turn/end"
+        ]
+      }
+    },
+    {
+      "event": "compaction/records/asserted",
+      "match": {
+        "shadowedRange": {
+          "start": 5,
+          "end": 5
+        },
+        "shadowedTokenCount": 1304,
+        "checkpointSeq": 16
+      }
+    },
+    {
+      "event": "compaction/pressure/asserted",
+      "match": {
+        "totalTokens": 5593,
+        "thresholdTokens": 6144,
+        "contextWindow": 8192,
+        "surfaceNodes": 5
+      }
+    },
+    {
+      "event": "projection/turn-boundary",
+      "match": {
+        "lastTurn": 2
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "running"
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "idle"
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "running"
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "idle"
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "upstream": "0.1.6-alpha.2",
+        "compaction": "vendored dsh-compaction-basic over the host-plane dsh-token-meter (gated boot row)"
+      }
+    }
+  ]
+}
