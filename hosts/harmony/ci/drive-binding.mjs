@@ -271,6 +271,19 @@ const onLine = async (line) => {
   }
 };
 
+/** True when the scripted-approval seam is staged (`--script-approval`):
+ * the drive STANDS DOWN on the Approve tap (the dialog self-answers 350 ms
+ * after present; a live tap would only race it) — and says so, one line,
+ * so "the approval answered with no UI action" stays provable in the log. */
+const scriptedApprovalStaged = () => {
+  if (!args['script-approval']) {
+    return false;
+  }
+  console.log(`drive: scripted approval staged (${args['script-approval']}) `
+    + '— standing down on the Approve tap (the seam answers)');
+  return true;
+};
+
 const act = async () => {
   if (state.seedWait && !state.seedHandled) {
     state.seedHandled = true;
@@ -301,9 +314,8 @@ const act = async () => {
   }
   if (state.approvalWait && !state.approvalTapped) {
     state.approvalTapped = true;
-    if (args['script-approval']) {
-      console.log(`drive: scripted approval staged (${args['script-approval']}) `
-        + '— standing down on the Approve tap (the seam answers)');
+    if (scriptedApprovalStaged()) {
+      console.log('drive: scripted approval staged — standing down on the Approve tap (the seam answers)');
       return;
     }
     await tapText('approval Approve', /^Approve$/, STEP);

@@ -1,0 +1,222 @@
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"main begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"take","data":[{"type":"runtime.config"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"keychainGet","data":[{"ref":"dsh.llm/byok-route"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainGet"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/echo.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.ish","message":"guest root from the host declaration","data":[{"rootfs":"","offered":false}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.ish","message":"no Linux guest staged by this host; the ish tool is not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-b4-ondevice-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-b4-ondevice-0001"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/echo.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsMkdir"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"echo","bytes":77}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/wc.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsMkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"probe/sub/hello.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/wc.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"probe/sub/hello.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"wc","bytes":353}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/grep.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/grep.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsList"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"grep","bytes":467}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsList"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRename"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsRename"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRemove"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsRemove"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"fs primitives probe","data":[{"stage":"done","mkdir":"ERR unavailable: not implemented on this host","write":"written=16","read":"hello primitives","stat":"ERR unavailable: not implemented on this host","list":"ERR unavailable: not implemented on this host","rename":"ERR unavailable: not implemented on this host","statDir":"ERR unavailable: not implemented on this host","remove":"ERR unavailable: not implemented on this host","statAfterRemove":"ERR unavailable: not implemented on this host"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsMkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsMkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"wasm probe","data":[{"stage":"done","ok":false,"error":"unavailable: not implemented on this host"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"ishRun"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"ishRun"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"ish probe","data":[{"stage":"done","unavailable":"unavailable: not implemented on this host"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginLiveMount","message":"install creation mount","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginLiveMount","message":"prefix derive","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.plugin-manager","message":"write legs assembled","data":[{"marketplace":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"cordis legs assembled","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"web.boot"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.begin"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.seat.ready","gateway":"gateway@1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/plugins/pomodoro-create/manifest.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/plugins/pomodoro-create/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.create","message":"e2e","data":[{"scenario":"create.card","event":"package.written","name":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount begin","data":[{"spec":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"manifest read begin","data":[{"spec":"pomodoro-create","prefix":"workspace"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/plugins/pomodoro-create/manifest.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":204}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"decode utf8 face probe","data":[{"length":152}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decode","data":[{"bytes":152}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decoder created","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 feed","data":[{"bytes":152}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 end","data":[{"dangling":false}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.read","spec":"pomodoro-create","version":"1.0.0"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.validated","spec":"pomodoro-create","version":"1.0.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"approval gate","data":[{"spec":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentApproval"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.claim"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.claim"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"runtime.booted","entries":58,"source":"vendored @deepseek-ai/dsh-client-modules composed in-runtime"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"write.surface.claimed","endpointCount":39,"streams":["session/follow","workspace/follow","session/control","$events"],"source":"the on-device spine (ctx.sessions/agents/settings)"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"settings probes begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.preset.roster","presets":["standard","mobile","ptc","minimal","cordis"],"default":"mobile","authorable":false,"modeSelectionEnabled":true,"healthy":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.plugin.inventory","managementAvailable":false,"entries":79,"clientEntries":49,"presets":5,"presetRows":125,"toolRows":["@deepseek-ai/dsh-tool-ask-user","@deepseek-ai/dsh-tool-bash","@deepseek-ai/dsh-tool-bash-persistent","@deepseek-ai/dsh-tool-cordis","@deepseek-ai/dsh-tool-fs","@deepseek-ai/dsh-tool-fs-search","@deepseek-ai/dsh-tool-goal","@deepseek-ai/dsh-tool-jobs","@deepseek-ai/dsh-tool-present","@deepseek-ai/dsh-tool-pwsh","@deepseek-ai/dsh-tool-pwsh-persistent","@deepseek-ai/dsh-tool-ralph","@deepseek-ai/dsh-tool-skill","@deepseek-ai/dsh-tool-subagent","@deepseek-ai/dsh-tool-subagent-control","@deepseek-ai/dsh-tool-subagent-control/list-agents","@deepseek-ai/dsh-tool-todo","@deepseek-ai/dsh-tool-web","@deepseek-ai/dsh-tool-workflow"],"spineSample":[{"id":"agent-loop","enabled":true,"fiberPhase":"active"},{"id":"llm","enabled":true,"fiberPhase":"active"},{"id":"shell-wasm","enabled":true,"fiberPhase":"active"},{"id":"shell-ish","enabled":false,"fiberPhase":null}]}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.pluginManager.readonly","bundles":3,"readOnlyBundles":2,"bundleRows":79,"plugins":79,"workspaceRows":0}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"settings.probes.done"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"settings probes done","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"b4 runtime resident (write surface live; awaiting the page)","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.approved","spec":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"workspace/dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.adopted","spec":"pomodoro-create","version":"1.0.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"entry link begin","data":[{"spec":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"workspace/plugins/pomodoro-create/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":1572}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"decode utf8 face probe","data":[{"length":1179}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decode","data":[{"bytes":1179}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decoder created","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 feed","data":[{"bytes":1179}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 end","data":[{"dangling":false}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.linked","spec":"pomodoro-create","module":"plugins/pomodoro-create/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"fiber settle begin","data":[{"spec":"pomodoro-create"}]}
+dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"plugin.running","kind":"timer"}]}
+dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"card.posted","id":"create-pomodoro-create"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.mounted","spec":"pomodoro-create","version":"1.0.0"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"tool.returned","ok":true,"text":"插件「番茄时钟 · 创作」已作为真实 cordis 插件在线插入:审批通过 → 注册表落库 → 动态加载 → ctx.plugin 挂载,插件自身代码已在运行("}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest validate","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Service"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Event"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Builtin"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Slots"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Theme"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest synced","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"inventory read","data":[{"runnerMounted":false}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.done","durationMs":8000}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"scenario.complete","status":"pass"}]}
