@@ -43,6 +43,18 @@ MODE=stage
 ZOD_SRC=$DSH/vendor/npm/zod@4.4.3
 ZOD_DST=$ASSETS/vendor/npm/zod@4.4.3
 
+# The dsh-shell-js parser closure's staged faces (the formal vendor round,
+# 2026-10-11): the 33 npm faces the plugin's CJS seam resolves, staged with
+# the same production faces the harmony CLOSURE rows carry (relative-require
+# closure of each main + package.json; the minimatch chain rides its
+# dist/commonjs face). The plugin tree itself rides the whole-dir
+# system-plugins mirror; THESE are the faces its parser.js map probes — a
+# face staged without a --check twin below is a drift the closures gate is
+# blind to (the anti-drift rule), so every loop here has a twin there.
+SHELLJS_FACE_DIRS="bash-parser@0.5.0/src shelljs@0.10.0/src minimatch@10.0.3/dist/commonjs @isaacs/brace-expansion@5.0.1/dist/commonjs @isaacs/balanced-match@4.0.1/dist/commonjs babylon@6.18.0/lib"
+SHELLJS_SINGLE_FILES="@isaacs/balanced-match@4.0.1/dist/commonjs/index.js @isaacs/brace-expansion@5.0.1/dist/commonjs/index.js arity-n@1.0.4/0.js arity-n@1.0.4/1.js arity-n@1.0.4/2.js arity-n@1.0.4/3.js arity-n@1.0.4/4.js arity-n@1.0.4/5.js arity-n@1.0.4/N.js array-last@1.3.0/index.js compose-function@3.0.3/index.js curry@1.2.0/curry.js deep-freeze@0.0.1/index.js filter-iterator@0.0.1/index.js filter-obj@1.1.0/index.js has-own-property@0.1.0/index.js identity-function@1.0.0/index.js is-iterable@1.1.2/index.js is-number@4.0.0/index.js iterable-lookahead@1.0.0/index.js iterable-transform-replace@1.2.0/index.js magic-string@0.16.0/dist/magic-string.cjs.js map-iterable@1.0.1/index.js map-obj@2.0.0/index.js object-pairs@0.1.0/index.js object-values@1.0.0/index.js reverse-arguments@1.0.0/index.js shell-quote-word@1.0.1/index.js shelljs@0.10.0/shell.js string.fromcodepoint@0.2.1/fromcodepoint.js to-no-case@1.0.2/index.js to-pascal-case@1.0.0/index.js to-space-case@1.0.0/index.js transform-spread-iterable@1.4.1/index.js unescape-js@1.1.4/dist/index.js vlq@0.2.3/dist/vlq.js"
+SHELLJS_PKGS="bash-parser@0.5.0 shelljs@0.10.0 minimatch@10.0.3 @isaacs/brace-expansion@5.0.1 @isaacs/balanced-match@4.0.1 array-last@1.3.0 babylon@6.18.0 compose-function@3.0.3 curry@1.2.0 deep-freeze@0.0.1 filter-iterator@0.0.1 filter-obj@1.1.0 has-own-property@0.1.0 identity-function@1.0.0 iterable-lookahead@1.0.0 iterable-transform-replace@1.2.0 magic-string@0.16.0 map-iterable@1.0.1 map-obj@2.0.0 object-pairs@0.1.0 object-values@1.0.0 reverse-arguments@1.0.0 shell-quote-word@1.0.1 to-pascal-case@1.0.0 transform-spread-iterable@1.4.1 unescape-js@1.1.4 arity-n@1.0.4 is-number@4.0.0 vlq@0.2.3 is-iterable@1.1.2 to-space-case@1.0.0 to-no-case@1.0.2 string.fromcodepoint@0.2.1"
+
 if [ "$MODE" != "check" ]; then
 
 # One vendored spine package: LICENSE + package.json + lib/** minus .d.ts,
@@ -261,6 +273,27 @@ mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data"
 cp "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.json" \
     "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/manifest.json"
 
+
+# The dsh-shell-js parser closure (the faces above): dir faces ride their
+# production tree, single-file mains copy by name, and every package's
+# package.json rides (the loader's main probe reads it).
+say "staging the dsh-shell-js parser closure (33 npm faces)"
+for dir_face in $SHELLJS_FACE_DIRS; do
+    pkg=${dir_face%%/*}; face=${dir_face#*/}
+    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/vendor/npm/$pkg/$(dirname "$rel")"
+            cp "$DSH/vendor/npm/$pkg/$rel" "$ASSETS/vendor/npm/$pkg/$rel"
+        done
+done
+for f in $SHELLJS_SINGLE_FILES; do
+    mkdir -p "$ASSETS/vendor/npm/$(dirname "$f")"
+    cp "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f"
+done
+for p in $SHELLJS_PKGS; do
+    cp "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json"
+done
+
 # The pinned zod's runtime closure (the iOS embedder's ZOD_FILES list).
 say "staging vendor/npm/zod@4.4.3 (classic runtime closure)"
 mkdir -p "$ZOD_DST/v4/classic" "$ZOD_DST/v4/core" "$ZOD_DST/v4/locales"
@@ -478,6 +511,32 @@ else cmp -s "$DSH/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plu
         "$ASSETS/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" ||
     note_drift "vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js"
 fi
+
+# The dsh-shell-js parser closure's verify twin (the stage block above): the
+# same three loops as cmps — a staged face the check never judges is a drift
+# the closures gate is blind to.
+for dir_face in $SHELLJS_FACE_DIRS; do
+    pkg=${dir_face%%/*}; face=${dir_face#*/}
+    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+        while IFS= read -r rel; do
+            path="vendor/npm/$pkg/$rel"
+            if [ "$MODE" = "check" ] && ! is_tracked "$path"; then note_skip; continue; fi
+            cmp -s "$DSH/$path" "$ASSETS/$path" || note_drift "$path"
+        done
+done
+for f in $SHELLJS_SINGLE_FILES; do
+    if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$f"; then note_skip
+    else cmp -s "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f" ||
+        note_drift "vendor/npm/$f"
+    fi
+done
+for p in $SHELLJS_PKGS; do
+    if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$p/package.json"; then note_skip
+    else cmp -s "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json" ||
+        note_drift "vendor/npm/$p/package.json"
+    fi
+done
+
 (cd "$DSH/vendor/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/diff@9.0.0/libesm/$rel"; then note_skip; continue; fi

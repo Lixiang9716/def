@@ -38,6 +38,11 @@ export const fsRead = async (scope, path) => {
 
 export const fsWrite = async (scope, path, bytes, opts = {}) => {
   const key = `${scope}/${path}`;
+  // A directory target is an io failure on every real host — the shell
+  // suite's redirect-flush failure leg depends on this semantics.
+  if (workspace.get(key)?.dir === true) {
+    throw new GatewayError('io', 'fsWrite', `cannot write ${path}: Is a directory`);
+  }
   // {append: true} is the receipts journal's primitive (append-only lines —
   // the §4 journal is never rewritten).
   if (opts.append === true && workspace.has(key)) {
@@ -61,8 +66,89 @@ export const fsRemove = async (scope, path, opts = {}) => {
       removed++;
     }
   }
-  if (removed === 0) throw new GatewayError('io', 'fsRemove', `cannot read ${path}`);
+  // missing:"ok" is the contract default (rm -f rides it); the historical
+  // io throw stays for callers that ask to be told about a miss.
+  if (removed === 0 && opts.missing !== 'ok') {
+    throw new GatewayError('io', 'fsRemove', `cannot read ${path}`);
+  }
   return { removed };
+};
+
+// The v1.1.0 filesystem additions (contract primitives.md §4 "filesystem
+// additions") — the legs the dsh-shell-js plugin's seven-fs manifest
+// exercises. Semantics follow the frozen contract exactly: fsStat's io
+// miss names the path, fsList is one level in byte order, fsMkdir is
+// recursive with existing:"ok", fsRename replaces an existing target and
+// moves a directory WITH its subtree. Ancestor directories that were never
+// inserted explicitly still exist here (they do on every host — the scope
+// root is the profile container), so stat/list synthesize them as dirs
+// when children are present.
+
+const childKeysOf = (key) => {
+  const prefix = `${key}/`;
+  return [...workspace.keys()].filter((k) => k.startsWith(prefix));
+};
+
+export const fsStat = async (scope, path) => {
+  const key = `${scope}/${path}`;
+  const entry = workspace.get(key);
+  if (entry === undefined) {
+    if (childKeysOf(key).length > 0) return { kind: 'dir', size: 0, mtime: new Date(0).toISOString() };
+    throw new GatewayError('io', 'fsStat', `cannot stat ${path}: no such file or directory`);
+  }
+  if (entry.dir === true) return { kind: 'dir', size: 0, mtime: new Date(0).toISOString() };
+  return { kind: 'file', size: entry.length, mtime: new Date(0).toISOString() };
+};
+
+export const fsList = async (scope, path) => {
+  const base = `${scope}/${path}`;
+  const names = new Set();
+  for (const key of childKeysOf(base)) {
+    const rest = key.slice(base.length + 1);
+    if (rest.length > 0) names.add(rest.split('/')[0]);
+  }
+  if (names.size === 0 && workspace.get(base) === undefined && childKeysOf(base).length === 0) {
+    throw new GatewayError('io', 'fsList', `cannot list ${path}`);
+  }
+  // Byte order per contract (deterministic across hosts).
+  const sorted = [...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  return {
+    entries: sorted.map((name) => {
+      const entry = workspace.get(`${base}/${name}`);
+      const kind = entry?.dir === true || childKeysOf(`${base}/${name}`).length > 0
+        ? 'dir' : 'file';
+      return { name, kind };
+    }),
+  };
+};
+
+export const fsMkdir = async (scope, path, _opts = {}) => {
+  // Recursive with existing:"ok" is the default — parents are implicit in
+  // the Map the same way ancestors are synthesized above.
+  workspace.set(`${scope}/${path}`, { dir: true });
+  return {};
+};
+
+export const fsRename = async (scope, from, to) => {
+  const fromKey = `${scope}/${from}`;
+  const toKey = `${scope}/${to}`;
+  const entry = workspace.get(fromKey);
+  if (entry === undefined && childKeysOf(fromKey).length === 0) {
+    throw new GatewayError('io', 'fsRename', `cannot rename ${from}: no such file`);
+  }
+  // POSIX rename: an existing target is replaced; a moved directory takes
+  // its whole subtree with it.
+  if (workspace.get(fromKey)?.dir === true || (workspace.get(fromKey) === undefined && childKeysOf(fromKey).length > 0)) {
+    for (const key of childKeysOf(fromKey)) {
+      workspace.set(`${toKey}${key.slice(fromKey.length)}`, workspace.get(key));
+      workspace.delete(key);
+    }
+  }
+  if (entry !== undefined) {
+    workspace.delete(fromKey);
+    workspace.set(toKey, entry);
+  }
+  return {};
 };
 
 /** The http face for the install legs: routes the TEST installs per url —
