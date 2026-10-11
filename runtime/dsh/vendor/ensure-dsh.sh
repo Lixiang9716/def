@@ -231,6 +231,12 @@ terminal|0.1.6-alpha.2|cb9b07571654bcfe6877f8ff860a3ebd17564fe17994a9e905aea0ef4
 # domino (served through the shims' cjs-loader), and the GFM rules plugin.
 # Shas mirror the suite-side pins in ensure-dsh-tests.sh (same bytes, one
 # pin per face).
+# The SESSION-PERSISTENCE family (2026-10-11, the resume leg): the vendored
+# dsh-session-persistence seam's concrete JSONL backend plus the session-log
+# format readers the backend links (catalog's own deps already pinned —
+# session-format + the v0→v1/v1→v2/v2→v3 migration adapters). The backend's
+# native row (koffi/flock) rides the shims' single-process flock face; the
+# boot mounts it behind the options.sessionPersistence gate (default off).
 NPM_PACKAGES="
 cordis@4.0.2|@deepseek-ai/cordis/-/cordis-4.0.2.tgz|686ca44fc6e8d217804de9062b716b7c72755dde09c2a433dd07045eea3c6a97
 @noble/hashes@2.3.0|@noble/hashes/-/hashes-2.3.0.tgz|892281f5dd25ddea8e215c740945bacdfc78aa4fca81f2c25a06876366c8beac
@@ -275,6 +281,11 @@ pngjs@5.0.0|pngjs/-/pngjs-5.0.0.tgz|4d960bbbe078022d7a36822e2874f884c7410ead111f
 turndown@7.2.4|turndown/-/turndown-7.2.4.tgz|05f61bc3f0aeca5e5cd7f1b5492e26b9040bb00708cd41fb1b0f7b216e296fa0
 @mixmark-io/domino@2.2.0|@mixmark-io/domino/-/domino-2.2.0.tgz|b829bcca09544649f6432020dd6915b6fb054154d7a77eb6f8b3fb1f4165afec
 @joplin/turndown-plugin-gfm@1.0.67|@joplin/turndown-plugin-gfm/-/turndown-plugin-gfm-1.0.67.tgz|59f5c59b28bb690bc1cb2d00c67b5e798ce5b29032989892b27a491093e6cde5
+@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2|@deepseek-ai/dsh-session-persistence-jsonl/-/dsh-session-persistence-jsonl-0.1.6-alpha.2.tgz|4acf76602ba7b031f1991ab6a518190c7d8ef5da4f217f25685881e37fdbcf89
+@deepseek-ai/dsh-session-format@0.1.6-alpha.2|@deepseek-ai/dsh-session-format/-/dsh-session-format-0.1.6-alpha.2.tgz|1f8583840d78b54b43d08c80bf31d5688ea0cd9f991e5823902ee3c83cb22f0d
+@deepseek-ai/dsh-session-format-v0-to-v1@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v0-to-v1/-/dsh-session-format-v0-to-v1-0.1.6-alpha.2.tgz|f3d458503007a986ca7ba8510c92e30425fb3d56d282b937fc8c342e7aa13952
+@deepseek-ai/dsh-session-format-v1-to-v2@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v1-to-v2/-/dsh-session-format-v1-to-v2-0.1.6-alpha.2.tgz|3ba7c561d637073b81fe1b2077fec19776a2e00abc191769b0bc008b85358a8e
+@deepseek-ai/dsh-session-format-v2-to-v3@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v2-to-v3/-/dsh-session-format-v2-to-v3-0.1.6-alpha.2.tgz|b488cb16ecae0128f023f985bdc66423f17e6de285d15c60b44ce370d2ef83b6
 
 "
 

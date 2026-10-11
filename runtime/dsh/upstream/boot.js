@@ -41,6 +41,7 @@ import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
 import { mountCompositionHostPlane, mountCoverageRows } from 'upstream/boot-coverage-rows.js';
+import { maybeMountSessionPersistence } from 'upstream/boot-session-persistence.js'; // the SESSION-PERSISTENCE row (gated, default off)
 export { joinDefaultPreset } from 'upstream/boot-coverage-rows.js';
 // The FIRST ported tool package (D9): its namespace object IS the plugin.
 import * as ToolTodo from '@deepseek-ai/dsh-tool-todo';
@@ -322,8 +323,7 @@ const mountSpine = async (ctx, identity) => {
   await ctx.plugin(SettingsMemory);
   // The SUBAGENT row (T-0050 item 2; boot-subagent-rows.js).
   await mountSubagentRows(ctx);
-  // Ported tool packages (D9): after `tools` (apply registers into it);
-  // `allowParallelInProgress: false` is the mobile one-agent shape.
+  // Ported tool packages (D9): after `tools`; `allowParallelInProgress: false` is the mobile one-agent shape.
     await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
     await ctx.plugin(ShellWasm);
     await ctx.plugin(ShellIsh);
@@ -344,6 +344,7 @@ const mountSpine = async (ctx, identity) => {
   // order; presetJoin boots the composition host plane first (same module).
   if (identity.presetJoin) await mountCompositionHostPlane(ctx, identity);
   await mountCoverageRows(ctx, identity);
+  await maybeMountSessionPersistence(ctx, identity); // gated; before agent-loop (its config start resumes a stored session)
   // dsh-base row `agent-loop` with ONE configured agent (config.agents create
   // path — no persistence backend is mounted, matching the base default).
   await ctx.plugin(AgentLoop, {
@@ -362,7 +363,6 @@ const mountSpine = async (ctx, identity) => {
   await mountRecoveryRings(ctx);
   await mountPresetPlane(ctx);
 };
-
 /**
  * @param options.scenario - E2E scenario id the caller logs under (used for
  *   the boot evidence events the caller emits).
@@ -448,9 +448,7 @@ const mountModelSelectionPlane = async (ctx, agentRoute, sessionId) => {
 export async function bootUpstream(options) {
   const { scenario, container, agentId, sessionId, cwd, onEvent } = options;
   const llm = options.llm ?? {};
-  if (!llm.baseURL || !llm.apiKey || !llm.provider || !llm.model) {
-    throw new Error('boot: options.llm {baseURL, apiKey, provider, model} is required — the profile boots the vendored LlmRuntime over the gateway transport');
-  }
+  if (!llm.baseURL || !llm.apiKey || !llm.provider || !llm.model) throw new Error('boot: options.llm {baseURL, apiKey, provider, model} is required — the profile boots the vendored LlmRuntime over the gateway transport');
   // The loop agent's route as ONE fact (mountSpine's row + the holder's fallback read it).
   const agentRoute = { provider: llm.provider, model: llm.model, reasoningEffort: 'off' };
   pinProfileContainer(container);
@@ -481,6 +479,7 @@ export async function bootUpstream(options) {
     // presetJoin boots the composition host plane; the join itself is the
     // seat's runtime half, after the presets seed has landed.
     presetJoin: options.presetJoin,
+    sessionPersistence: options.sessionPersistence, // the resume leg's gate; absent = off
   });
   await mountModelSelectionPlane(ctx, agentRoute, sessionId);
 

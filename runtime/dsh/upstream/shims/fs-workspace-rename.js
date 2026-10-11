@@ -127,6 +127,27 @@ export const wsLink = (sourcePath, destPath) => {
       || state.symlinks?.has(target.path)) throw wsEexist('link', target.path);
   wsCreateFile(state, target.path, entry.bytes.slice(), entry.mode);
   state.files.get(target.path).ino = entry.ino;
+  // Real-disk write-through (the session-persistence resume leg, 2026-10-11):
+  // the jsonl backend publishes its log via link()+unlink() — the link face
+  // is the LAST writer of the artifact's bytes and had no real twin, so the
+  // staged temp's write-through mirror was unlink-mirrored away and a stored
+  // session left the container disk with directories only (measured: the
+  // resume leg's process-1 disk check). Materialize the linked bytes at the
+  // destination: parents are mkdir -p'd by the intrinsic, and the 8 MB cap /
+  // best-effort posture match the sibling mirrors — the VFS stays the world
+  // of record, and what the disk needs is byte-identical durability, not
+  // real-inode identity (the two names stay one object in the VFS).
+  try {
+    const bytes = entry.bytes;
+    if (bytes.length <= 8 * 1024 * 1024) {
+      let bin = '';
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+      }
+      globalThis.__dshProcWriteFileReal?.(target.path, btoa(bin));
+    }
+  } catch { /* structural mirror is best-effort */ }
 };
 
 /** chmod on a workspace file or directory. */
