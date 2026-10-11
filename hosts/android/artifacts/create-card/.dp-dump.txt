@@ -1,0 +1,123 @@
+--------- beginning of main
+10-11 10:11:22.504  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"create.card","event":"client.selected","client":"dsh-web-client"}]}
+10-11 10:11:23.140  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.begin"}]}
+10-11 10:11:23.141  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.seat.ready","gateway":"gateway@1"}]}
+10-11 10:11:23.141  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
+10-11 10:11:23.443  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+10-11 10:11:23.443  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+10-11 10:11:23.455  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+10-11 10:11:23.455  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+10-11 10:11:23.490  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"echo.wasm"}]}
+10-11 10:11:23.490  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:23.501  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.shell.ish","message":"guest root from the host declaration","data":[{"rootfs":"","offered":false}]}
+10-11 10:11:23.501  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.ish","message":"no Linux guest staged by this host; the ish tool is not offered","data":[]}
+10-11 10:11:23.503  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+10-11 10:11:23.508  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+10-11 10:11:23.511  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+10-11 10:11:23.531  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+10-11 10:11:23.541  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+10-11 10:11:23.584  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+10-11 10:11:23.584  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+10-11 10:11:23.591  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+10-11 10:11:23.591  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+10-11 10:11:23.734  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+10-11 10:11:23.740  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+10-11 10:11:23.748  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+10-11 10:11:23.750  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+10-11 10:11:23.786  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-create-card-0001"}]}
+10-11 10:11:23.811  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-create-card-0001"}]}
+10-11 10:11:23.812  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+10-11 10:11:23.813  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+10-11 10:11:23.813  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+10-11 10:11:23.813  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+10-11 10:11:23.813  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:23.816  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-11 10:11:23.816  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"echo.wasm"}]}
+10-11 10:11:23.816  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:23.823  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-11 10:11:23.824  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.spine.booted","sessionId":"s-create-card-0001"}]}
+10-11 10:11:23.825  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"plugins/pomodoro-create/manifest.json"}]}
+10-11 10:11:23.826  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:23.829  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"echo","bytes":77}]}
+10-11 10:11:23.829  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"wc.wasm"}]}
+10-11 10:11:23.829  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:23.833  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"plugins/pomodoro-create/index.js"}]}
+10-11 10:11:23.835  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:23.841  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-11 10:11:23.841  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"wc.wasm"}]}
+10-11 10:11:23.842  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:23.845  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.create","message":"e2e","data":[{"scenario":"create.card","event":"package.written","name":"pomodoro-create"}]}
+10-11 10:11:23.845  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount begin","data":[{"spec":"pomodoro-create"}]}
+10-11 10:11:23.846  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"manifest read begin","data":[{"spec":"pomodoro-create","prefix":""}]}
+10-11 10:11:23.846  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"plugins/pomodoro-create/manifest.json"}]}
+10-11 10:11:23.846  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:23.850  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"wc","bytes":353}]}
+10-11 10:11:23.850  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"grep.wasm"}]}
+10-11 10:11:23.851  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:23.855  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":204}]}
+10-11 10:11:23.857  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"decode utf8 face probe","data":[{"length":152}]}
+10-11 10:11:23.861  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decode","data":[{"bytes":152}]}
+10-11 10:11:23.861  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decoder created","data":[]}
+10-11 10:11:23.862  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 feed","data":[{"bytes":152}]}
+10-11 10:11:23.864  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 end","data":[{"dangling":false}]}
+10-11 10:11:23.865  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.read","spec":"pomodoro-create","version":"1.0.0"}]}
+10-11 10:11:23.865  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.validated","spec":"pomodoro-create","version":"1.0.0"}]}
+10-11 10:11:23.866  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"approval gate","data":[{"spec":"pomodoro-create"}]}
+10-11 10:11:23.866  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentApproval"}]}
+10-11 10:11:23.868  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-11 10:11:23.868  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"grep.wasm"}]}
+10-11 10:11:23.869  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:23.871  7363  7363 I dsh.runtime.ui: ui-wait approval
+10-11 10:11:23.873  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"grep","bytes":467}]}
+10-11 10:11:24.627  7363  7363 I dsh.runtime.ui: ui-script approval
+10-11 10:11:24.813  7363  7363 I dsh.runtime.ui: ui-done approval
+10-11 10:11:24.844  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.approved","spec":"pomodoro-create"}]}
+10-11 10:11:24.845  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.create","message":"e2e","data":[{"scenario":"create.card","event":"approval.answered","name":"pomodoro-create","approved":true}]}
+10-11 10:11:24.845  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+10-11 10:11:24.846  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:24.859  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-11 10:11:24.868  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+10-11 10:11:24.873  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+10-11 10:11:24.930  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.adopted","spec":"pomodoro-create","version":"1.0.0"}]}
+10-11 10:11:24.930  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.create","message":"e2e","data":[{"scenario":"create.card","event":"registry.installed","name":"pomodoro-create"}]}
+10-11 10:11:24.930  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"entry link begin","data":[{"spec":"pomodoro-create"}]}
+10-11 10:11:24.931  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"plugins/pomodoro-create/index.js"}]}
+10-11 10:11:24.931  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-11 10:11:24.935  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":1572}]}
+10-11 10:11:24.992  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"decode utf8 face probe","data":[{"length":1179}]}
+10-11 10:11:24.995  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decode","data":[{"bytes":1179}]}
+10-11 10:11:24.995  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 decoder created","data":[]}
+10-11 10:11:24.996  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 feed","data":[{"bytes":1179}]}
+10-11 10:11:25.005  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 end","data":[{"dangling":false}]}
+10-11 10:11:25.006  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.linked","spec":"pomodoro-create","module":"plugins/pomodoro-create/index.js"}]}
+10-11 10:11:25.006  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"fiber settle begin","data":[{"spec":"pomodoro-create"}]}
+10-11 10:11:25.010  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"plugin.running","kind":"timer"}]}
+10-11 10:11:25.056  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"create.card","event":"card.face.presented","id":"create-pomodoro-create","kind":"timer"}]}
+10-11 10:11:25.083  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"card.posted","id":"create-pomodoro-create"}]}
+10-11 10:11:25.112  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:25.447  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.mounted","spec":"pomodoro-create","version":"1.0.0"}]}
+10-11 10:11:25.447  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"tool.returned","ok":true,"text":"插件「番茄时钟 · 创作」已作为真实 cordis 插件在线插入:审批通过 → 注册表落库 → 动态加载 → ctx.plugin 挂载,插件自身代码已在运行("}]}
+10-11 10:11:25.448  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:25.735  7363  7363 I dsh.runtime.ui: ui-wait card-present
+10-11 10:11:26.459  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:26.478  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:27.481  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:27.482  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:28.489  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:28.491  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:29.501  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:29.505  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:30.510  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:30.512  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:31.523  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:31.567  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:32.626  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:32.628  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-11 10:11:33.636  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:33.639  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"create.card","event":"card.face.completed","id":"create-pomodoro-create"}]}
+10-11 10:11:33.644  7363  7363 I dsh.runtime.ui: ui-done card-present
+10-11 10:11:39.469  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+10-11 10:11:39.471  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.done","durationMs":8000}]}
+10-11 10:11:39.471  7363  7424 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"scenario.complete","status":"pass"}]}
+10-11 10:11:39.478  7363  7424 I dsh.runtime.result: create.card PASS | quickjs-ng 0.17.0
+10-11 10:11:39.478  7363  7424 I dsh.runtime.result: ALL PASS

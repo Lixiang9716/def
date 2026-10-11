@@ -43,6 +43,8 @@ class BindingHost private constructor(
         const val LLM_ENTRY = "scenario/llm-live-stream.js"
         const val CARD_PLAYER_SCENARIO = "card.player"
         const val CARD_PLAYER_ENTRY = "scenario/card-player.js"
+        const val CREATE_CARD_SCENARIO = "create.card"
+        const val CREATE_CARD_ENTRY = "scenario/create-card.js"
         const val PARITY_SCENARIO = "upstream.parity"
         const val PARITY_ENTRY = "scenario/upstream-parity.js"
         const val SUITE_SCENARIO = "upstream.suite"
@@ -138,6 +140,17 @@ class BindingHost private constructor(
         /** The card-player drive (`card.player`): the card face's proof. */
         fun startCardPlayer(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
             drive("card-player", CARD_PLAYER_SCENARIO, CARD_PLAYER_ENTRY, activity, webView, onFinished)
+
+        /**
+         * The create-card drive (`create.card`, the gaps3/android-01 spine
+         * seat): the scenario boots the FULL upstream spine (boot.js mounts
+         * dsh-create, capturing the real cordis context), then plugin_create's
+         * execute writes the package, the scripted-approval seam answers the
+         * native dialog, the registry row lands, and the authored plugin
+         * LIVE-mounts into that spine — its own apply() posts the card.* bus
+         * lines this surface renders. */
+        fun startCreateCard(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
+            drive("create-card", CREATE_CARD_SCENARIO, CREATE_CARD_ENTRY, activity, webView, onFinished)
 
         /** The camera drive (`android.camera-plane`, v1.10.0): the capture burst
          * against the emulator's virtual camera, the phased rows' honest `unavailable`. */
@@ -388,8 +401,31 @@ class BindingHost private constructor(
                 carrier.send(payload.toString()) // CarrierServer.send is thread-safe
             }
             // The card face is main-thread confined; the bus line is not.
-            "card.present", "card.state", "card.dismiss", "card.complete" ->
+            // The create-card drive additionally narrates the face's own
+            // acts under its scenario (card.face.presented / completed —
+            // the manifest's chain names the NATIVE surface's render, a
+            // fact only this side of the bus owns); the other drives'
+            // streams stay byte-shaped (their manifests pin them).
+            "card.present", "card.state", "card.dismiss", "card.complete" -> {
+                if (scenarioId == CREATE_CARD_SCENARIO) {
+                    when (msg.optString("type")) {
+                        "card.present" -> {
+                            val face = msg.optJSONObject("card")
+                            carrierLog(
+                                "card.face.presented",
+                                JSONObject()
+                                    .put("id", face?.optString("id") ?: "")
+                                    .put("kind", face?.optString("kind") ?: ""),
+                            )
+                        }
+                        "card.complete" -> carrierLog(
+                            "card.face.completed",
+                            JSONObject().put("id", msg.optString("id")),
+                        )
+                    }
+                }
                 activity.runOnUiThread { cardSurface?.handle(msg) }
+            }
         }
     }
 
