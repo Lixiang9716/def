@@ -20,7 +20,22 @@ export class E2eLeg {
   private static leg: string = '';
   private static spec: string = '';
   private static webClient: string = '';
+  private static scriptApproval: string = '';
   private static bleMock: boolean = false;
+
+  /** The scripted-approval launch want (`--ps dsh.script.approval
+   * approve|remember|decline`, the Android UiPrimitives twin): the approval
+   * dialog still presents — the native path is exercised — then
+   * self-answers exactly the way the tapped button would. '' (absent)
+   * means a human answers; the product default is unchanged. An unknown
+   * value fails loud at the want's reader (EntryAbility) and never stages. */
+  static setScriptApproval(scriptApproval: string): void {
+    E2eLeg.scriptApproval = scriptApproval;
+  }
+
+  static getScriptApproval(): string {
+    return E2eLeg.scriptApproval;
+  }
 
   /** EntryAbility.onCreate: the BLE face's mock-radio launch parameter
    * (`--ps dsh.e2e.ble.mock true`) — the CI leg's radio choice. */

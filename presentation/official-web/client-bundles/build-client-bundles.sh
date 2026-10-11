@@ -85,18 +85,22 @@ node "$HERE/roster.mjs" "$WORK" "$HERE/ROSTER.json.tmp"
 
 echo "==> copy the staged allowlist into $HERE/npm"
 rm -rf "$HERE/npm" && mkdir -p "$HERE/npm"
-node - "$HERE/ROSTER.json.tmp" "$HERE/npm" <<'COPY'
+# The roster's dir/bundle rows are checkout-relative (roster.mjs normalizes
+# them so the committed record stays machine-independent) — the copy leg
+# joins them against the work checkout root.
+node - "$HERE/ROSTER.json.tmp" "$HERE/npm" "$WORK" <<'COPY'
 const { readFileSync, mkdirSync, copyFileSync } = require('node:fs');
 const { join, dirname } = require('node:path');
 const roster = JSON.parse(readFileSync(process.argv[2], 'utf8'));
 const destRoot = process.argv[3];
+const workRoot = process.argv[4];
 for (const entry of roster.entries) {
   // Layout mirrors the E2E staging tree (Documents/web-plugins/npm/...): the
   // runner copies this directory verbatim into the app container.
   const dest = join(destRoot, `${entry.name}@${entry.version}`);
   for (const file of entry.files) {
     mkdirSync(dirname(join(dest, file)), { recursive: true });
-    copyFileSync(join(entry.dir, file), join(dest, file));
+    copyFileSync(join(workRoot, entry.dir, file), join(dest, file));
   }
 }
 COPY

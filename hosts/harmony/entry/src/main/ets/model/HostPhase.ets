@@ -63,6 +63,7 @@ import { DevicePlanePrimitives } from './DevicePlanePrimitives';
 import { CameraPrimitives } from './CameraPrimitives';
 import { BlePrimitives } from './BlePrimitives';
 import { MicPrimitives } from './MicPrimitives';
+import { CardFace } from './CardFace';
 import { BuildFlavor } from './BuildFlavor';
 
 const TAG: string = 'dsh.app';
@@ -95,6 +96,15 @@ const SCENARIO_REAL_AGENT: string = 'real.agent.loop';
 const ENTRY_REAL_AGENT: string = 'scenario/real-agent-loop.js';
 const SCENARIO_PARITY: string = 'upstream.parity';
 const ENTRY_PARITY: string = 'scenario/upstream-parity.js';
+/** The card.player leg (the Android card-player drive's sibling): the
+ * plugin's card speaks bus lines (card.present/state/complete) over THIS
+ * seat — the C host installs __dshGatewayNegotiate/__dshBusPost/__dshComplete
+ * for every runtime it starts (dsh_runtime_host.c), so the scenario's
+ * gateway@1 negotiate and the bus crossing ride the same seam the binding
+ * phase uses. No web client mounts (the scenario drives primitives only);
+ * the card.* records route through CardFace into the page's PiP face. */
+const SCENARIO_CARD_PLAYER: string = 'card.player';
+const ENTRY_CARD_PLAYER: string = 'scenario/card-player.js';
 
 const SCENARIO_DEVICE_PLANE: string = 'harmony.device-plane';
 const ENTRY_DEVICE_PLANE: string = 'scenario/device-plane.js';
@@ -196,6 +206,7 @@ export class HostPhase {
   private devicePlaneLeg: boolean = false;
   private cameraPlaneLeg: boolean = false;
   private parityLeg: boolean = false;
+  private cardPlayerLeg: boolean = false;
   private bleLeg: boolean = false;
   private bleMock: boolean = false;
   /** The compact creation-client leg: session-mock-llm over the compact page —
@@ -207,6 +218,10 @@ export class HostPhase {
   /** Fired once when the phase scenario reaches a terminal verdict (mutator
    * status >= 1) — Index chains the D9 official-web phase off it. */
   onPhaseComplete: (passed: boolean) => void = (passed: boolean): void => {};
+  /** The card record hook (OfficialServe's twin): bus card.* records route
+   * through CardFace, then this fires so the owning page pushes the
+   * projection into the PiP face's @State bindings. */
+  onCardRecord: (() => void) | undefined = undefined;
   private seedPath: string = '';
   private http: HttpPrimitive = new HttpPrimitive();
   private timer: TimerPrimitive = new TimerPrimitive((eventJson: string): void => {
@@ -343,6 +358,27 @@ export class HostPhase {
     this.llmLeg = false;
     this.whaleLeg = false;
     this.cameraPlaneLeg = true;
+    this.slotAcked = false;
+    this.connectedLogged = false;
+    this.hostInfoDelivered = false;
+    this.start(ctx, bundleRoot, capturePath, fsRoot);
+  }
+
+  /** The card.player leg (ONE launch, its own scenario id): the binding
+   * machinery with the card-player scenario as the entry — the device-plane
+   * leg's headless shape (no web client mounts; the runner calls
+   * evalEntryDirect once the carrier is up). The scenario's ticks ride the
+   * gateway timer seam (one-shot re-arm loop) and its card lines cross the
+   * __dshBusPost seam into onBusLine, which routes them through CardFace. */
+  beginCardPlayer(ctx: common.UIAbilityContext, bundleRoot: string,
+    capturePath: string, fsRoot: string): void {
+    this.scenario = SCENARIO_CARD_PLAYER;
+    this.carrierScenario = SCENARIO_CARD_PLAYER;
+    this.entry = ENTRY_CARD_PLAYER;
+    this.llmLeg = false;
+    this.whaleLeg = false;
+    this.parityLeg = false;
+    this.cardPlayerLeg = true;
     this.slotAcked = false;
     this.connectedLogged = false;
     this.hostInfoDelivered = false;
@@ -564,7 +600,8 @@ export class HostPhase {
 
   onCarrierListening(port: number): void {
     this.carrierPort = port;
-    if (this.devicePlaneLeg || this.cameraPlaneLeg || this.parityLeg) {
+    if (this.devicePlaneLeg || this.cameraPlaneLeg || this.parityLeg
+      || this.cardPlayerLeg) {
       // No web client mounts on this leg (the scenario drives primitives
       // only) — carrier-side selection records would pin records no page
       // produces; the manifest carries the scenario's own records alone.
@@ -785,6 +822,17 @@ export class HostPhase {
     }
     if (this.llmLeg && msg.type === 'stage.error') {
       hilog.error(0x0000, TAG, 'stage-error %{public}s', msg.message ?? 'unknown');
+      return;
+    }
+    // The card face's bus lines (the card.player leg; OfficialServe's
+    // onBusLine routing, mirrored): project through CardFace, then the hook
+    // pushes the projection into the page's PiP bindings.
+    if (msg.type === 'card.present' || msg.type === 'card.state'
+      || msg.type === 'card.complete' || msg.type === 'card.dismiss') {
+      CardFace.handle(msg.type, msg as Record<string, Object>);
+      if (this.onCardRecord !== undefined) {
+        this.onCardRecord();
+      }
       return;
     }
     if (msg.type !== 'ws.send' || msg.payload === undefined) {

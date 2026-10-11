@@ -73,6 +73,10 @@ export class CardFace {
         return;
       }
       CardFace.card['completeMessage'] = String(msg['message'] ?? '完成');
+      // The complete message REPLACES the stale tick label on the face (the
+      // Android sibling's complete(): subtitle becomes the message) — the
+      // page's binding prefers the label, so the stale one must retire.
+      CardFace.card['label'] = '';
     }
     CardFace.project();
   }
@@ -93,6 +97,15 @@ export class CardFace {
     const visible = card['visible'] === true;
     const id = visible ? String(card['id'] ?? '') : '';
     return CardFace.projected(true, visible, id);
+  }
+
+  /** The FULL projected card for the page's own PiP bindings: the face the
+   * app renders (title/kind/remainingText/label/completeMessage).
+   * snapshot() above stays the REDACTED /api/state seam — attached/visible/
+   * id only, the state the outside world may see (the #455 seam contract);
+   * the card's text is in-app face surface, not the seam's. */
+  static faceCard(): Record<string, Object> {
+    return CardFace.face['card'] as Record<string, Object>;
   }
 
   /** Re-projects the face from the model (called by the page's tick and

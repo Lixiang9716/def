@@ -1,0 +1,14 @@
+{
+  "host": "harmony",
+  "udid": "127.0.0.1:5557 (dsh_phone emulator)",
+  "runner": "hosts/harmony/ci/run-create-card.sh",
+  "phase": "create.card",
+  "launch": "dsh_phone emulator, --ps dsh.e2e.leg create.card + --ps dsh.script.approval approve (Debug)",
+  "tree": "origin/main b76fba1704ef (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "scenarios": [
+    { "manifest": "create-card-harmony", "verdict": "verdict-create-card-harmony.json", "pass": true }
+  ],
+  "screens": ["screens/01-create-card-face.png", "screens/02-final.png"],
+  "producedAt": "2026-10-11T05:27:58Z"
+}
