@@ -102,12 +102,19 @@ TREES = [
     ("vendor/npm/fflate@0.8.2/lib/index.cjs", DSH / "vendor" / "npm" / "fflate@0.8.2" / "lib" / "index.cjs"),
     ("vendor/npm/@noble/hashes@2.3.0", DSH / "vendor" / "npm" / "@noble" / "hashes@2.3.0"),
     ("vendor/npm/@earendil-works/pi-ai@0.85.1", DSH / "vendor" / "npm" / "@earendil-works" / "pi-ai@0.85.1"),
-
-    # The dsh-shell-js system plugin's parser closure (the formal vendor
-    # round, 2026-10-11): the 33 npm faces its CJS seam resolves. The
-    # parser faces stage whole (pristine tarballs — D6); the minimatch
-    # chain rides its dist/commonjs CJS face + package.json only (the
-    # domino double-row pattern — the ESM face never loads).
+    ("system-plugins/dsh-office", DSH / "system-plugins" / "dsh-office"),
+    ("system-plugins/dsh-ble", DSH / "system-plugins" / "dsh-ble"),
+    ("system-plugins/dsh-device-plane", DSH / "system-plugins" / "dsh-device-plane"),
+    ("system-plugins/dsh-plugin-manager-tools", DSH / "system-plugins" / "dsh-plugin-manager-tools"),
+    ("system-plugins/dsh-shell-wasm", DSH / "system-plugins" / "dsh-shell-wasm"),
+    ("system-plugins/dsh-create", DSH / "system-plugins" / "dsh-create"),
+    ("upstream/shims", DSH / "upstream" / "shims"),
+    ("scenario", DSH / "scenario"),
+    ("web-live", DSH / "web-live"),
+    ("vendor/npm/cordis@4.0.2/package.json", DSH / "vendor" / "npm" / "cordis@4.0.2" / "package.json"),
+    ("vendor/npm/cosmokit@1.8.3/package.json", DSH / "vendor" / "npm" / "cosmokit@1.8.3" / "package.json"),
+    ("vendor/npm/schemastery@3.18.2/package.json", DSH / "vendor" / "npm" / "schemastery@3.18.2" / "package.json"),
+    ("vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json", DSH / "vendor" / "npm" / "@deepseek-ai" / "dsh-client-modules@0.1.6-alpha.2" / "package.json"),
     ("vendor/npm/bash-parser@0.5.0", DSH / "vendor" / "npm" / "bash-parser@0.5.0"),
     ("vendor/npm/shelljs@0.10.0", DSH / "vendor" / "npm" / "shelljs@0.10.0"),
     ("vendor/npm/array-last@1.3.0", DSH / "vendor" / "npm" / "array-last@1.3.0"),
@@ -139,24 +146,11 @@ TREES = [
     ("vendor/npm/to-no-case@1.0.2", DSH / "vendor" / "npm" / "to-no-case@1.0.2"),
     ("vendor/npm/string.fromcodepoint@0.2.1", DSH / "vendor" / "npm" / "string.fromcodepoint@0.2.1"),
     ("vendor/npm/minimatch@10.0.3/dist/commonjs", DSH / "vendor" / "npm" / "minimatch@10.0.3" / "dist" / "commonjs"),
-    ("vendor/npm/minimatch@10.0.3/package.json", DSH / "vendor" / "npm" / "minimatch@10.0.3" / "package.json"),
     ("vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs", DSH / "vendor" / "npm" / "@isaacs" / "brace-expansion@5.0.1" / "dist" / "commonjs"),
-    ("vendor/npm/@isaacs/brace-expansion@5.0.1/package.json", DSH / "vendor" / "npm" / "@isaacs" / "brace-expansion@5.0.1" / "package.json"),
     ("vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs", DSH / "vendor" / "npm" / "@isaacs" / "balanced-match@4.0.1" / "dist" / "commonjs"),
+    ("vendor/npm/minimatch@10.0.3/package.json", DSH / "vendor" / "npm" / "minimatch@10.0.3" / "package.json"),
+    ("vendor/npm/@isaacs/brace-expansion@5.0.1/package.json", DSH / "vendor" / "npm" / "@isaacs" / "brace-expansion@5.0.1" / "package.json"),
     ("vendor/npm/@isaacs/balanced-match@4.0.1/package.json", DSH / "vendor" / "npm" / "@isaacs" / "balanced-match@4.0.1" / "package.json"),
-    ("system-plugins/dsh-office", DSH / "system-plugins" / "dsh-office"),
-    ("system-plugins/dsh-ble", DSH / "system-plugins" / "dsh-ble"),
-    ("system-plugins/dsh-device-plane", DSH / "system-plugins" / "dsh-device-plane"),
-    ("system-plugins/dsh-plugin-manager-tools", DSH / "system-plugins" / "dsh-plugin-manager-tools"),
-    ("system-plugins/dsh-shell-wasm", DSH / "system-plugins" / "dsh-shell-wasm"),
-    ("system-plugins/dsh-create", DSH / "system-plugins" / "dsh-create"),
-    ("upstream/shims", DSH / "upstream" / "shims"),
-    ("scenario", DSH / "scenario"),
-    ("web-live", DSH / "web-live"),
-    ("vendor/npm/cordis@4.0.2/package.json", DSH / "vendor" / "npm" / "cordis@4.0.2" / "package.json"),
-    ("vendor/npm/cosmokit@1.8.3/package.json", DSH / "vendor" / "npm" / "cosmokit@1.8.3" / "package.json"),
-    ("vendor/npm/schemastery@3.18.2/package.json", DSH / "vendor" / "npm" / "schemastery@3.18.2" / "package.json"),
-    ("vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json", DSH / "vendor" / "npm" / "@deepseek-ai" / "dsh-client-modules@0.1.6-alpha.2" / "package.json"),
 ]
 
 # The pinned zod's runtime closure: `zod` → index.js → the classic build's

@@ -68,6 +68,7 @@ globalThis.process ??= { env: {}, versions: {}, execPath: '' };
  * unimplemented node type". */
 export class ShellParseError extends Error {
   constructor(message, syntax) {
+    log.debug('shell parse error', { syntax: syntax === true });
     super(message);
     this.name = 'ShellParseError';
     this.syntax = syntax === true;
@@ -89,6 +90,7 @@ const MODULE_DIR = (import.meta.dirname
 /** Lexically fold '.'/'..' segments without I/O; null escapes the root.
  * (Defined early: the vendor root below folds through it.) */
 const lexicalResolve = (fromDir, request) => {
+  log.debug('lexical resolve', { fromDir, request });
   const segs = fromDir === '' ? [] : fromDir.split('/');
   for (const seg of request.split('/')) {
     if (seg === '' || seg === '.') continue;
@@ -181,6 +183,7 @@ const bundleSeam = () => globalThis.__dshBundleRequire;
 let nodeReadText = null;
 
 const readTextSync = (spec) => {
+  log.debug('read text', { spec });
   const seam = bundleSeam();
   if (typeof seam === 'function') {
     const cut = spec.lastIndexOf('/');
@@ -195,6 +198,7 @@ const textCache = new Map();
 const readTextMemoized = (spec) => {
   const hit = textCache.get(spec);
   if (hit !== undefined) return hit;
+  log.debug('text cache miss', { spec });
   const text = readTextSync(spec);
   textCache.set(spec, text);
   return text;
@@ -207,6 +211,7 @@ const existsCache = new Map();
 const existsInTree = (spec) => {
   const hit = existsCache.get(spec);
   if (hit !== undefined) return hit;
+  log.debug('exists probe', { spec });
   let exists;
   try { readTextMemoized(spec); exists = true; } catch { exists = false; }
   existsCache.set(spec, exists);
@@ -229,6 +234,7 @@ export const ensureVendorReader = () => {
 };
 
 const dirOf = (p) => {
+  log.debug('dir of', { p });
   const cut = p.lastIndexOf('/');
   return cut > 0 ? p.slice(0, cut) : '';
 };
@@ -254,6 +260,7 @@ const dirExists = (spec) => existsInTree(`${spec}/package.json`)
  * the index faces); null when nothing serves it. The trees are pristine, so
  * the entry point is upstream's own manifest, never a guess. */
 const resolvePackageEntry = (dir) => {
+  log.debug('resolve package entry', { dir });
   if (existsInTree(dir)) return dir; // exact file hit
   for (const ext of ['.js', '.cjs', '.json']) {
     if (existsInTree(dir + ext)) return dir + ext;
@@ -327,6 +334,7 @@ const loadModule = (spec) => {
 /** Require one vendored package by its mapped name (the plugin's entry
  * points into third-party code). */
 export const vendorRequire = (name) => {
+  log.debug('vendor require', { name });
   if (!Object.prototype.hasOwnProperty.call(VENDOR_TREES, name)) {
     throw new Error(`dsh-shell-js vendor seam: '${name}' is not a vendored name `
       + `(vendored: ${Object.keys(VENDOR_TREES).join(', ')})`);

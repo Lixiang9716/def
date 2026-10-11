@@ -37,6 +37,7 @@ export const PIPE_WINDOW_BYTES = 64 * 1024;
  * failed, so a refusal reads as "which capability is missing", not "hang". */
 export class StreamError extends Error {
   constructor(message) {
+    log.debug('stream error', {});
     super(message);
     this.name = 'StreamError';
   }
@@ -46,6 +47,7 @@ export class StreamError extends Error {
  * no timers here and needs none: every wait is paired with an explicit
  * wake on the state transition that ends it. */
 const deferred = () => {
+  log.debug('deferred', {});
   let resolve;
   let reject;
   const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
@@ -121,12 +123,14 @@ export class PipeWriter {
   /** The reader side gave up (it exited or failed): unblock and refuse any
    * further or pending write with the broken-pipe naming. */
   readerGone() {
+    log.debug('reader gone', {});
     this.readerClosed = true;
     const writers = this.waitingWriters.splice(0);
     for (const w of writers) w.reject(new StreamError('write to a pipe whose reader has closed (broken pipe)'));
   }
 
   wakeReaders() {
+    log.debug('wake readers', {});
     const readers = this.waitingReaders.splice(0);
     for (const w of readers) w.resolve();
   }
@@ -175,6 +179,7 @@ export class PipeReader {
   }
 
   wakeWriters() {
+    log.debug('wake writers', {});
     const writers = this.writer.waitingWriters;
     const awake = writers.splice(0);
     for (const w of awake) w.resolve();
@@ -218,6 +223,7 @@ export class CaptureWriter {
 
   /** The whole captured stream as bytes (a single copy). */
   bytes() {
+    log.debug('capture bytes', { length: this.bytesLength });
     const out = new Uint8Array(this.bytesLength);
     let at = 0;
     for (const part of this.parts) { out.set(part, at); at += part.length; }
@@ -226,6 +232,7 @@ export class CaptureWriter {
 
   /** The whole captured stream as utf8 text. */
   text() {
+    log.debug('capture text', {});
     return decoder.decode(this.bytes());
   }
 }
