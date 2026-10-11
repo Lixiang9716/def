@@ -343,6 +343,7 @@ scenario/upstream-parity.js
 upstream/boot.js
 upstream/llm-gateway-mount.js
 upstream/llm-piai-mount.js
+upstream/fetch-gateway-bridge.js
 system-plugins/dsh-create/index.js
 system-plugins/dsh-create/manifest.json
 upstream/wire-logger.js
@@ -430,6 +431,7 @@ upstream/shims/dsh-client-ui-renderer-client.js
 upstream/shims/node-addon-system-landlock-run.js
 upstream/shims/node-sqlite.js
 upstream/shims/openai-client.js
+upstream/shims/anthropic-client.js
 upstream/shims/partial-json.js
 upstream/shims/slot-registry.js
 upstream/shims/source-bootstrap-loader-smoke.js

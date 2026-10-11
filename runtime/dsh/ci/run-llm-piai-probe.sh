@@ -28,9 +28,12 @@ PIAI_KEY="mock-key-0001"
 
 # 1. vendored upstream closure: pinned + sha256-verified (network only for
 #    packages missing on disk) — includes the two llm-pi-ai-leg pins
-#    (dsh-llm-pi-ai + its dsh-launch-environment link-time dep).
+#    (dsh-llm-pi-ai + its dsh-launch-environment link-time dep). The C host
+#    ALSO needs the vendored iSH-AArch64 userland at configure time
+#    (CMakeLists refuses without it) — ensure-ish.sh is idempotent.
 sh vendor/ensure.sh > /dev/null
 sh vendor/ensure-dsh.sh
+sh vendor/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh

@@ -45,6 +45,7 @@ import { encodeUtf8, decodeUtf8 } from 'node:buffer';
 import { keychainGet } from '../gateway.js';
 import { createLogger } from '../logger.js';
 import { createGatewayLlmAdapter } from './llm-transport.js';
+import { rebindPiAiProviders } from './llm-piai-mount.js';
 import { providerSettingsNs } from './web-write-settings.js';
 
 const log = createLogger('dsh.llm-route');
@@ -62,11 +63,28 @@ export const BYOK_REF = 'dsh.llm/byok-route';
  * "no context capacity" once compaction triggers). deepseek: deepseek-chat's
  * documented 128K (api-docs.deepseek.com; the 1M-era flash/v4-pro models can
  * be named with a form override). openai-compatible: the configurable
- * reasonable default — most OpenAI-compatible endpoints serve ≥128K. */
+ * reasonable default — most OpenAI-compatible endpoints serve ≥128K.
+ * anthropic: claude-sonnet-4-5's documented 200K (docs.anthropic.com).
+ * google: gemini-2.5-flash's documented 1M input (ai.google.dev).
+ *
+ * `api` is the row's WIRE FLAVOR — how a credential for this provider is
+ * SERVED: `openai-completions` rides the gateway adapter (the chat-
+ * completions transport every OpenAI-compatible endpoint speaks, including
+ * Google's documented /v1beta/openai compatibility face); any other vendored
+ * pi-ai protocol (anthropic-messages) rides the pi-ai mount through the
+ * BYOK-piai rebind seam (rebindPiAiProviders in llm-piai-mount.js) and names
+ * itself a piaiProviders route dict. */
 export const BYOK_PROVIDERS = {
-  deepseek: { displayName: 'DeepSeek', baseURL: 'https://api.deepseek.com', model: 'deepseek-chat', contextWindow: 131072 },
-  'openai-compatible': { displayName: 'OpenAI 兼容', baseURL: '', model: '', contextWindow: 131072 },
+  deepseek: { displayName: 'DeepSeek', baseURL: 'https://api.deepseek.com', model: 'deepseek-chat', contextWindow: 131072, api: 'openai-completions' },
+  'openai-compatible': { displayName: 'OpenAI 兼容', baseURL: '', model: '', contextWindow: 131072, api: 'openai-completions' },
+  anthropic: { displayName: 'Anthropic', baseURL: 'https://api.anthropic.com', model: 'claude-sonnet-4-5', contextWindow: 200000, api: 'anthropic-messages' },
+  google: { displayName: 'Google', baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.5-flash', contextWindow: 1048576, api: 'openai-completions' },
 };
+
+/** The flavor every row serves when its provider names none (a custom
+ * provider id the panel accepts): the OpenAI-compatible transport the gateway
+ * adapter has always spoken. */
+export const DEFAULT_BYOK_API = 'openai-completions';
 
 /** The fallback context capacity when neither the credential nor its
  * provider row names one (a custom provider id the panel accepts): the same
@@ -242,10 +260,36 @@ export const mockRoute = (cfg) => {
   };
 };
 
+/** The piaiProviders route dict one non-openai-completions flavor is served
+ * through (the vendored dsh-llm-pi-ai Config.providers row shape): the
+ * credential ref NAME (deriveByokRef — never the key material itself; the
+ * plugin resolves the reference through the launch environment at request
+ * time), the wire protocol, the endpoint, and the one-model catalog. A dict
+ * that embedded the credential value would be the leak the byok-leak audit
+ * hunts. */
+const piaiRouteDict = (route) => ({
+  displayName: route.displayName ?? route.provider,
+  apiKeyEnv: deriveByokRef(route.provider),
+  api: route.api,
+  baseURL: route.baseURL,
+  models: [route.contextWindow === undefined
+    ? { id: route.model }
+    : { id: route.model, contextWindow: route.contextWindow }],
+  // A BYOK credential IS the named user-endpoint decision — the dict says so
+  // (the pi-ai mount's gate demands exactly this declaration for a
+  // non-loopback baseURL; a loopback BYOK endpoint stays exempt).
+  userEndpoint: true,
+});
+
 export const byokRoute = (credential) => {
   let host = 'the configured endpoint';
   try { host = new URL(credential.baseURL).host; } catch { /* keep the generic label */ }
-  return {
+  const row = BYOK_PROVIDERS[credential.provider];
+  const api = row?.api ?? DEFAULT_BYOK_API;
+  const contextWindow = credential.contextWindow
+    ?? row?.contextWindow
+    ?? DEFAULT_CONTEXT_WINDOW;
+  const route = {
     kind: 'byok',
     baseURL: credential.baseURL, apiKey: credential.apiKey, provider: credential.provider,
     model: credential.model, scripted: false, userEndpoint: true,
@@ -253,13 +297,17 @@ export const byokRoute = (credential) => {
     // its provider row's default, else the openai-compatible fallback —
     // never absent, so the rebound adapter always answers compaction's
     // resolveModelInfo with a context (the capacity the seam demands).
-    contextWindow: credential.contextWindow
-      ?? BYOK_PROVIDERS[credential.provider]?.contextWindow
-      ?? DEFAULT_CONTEXT_WINDOW,
-    displayName: BYOK_PROVIDERS[credential.provider]?.displayName,
+    contextWindow,
+    // The row's wire flavor (how the route is SERVED — see BYOK_PROVIDERS).
+    api,
+    displayName: row?.displayName,
     adapterName: `BYOK onboarding endpoint (${credential.provider})`,
     transportLabel: `gateway httpFetch → ${host} (BYOK onboarding credential)`,
   };
+  // A flavor the gateway adapter cannot speak rides the pi-ai mount: the
+  // route names its piaiProviders dict and the rebind seam mounts it.
+  if (api !== 'openai-completions') route.piai = piaiRouteDict({ ...route, contextWindow });
+  return route;
 };
 
 /** The boot-side resolver (composer-web-live): staged → byok → mock. Async
@@ -333,19 +381,32 @@ export const directoryRowFor = (route) => ({
   settingsPath: ['providers', 'default'],
 });
 
-/** Swap the live transport to one user credential. Returns the adapter
- * labels the caller may emit; NEVER the credential. Throws (fail loud) when
+/** Swap the live transport to one user credential. Returns the route the
+ * caller may emit facts from; NEVER the credential. Throws (fail loud) when
  * no llm runtime is mounted or the vendored registry rejects — a save that
- * cannot rebind must not report success. The directory row swaps in the same
- * breath (the models 设置页 row follows the live route). */
-export const rebindLlmRoute = (ctx, credential) => {
+ * cannot rebind must not report success. An `openai-completions` flavor
+ * registers the gateway adapter (the historical path, byte-identical); any
+ * other flavor hands its piaiProviders dict to the pi-ai mount's rebind seam
+ * (rebindPiAiProviders — the plugin then serves the route, and the models
+ * 设置页 row is the PLUGIN's own directory entry, so the boot handle's row
+ * swap is skipped: a second declaration of the same provider would be the
+ * registry's DUPLICATE_DIRECTORY). */
+export const rebindLlmRoute = async (ctx, credential) => {
   const runtime = ctx.get('llm');
   if (runtime === undefined) {
     throw new Error('llm-route: no llm runtime is mounted — cannot rebind');
   }
   const route = byokRoute(credential);
   const previous = routeDisposers.get(ctx);
-  if (previous !== undefined) previous();
+  if (previous !== undefined) await previous();
+  if (route.piai !== undefined) {
+    // The plugin serves the route — and its directory declares the provider
+    // row itself, so the boot handle's row withdraws first (a second
+    // declaration of the same provider is the registry's DUPLICATE_DIRECTORY).
+    directoryHandles.get(ctx)?.replace([]);
+    routeDisposers.set(ctx, await rebindPiAiProviders(ctx, { [route.provider]: route.piai }));
+    return route;
+  }
   routeDisposers.set(ctx, runtime.registerAdapter([route.provider], createGatewayLlmAdapter({
     baseURL: route.baseURL,
     apiKey: route.apiKey,
@@ -361,14 +422,35 @@ export const rebindLlmRoute = (ctx, credential) => {
   return route;
 };
 
-/** The UNBIND: dispose the current adapter and re-derive the BOOT route from
+/** The boot seat's pi-ai hand-off (composer-web-live): the resolved boot
+ * route IS a byok credential whose flavor the gateway adapter cannot speak.
+ * The boot mounted the gateway adapter for it (the serving-route demand);
+ * this replaces it with the pi-ai mount BEFORE any session dials — dispose,
+ * withdraw the boot directory row (the plugin declares its own), mount the
+ * plugin over the route's piaiProviders dict. The boot-route factory the
+ * installer registered stays: onboarding/clear still restores the boot route
+ * through restoreBootRoute. Fail loud on every seam rejection (a boot whose
+ * saved credential cannot serve must not answer turns on the wrong wire). */
+export const mountByokPiaiRoute = async (ctx, route) => {
+  if (route?.piai === undefined) {
+    throw new Error('llm-route: mountByokPiaiRoute needs a route carrying a piaiProviders dict');
+  }
+  const previous = routeDisposers.get(ctx);
+  if (previous !== undefined) await previous();
+  directoryHandles.get(ctx)?.replace([]);
+  routeDisposers.set(ctx, await rebindPiAiProviders(ctx, { [route.provider]: route.piai }));
+  return route;
+};
+
+/** The UNBIND: dispose the current route and re-derive the BOOT route from
  * the registered factory (staged → mock — the byok leg is never restored;
  * its credential was just deleted). Mirrors rebindLlmRoute exactly, down to
  * the fail-loud contract: no runtime, no factory, or a registry rejection
  * throws — a clear that cannot unbind must not report success. Returns the
  * restored route (the caller mutates its surface view from it); NEVER the
- * credential. */
-export const restoreBootRoute = (ctx) => {
+ * credential. A pi-ai-served rebind reverts through the disposer the rebind
+ * seam returned (the plugin's section watcher unregisters the route). */
+export const restoreBootRoute = async (ctx) => {
   const runtime = ctx.get('llm');
   if (runtime === undefined) {
     throw new Error('llm-route: no llm runtime is mounted — cannot restore');
@@ -379,7 +461,7 @@ export const restoreBootRoute = (ctx) => {
   }
   const route = factory();
   const previous = routeDisposers.get(ctx);
-  if (previous !== undefined) previous();
+  if (previous !== undefined) await previous();
   routeDisposers.set(ctx, runtime.registerAdapter([route.provider], createGatewayLlmAdapter({
     baseURL: route.baseURL,
     apiKey: route.apiKey,

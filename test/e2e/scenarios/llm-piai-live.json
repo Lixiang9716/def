@@ -1,0 +1,28 @@
+{
+  "scenario": "llm.piai-live",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "live/skip.honest",
+      "optional": true,
+      "match": {
+        "reason": "no-served-key"
+      }
+    },
+    {
+      "event": "live/skip.honest",
+      "optional": true,
+      "match": {
+        "reason": "egress-unreachable"
+      }
+    },
+    {
+      "event": "live/flow/completed",
+      "match": {
+        "status": "skipped-honest"
+      }
+    }
+  ]
+}

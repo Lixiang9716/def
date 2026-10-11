@@ -8,11 +8,12 @@
  * Bilingual copy is EN-first data here ({en, zh}); the panel renders both.
  */
 
-/** The provider rows: DeepSeek's first-party OpenAI-compatible endpoint and
- * the bring-your-own OpenAI-compatible row. Mirrors the runtime's
- * BYOK_PROVIDERS — including each row's DEFAULT contextWindow (tokens, the
- * compaction capacity the runtime's adapter answers with; the form
- * pre-fills it and the user may override). */
+/** The provider rows: DeepSeek's first-party OpenAI-compatible endpoint, the
+ * bring-your-own OpenAI-compatible row, Anthropic's first-party Messages
+ * endpoint, and Google's documented OpenAI-compatible Gemini face. Mirrors
+ * the runtime's BYOK_PROVIDERS — including each row's DEFAULT contextWindow
+ * (tokens, the compaction capacity the runtime's adapter answers with; the
+ * form pre-fills it and the user may override). */
 export const PROVIDERS = {
   deepseek: {
     label: 'DeepSeek',
@@ -26,6 +27,20 @@ export const PROVIDERS = {
     baseURL: '',
     model: '',
     contextWindow: 131072,
+    baseURLFixed: false,
+  },
+  anthropic: {
+    label: 'Anthropic',
+    baseURL: 'https://api.anthropic.com',
+    model: 'claude-sonnet-4-5',
+    contextWindow: 200000,
+    baseURLFixed: false,
+  },
+  google: {
+    label: 'Google',
+    baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai',
+    model: 'gemini-2.5-flash',
+    contextWindow: 1048576,
     baseURLFixed: false,
   },
 };

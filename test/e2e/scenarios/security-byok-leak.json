@@ -9,6 +9,7 @@
   { "event": "leak.route.resolved", "match": { "route": "byok", "provider": "deepseek" } },
   { "event": "leak.turn.completed", "repeat": true },
   { "event": "leak.auth-error.redacted", "match": { "keyInMessage": false } },
+  { "event": "leak.piai-dict.ref-only", "match": { "provider": "anthropic", "apiKeyEnv": "ANTHROPIC_API_KEY", "api": "anthropic-messages" } },
   { "event": "leak.cleanup", "match": { "cleared": true } },
   { "event": "scenario.complete", "match": { "status": "pass" } }
  ]

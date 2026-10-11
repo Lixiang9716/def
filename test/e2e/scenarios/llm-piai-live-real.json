@@ -1,0 +1,22 @@
+{
+  "scenario": "llm.piai-live",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "llm/runtime", "match": {
+      "provider": "mock", "model": "mock-1",
+      "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+      "transport": "gateway httpFetch → loopback chat-completions mock server" } },
+    { "event": "upstream/profile", "match": { "profile": "mobile" } },
+    { "event": "llm/piai-bridge", "match": { "installed": true } },
+    { "event": "llm/piai", "match": {
+      "plugin": "@deepseek-ai/dsh-llm-pi-ai",
+      "routes": ["anthropic"],
+      "protocols": ["anthropic-messages"]
+    } },
+    { "event": "upstream/services", "match": { "kernel": "@deepseek-ai/cordis@4.0.2" } },
+    { "event": "live/dispatched", "match": { "provider": "anthropic" } },
+    { "event": "live/stream", "optional": true, "match": { "finish": "stop" } },
+    { "event": "live/auth-refused", "optional": true, "match": { "keyAccepted": false } },
+    { "event": "live/flow/completed", "match": { "status": "pass" } }
+  ]
+}

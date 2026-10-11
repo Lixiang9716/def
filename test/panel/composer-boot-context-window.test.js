@@ -71,6 +71,26 @@ describe('the boot carrier forwards the route contextWindow', () => {
 
 });
 
+describe('the boot carrier launch env rows (the default-off byte pin)', () => {
+  it('the default-off launch env is EXACTLY the two mock rows (byte-identity pin)', () => {
+    const opts = bootOptions(CFG, mockRoute, ROOT, EXTRAS);
+    expect(Object.keys(opts.container.env).sort())
+      .toEqual(['DSH_MOCK_LLM_KEY', 'DSH_MOCK_LLM_URL']);
+  });
+
+  it('a pi-ai-served route adds ONLY its credential-ref row (deriveByokRef mirror)', () => {
+    const piaiRoute = { ...byokRoute, provider: 'anthropic', model: 'claude-sonnet-4-5',
+      api: 'anthropic-messages',
+      piai: { displayName: 'Anthropic', apiKeyEnv: 'ANTHROPIC_API_KEY',
+        api: 'anthropic-messages', baseURL: byokRoute.baseURL,
+        models: [{ id: 'claude-sonnet-4-5', contextWindow: 131072 }], userEndpoint: true } };
+    const opts = bootOptions(CFG, piaiRoute, ROOT, EXTRAS);
+    expect(Object.keys(opts.container.env).sort())
+      .toEqual(['ANTHROPIC_API_KEY', 'DSH_MOCK_LLM_KEY', 'DSH_MOCK_LLM_URL']);
+    expect(opts.container.env.ANTHROPIC_API_KEY).toBe('k');
+  });
+});
+
 // The SESSION-PERSISTENCE gate (T-0212), pinned at the same pure module: the
 // evidence/drive seats' cfg carries no sessionPersistence row, and the boot
 // options must stay exactly as before — the key ABSENT (the

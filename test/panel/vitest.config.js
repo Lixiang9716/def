@@ -113,6 +113,12 @@ export default defineConfig({
         find: /^\/vendor\//,
         replacement: fileURLToPath(new URL('../../runtime/dsh/vendor/', import.meta.url)),
       },
+      {
+        // The loader's OTHER dsh-root-relative spelling ('/upstream/…' —
+        // web-fetch-values.js's stream import); same root rule as '/vendor/'.
+        find: /^\/upstream\//,
+        replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/', import.meta.url)),
+      },
     ],
   },
 });
