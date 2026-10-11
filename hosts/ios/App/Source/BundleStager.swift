@@ -150,14 +150,6 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_plugin_subprocess_manifest), under: root)
         try write("system-plugins/dsh-subprocess-quickjs/index.js",
                   data: resData(dsh_runtime_res_plugin_subprocess_js), under: root)
-        try write("system-plugins/dsh-shell-wasm/manifest.json",
-                  data: resData(dsh_runtime_res_plugin_shell_wasm_manifest), under: root)
-        try write("system-plugins/dsh-shell-wasm/index.js",
-                  data: resData(dsh_runtime_res_plugin_shell_wasm_js), under: root)
-        try write("system-plugins/dsh-shell-ish/manifest.json",
-                  data: resData(dsh_runtime_res_plugin_shell_ish_manifest), under: root)
-        try write("system-plugins/dsh-shell-ish/index.js",
-                  data: resData(dsh_runtime_res_plugin_shell_ish_js), under: root)
         try write("system-plugins/dsh-open-design/manifest.json",
                   data: resData(dsh_runtime_res_plugin_open_design_manifest), under: root)
         try write("system-plugins/dsh-open-design/index.js",

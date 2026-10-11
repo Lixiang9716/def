@@ -106,12 +106,14 @@ vendor/npm/@noble/hashes@2.3.0=vendor/npm/@noble/hashes@2.3.0
 vendor/npm/@earendil-works/pi-ai@0.85.1=vendor/npm/@earendil-works/pi-ai@0.85.1
 # The OFFICE row's whole plugin dir, the upstream shims (a shim joins the
 # embed by existing, not by list edit), and the scenario/web-live whole-dir
-# rows (same rule).
+# rows (same rule). The shell seat is dsh-shell-js's since 2026-10-11 — the
+# retired dsh-shell-wasm/dsh-shell-ish trees no longer stage (their source
+# trees stay under runtime/dsh/system-plugins for the local engine gates).
 system-plugins/dsh-office=system-plugins/dsh-office
 system-plugins/dsh-ble=system-plugins/dsh-ble
 system-plugins/dsh-device-plane=system-plugins/dsh-device-plane
 system-plugins/dsh-plugin-manager-tools=system-plugins/dsh-plugin-manager-tools
-system-plugins/dsh-shell-wasm=system-plugins/dsh-shell-wasm
+system-plugins/dsh-shell-js=system-plugins/dsh-shell-js
 system-plugins/dsh-create=system-plugins/dsh-create
 upstream/shims=upstream/shims
 scenario=scenario
@@ -122,3 +124,16 @@ vendor/npm/cordis@4.0.2/package.json=vendor/npm/cordis@4.0.2/package.json
 vendor/npm/cosmokit@1.8.3/package.json=vendor/npm/cosmokit@1.8.3/package.json
 vendor/npm/schemastery@3.18.2/package.json=vendor/npm/schemastery@3.18.2/package.json
 vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json=vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json
+
+# The dsh-shell-js parser closure (the formal vendor round, 2026-10-11):
+# the 33 npm faces the plugin's CJS seam resolves. Parser faces stage whole
+# (pristine tarballs — D6); the minimatch chain rides its dist/commonjs CJS
+# face + package.json only (the domino double-row pattern — the ESM face
+# never loads).
+vendor/npm/shelljs@0.10.0=vendor/npm/shelljs@0.10.0
+vendor/npm/minimatch@10.0.3/dist/commonjs=vendor/npm/minimatch@10.0.3/dist/commonjs
+vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs=vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs
+vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs=vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs
+vendor/npm/minimatch@10.0.3/package.json=vendor/npm/minimatch@10.0.3/package.json
+vendor/npm/@isaacs/brace-expansion@5.0.1/package.json=vendor/npm/@isaacs/brace-expansion@5.0.1/package.json
+vendor/npm/@isaacs/balanced-match@4.0.1/package.json=vendor/npm/@isaacs/balanced-match@4.0.1/package.json

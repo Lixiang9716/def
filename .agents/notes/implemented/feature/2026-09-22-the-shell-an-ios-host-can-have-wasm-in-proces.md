@@ -1,6 +1,12 @@
 # Agent Note: the shell an iOS host can actually have — WebAssembly, interpreted in-process
 
 Status: implemented
+Superseded by: 2026-10-11-the-shell-all-three-hosts-can-actually-s.md — partially: that note retires
+this note's verdict against the pure-JS route (the Alternatives bullet below), because the question
+changed from "one host's seam" to ONE shell serving all three hosts, and the gateway's seven audited
+fs primitives re-answer the "JS pretending to be a program" objection. The decision itself — the
+`wasmRun` seam with the vendored wasm3 engine — is NOT superseded: the capability stays granted and
+the engine stays embedded.
 Related: D2, D5, D9
 
 ## Problem
