@@ -1,0 +1,19 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "quickjsTag": "v0.17.0",
+  "quickjsCommit": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-compaction + dsh-compaction-basic + dsh-token-meter (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "kernel": "@deepseek-ai/cordis@4.0.2",
+  "scenario": "upstream.compaction",
+  "proves": [
+    "the GATED boot row (options.compaction → upstream/boot-compaction.js) mounts the host-plane token meter under tokenMeter and the VENDORED BasicCompactionEngine under compaction; absent the option the spine boots byte-identically (no new service, no new event)",
+    "the engine's AUTO step-pressure compaction fires on the real spine between turn 2's turn/start and its first step: compaction/start → the summarizer's aux ctx.llm.stream call (the same mock route, purpose compaction) → compaction/summary with the shadowed turn-1 span → the framed checkpoint user/message replacing it (surfaceOp replace) → compaction/end, all durable session records asserted one-to-one",
+    "the summary is smaller than the shadowed span (the shrink check passed) and the post-compaction meter reading is below the tuned threshold (compaction/pressure/asserted)"
+  ],
+  "checker": "test/e2e/scenarios/upstream-compaction.json",
+  "events": 39,
+  "determinism": "3 consecutive runs byte-identical on the scenario stream with the per-run random compaction id masked before hashing (md5 04a9a9d342a26d260f6d360882cac915)",
+  "exitCode": 0
+}

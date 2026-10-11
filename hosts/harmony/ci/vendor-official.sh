@@ -376,6 +376,8 @@ upstream/retry-telemetry.js
 upstream/turn-watchdog.js
 upstream/web-search-keyless.js
 upstream/boot-coverage-rows.js
+upstream/boot-compaction.js
+upstream/boot-demand.js
 upstream/shims/async-hooks.js
 upstream/shims/util.js
 upstream/shims/fs-promises.js
