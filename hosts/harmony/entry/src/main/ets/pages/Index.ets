@@ -170,6 +170,8 @@ const BUNDLE_FILES: string[] = [
   'workspace-registry.js',
   'upstream/boot-coverage-rows.js',
   'upstream/boot-session-persistence.js',
+  'upstream/boot-compaction.js',
+  'upstream/boot-demand.js',
   'upstream/boot.js',
   'upstream/llm-route.js',
   'upstream/llm-transport.js',

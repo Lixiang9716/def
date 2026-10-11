@@ -43,6 +43,12 @@ import { mountBootRows } from 'plugin-mount.js';
 import { mountCompositionHostPlane, mountCoverageRows } from 'upstream/boot-coverage-rows.js';
 import { maybeMountSessionPersistence } from 'upstream/boot-session-persistence.js'; // the SESSION-PERSISTENCE row (gated, default off)
 export { joinDefaultPreset } from 'upstream/boot-coverage-rows.js';
+// The COMPACTION row (gated, 2026-10-11): the host-plane token meter plus the
+// vendored compaction-basic engine — only when options.compaction is set.
+import { mountCompactionPlane } from 'upstream/boot-compaction.js';
+// The spine demand-FACTS (the layer list + the fail-loud demand checks), split
+// out at the file-size gate (2026-10-11) with the compaction row's landing.
+import { MOBILE_LAYERS, MOUNTED_SERVICES, demandServices, demandPresetServices } from 'upstream/boot-demand.js';
 // The FIRST ported tool package (D9): its namespace object IS the plugin.
 import * as ToolTodo from '@deepseek-ai/dsh-tool-todo';
 // The per-tool-run deadline (#323 ring 1): a wall-clock budget around
@@ -130,41 +136,6 @@ export const AGENT_PRESETS_BASE_URL = `file://${AGENT_PRESETS_VENDOR_ROOT}/`;
 /** The deployment default preset (the shipped roster: cordis/minimal/ptc/
  * standard; the package README's own deployment example pins `standard`). */
 export const AGENT_PRESETS_DEFAULT = 'mobile';
-
-/** The dsh-base rows the mobile profile mounts, in base-patch order. */
-const MOBILE_LAYERS = [
-  ['session', '@deepseek-ai/dsh-session'],
-  ['agent', '@deepseek-ai/dsh-agent'],
-  ['system-prompt', '@deepseek-ai/dsh-system-prompt'],
-  ['tools', '@deepseek-ai/dsh-tools'],
-  ['session-projection', '@deepseek-ai/dsh-session-projection'],
-  ['settings', 'in-memory SettingsProvider (no settings-file on mobile)'],
-  ['agent-loop', '@deepseek-ai/dsh-agent-loop'],
-];
-
-/** The service keys the mobile profile must provide after the spine mounts. */
-const MOUNTED_SERVICES = ['sessions', 'agents', 'systemPrompt', 'tools', 'sessionProjections', 'settings', 'agentLoop', 'llm'];
-
-/** Fail loud naming any spine service that failed to mount (rule 5). */
-const demandServices = async (ctx) => {
-  const missing = MOUNTED_SERVICES.filter((name) => ctx.get(name) === undefined);
-  if (missing.length > 0) {
-    throw new Error(`boot: services failed to mount: ${missing.join(', ')}`);
-  }
-};
-
-/** The settings-plane services (the Agent 预设 data source) the boot demands
- * BESIDE the spine: demanded separately so the `upstream/services` record
- * keeps its published spine shape (the E2E manifests pin it). */
-const PRESET_SERVICES = ['loader', 'agentPresets'];
-
-/** Fail loud when the Agent 预设 mount chain did not land (rule 5). */
-const demandPresetServices = (ctx) => {
-  const missing = PRESET_SERVICES.filter((name) => ctx.get(name) === undefined);
-  if (missing.length > 0) {
-    throw new Error(`boot: preset services failed to mount: ${missing.join(', ')}`);
-  }
-};
 
 /** The REAL spine mounts, as plugin-inventory rows (the settings 插件 list's
  * global plane). Every row is answered from live context facts, never from
@@ -331,8 +302,7 @@ const mountSpine = async (ctx, identity) => {
     await ctx.plugin(PluginManagerTools);
     await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
     await ctx.plugin(await import('system-plugins/dsh-office/index.js')); // the OFFICE row — dynamic: bare `fflate` needs the bridges body first
-    // The WEB row (#335 B5): dynamic import — the bridges must have
-    // registered turndown/domino before tool-web's static graph links.
+    // The WEB row (#335 B5): dynamic — the bridges register turndown/domino first.
     await mountWebPlane(ctx);
   await mountFileTools(ctx, identity.cwd);
   // The SKILL row (agent-flow E2E): after the file tools (its
@@ -344,7 +314,10 @@ const mountSpine = async (ctx, identity) => {
   // order; presetJoin boots the composition host plane first (same module).
   if (identity.presetJoin) await mountCompositionHostPlane(ctx, identity);
   await mountCoverageRows(ctx, identity);
-  await maybeMountSessionPersistence(ctx, identity); // gated; before agent-loop (its config start resumes a stored session)
+  // Both gated rows ride before agent-loop: persistence resumes a stored
+  // session at config start; compaction arms pressure from the first turn.
+  await maybeMountSessionPersistence(ctx, identity);
+  if (identity.compaction) await mountCompactionPlane(ctx, identity.compaction);
   // dsh-base row `agent-loop` with ONE configured agent (config.agents create
   // path — no persistence backend is mounted, matching the base default).
   await ctx.plugin(AgentLoop, {
@@ -384,6 +357,11 @@ const mountSpine = async (ctx, identity) => {
  * the vendored dsh-file-reference-local service under `fileReferences`, the
  * composer's @-mention lexicon). Absent = the historical spine.
  * @param options.creation - optional CREATION-row flag (the present tool).
+ * @param options.compaction - optional COMPACTION-row configuration: {config?}
+ *   mounts the host-plane token meter (dsh-token-meter) plus the vendored
+ *   compaction-basic engine (auto step-pressure + overflow recovery) under
+ *   `compaction`; config rides BasicCompactionConfig (thresholdRatio,
+ *   retainTokens, ...). Absent = the historical spine (upstream/boot-compaction.js).
  * @param options.skills - optional SKILL-row configuration: {dshHome,
  *   agentsHome, customSkillDirs?} — the vendored skill family. Absent = the
  *   historical spine (the parity/session manifests pin that shape).
@@ -476,8 +454,8 @@ export async function bootUpstream(options) {
     goals: options.goals,
     fileReferences: options.fileReferences,
     creation: options.creation,
-    // presetJoin boots the composition host plane; the join itself is the
-    // seat's runtime half, after the presets seed has landed.
+    compaction: options.compaction,
+    // presetJoin boots the composition host plane; the join is the seat's runtime half.
     presetJoin: options.presetJoin,
     sessionPersistence: options.sessionPersistence, // the resume leg's gate; absent = off
   });
