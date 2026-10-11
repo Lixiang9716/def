@@ -18,6 +18,11 @@
 #      DSH_LLM_* pairs).
 # NO credential source → the leg ships an HONEST BLOCKED: a receipt whose
 # verdict is "blocked", a message naming what was looked for, exit 0.
+# The staged container credential is REMOVED again on every exit path: left
+# behind it would (a) let a later credential-less run silently inherit it
+# through resolution source 2 and run a REAL turn where the honest blocked
+# verdict was expected, and (b) leave the key in plaintext in a debuggable
+# container on a shared emulator.
 #
 # Every wait is a polled condition with a deadline (rules.md rule 8); every
 # exhaustion is loud (rule 5).
@@ -157,8 +162,14 @@ adbsh shell "run-as $PKG sh -c 'mkdir -p files/profiles/default/llm && cat > fil
 adbsh shell "run-as $PKG cat files/profiles/default/llm/config.json" | grep -q '"apiKey"' \
     || die "credential staging failed (the apiKey FIELD is not in the staged file)"
 cleanup_cfg
-trap - EXIT INT TERM
-say "credential staged into the app container (never printed)"
+# From here on, every exit path removes the staged credential again (see the
+# header: a lingering container credential fakes the next run's resolution
+# order and leaves the key plaintext in a debuggable container).
+cleanup_staged_cred() {
+    adbsh shell "run-as $PKG sh -c 'rm -f files/profiles/default/llm/config.json'" >/dev/null 2>&1 || true
+}
+trap cleanup_staged_cred EXIT INT TERM
+say "credential staged into the app container (never printed; removed again at exit)"
 
 # ---- 4. launch + bounded capture ----------------------------------------------
 adbsh shell am force-stop $PKG >/dev/null 2>&1 || true
