@@ -1,0 +1,14 @@
+{
+  "host": "harmony",
+  "udid": "127.0.0.1:5557 (dsh_phone emulator)",
+  "runner": "hosts/harmony/ci/run-card-player.sh",
+  "phase": "card.player",
+  "launch": "dsh_phone emulator, --ps dsh.e2e.leg card.player (Debug)",
+  "tree": "origin/main cd7b1db32d0d (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "scenarios": [
+    { "manifest": "card-player-harmony", "verdict": "verdict-card-player-harmony.json", "pass": true }
+  ],
+  "screens": ["screens/01-card-present.png", "screens/02-card-complete.png", "screens/03-final.png"],
+  "producedAt": "2026-10-11T01:53:58Z"
+}

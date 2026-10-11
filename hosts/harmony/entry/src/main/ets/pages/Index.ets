@@ -79,6 +79,10 @@ const LEG_UPSTREAM_SUITE: string = 'upstream.suite';
  * creation client on the STAGED real backend — one Pomodoro-clock creation
  * turn, streamed into the page. A demo: no one-to-one manifest. */
 const LEG_REAL_CREATE: string = 'real.create';
+/** The card.player leg (`--ps dsh.e2e.leg card.player`): the plugin's card
+ * speaks bus lines over the HostPhase seat and the native PiP face renders
+ * them (ci/run-card-player.sh drives it; the Android runner's sibling). */
+const LEG_CARD_PLAYER: string = 'card.player';
 
 // bundle-root-relative files shipped under resources/rawfile/dsh/ —
 // logger.js must sit at <bundle>/logger.js, gateway.js at <bundle>/gateway.js,
@@ -1330,7 +1334,11 @@ struct Index {
   /** Pushes CardFace's projection into the bindings; owns the local tick's
    * start/stop (visible = ticking). */
   private refreshCardFace(): void {
-    const snap = CardFace.snapshot()['card'] as Record<string, Object>;
+    // The FULL projected face (faceCard) — snapshot() is the redacted
+    // /api/state seam (attached/visible/id only) and would render the PiP
+    // face's text blank (measured: the card.player leg's first green run
+    // showed the frame with no title/time/label).
+    const snap = CardFace.faceCard();
     const visible = snap['visible'] === true;
     if (visible && this.cardTick < 0) {
       this.cardTick = setInterval((): void => {
@@ -1347,7 +1355,12 @@ struct Index {
     this.cardVisible = visible;
     this.cardTitle = String(snap['title'] ?? '');
     this.cardTime = String(snap['remainingText'] ?? '');
-    this.cardLabel = String(snap['label'] ?? snap['completeMessage'] ?? '');
+    // The complete message takes the label row once it lands (CardFace
+    // retires the stale tick label on card.complete — the Android
+    // sibling's complete() shape).
+    const label = String(snap['label'] ?? '');
+    const completeMessage = String(snap['completeMessage'] ?? '');
+    this.cardLabel = completeMessage.length > 0 ? completeMessage : label;
     this.cardIsTimer = String(snap['kind'] ?? 'info') === 'timer';
   }
 
@@ -1459,6 +1472,9 @@ struct Index {
     } else if (leg === LEG_REAL_CREATE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runRealCreateLeg();
+    } else if (leg === LEG_CARD_PLAYER) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runCardPlayerLeg();
     } else if (leg === LEG_UPSTREAM_SUITE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch, spec %{public}s', leg, E2eLeg.getSpec());
       this.runSuiteLeg(E2eLeg.getSpec());
@@ -2108,6 +2124,59 @@ struct Index {
       .catch((err: BusinessError): void => {
         this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
         hilog.error(0x0000, TAG, 'ble leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
+  /** The card.player leg (`card.player`, ONE launch; ci/run-card-player.sh):
+   * the device-plane leg's headless shape — the binding carrier + HostPhase
+   * machinery with the card-player scenario as the entry, no web client
+   * mounts. The scenario negotiates gateway@1, posts card.present + five
+   * card.state ticks + card.complete over the __dshBusPost seam, and the
+   * native PiP face (the #455 CardFace bindings) renders them; the tick
+   * lines ride the gateway timer seam's one-shot re-arm loop. The verdict is
+   * the C `dsh.runtime.verdict: card.player` line, record by record via the
+   * card-player-harmony.json manifest. */
+  private runCardPlayerLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const phase = HostPhase.getInstance();
+    phase.setApprovalPresenter((title: string, resolve: (approved: boolean) => void): void => {
+      this.showApproval(title, resolve);
+    });
+    phase.onPhaseComplete = (passed: boolean): void => {
+      this.verdict = (passed ? 'PASS' : 'FAIL') + ' card.player (logs are the verdict)';
+    };
+    // The card face's record hook: bus card.* records route through
+    // CardFace, then this pushes the projection into the PiP @State
+    // bindings (aboutToAppear's OfficialServe hook, mirrored on HostPhase).
+    phase.onCardRecord = (): void => this.refreshCardFace();
+    phase.pageSink = (text: string): void => {
+      this.carrier.sendText(text);
+    };
+    this.carrier.onStaticServed = (path: string): void => {
+      phase.onStaticServed(path);
+    };
+    this.carrier.onWsText = (text: string): void => {
+      phase.onPageText(text);
+    };
+    this.materializeBundle(ctx)
+      .then((root: string): Promise<number> => {
+        this.verdict = 'card-player leg: running...';
+        phase.beginCardPlayer(ctx, root,
+          ctx.cacheDir + '/dsh-card-player-capture.log', fsRoot);
+        return this.carrier.start(CARRIER_BASE_PORT).then((port: number): number => {
+          phase.onCarrierListening(port);
+          phase.evalEntryDirect();
+          return port;
+        });
+      })
+      .then((port: number): void => {
+        this.verdict = 'card-player leg: running on 127.0.0.1:' + port;
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'card-player leg failed: %{public}s',
           err.message ?? 'unknown');
       });
   }
