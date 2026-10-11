@@ -222,6 +222,32 @@ export const apply = (ctx) => {
 };
 `;
 
+// The creation-refusal probes' sources. BAD_SYNTAX deliberately fails to
+// parse (a `;` inside an object literal) so the mount's import() compile
+// throws — refusing at 'linked'. NO_APPLY links fine but exports two
+// NON-callable named exports — the single-callable pick must not rescue it,
+// so the export normalization refuses at 'linked' too.
+export const BAD_SYNTAX_SOURCE = `
+export const name = 'forms-badsyntax';
+export const apply = (ctx) => {
+  globalThis.__formsBad = { loaded: true; };
+};
+`;
+
+export const NO_APPLY_SOURCE = `
+export const label = 'not a plugin';
+export const note = 41 + 1;
+`;
+
+// The kind-enum flip: a real plugin whose manifest kind is a FREE field —
+// legal exactly because the author brought their own source.
+export const CUSTOM_KIND_SOURCE = `
+export const name = 'forms-hologram';
+export const apply = (ctx) => {
+  globalThis.__formsHologram = { loaded: true };
+};
+`;
+
 export const MANIFEST = (id) => ({
   schemaVersion: 1, type: 'service', id, version: '1.0.0',
   entry: 'index.js', capabilities: { required: [] },

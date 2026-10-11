@@ -193,6 +193,45 @@
    }
   },
   {
+   "event": "create.refused",
+   "match": {
+    "probe": "bad-syntax",
+    "step": "linked"
+   }
+  },
+  {
+   "event": "create.refused",
+   "match": {
+    "probe": "no-apply",
+    "step": "linked"
+   }
+  },
+  {
+   "event": "create.kindrefused",
+   "match": {
+    "probe": "unknown-kind",
+    "kinds": [
+     "timer",
+     "calendar"
+    ]
+   }
+  },
+  {
+   "event": "create.refused",
+   "match": {
+    "probe": "remount",
+    "step": "context"
+   }
+  },
+  {
+   "event": "create.warned",
+   "match": {
+    "probe": "setinterval-warn",
+    "warned": true,
+    "control": true
+   }
+  },
+  {
    "event": "scenario.complete",
    "match": {
     "status": "pass"

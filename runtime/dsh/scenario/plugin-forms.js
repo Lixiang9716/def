@@ -12,8 +12,8 @@
  *   3. config (basic/config): the exported Config schema validates inside
  *      ctx.plugin — explicit value, schema default, invalid → loud refusal
  *      with the adoption rolled back;
- *   4. events (framework/events): emit / bail / serial / waterfall, and
- *      ctx.on proven to detach on unmount;
+ *   4. events (framework/events): emit / bail / serial / waterfall /
+ *      parallel, and ctx.on proven to detach on unmount;
  *   5. tool + policy (basic/tool + cookbook): the tutorial-verbatim greet
  *      tool runs through the real ToolRuntime under an independent
  *      observer; tools/pre-execute deny and the monotonic ctx.tools.guard
@@ -30,7 +30,9 @@
  *      real LlmRuntime stream for its own provider;
  *  10. unload / reload / boot-list: fiber.dispose runs the cleanups, edited
  *      source re-links under the epoch cache-buster, and the boot list
- *      mounts exactly the enabled registry rows.
+ *      mounts exactly the enabled registry rows;
+ *  11. refusals: the chat-created flow's negative legs (plugin-forms-
+ *      refusals.js) — linked/kind/context refusals + the setInterval warn.
  *
  * Artifacts: runtime/dsh/artifacts/macos-cli-plugin-forms/.
  */
@@ -41,6 +43,7 @@ import { mountWorkspacePlugin, unmountWorkspacePlugin,
   mountEnabledRegistry, isMounted, updateWorkspacePluginConfig }
   from 'plugin-mount.js';
 import { upsertRegistryRow } from 'workspace-registry.js';
+import { refuseProbesPhase } from './plugin-forms-refusals.js';
 import { HELLO_SOURCE, HELLO_EDITED, FN_SOURCE, BOOT_SOURCE, SERVICE_SOURCE,
   CONFIG_SOURCE, EVENTS_SOURCE, GREET_SOURCE, LOGGER_SOURCE, POLICY_SOURCE,
   NESTED_SOURCE, CUSTOMER_SOURCE, PENDING_SOURCE, LLM_SOURCE, MANIFEST }
@@ -402,6 +405,9 @@ const bootListPhase = async (ctx) => {
   emit('bootlist.mounted', { spec: 'forms-boot', skipped: 'forms-hello(disabled)' });
 };
 
+/** Phase 11 rides in plugin-forms-refusals.js (the code-size cap forced the
+ * split): linked/kind/context refusals + the setInterval warn probe. */
+
 const main = async () => {
   log.debug('main begin', {});
   const ctx = await bootPhase();
@@ -420,6 +426,7 @@ const main = async () => {
   await unloadPhase(ctx);
   await reloadPhase(ctx);
   await bootListPhase(ctx);
+  await refuseProbesPhase({ ctx, emit, demand, writeTree, mountOk });
   emit('scenario.complete', { status: 'pass' });
   globalThis.__dshComplete(true, 'pass');
 };
