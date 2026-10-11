@@ -1,0 +1,12 @@
+{
+  "scenario": "create.card",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "create.card.begin", "match": {} },
+    { "event": "create.card.seat.ready", "match": { "gateway": "gateway@1" } },
+    { "event": "package.written", "match": { "name": "pomodoro-create" } },
+    { "event": "tool.returned", "match": { "ok": true } },
+    { "event": "create.card.done", "match": { "durationMs": 8000 } },
+    { "event": "scenario.complete", "match": { "status": "pass" } }
+  ]
+}

@@ -80,9 +80,16 @@ class UiPrimitives(
             }
         }
         approvalSettled = false
-        builder.create().show()
+        val dialog = builder.create()
+        approvalDialog = dialog
+        dialog.show()
         scriptAnswerIfAsked(remember, done)
     }
+
+    /** The presented dialog, so a scripted settle dismisses it too — the
+     * seam's contract is settling "exactly the way the tapped button
+     * would", and a tapped button takes the dialog down with it. */
+    private var approvalDialog: android.app.AlertDialog? = null
 
     /** The scripted-approver test seam (the launch extra
      * `dsh.script.approval approve|remember|decline`): the dialog still
@@ -98,7 +105,6 @@ class UiPrimitives(
         val script = scriptedApprovalFlag() ?: return
         main.postDelayed({
             if (approvalSettled) return@postDelayed
-            approvalSettled = true
             GatewayCore.uiMarker("approval", "script")
             android.util.Log.i("dsh.approval", "script answered $script")
             when (script) {
@@ -111,9 +117,14 @@ class UiPrimitives(
 
     private fun settleApproval(done: GatewayCore.Done, approved: Boolean, remember: Boolean) {
         // Exactly one settle per presentation: the scripted seam and a live
-        // tap can race (all settle paths run on main).
+        // tap can race (all settle paths run on main). The one-shot flag is
+        // set HERE and only here — the scripted lambda pre-setting it made
+        // every scripted answer bail on this guard before the settle ever
+        // landed (the create-card leg's measured hang, gaps3/android-01).
         if (approvalSettled) return
         approvalSettled = true
+        approvalDialog?.dismiss()
+        approvalDialog = null
         GatewayCore.uiMarker("approval", "done")
         val result = JSONObject().put("approved", approved)
         if (remember) result.put("remember", true)

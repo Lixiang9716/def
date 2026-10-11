@@ -1,0 +1,14 @@
+{
+  "scenario": "create.calendar.live",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "client.selected", "match": { "client": "dsh-web-client" } },
+    { "event": "calendar/config/loaded", "match": {} },
+    { "event": "calendar/spine/booted", "match": { "sessionId": "s-calendar-live-0001" } },
+    { "event": "calendar/turn/begin", "match": {} },
+    { "event": "calendar/turn/settled", "match": {} },
+    { "event": "calendar/files", "match": {} },
+    { "event": "calendar/mounted", "match": { "spec": "calendar-plugin" } },
+    { "event": "scenario.complete", "match": { "status": "pass" } }
+  ]
+}

@@ -27,7 +27,7 @@
  * usage: node roster.mjs <upstream-checkout> <out.json>
  */
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 
 const upstream = process.argv[2];
 const out = process.argv[3];
@@ -35,6 +35,14 @@ if (!upstream || !out) {
   console.error('usage: node roster.mjs <upstream-checkout> <out.json>');
   process.exit(2);
 }
+
+/** Checkout-relative POSIX spelling for the recorded paths: the roster
+ * travels in git, so the generating machine's absolute work path must not
+ * leak into it (the committed value used to name a Windows Temp dir — every
+ * fresh environment rewrote the file and every receipt reported a dirty
+ * tree). The one consumer (build-client-bundles.sh's copy leg) joins these
+ * against the work checkout root. */
+const relPosix = (p) => relative(upstream, p).split('\\').join('/');
 
 /** The shell-static modules (apps/web seed.ts, the platform constant table):
  * shared into the frozen module table by the vite entry chunk, so they are
@@ -162,13 +170,13 @@ const entries = [...roster].sort().map((name) => {
   return {
     name,
     version: json.version,
-    dir,
+    dir: relPosix(dir),
     immediately: decl.immediately,
     inject: decl.inject,
     external: decl.external,
     files,
     chunks,
-    bundle: bundlePath,
+    bundle: relPosix(bundlePath),
     bootstrap: name === BOOTSTRAP_ID,
   };
 });

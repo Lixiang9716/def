@@ -65,8 +65,12 @@ rm -rf "$HERE/dist" && mkdir -p "$HERE/dist"
 echo "==> regenerate MANIFEST.sha256"
 # LC_ALL=C pins the sort collation: a manifest generated under another
 # locale lists the same digests in a different order and shasum -c
-# (order-sensitive) then fails on the other platform.
-( cd "$HERE/dist" && find . -type f | LC_ALL=C sort | xargs shasum -a 256 ) > "$HERE/MANIFEST.sha256"
+# (order-sensitive) then fails on the other platform. -t pins the TEXT
+# record format: shasum defaults to binary mode on Windows
+# (`digest *./path`), which is how the committed record was first spelled —
+# every regeneration on macOS/Linux rewrote all 89 lines over one marker
+# character and every receipt reported a dirty tree.
+( cd "$HERE/dist" && find . -type f | LC_ALL=C sort | xargs shasum -a 256 -t ) > "$HERE/MANIFEST.sha256"
 
 echo "==> done"
 ( cd "$HERE/dist" && shasum -a 256 -c ../MANIFEST.sha256 ) >/dev/null && echo "manifest verifies clean"
