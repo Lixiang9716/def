@@ -137,8 +137,12 @@ const adoptAfterApproval = async (manifest, spec, prefix, opts) => {
     });
     return verdict?.approved === true;
   })();
-  if (!approved) return refused('approval', spec, 'the user declined the mount');
+  if (!approved) {
+    opts.onStep?.('approved', { spec, approved: false });
+    return refused('approval', spec, 'the user declined the mount');
+  }
   log.info('e2e', { scenario: 'plugin.mount', event: 'plugin.mount.approved', spec });
+  opts.onStep?.('approved', { spec, approved: true });
   const registry = await upsertRegistryRow({
     fsRead, fsWrite, path: `${prefix ? prefix + '/' : ''}dsh.plugins/1/registry.json`,
   }, {
@@ -149,6 +153,7 @@ const adoptAfterApproval = async (manifest, spec, prefix, opts) => {
   if (!registry.ok) return refused('adopted', spec, `${registry.code}: ${registry.message}`);
   log.info('e2e', { scenario: 'plugin.mount', event: 'plugin.mount.adopted',
     spec, version: manifest.version });
+  opts.onStep?.('adopted', { spec, version: manifest.version });
   return { adopted: true };
 };
 
@@ -244,6 +249,14 @@ const settleFiber = async (ctx, linked, opts) => {
  * (each an E2E log line, one round trip each): read → validated →
  * approved → adopted → linked → mounted. The fiber cordis returned is
  * retained for `unmountWorkspacePlugin`. See the option docs above.
+ *
+ * `opts.onStep(step, fields)` — the pipeline's observability seam: invoked
+ * at each E2E step with the same facts the plugin.mount.* record carries
+ * ('read', 'validated', 'approved' {spec, approved}, 'adopted', 'linked',
+ * 'mounted'). The plugin.mount.* records keep their own scenario; a DRIVE
+ * that narrates the chain under its own scenario id subscribes here and
+ * names the steps itself — the product stream never changes shape for a
+ * passenger.
  */
 export const mountWorkspacePlugin = async (ctx, spec, opts = {}) => {
   log.debug('mount begin', { spec });
@@ -260,6 +273,7 @@ export const mountWorkspacePlugin = async (ctx, spec, opts = {}) => {
   const read = await readManifest(spec, prefix);
   if (read.manifest === undefined) return read;
   const manifest = read.manifest;
+  opts.onStep?.('read', { spec, version: manifest.version ?? null });
   const adopted = await adoptAfterApproval(manifest, spec, prefix, opts);
   if (adopted.adopted !== true) return adopted;
   // Adoption enables the registry row BEFORE the load, so a refused mount
@@ -275,6 +289,7 @@ export const mountWorkspacePlugin = async (ctx, spec, opts = {}) => {
     await rollbackRow();
     return linked;
   }
+  opts.onStep?.('linked', { spec, module: linked.moduleName });
   const settled = await settleFiber(ctx, { ...linked, spec }, opts);
   if (settled.fiber === undefined) {
     await rollbackRow();
@@ -283,6 +298,7 @@ export const mountWorkspacePlugin = async (ctx, spec, opts = {}) => {
   liveFibers.set(spec, settled.fiber);
   log.info('e2e', { scenario: 'plugin.mount', event: 'plugin.mount.mounted',
     spec, version: manifest.version });
+  opts.onStep?.('mounted', { spec, version: manifest.version });
   return { mounted: true, spec, version: manifest.version, module: linked.moduleName };
 };
 

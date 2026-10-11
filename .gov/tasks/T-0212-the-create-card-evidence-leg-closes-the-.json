@@ -1,0 +1,21 @@
+{
+  "title": "The create-card evidence leg closes the trilogy on iOS: run-ios-create-card.sh drives the create-approve-hotmount chain on the simulator (scenario create.card), captures the 12-event log contract, the presented card face, and the receipt \u2014 hosts/ios/artifacts/create-card/ lands committed like its Android (#453) and Harmony (#455) siblings",
+  "created": "2026-10-11T09:38:19+00:00",
+  "rules": {
+    "hash": "5fed98aae9738ce8e6003d93fd785d78c60c44c5e11d3f278acdb20a08d968d0",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "6d186be6616493c3d8ae7d24174a4e1634711180ca5b3b760452d3c09d7cdb90"
+    }
+  },
+  "checklist": [
+    "[x] run-ios-create-card.sh exists following the sibling runner interface (--udid, --art-dir, --skip-build) and passes shellcheck",
+    "[x] a real simulator run scores the create.card scenario green against test/e2e/scenarios/create-card.json (12 events, one-to-one)",
+    "[x] hosts/ios/artifacts/create-card/ carries the full evidence set (logs.txt, scenario.jsonl, receipt.json, verdict, screens)",
+    "[x] the scoped gov gate DAG is green on the outgoing diff",
+    "PR opened and the gates check green"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0212"
+}

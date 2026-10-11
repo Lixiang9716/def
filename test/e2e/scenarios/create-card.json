@@ -2,8 +2,10 @@
   "scenario": "create.card",
   "extract": { "prefix": "dsh.runtime.log:" },
   "expect": [
+    { "event": "client.selected", "match": { "client": "dsh-web-client" } },
     { "event": "create.card.begin", "match": {} },
     { "event": "create.card.seat.ready", "match": { "gateway": "gateway@1" } },
+    { "event": "create.card.spine.booted", "match": {} },
     { "event": "package.written", "match": { "name": "pomodoro-create" } },
     { "event": "approval.answered", "match": { "name": "pomodoro-create", "approved": true } },
     { "event": "registry.installed", "match": { "name": "pomodoro-create" } },
