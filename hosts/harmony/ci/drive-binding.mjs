@@ -289,21 +289,7 @@ const act = async () => {
     state.seedHandled = true;
     await driveSeed();
   }
-  if (state.permissionWait && !state.permissionTapTried) {
-    // The consent dialog races the grant; poll briefly, then move on — the
-    // ui-done marker (or publish failure) is the authoritative outcome.
-    // EXACT text match: the zh dialog's title CONTAINS '允许' — a contains
-    // match once tapped the title instead of the button (observed on-device).
-    // SOFT: a granted install (data persists across `hdc install -r`) never
-    // shows the dialog, and that is the happy path, not a failure.
-    state.permissionTapTried = true;
-    tapText('notification permission Allow', /^(Allow|允许)$/, 20_000, true)
-      .then((tapped) => {
-        if (!tapped) {
-          console.log('drive: no permission dialog (already granted)');
-        }
-      });
-  }
+  if (state.permissionWait && !state.permissionTapTried) await drivePermission();
   if (state.pickerDismiss && !state.pickerDismissTried) {
     state.pickerDismissTried = true;
     await drivePicker('dismiss');
@@ -312,59 +298,78 @@ const act = async () => {
     state.pickerGrantTried = true;
     await drivePicker('grant');
   }
-  if (state.approvalWait && !state.approvalTapped) {
-    state.approvalTapped = true;
-    if (scriptedApprovalStaged()) {
-      console.log('drive: scripted approval staged — standing down on the Approve tap (the seam answers)');
-      return;
-    }
-    await tapText('approval Approve', /^Approve$/, STEP);
-  }
-  if (state.notifyScheduled && !state.notifyHandled) {
-    state.notifyHandled = true;
-    execFileSync(args.hdc, ['shell', 'uitest', 'uiInput', 'keyEvent', 'Home']);
-    console.log('drive: pressed Home (background edge)');
-  }
-  if (state.notifyHandled && state.backgrounded && !state.shadeOpened) {
-    state.shadeOpened = true;
-    execFileSync(args.hdc,
-      ['shell', 'uitest', 'uiInput', 'swipe', '360', '30', '360', '1800', '600']);
-    console.log('drive: opened the notification shade');
-    await pollUntil('app.state background edge', async () => state.backgrounded, STEP);
-    // SKIP-LOUD on the shade row: absence is a named diagnosis, never a
-    // bare deadline death. The heads-up banner never renders on this
-    // emulator image (see the header forensics); the ROW is the tap
-    // surface — when even the row is missing, the notification mirror is
-    // degraded (asleep/locked screen freezing the mirror, or an image
-    // that needs a real device for this leg). Evidence lands beside the
-    // final shot so the failure is diagnosable from the artifacts.
-    const rowAt = await pollUntil('DSH notification row', async () => {
-      try {
-        return findText(dumpLayout(), /DSH E2E/);
-      } catch {
-        return null; // transient dump failures (shade animation) — keep polling
-      }
-    }, STEP, true);
-    if (rowAt === null) {
-      try {
-        shell('snapshot_display -f /data/local/tmp/dsh-drive-shade-miss.jpeg');
-        const miss = (args['shot-final'] ?? '/tmp/dsh-drive-shot.png')
-          .replace(/[^/]*$/, 'shade-miss.png');
-        hdcHere(['file', 'recv', '/data/local/tmp/dsh-drive-shade-miss.jpeg', miss]);
-        console.log(`drive: shade-miss evidence -> ${miss}`);
-      } catch { /* best effort */ }
-      die('notification leg skipped loud: the DSH row never rendered in the '
-        + 'shade — the heads-up banner never renders on this emulator image '
-        + '(measured, see hosts/harmony/artifacts/banner-forensics/), and '
-        + 'with even the row absent the notification mirror is degraded '
-        + '(asleep/locked screen, or an image whose mirror drops the row: '
-        + 'that banner leg needs a real device). Not retrying blind.');
-    }
-    execFileSync(args.hdc, ['shell', 'uitest', 'uiInput', 'click',
-      String(rowAt.x), String(rowAt.y)]);
-    console.log(`drive: tapped DSH notification at ${rowAt.x},${rowAt.y}`);
-  }
+  if (state.approvalWait && !state.approvalTapped) await driveApprovalGate();
+  if (state.notifyScheduled && !state.notifyHandled) await driveNotifyBackground();
+  if (state.notifyHandled && state.backgrounded && !state.shadeOpened) await driveShadeRow();
 };
+
+/** The notification-permission consent: tap Allow once; a granted install
+ * never shows the dialog (that is the happy path, not a failure). */
+function drivePermission() {
+  state.permissionTapTried = true;
+  tapText('notification permission Allow', /^(Allow|允许)$/, 20_000, true)
+    .then((tapped) => {
+      if (!tapped) {
+        console.log('drive: no permission dialog (already granted)');
+      }
+    });
+}
+
+/** The scripted-approval stand-down: when the want is staged the seam
+ * answers, so the drive must not race it to the Approve tap. */
+function driveApprovalGate() {
+  state.approvalTapped = true;
+  if (scriptedApprovalStaged()) return;
+  tapText('approval Approve', /^Approve$/, STEP);
+}
+
+/** notify.scheduled → HOME (the background edge the banner choreography
+ * needs before the shade row can be polled). */
+function driveNotifyBackground() {
+  state.notifyHandled = true;
+  execFileSync(args.hdc, ['shell', 'uitest', 'uiInput', 'keyEvent', 'Home']);
+  console.log('drive: pressed Home (background edge)');
+}
+
+/** The shade walk: open the notification shade, poll for the DSH row, and
+ * SKIP-LOUD when the row never renders — the heads-up banner never renders
+ * on this emulator image (see the header forensics), so the ROW is the tap
+ * surface; when even the row is missing the notification mirror is
+ * degraded (asleep/locked screen freezing the mirror, or an image that
+ * needs a real device for this leg). Evidence lands beside the final shot
+ * so the failure is diagnosable from the artifacts. */
+async function driveShadeRow() {
+  state.shadeOpened = true;
+  execFileSync(args.hdc,
+    ['shell', 'uitest', 'uiInput', 'swipe', '360', '30', '360', '1800', '600']);
+  console.log('drive: opened the notification shade');
+  await pollUntil('app.state background edge', async () => state.backgrounded, STEP);
+  const rowAt = await pollUntil('DSH notification row', async () => {
+    try {
+      return findText(dumpLayout(), /DSH E2E/);
+    } catch {
+      return null; // transient dump failures (shade animation) — keep polling
+    }
+  }, STEP, true);
+  if (rowAt === null) {
+    try {
+      shell('snapshot_display -f /data/local/tmp/dsh-drive-shade-miss.jpeg');
+      const miss = (args['shot-final'] ?? '/tmp/dsh-drive-shot.png')
+        .replace(/[^/]*$/, 'shade-miss.png');
+      hdcHere(['file', 'recv', '/data/local/tmp/dsh-drive-shade-miss.jpeg', miss]);
+      console.log(`drive: shade-miss evidence -> ${miss}`);
+    } catch { /* best effort */ }
+    die('notification leg skipped loud: the DSH row never rendered in the '
+      + 'shade — the heads-up banner never renders on this emulator image '
+      + '(measured, see hosts/harmony/artifacts/banner-forensics/), and '
+      + 'with even the row absent the notification mirror is degraded '
+      + '(asleep/locked screen, or an image whose mirror drops the row: '
+      + 'that banner leg needs a real device). Not retrying blind.');
+  }
+  execFileSync(args.hdc, ['shell', 'uitest', 'uiInput', 'click',
+    String(rowAt.x), String(rowAt.y)]);
+  console.log(`drive: tapped DSH notification at ${rowAt.x},${rowAt.y}`);
+}
 
 /** The DocumentViewPicker dialog (a separate Files ability). Observed on the
  * dsh_phone emulator (HarmonyOS 7.0/26.0.0): the dialog opens on the 最近
