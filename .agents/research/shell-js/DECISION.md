@@ -182,7 +182,9 @@ pure JS, no native parts, no Node builtins — the only Node-global touch is a g
 resolves `'posix'` on a process-less engine (probe-verified `mm.sep === "/"`).
 
 - **Version: `minimatch@10.0.3` — the ISC ceiling.** 10.1.0+ relicensed to BlueOak-1.0.0 (Spike C §1);
-  crossing that line is a license-policy decision this document does not make. Pin
+  crossing that line is a license-policy decision this document does not make. **Owner affirmed staying
+  at the ISC ceiling on 2026-10-11** (PR #457 thread): the pin does not follow 10.1.0+; a future bump
+  requires an explicit BlueOak acceptance recorded here. Pin
   `minimatch@10.0.3` + `@isaacs/brace-expansion@5.0.1` + `@isaacs/balanced-match@4.0.1` (ISC + MIT + MIT,
   80,055 B raw / 19,680 B gzip — Spike C §2). Note the dependency names: the `@isaacs/`-scoped packages are
   *different code* from the plain-named `brace-expansion`/`balanced-match` (Spike C compared them with `cmp`).
