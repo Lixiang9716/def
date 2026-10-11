@@ -316,7 +316,8 @@ service name through the same resolver `inject` uses. Frozen by
 
 **Mounted (22)**: sessions, agents, systemPrompt, tools, sessionProjections,
 settings, agentLoop, llm, tokenMeter, jobs, userQuestions,
-subagentModelSelection, shell (wasm executor), shellEnv, goals, commands,
+subagentModelSelection, shell (the dsh-shell-js JS shell), shellEnv, goals,
+commands,
 agentPresets, skills, fileReferences, web (keyless plane), sessionQuery,
 sessionFeedback.
 
@@ -327,9 +328,9 @@ sessionFeedback.
 | credentials | host-side store: the gateway keychain + the profile credential file (`loadCredential`) |
 | approval | the gateway `presentApproval` primitive (contract-first; the native dialog) |
 | fs (gateway, not a seam) | the host gateway's fs primitives are THE fs |
-| subprocess, sandbox, terminals | the mobile wall: no processes — the wasm shell (+ optional iSH) story |
-| compaction | the only closure consumer is `/compact` (command-compact), a desktop row the upstream README records as not carried; long-session auto-compaction is a flagged product follow-up |
-| sessionPersistence | the abstract seam is vendored but the jsonl backend is not pinned; resume fails loud ("cannot resume: session persistence is not configured") — sessions are per-launch; durability is a flagged product follow-up |
+| subprocess, sandbox, terminals | the mobile wall: no processes — the shell seat is the `dsh-shell-js` JS shell over the gateway's scoped fs face (the wasm-shell + optional-iSH seats were retired 2026-10-11, #457 — no host stages or mounts them any more) |
+| compaction | the vendored `BasicCompactionEngine` mounts behind the runtime's `compaction` gate (`upstream/boot-compaction.js`, #456; CLI evidence `runtime/dsh/artifacts/macos-cli-upstream-compaction/`); gate-off, `/compact` (command-compact) remains the only consumer — cross-host UI integration is the remaining follow-up (registered in e2e-matrix known gaps, 2026-10-12) |
+| sessionPersistence | the jsonl backend is vendored and sha256-pinned (`session-persistence@0.1.6-alpha.2`); #463 wires `sessionPersistence: true` into all three hosts' serve seats — force-kill restart recovery is proven per host (`hosts/{android,harmony,ios}/artifacts/session-persist-restart/` + the CLI leg `runtime/dsh/artifacts/macos-cli-session-persistence/`); the page-session list-merge/re-attach seam is the remaining follow-up (registered in e2e-matrix known gaps, 2026-10-12) |
 | sessionTitle, attachments, schedule, planMode, messageFeedback, mcpResources, spillStore, workflowEngine, lsp | desktop product features not yet carried (each a candidate follow-up, none silently broken) |
 | invariant, configEditor, setting, workspaceRegistry | desktop diagnostics/composition faces; mobile's equivalents are the settings service, the gateway workspace picker, and the host workspace model |
 | api-gateway (typert/Remote) | the carrier API bridge: `/api/<endpoint>` + the bus-claimed endpoint table (session/*, goals/*, commands/*, marketplace/*, …) — the same namespace surface over the carrier contract, no typert wire |
