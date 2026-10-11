@@ -58,6 +58,8 @@ RESOURCES = [
     ("upstream_web_write_session_delete_js", DSH / "upstream" / "web-write-session-delete.js"),
     ("upstream_web_write_presets_js", DSH / "upstream" / "web-write-presets.js"),
     ("upstream_boot_subagent_rows_js", DSH / "upstream" / "boot-subagent-rows.js"),
+    ("upstream_boot_compaction_js", DSH / "upstream" / "boot-compaction.js"),
+    ("upstream_boot_demand_js", DSH / "upstream" / "boot-demand.js"),
     ("upstream_web_write_subagents_js", DSH / "upstream" / "web-write-subagents.js"),
     ("upstream_web_write_inventory_js", DSH / "upstream" / "web-write-inventory.js"),
     ("upstream_web_write_streams_js", DSH / "upstream" / "web-write-streams.js"),
@@ -112,6 +114,8 @@ RESOURCES = [
     ("upstream_llm_transport_js", DSH / "upstream" / "llm-transport.js"),
     ("upstream_llm_read_idle_js", DSH / "upstream" / "llm-read-idle.js"),
     ("upstream_llm_retry_pacing_js", DSH / "upstream" / "llm-retry-pacing.js"),
+    ("upstream_llm_gateway_mount_js", DSH / "upstream" / "llm-gateway-mount.js"),
+    ("upstream_llm_piai_mount_js", DSH / "upstream" / "llm-piai-mount.js"),
     ("upstream_tool_present_js", DSH / "upstream" / "tool-present.js"),
     ("upstream_model_selection_projection_js", DSH / "upstream" / "model-selection-projection.js"),
     ("upstream_model_selection_holder_js", DSH / "upstream" / "model-selection-holder.js"),
@@ -126,6 +130,7 @@ RESOURCES = [
     ("upstream_turn_recovery_js", DSH / "upstream" / "turn-recovery.js"),
     ("upstream_retry_telemetry_js", DSH / "upstream" / "retry-telemetry.js"),
     ("upstream_boot_coverage_rows_js", DSH / "upstream" / "boot-coverage-rows.js"),
+    ("upstream_boot_session_persistence_js", DSH / "upstream" / "boot-session-persistence.js"),
 ]
 # Directory trees embedded whole and staged back under the same
 # bundle-relative paths: the vendored upstream spine packages (verbatim

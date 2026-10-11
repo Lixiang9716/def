@@ -2,11 +2,15 @@
 /**
  * shims/node-stream-writable.js — the sink half of the node:stream shim
  * (SinkEvents/Writable/Duplex + pipeline), split out of node-stream.js at
- * the size budget. The readable faces stay the single source of truth in
- * node-stream.js; the cycle is call-time-only (Duplex.from pairs a readable
- * with a writable at construction time, never at module evaluation).
+ * the size budget. The readable faces are the single source of truth in
+ * node-stream-readable.js, imported here TERMINALLY (the 2026-10-11 cycle
+ * fix: the old back-import of node-stream.js re-entered the file as a second
+ * bare-row instance and duplex's `extends SinkEvents` evaluated against a
+ * mid-evaluation writable — the session-persistence-jsonl link's
+ * "SinkEvents is not initialized"; Duplex.from still pairs a readable with
+ * a writable at construction time, never at module evaluation).
  */
-import { MiniStream, PassThrough, Readable } from 'upstream/shims/node-stream.js';
+import { PassThrough, Readable } from 'upstream/shims/node-stream-readable.js';
 
 export class SinkEvents {
   _listeners = new Map();

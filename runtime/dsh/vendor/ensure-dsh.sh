@@ -21,12 +21,25 @@
 # closure: session-persistence (agent-loop hard-imports its error type at
 # module top — the 2026-09-23 ios parity leg died loading it), subagent, base,
 # and
-# the transport adapters (llm-deepseek / llm-pi-ai — their direct-fetch
-# transport is the desktop's; the mobile seam is the gateway adapter in
-# runtime/dsh/upstream/llm-transport.js). dsh-llm is vendored since the
-# W-LLM leg; llm-mock-server is vendored as the E2E test vehicle (its
+# the transport adapters' DIRECT-FETCH face (llm-deepseek stays out entirely —
+# its direct-fetch transport is the desktop's; the mobile seam is the gateway
+# adapter in runtime/dsh/upstream/llm-transport.js). dsh-llm is vendored since
+# the W-LLM leg; llm-mock-server is vendored as the E2E test vehicle (its
 # node-side driver is runtime/dsh/ci/mock-llm-server.mjs); llm-replay stays
 # out (peer deps on compaction + api-extensions, none of it needed).
+# 2026-10-11 (the llm-pi-ai leg): dsh-llm-pi-ai JOINED — the multi-protocol
+# adapter (pi-ai-backed anthropic-messages / openai-responses /
+# openai-completions) whose lib imports only already-pinned faces (dsh-llm,
+# dsh-brand, dsh-util-values, dsh-timeout, dsh-attachment, dsh-credentials,
+# schemastery, the bridged pi-ai dist subpaths) plus ONE new link-time dep
+# pinned beside it: dsh-launch-environment (zero-dep, cordis peer only).
+# The mount is BOOT-GATED (options.llm.piaiProviders — upstream/boot.js +
+# upstream/llm-piai-mount.js): an absent option mounts nothing and every
+# existing leg is byte-identical. pi-ai's own npm deps stay UNVENDORED — the
+# openai SDK specifier rides the composed openai-client shim
+# (upstream/shims/openai-client.js), and the not-served protocol SDKs
+# (@anthropic-ai/sdk, @google/genai, @aws-sdk/*) keep the loader's loud
+# unmap (those protocol routes fail at API construction, not silently).
 # The FILE-TOOLS row (the dsh-desktop fs tool family over ctx.fs) vendors
 # fs-local + tool-fs + tool-str-replace-editor + attachment (tool-fs' only
 # not-yet-vendored link-time import) plus the npm `diff` (tool-fs' hunk
@@ -252,6 +265,12 @@ terminal|0.1.6-alpha.2|cb9b07571654bcfe6877f8ff860a3ebd17564fe17994a9e905aea0ef4
 #   Copyright (c) 2012 Artur Adib
 #   Licensed under the MIT License
 #   http://www.opensource.org/licenses/mit-license.php
+# The SESSION-PERSISTENCE family (2026-10-11, the resume leg): the vendored
+# dsh-session-persistence seam's concrete JSONL backend plus the session-log
+# format readers the backend links (catalog's own deps already pinned —
+# session-format + the v0→v1/v1→v2/v2→v3 migration adapters). The backend's
+# native row (koffi/flock) rides the shims' single-process flock face; the
+# boot mounts it behind the options.sessionPersistence gate (default off).
 NPM_PACKAGES="
 cordis@4.0.2|@deepseek-ai/cordis/-/cordis-4.0.2.tgz|686ca44fc6e8d217804de9062b716b7c72755dde09c2a433dd07045eea3c6a97
 @noble/hashes@2.3.0|@noble/hashes/-/hashes-2.3.0.tgz|892281f5dd25ddea8e215c740945bacdfc78aa4fca81f2c25a06876366c8beac
@@ -300,6 +319,13 @@ shelljs@0.10.0|shelljs/-/shelljs-0.10.0.tgz|0908d4921a9e304cbf0aacf161f31aafaa7d
 minimatch@10.0.3|minimatch/-/minimatch-10.0.3.tgz|5c531a1fcdfab89b67470063e99d392d701027c41774f6ba957c819f91656ee4
 @isaacs/brace-expansion@5.0.1|@isaacs/brace-expansion/-/brace-expansion-5.0.1.tgz|c908309f6735b002952f2b02563e68d98cba0375322a189ebc4f6f47637ee95b
 @isaacs/balanced-match@4.0.1|@isaacs/balanced-match/-/balanced-match-4.0.1.tgz|b4593f0b61a94bb72521b5868b9da79e5f26b353d2cb958a1822adc3759915b0
+@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2|@deepseek-ai/dsh-launch-environment/-/dsh-launch-environment-0.1.6-alpha.2.tgz|5dab2fac358f02b91a07107e2692a7e9ba8e694fc27f44de39f394d1817701c6
+@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2|@deepseek-ai/dsh-llm-pi-ai/-/dsh-llm-pi-ai-0.1.6-alpha.2.tgz|ba7b73b5d7eb7570e1195aebb4325d2dd83ae4e939de82ec4f5fc0fc5c176854
+@deepseek-ai/dsh-session-format-v0-to-v1@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v0-to-v1/-/dsh-session-format-v0-to-v1-0.1.6-alpha.2.tgz|f3d458503007a986ca7ba8510c92e30425fb3d56d282b937fc8c342e7aa13952
+@deepseek-ai/dsh-session-format-v1-to-v2@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v1-to-v2/-/dsh-session-format-v1-to-v2-0.1.6-alpha.2.tgz|3ba7c561d637073b81fe1b2077fec19776a2e00abc191769b0bc008b85358a8e
+@deepseek-ai/dsh-session-format-v2-to-v3@0.1.6-alpha.2|@deepseek-ai/dsh-session-format-v2-to-v3/-/dsh-session-format-v2-to-v3-0.1.6-alpha.2.tgz|b488cb16ecae0128f023f985bdc66423f17e6de285d15c60b44ce370d2ef83b6
+@deepseek-ai/dsh-session-format@0.1.6-alpha.2|@deepseek-ai/dsh-session-format/-/dsh-session-format-0.1.6-alpha.2.tgz|1f8583840d78b54b43d08c80bf31d5688ea0cd9f991e5823902ee3c83cb22f0d
+@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2|@deepseek-ai/dsh-session-persistence-jsonl/-/dsh-session-persistence-jsonl-0.1.6-alpha.2.tgz|4acf76602ba7b031f1991ab6a518190c7d8ef5da4f217f25685881e37fdbcf89
 
 "
 

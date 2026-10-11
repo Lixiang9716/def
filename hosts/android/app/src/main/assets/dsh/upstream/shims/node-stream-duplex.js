@@ -4,10 +4,10 @@
  * (options constructor, Duplex.from pairing with the X4 close accounting),
  * split out of node-stream-writable.js at the size budget. SinkEvents and
  * Writable stay the single source of truth in node-stream-writable.js; the
- * readable face comes from node-stream.js (call-time reads only).
+ * readable face comes from node-stream-readable.js (call-time reads only).
  */
 import { SinkEvents, Writable } from 'upstream/shims/node-stream-writable.js';
-import { Readable } from 'upstream/shims/node-stream.js';
+import { Readable } from 'upstream/shims/node-stream-readable.js';
 
 export class Duplex extends SinkEvents {
   #readImpl;
