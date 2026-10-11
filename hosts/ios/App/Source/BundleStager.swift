@@ -265,7 +265,8 @@ enum BundleStager {
         // The file-size-gate splits mainline's boot.js grew (the spine-seat
         // round, 2026-10-11): the demand facts, the optional compaction row,
         // and the gated session-persistence row are TOP-LEVEL imports — the
-        // static graph resolves at eval whether or not the gates open.
+        // static graph resolves at eval whether or not the gates open. The
+        // two LLM mounts ride writeSpineSeatLlmRows above (the same round).
         try write("upstream/boot-demand.js",
                   data: resData(dsh_runtime_res_upstream_boot_demand_js), under: root)
         try write("upstream/boot-compaction.js",

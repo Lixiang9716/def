@@ -39,6 +39,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private var sessionWriteVerdict = "PENDING"
     private var v2Web: V2WebRuntime?
     private var v2WebVerdict = "PENDING"
+    var persistRestart: SessionPersistRestartRuntime?
 
     func application(
         _ application: UIApplication,
@@ -123,7 +124,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                      line: "rt: app launched in session mode (\(surface))", web: false)
             runSession()
         case "official-web", "session-live", "session-write", "next-web",
-             "serve", "card-player":
+             "serve", "card-player", "session-restart":
             launchWebDrive(launchMode)
         default:
             runDefaultChain()
@@ -162,9 +163,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     /// Launch mode from the launch arguments ("-dsh-mode session"): the
     /// default keeps the historical boot → carrier → gateway sequence.
-    var launchMode: String {
-        requestedLaunchMode ?? "spikes"
-    }
+    var launchMode: String { requestedLaunchMode ?? "spikes" }
 
     /// The `-dsh-mode` value, or nil when the flag is absent.
     var requestedLaunchMode: String? {

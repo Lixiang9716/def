@@ -30,6 +30,16 @@ vendor/dsh/session-projection@0.1.6-alpha.2=vendor/dsh/session-projection@0.1.6-
 vendor/dsh/settings@0.1.6-alpha.2=vendor/dsh/settings@0.1.6-alpha.2
 vendor/dsh/system-prompt@0.1.6-alpha.2=vendor/dsh/system-prompt@0.1.6-alpha.2
 vendor/dsh/session-persistence@0.1.6-alpha.2=vendor/dsh/session-persistence@0.1.6-alpha.2
+# The SESSION-PERSISTENCE family's npm-face packages: the gated boot row
+# dynamically imports dsh-session-persistence-jsonl, whose graph reaches the
+# session-format codecs + the three migration adapters (catalog rides the
+# npm-face section below). The android stager mirrors these at the same
+# vendor/dsh/<mangled>@<ver> rel paths; the harmony CLOSURE names them.
+vendor/dsh/session-persistence-jsonl@0.1.6-alpha.2=vendor/npm/@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2
+vendor/dsh/session-format@0.1.6-alpha.2=vendor/npm/@deepseek-ai/dsh-session-format@0.1.6-alpha.2
+vendor/dsh/session-format-v0-to-v1@0.1.6-alpha.2=vendor/npm/@deepseek-ai/dsh-session-format-v0-to-v1@0.1.6-alpha.2
+vendor/dsh/session-format-v1-to-v2@0.1.6-alpha.2=vendor/npm/@deepseek-ai/dsh-session-format-v1-to-v2@0.1.6-alpha.2
+vendor/dsh/session-format-v2-to-v3@0.1.6-alpha.2=vendor/npm/@deepseek-ai/dsh-session-format-v2-to-v3@0.1.6-alpha.2
 vendor/dsh/commands@0.1.6-alpha.2=vendor/dsh/commands@0.1.6-alpha.2
 vendor/dsh/command-feedback@0.1.6-alpha.2=vendor/dsh/command-feedback@0.1.6-alpha.2
 vendor/dsh/timeout@0.1.6-alpha.2=vendor/dsh/timeout@0.1.6-alpha.2

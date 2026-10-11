@@ -269,6 +269,13 @@ export class OfficialServe {
    * carrier serves the scripted model route as the no-credential fallback. */
   private interactive: boolean = false;
   private credentialJson: string | null = null;
+  /** A verification leg's entry + verdict-label override (the restart leg
+   * evals its own web-live file through this carrier's interactive flow —
+   * the scripted route rides `interactive`). '' = the seat's defaults; the
+   * override never changes WHAT is delivered, only WHICH file evals and
+   * under which label the C host logs the verdict. */
+  entryOverride: string = '';
+  labelOverride: string = '';
   /** The self-hosted next client is the served page: the runtime's boot
    * rows never swap in (the page owns its boot — zero injection rows), the
    * mounts still report them for composition evidence. */
@@ -419,8 +426,10 @@ export class OfficialServe {
       // a scenario label, not a path — threw 'cannot read entry' and killed
       // the boot chain for every non-interactive mount leg; the label still
       // rides startRuntime's verdict naming).
-      const entry = this.interactive ? ENTRY_INTERACTIVE : ENTRY_MOUNT;
-      const label = this.interactive ? ENTRY_INTERACTIVE : SCENARIO_MOUNT;
+      const entry = this.entryOverride !== '' ? this.entryOverride
+        : (this.interactive ? ENTRY_INTERACTIVE : ENTRY_MOUNT);
+      const label = this.labelOverride !== '' ? this.labelOverride
+        : (this.interactive ? ENTRY_INTERACTIVE : SCENARIO_MOUNT);
       this.startRuntime(ctx, label);
       this.onCarrierUp(port);
       this.evalEntry(entry);
@@ -952,7 +961,14 @@ export class OfficialServe {
       '","containerRoot":' + JSON.stringify(workspace) +
       ',"fsScopeRoot":' + JSON.stringify(this.fsRoot) +
       ',"commands":true,"fullCoverage":true,"goals":true,' +
-      '"presetJoin":true,"fileReferences":true,"creation":true,"skills":{"dshHome":' +
+      '"presetJoin":true,"fileReferences":true,"creation":true,' +
+      // The SESSION-PERSISTENCE gate (T-0212): `{}` = DEFAULTS (root
+      // inside the pinned workspace, vendored 'zstd'). The v2web drive
+      // boots this interactive config and DOES carry the row (no canonical
+      // record names the mount; the blank configured session falls through
+      // to create). The mount legs boot the non-interactive config, whose
+      // cfg carries no key.
+      '"sessionPersistence":true,"skills":{"dshHome":' +
       JSON.stringify(workspace + '/home') + ',"agentsHome":' +
       JSON.stringify(workspace + '/home/agents') + ',"customSkillDirs":[' +
       JSON.stringify(workspace + '/skills') + ']}';

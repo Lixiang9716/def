@@ -278,13 +278,13 @@ final class SessionServe {
             // these): the commands registry + the skill plane under the
             // profile container. The custom skills dir must live INSIDE the
             // pinned workspace (the fs backends refuse anything outside it —
-            // measured: Documents/skills was skipped by the discovery
-            // provider), so the user stages skills at workspace/skills via
-            // Files.app.
+            // measured: Documents/skills was skipped by discovery), so the
+            // user stages skills at workspace/skills via Files.app.
             config["commands"] = true
             config["fullCoverage"] = true
             config["goals"] = true
             config["fileReferences"] = true
+            config["sessionPersistence"] = true // the T-0212 gate: {} = DEFAULTS (v2web drives carry it too)
             config.merge(Self.interactiveExtras()) { _, new in new }
         }
         return config

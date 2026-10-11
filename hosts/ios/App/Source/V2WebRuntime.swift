@@ -26,10 +26,12 @@ final class V2WebRuntime {
     static let gameMessageText = "GAME_TURN 请做一个Canvas弹球小游戏"
     static let gameCardTitle = "弹球小游戏 — 点按全屏查看"
 
-    /// interactive: the CREATION row (the present tool) rides the same
-    /// user-facing flag — this drive IS the creation-mode seat. The staged
-    /// credential flows when present (the real-LLM creation turn); a seat
-    /// with no credential keeps the scripted route byte-for-byte (CI).
+    /// interactive: the CREATION row (the present tool) — and, since T-0212,
+    /// the SESSION-PERSISTENCE row — ride the same user-facing flag; this
+    /// drive IS the creation-mode seat. The mount emits no canonical record
+    /// and the blank configured session falls through to create, so the
+    /// manifest's boot pins hold. The staged credential flows when present
+    /// (the real-LLM creation turn); no credential keeps the scripted route.
     private let serve = SessionServe(
         credential: SessionServe.loadCredential(), interactive: true)
     let eventLog = CarrierEventLog(scenario: V2WebRuntime.scenario)

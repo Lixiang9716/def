@@ -1,0 +1,14 @@
+{
+  "host": "android",
+  "udid": "emulator-5554",
+  "runner": "hosts/android/ci/run-session-persist-restart.sh",
+  "phase": "session-persist.restart",
+  "launch": "emulator, --ez dsh.persistrestart true x2 (create leg, am force-stop, resume leg on the same container)",
+  "tree": "origin/main 1b93131ac3ef (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "scenarios": [
+    { "manifest": "android-session-persist-restart", "verdict": "verdict-android-session-persist-restart.json", "pass": true }
+  ],
+  "screens": ["screens/01-create-settled.png", "screens/02-resume-settled.png"],
+  "producedAt": "2026-10-11T13:39:32Z"
+}

@@ -30,16 +30,13 @@ class MainActivity : Activity() {
     /** The per-tree asset manifest stamp (syncAssetDir). */
     private val assetStampName = ".dsh-asset-stamp"
 
-    private lateinit var verdictView: TextView
+    internal lateinit var verdictView: TextView
     private var spikeHost: BindingHost? = null
     private var webView: WebView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildFlavor.isRelease) {
-            bootRelease()
-            return
-        }
+        if (BuildFlavor.isRelease) { bootRelease(); return }
         verdictView = TextView(this).apply {
             setBackgroundColor(Color.BLACK)
             setTextColor(Color.WHITE)
@@ -75,6 +72,7 @@ class MainActivity : Activity() {
             startSessionLive()
         } else if (intent.getBooleanExtra(EXTRA_WRITE, false)) {
             startWriteLive()
+        } else if (intent.getBooleanExtra(EXTRA_RESTART, false)) { startPersistRestart()
         } else {
             setContentView(verdictView)
             JsRuntime.post {
@@ -447,7 +445,7 @@ class MainActivity : Activity() {
     }
 
     /** Copies the asset rt bundle to filesDir/rt preserving the layout. */
-    private fun materializeBundle() {
+    internal fun materializeBundle() {
         syncAssetDir("dsh", File(filesDir, "dsh"))
     }
 
@@ -476,7 +474,7 @@ class MainActivity : Activity() {
      * app-owned scratch (the workspace lives under files/profiles/, and the
      * presets seed re-delivers its rows every boot), so the wipe never
      * takes user data with it. */
-    private fun syncAssetDir(assetPath: String, target: File) {
+    internal fun syncAssetDir(assetPath: String, target: File) {
         val stamp = File(target, assetStampName)
         val names = sortedSetOf<String>()
         collectAssetNames(assetPath, "", names)

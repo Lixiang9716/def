@@ -40,6 +40,10 @@ export const bootOptions = (cfg, route, root, extras) => ({
   // it a creation turn's write tool calls drop on the floor (measured
   // 2026-10-09: the session agent published onto an empty toolset).
   presetJoin: cfg.presetJoin === true,
+  // The SESSION-PERSISTENCE gate (T-0212): the interactive seat's flag →
+  // `{}` = DEFAULTS (root inside the pinned container, vendored 'zstd');
+  // ABSENT → the key stays off (`absent = off`) — ungated boots unchanged.
+  ...(cfg.sessionPersistence === true ? { sessionPersistence: {} } : {}),
   container: {
     cwd: root,
     tmpdir: `${root}/tmp`,

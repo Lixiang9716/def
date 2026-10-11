@@ -110,6 +110,21 @@ extension AppDelegate {
         }
     }
 
+    /// The session-persistence restart leg (`-dsh-mode session-restart`):
+    /// the serving seat with the restart scenario entry, no page in the
+    /// path — the scenario's completion IS the verdict, on both launches.
+    func runSessionRestart() {
+        let drive = SessionPersistRestartRuntime()
+        self.persistRestart = drive
+        drive.run { [weak self] outcome in
+            guard let self else { return }
+            self.show(outcome, phase: "session-persist.restart") { _ in }
+            self.persistRestart = nil
+            print("rt: sequence session-persist-restart=\(outcome.verdict)")
+            fflush(stdout)
+        }
+    }
+
     /// The WEB-seat launch modes' table (one line each in the dispatch
     /// switch): banner + canonical stdout line + the drive. The serve and
     /// card-player comments explain the seat's contract — see
@@ -139,6 +154,14 @@ extension AppDelegate {
             announce("DSH serve — the user-facing seat, driven by hand (harness logging on)…",
                      line: "rt: app launched in serve mode", web: true)
             runServingBoot()
+        case "session-restart":
+            // The session-persistence restart leg: the gated spine, TWO
+            // launches with ONE runner-owned force kill between them — the
+            // create leg settles PASS, the runner kills + relaunches, the
+            // resume leg continues the journal.
+            announce("DSH session restart — session-persist.restart, the gated spine across a force kill…",
+                     line: "rt: app launched in session-restart mode", web: false)
+            runSessionRestart()
         case "card-player":
             // PR-1 of the create-approve-hotmount-native loop: a plugin card
             // rendered by the app's OWN chrome (not an HTML page).
