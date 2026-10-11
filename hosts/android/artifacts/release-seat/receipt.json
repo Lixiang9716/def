@@ -1,0 +1,17 @@
+{
+  "host": "android",
+  "udid": "emulator-5554",
+  "runner": "hosts/android/ci/run-release-seat.sh",
+  "phase": "release.seat",
+  "launch": "emulator, NO extras (release boot -> SessionServe), release APK signed with the debug keystore",
+  "tree": "origin/main 50859908ec90 (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "stateSeam": {
+    "snapshot": "hosts/android/artifacts/release-seat/state-snapshot.json",
+    "claimedEndpoints": 76,
+    "appBlockPresent": true,
+    "asserted": true
+  },
+  "screens": ["screens/01-origin.png", "screens/02-state.png"],
+  "producedAt": "2026-10-11T02:48:23Z"
+}
