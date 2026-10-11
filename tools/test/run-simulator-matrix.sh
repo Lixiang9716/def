@@ -258,7 +258,9 @@ ios_release_leg() {
     local f
     for f in "$art/plain-launch-release.stdout.txt" "$art/plain-launch-release.stderr.txt" \
              "$art/plain-launch-release.oslog.txt"; do
-        for pat in 'dsh: sequence' 'dsh: ui-wait' 'dsh: app launched' \
+        for pat in 'rt: sequence' 'rt: ui-wait' 'rt: app launched' \
+                   'rt: device-plane drive finished' 'rt: gateway drive finished' \
+                   'rt: host drive finished' 'rt: verdict' \
                    'dsh.runtime.verdict' 'dsh.runtime.result' 'ALL PASS' 'ALL FAIL' \
                    '"level":"debug"' '"level":"info"'; do
             [ "$(count_of "$f" "$pat")" -eq 0 ] \
@@ -309,7 +311,9 @@ proof = {
     "tree": os.environ.get("DSH_MATRIX_TREE", ""),
     "assertions": {
         "driveMachineryMarkers": 0,
-        "assertedZero": ["dsh: sequence", "dsh: ui-wait", "dsh: app launched",
+        "assertedZero": ["rt: sequence", "rt: ui-wait", "rt: app launched",
+                          "rt: device-plane drive finished", "rt: gateway drive finished",
+                          "rt: host drive finished", "rt: verdict",
                           "dsh.runtime.verdict", "dsh.runtime.result", "ALL PASS", "ALL FAIL",
                           "level:debug records", "level:info records"],
         "officialUiReached": "plain-launch-release.png",
