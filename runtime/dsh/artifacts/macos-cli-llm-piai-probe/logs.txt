@@ -1,0 +1,61 @@
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"main begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"launch env","data":[{"keys":["DSH_HOST_PLATFORM","DSH_PIAI_KEY"]}]}
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"piai mock starting","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"boot phase begin","data":[{"baseURL":"http://127.0.0.1:49152/v1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"unavailable","primitive":"shell"}]}
+dsh.runtime.log: {"level":"warn","module":"dsh.shell.wasm","message":"starter programs not written","data":[{"reason":"the host granted no scoped workspace (no __dshProfileScopeRoot)"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.ish","message":"guest root from the host declaration","data":[{"rootfs":"","offered":false}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.ish","message":"no Linux guest staged by this host; the ish tool is not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-llm-piai-probe-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-llm-piai-probe-0001"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"llm/piai","plugin":"@deepseek-ai/dsh-llm-pi-ai","routes":["piai-test"],"protocols":["openai-completions"]}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/piai-mounted","routes":["piai-test"],"baseURL":"http://127.0.0.1:49152/v1"}]}
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"contract phase begin","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/list-providers","routes":["mock","piai-test"],"piaiName":"pi-ai test route"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/list-models","provider":"piai-test","models":["piai-mock-1"]}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/resolve-model","provider":"piai-test","id":"piai-mock-1","name":"pi-ai mock model","contextWindow":8192}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/prepare-call","provider":"piai-test","model":"piai-mock-1","retryPolicyMode":"normal","dispatched":true}]}
+dsh.runtime.log: {"level":"debug","module":"llm.piai-probe.dsh","message":"stream phase begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/wire","path":"/v1/chat/completions","model":"piai-mock-1","stream":true,"bearer":true}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/stream","kinds":"block-start,text-delta,text-delta,text-delta,block-end,usage,finish","text":"Hello from pi-ai","finish":"stop","inputTokens":11,"outputTokens":4,"totalTokens":15}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"llm.piai-probe.dsh","message":"e2e","data":[{"scenario":"llm.piai-probe","event":"probe/completed","status":"pass","adapter":"vendored dsh-llm-pi-ai PiAiAdapter"}]}

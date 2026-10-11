@@ -21,12 +21,25 @@
 # closure: session-persistence (agent-loop hard-imports its error type at
 # module top — the 2026-09-23 ios parity leg died loading it), subagent, base,
 # and
-# the transport adapters (llm-deepseek / llm-pi-ai — their direct-fetch
-# transport is the desktop's; the mobile seam is the gateway adapter in
-# runtime/dsh/upstream/llm-transport.js). dsh-llm is vendored since the
-# W-LLM leg; llm-mock-server is vendored as the E2E test vehicle (its
+# the transport adapters' DIRECT-FETCH face (llm-deepseek stays out entirely —
+# its direct-fetch transport is the desktop's; the mobile seam is the gateway
+# adapter in runtime/dsh/upstream/llm-transport.js). dsh-llm is vendored since
+# the W-LLM leg; llm-mock-server is vendored as the E2E test vehicle (its
 # node-side driver is runtime/dsh/ci/mock-llm-server.mjs); llm-replay stays
 # out (peer deps on compaction + api-extensions, none of it needed).
+# 2026-10-11 (the llm-pi-ai leg): dsh-llm-pi-ai JOINED — the multi-protocol
+# adapter (pi-ai-backed anthropic-messages / openai-responses /
+# openai-completions) whose lib imports only already-pinned faces (dsh-llm,
+# dsh-brand, dsh-util-values, dsh-timeout, dsh-attachment, dsh-credentials,
+# schemastery, the bridged pi-ai dist subpaths) plus ONE new link-time dep
+# pinned beside it: dsh-launch-environment (zero-dep, cordis peer only).
+# The mount is BOOT-GATED (options.llm.piaiProviders — upstream/boot.js +
+# upstream/llm-piai-mount.js): an absent option mounts nothing and every
+# existing leg is byte-identical. pi-ai's own npm deps stay UNVENDORED — the
+# openai SDK specifier rides the composed openai-client shim
+# (upstream/shims/openai-client.js), and the not-served protocol SDKs
+# (@anthropic-ai/sdk, @google/genai, @aws-sdk/*) keep the loader's loud
+# unmap (those protocol routes fail at API construction, not silently).
 # The FILE-TOOLS row (the dsh-desktop fs tool family over ctx.fs) vendors
 # fs-local + tool-fs + tool-str-replace-editor + attachment (tool-fs' only
 # not-yet-vendored link-time import) plus the npm `diff` (tool-fs' hunk
@@ -275,6 +288,8 @@ pngjs@5.0.0|pngjs/-/pngjs-5.0.0.tgz|4d960bbbe078022d7a36822e2874f884c7410ead111f
 turndown@7.2.4|turndown/-/turndown-7.2.4.tgz|05f61bc3f0aeca5e5cd7f1b5492e26b9040bb00708cd41fb1b0f7b216e296fa0
 @mixmark-io/domino@2.2.0|@mixmark-io/domino/-/domino-2.2.0.tgz|b829bcca09544649f6432020dd6915b6fb054154d7a77eb6f8b3fb1f4165afec
 @joplin/turndown-plugin-gfm@1.0.67|@joplin/turndown-plugin-gfm/-/turndown-plugin-gfm-1.0.67.tgz|59f5c59b28bb690bc1cb2d00c67b5e798ce5b29032989892b27a491093e6cde5
+@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2|@deepseek-ai/dsh-llm-pi-ai/-/dsh-llm-pi-ai-0.1.6-alpha.2.tgz|ba7b73b5d7eb7570e1195aebb4325d2dd83ae4e939de82ec4f5fc0fc5c176854
+@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2|@deepseek-ai/dsh-launch-environment/-/dsh-launch-environment-0.1.6-alpha.2.tgz|5dab2fac358f02b91a07107e2692a7e9ba8e694fc27f44de39f394d1817701c6
 
 "
 

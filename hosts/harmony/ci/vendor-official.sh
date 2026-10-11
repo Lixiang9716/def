@@ -338,6 +338,8 @@ scenario/create-card.js
 scenario/card-player.js
 scenario/upstream-parity.js
 upstream/boot.js
+upstream/llm-gateway-mount.js
+upstream/llm-piai-mount.js
 system-plugins/dsh-create/index.js
 system-plugins/dsh-create/manifest.json
 upstream/wire-logger.js
