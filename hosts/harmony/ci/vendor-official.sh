@@ -191,6 +191,9 @@ web-live/plugin-live-mount.js
 web-live/composer-bus.js
 web-live/api-handler-respond.js
 web-live/scenario-verdict.js
+web-live/session-persist-restart.js
+web-live/harmony-session-persist-restart.js
+web-live/session-persist-restart-core.js
 vendor/npm/turndown@7.2.4/lib/turndown.es.js
 $(cd runtime/dsh && find vendor/npm/@mixmark-io/domino@2.2.0/lib \
     vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib \
@@ -734,6 +737,15 @@ if [ "$MODE" != "check" ]; then
     stage_npm_face_at_dsh_path session-title
     stage_npm_face_at_dsh_path session-format-catalog
     stage_npm_face_at_dsh_path compaction-image-offload
+    # The SESSION-PERSISTENCE family (1b93131a): the gated boot row's
+    # dynamic import resolves @deepseek-ai/dsh-session-persistence-jsonl,
+    # whose graph links the session-format codecs and the catalog (which
+    # links v0-to-v1/v1-to-v2; the jsonl links v2-to-v3 directly).
+    stage_npm_face_at_dsh_path session-format
+    stage_npm_face_at_dsh_path session-format-v0-to-v1
+    stage_npm_face_at_dsh_path session-format-v1-to-v2
+    stage_npm_face_at_dsh_path session-format-v2-to-v3
+    stage_npm_face_at_dsh_path session-persistence-jsonl
     # The preset-join seats' LOCAL jobs implementation (T-0048's tail item):
     # the composition's tool-jobs row injects `jobs`, whose abstract registry
     # seam refuses to load — the composition host plane mounts the LOCAL

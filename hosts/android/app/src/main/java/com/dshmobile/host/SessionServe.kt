@@ -308,6 +308,14 @@ class SessionServe private constructor(
                 .put("fullCoverage", true)
                 .put("goals", true)
                 .put("fileReferences", true)
+                // The SESSION-PERSISTENCE gate (T-0212): `{}` = DEFAULTS
+                // (root inside the pinned container, vendored 'zstd'). The
+                // v2web drive runs this seat with interactive=true and DOES
+                // carry the row (no canonical record names the mount; the
+                // blank configured session falls through to create). The
+                // bare-boot drives (b3/b4/officialweb) construct
+                // interactive=false, so the key stays absent.
+                .put("sessionPersistence", true)
                 // The CREATION row: the present tool — the model declares
                 // workspace files as deliverables, journaled as
                 // deliverables/presented for the clients to render on screen.

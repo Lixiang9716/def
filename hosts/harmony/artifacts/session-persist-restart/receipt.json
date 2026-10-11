@@ -1,0 +1,13 @@
+{
+  "host": "harmony",
+  "udid": "127.0.0.1:5557 (emulator , HarmonyOS API 26 )",
+  "runner": "hosts/harmony/ci/run-session-persist-restart.sh",
+  "phase": "session-persist.restart",
+  "launch": "emulator  emulator, --ps dsh.e2e.leg session-persist.restart x2 (create leg, aa force-stop, resume leg on the same sandbox)",
+  "tree": "origin/main 1b93131ac3ef (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "scenarios": [
+    { "manifest": "harmony-session-persist-restart", "verdict": "verdict-harmony-session-persist-restart.json", "pass": true }
+  ],
+  "producedAt": "2026-10-11T13:40:15Z"
+}

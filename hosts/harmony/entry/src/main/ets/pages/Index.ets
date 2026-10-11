@@ -79,6 +79,7 @@ const LEG_UPSTREAM_SUITE: string = 'upstream.suite';
  * creation client on the STAGED real backend — one Pomodoro-clock creation
  * turn, streamed into the page. A demo: no one-to-one manifest. */
 const LEG_REAL_CREATE: string = 'real.create';
+const LEG_SESSION_PERSIST: string = 'session-persist.restart';
 
 // bundle-root-relative files shipped under resources/rawfile/dsh/ —
 // logger.js must sit at <bundle>/logger.js, gateway.js at <bundle>/gateway.js,
@@ -512,8 +513,24 @@ const BUNDLE_FILES: string[] = [
   'vendor/dsh/session-format-catalog@0.1.6-alpha.2/lib/types/index.js',
   'vendor/dsh/session-format-catalog@0.1.6-alpha.2/lib/types/message-projections.js',
   'vendor/dsh/session-format-catalog@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-format@0.1.6-alpha.2/LICENSE',
+  'vendor/dsh/session-format@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-format@0.1.6-alpha.2/lib/index.js',
+  'vendor/dsh/session-format-v0-to-v1@0.1.6-alpha.2/LICENSE',
+  'vendor/dsh/session-format-v0-to-v1@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-format-v0-to-v1@0.1.6-alpha.2/lib/index.js',
+  'vendor/dsh/session-format-v1-to-v2@0.1.6-alpha.2/LICENSE',
+  'vendor/dsh/session-format-v1-to-v2@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-format-v1-to-v2@0.1.6-alpha.2/lib/index.js',
+  'vendor/dsh/session-format-v2-to-v3@0.1.6-alpha.2/LICENSE',
+  'vendor/dsh/session-format-v2-to-v3@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-format-v2-to-v3@0.1.6-alpha.2/lib/index.js',
   'vendor/dsh/session-persistence@0.1.6-alpha.2/lib/index.js',
   'vendor/dsh/session-persistence@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-persistence-jsonl@0.1.6-alpha.2/LICENSE',
+  'vendor/dsh/session-persistence-jsonl@0.1.6-alpha.2/package.json',
+  'vendor/dsh/session-persistence-jsonl@0.1.6-alpha.2/lib/index.js',
+  'vendor/dsh/session-persistence-jsonl@0.1.6-alpha.2/lib/worker.cjs',
   'vendor/dsh/session-projection@0.1.6-alpha.2/lib/index.js',
   'vendor/dsh/session-projection@0.1.6-alpha.2/lib/types/index.js',
   'vendor/dsh/session-projection@0.1.6-alpha.2/lib/types/types.js',
@@ -1264,12 +1281,15 @@ const BUNDLE_FILES: string[] = [
   'web-live/harmony-composer-live-write.js',
   'web-live/harmony-httpfetch-streaming.js',
   'web-live/harmony-session-live-read.js',
+  'web-live/harmony-session-persist-restart.js',
   'web-live/manager-legs-probe.js',
   'web-live/officialweb-web-live.js',
   'web-live/plugin-live-mount.js',
   'web-live/pomodoro-plugin-template.js',
   'web-live/probe-respond-await.js',
   'web-live/scenario-verdict.js',
+  'web-live/session-persist-restart-core.js',
+  'web-live/session-persist-restart.js',
   'web-live/turn-evidence.js',
   'web-live/turn-failure.js',
   'web-live/write-surface-options.js',
@@ -1411,6 +1431,9 @@ struct Index {
   /** The release boot's serving seat (null in the harness: OfficialPhase
    * owns the seat there). */
   private releaseServe: OfficialServe | null = null;
+  /** The session-persistence restart leg's serve (held so the carrier and
+   * the live runtime survive the compositing GC). */
+  private persistRestartServe: OfficialServe | null = null;
 
   aboutToAppear(): void {
     // The render surface overlay + the official seat's approval dialog are
@@ -1513,6 +1536,9 @@ struct Index {
     } else if (leg === LEG_REAL_CREATE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runRealCreateLeg();
+    } else if (leg === LEG_SESSION_PERSIST) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runSessionPersistLeg();
     } else if (leg === LEG_UPSTREAM_SUITE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch, spec %{public}s', leg, E2eLeg.getSpec());
       this.runSuiteLeg(E2eLeg.getSpec());
@@ -1532,6 +1558,10 @@ struct Index {
     HostPhase.getInstance().destroy();
     OfficialPhase.getInstance().destroy();
     V2WebPhase.destroyIfLive();
+    if (this.persistRestartServe !== null) {
+      this.persistRestartServe.destroy();
+      this.persistRestartServe = null;
+    }
     this.carrier.stop();
   }
 
@@ -1917,6 +1947,33 @@ struct Index {
    * swapped, zero injection rows, the interactive config with the CREATION
    * row; the probe drives OUR page like a user through real scripted turns
    * (V2WebPhase holds the chain). */
+  /** The session-persistence restart leg (`harmony.session-persist.restart`):
+   * TWO launches with ONE force kill between them — the runner owns the kill
+   * and the relaunch, this page only boots the gated spine. The restart
+   * entry self-stages (create leg on the fresh container, resume leg after
+   * the kill — the boot state decides) and completes itself, so the verdict
+   * is the C host's `dsh.runtime.verdict: harmony.session-persist.restart`
+   * line under the leg's own label. */
+  private runSessionPersistLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const serve = new OfficialServe();
+    serve.entryOverride = 'web-live/harmony-session-persist-restart.js';
+    serve.labelOverride = 'harmony.session-persist.restart';
+    this.persistRestartServe = serve;
+    this.materializeBundle(ctx)
+      .then((root: string): void => {
+        this.verdict = 'session-persist leg: booting the gated spine...';
+        serve.beginInteractive(ctx, root,
+          ctx.cacheDir + '/dsh-persist-restart-capture.log', fsRoot, null);
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'session-persist leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
   private runV2WebLeg(): void {
     const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
     const fsRoot: string = ctx.filesDir + '/dsh-fs';

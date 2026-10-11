@@ -1,0 +1,373 @@
+{
+  "scenario": "harmony.session-persist.restart",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "persistence/service",
+      "match": {
+        "name": "session-persistence-jsonl",
+        "key": "sessionPersistence"
+      }
+    },
+    {
+      "event": "restart/seed",
+      "match": {
+        "sessionId": "s-harmony-persist-0001",
+        "restoredEvents": 0
+      }
+    },
+    {
+      "event": "agent/created",
+      "match": {
+        "id": "main",
+        "sessionId": "s-harmony-persist-0001"
+      }
+    },
+    {
+      "event": "restart/stage",
+      "match": {
+        "stage": "create",
+        "sessionId": "s-harmony-persist-0001"
+      }
+    },
+    {
+      "event": "llm/request/built",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "messages": 2,
+        "tools": 17,
+        "path": "/chat/completions",
+        "method": "POST",
+        "agentLoopMarked": true,
+        "stream": true
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "Hello"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " from"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " upst"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "ream"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "finish": "stop",
+        "usage": {
+          "inputTokens": 3,
+          "outputTokens": 19,
+          "totalTokens": 22
+        }
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "done": true
+      }
+    },
+    {
+      "event": "session.log",
+      "match": {
+        "count": 11,
+        "types": [
+          "agent/inbox/spliced",
+          "turn/start",
+          "agent/inbox/spliced",
+          "step/start",
+          "system/message",
+          "user/message",
+          "request/header",
+          "request/context",
+          "assistant/message",
+          "step/end",
+          "turn/end"
+        ]
+      }
+    },
+    {
+      "event": "assistant/text/asserted",
+      "match": {
+        "text": "Hello from upstream"
+      }
+    },
+    {
+      "event": "runtime.booted",
+      "match": {
+        "source": "vendored @deepseek-ai/dsh-client-modules composed in-runtime"
+      }
+    },
+    {
+      "event": "session.services.claimed",
+      "match": {
+        "endpoints": [
+          "session.list"
+        ],
+        "stream": "session/journal",
+        "source": "the on-device spine (ctx.sessions)"
+      }
+    },
+    {
+      "event": "restart/artifact",
+      "match": {
+        "sessionId": "s-harmony-persist-0001",
+        "phase": "turn1",
+        "events": 11
+      }
+    },
+    {
+      "event": "restart/leg.settled",
+      "match": {
+        "leg": "create",
+        "pass": true,
+        "events": 11
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "leg": "create",
+        "backend": "vendored session-persistence-jsonl"
+      }
+    },
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile"
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2"
+      }
+    },
+    {
+      "event": "persistence/service",
+      "match": {
+        "name": "session-persistence-jsonl",
+        "key": "sessionPersistence"
+      }
+    },
+    {
+      "event": "restart/seed",
+      "match": {
+        "sessionId": "s-harmony-persist-0001",
+        "restoredEvents": 12
+      }
+    },
+    {
+      "event": "agent/created",
+      "match": {
+        "id": "main",
+        "sessionId": "s-harmony-persist-0001"
+      }
+    },
+    {
+      "event": "restart/stage",
+      "match": {
+        "stage": "resume",
+        "sessionId": "s-harmony-persist-0001"
+      }
+    },
+    {
+      "event": "session.journal.real",
+      "match": {
+        "baseline": 12,
+        "lastType": "session/end-seed",
+        "live": 0
+      }
+    },
+    {
+      "event": "runtime.booted",
+      "match": {
+        "source": "vendored @deepseek-ai/dsh-client-modules composed in-runtime"
+      }
+    },
+    {
+      "event": "session.services.claimed",
+      "match": {
+        "endpoints": [
+          "session.list"
+        ],
+        "stream": "session/journal",
+        "source": "the on-device spine (ctx.sessions)"
+      }
+    },
+    {
+      "event": "session.list.real",
+      "match": {
+        "sessionId": "s-harmony-persist-0001",
+        "sessions": 1,
+        "running": false,
+        "blank": false
+      }
+    },
+    {
+      "event": "llm/request/built",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "messages": 4,
+        "tools": 17,
+        "path": "/chat/completions",
+        "method": "POST",
+        "agentLoopMarked": true,
+        "stream": true
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "Hello"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " from"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " upst"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "ream"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "finish": "stop",
+        "usage": {
+          "inputTokens": 3,
+          "outputTokens": 19,
+          "totalTokens": 22
+        }
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "done": true
+      }
+    },
+    {
+      "event": "journal/live",
+      "match": {
+        "turn": 2,
+        "events": 9,
+        "note": "appended after the restart resume (cross-process continuation)"
+      }
+    },
+    {
+      "event": "restart/turnBoundary",
+      "match": {
+        "lastTurn": 2
+      }
+    },
+    {
+      "event": "restart/artifact",
+      "match": {
+        "sessionId": "s-harmony-persist-0001",
+        "phase": "turn2",
+        "events": 21
+      }
+    },
+    {
+      "event": "restart/leg.settled",
+      "match": {
+        "leg": "resume",
+        "pass": true,
+        "restoredEvents": 12,
+        "totalEvents": 21,
+        "lastTurn": 2
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "leg": "resume",
+        "backend": "vendored session-persistence-jsonl"
+      }
+    }
+  ]
+}

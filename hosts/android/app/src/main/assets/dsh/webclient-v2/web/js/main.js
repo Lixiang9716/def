@@ -225,3 +225,51 @@ setupMarketplace({ mux, rpc, toast, onReady: refreshSessions });
 showView('home');
 mux.connect();
 refreshSessions();
+
+// ---- cold-start resume ----------------------------------------------------
+
+// The cold-start resume (T-0212): a returning user lands straight in the
+// most recently updated session the runtime lists. SCOPE NOTE: the list is
+// the live store, and boot re-seeds only the CONFIGURED session — so the
+// auto-open hits today when that session carries journal (the restart legs'
+// shape); page-created conversations are not yet re-attached after a
+// restart (the list-merge/re-attach seam is deferred, see the T-0212 note).
+// The open rides the ONE session channel (openSession) — mux follow, and
+// the journal's snapshot opening frame replays through the same timeline
+// fold the live events use, so a resumed journal renders with zero
+// resume-specific code. An empty list keeps today's create path (the
+// 新会话 button); home stays reachable (返回 button) exactly as before.
+const waitColdStartSettled = async (deadlineMs = 20000) => {
+  const start = Date.now();
+  for (;;) {
+    // Both boot decisions ride the mux-open event: the connection state and
+    // the BYOK panel's verdict (onboarding.js marks its panel `settled` on
+    // every detect exit). Poll with a deadline — bounded, never a blind wait.
+    if (connState === 'open' && $('onboarding')?.dataset.settled === 'true') return true;
+    if (Date.now() - start > deadlineMs) return false;
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+};
+
+const autoOpenLatestSession = async () => {
+  if (!(await waitColdStartSettled())) return; // mux never opened: stay home
+  if (!$('onboarding').hidden) return; // the first-run BYOK panel owns this boot
+  if (activeSessionId !== null) return; // already in a session (defensive)
+  let items = [];
+  try {
+    const value = await rpc('session/list');
+    items = Array.isArray(value?.items) ? value.items : [];
+  } catch {
+    return; // a list failure stays on home (refreshSessions already toasts)
+  }
+  // The runtime orders by header.createdAt (the closest field it has); this
+  // page's contract is "most recently UPDATED first" — the sort lives here
+  // so a future server-side updatedAt only sharpens it. Blank sessions
+  // (seq === 0, e.g. the bare boot-seeded agent session) are skipped: an
+  // auto-open must never land on an empty shell.
+  const latest = items
+    .filter((item) => item?.blank !== true && typeof item?.sessionId === 'string')
+    .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))[0];
+  if (latest !== undefined) openSession(latest.sessionId);
+};
+autoOpenLatestSession();

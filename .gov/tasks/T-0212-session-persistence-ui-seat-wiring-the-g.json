@@ -1,0 +1,22 @@
+{
+  "title": "session-persistence UI seat wiring: the gated JSONL backend (vendored in #456, CLI-proven) rides into the USER-FACING seats through the shared bootOptions under the interactive flag \u2014 restarts keep conversations; the page auto-opens the latest session on cold start; per-host restart legs prove journal survival across force-stop+relaunch on Android, Harmony, and iOS",
+  "created": "2026-10-11T10:37:08+00:00",
+  "rules": {
+    "hash": "5fed98aae9738ce8e6003d93fd785d78c60c44c5e11d3f278acdb20a08d968d0",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "6d186be6616493c3d8ae7d24174a4e1634711180ca5b3b760452d3c09d7cdb90"
+    }
+  },
+  "checklist": [
+    "[x] boot-options carries sessionPersistence under the user-facing interactive flag; evidence-drive boots stay byte-identical (the boot-carrier regression test pins it)",
+    "[x] page bootstrap auto-opens the most recently updated session on cold start; session/list returns persisted sessions after restart",
+    "[x] restart legs green per host (Android/Harmony/iOS): journal tail before stop == read-back after relaunch, second turn appends; each green host commits its evidence dir",
+    "[x] the CLI session-persistence leg stays green (default-off untouched); boot-carrier vitest green",
+    "[x] staging re-sync (v2 client mirrors + closures) lands in the same PR; scoped gov DAG green",
+    "PR opened and the gates check green"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0212"
+}

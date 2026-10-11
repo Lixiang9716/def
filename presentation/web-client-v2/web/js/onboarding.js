@@ -231,15 +231,23 @@ export function setupOnboarding({ mux, rpc, toast, onReady }) {
   wireModelKeyButton(rpc, toast, panel);
 
   const detect = async () => {
-    let status;
+    const panel = $('onboarding');
     try {
-      status = await rpc('onboarding/status');
-    } catch (error) {
-      if (error?.code === 'gateway/unimplemented') return; // no coverage plane
-      return; // a status failure never blocks the session UI
+      let status;
+      try {
+        status = await rpc('onboarding/status');
+      } catch (error) {
+        if (error?.code === 'gateway/unimplemented') return; // no coverage plane
+        return; // a status failure never blocks the session UI
+      }
+      setStatusLine(status);
+      if (shouldShowPanel(status)) { showForm(); panel.hidden = false; }
+    } finally {
+      // The boot decision is in (panel shown or not needed): the cold-start
+      // auto-open (main.js) waits on this marker so a no-credential first
+      // run never gets its session view preempted by the auto-open.
+      panel.dataset.settled = 'true';
     }
-    setStatusLine(status);
-    if (shouldShowPanel(status)) { showForm(); panel.hidden = false; }
   };
   const stop = mux.onStatus((state) => {
     if (state === 'open') detect();

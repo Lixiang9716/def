@@ -1,0 +1,23 @@
+{
+  "host": "iOS dsh-iphone simulator (A4AE41BF-026A-441E-85DF-F53522996073, iOS 26.5)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "phase": "session-persist.restart: the gated spine boots with the vendored JSONL backend, one scripted turn per process, and the runner-owned force kill between them \u2014 create leg journals durably, simctl terminate kills the process, the relaunch on the SAME container restores the stored session (session/list carries it, journal tail turn/end) and turn 2 continues the journal across the restart, one-to-one against the session-persist-restart manifest",
+  "launchConfiguration": "-dsh-mode session-restart x2; vendored official dist + web-boot plugin files staged; /tmp/dsh-ios-e2e-sim.lock + per-UDID pid lock held",
+  "tree": "origin/main 1b93131ac3ef (dirty working tree at receipt time)",
+  "scenarios": [
+    {
+      "id": "session-persist.restart",
+      "checker": "test/e2e/scenarios/session-persist-restart.json",
+      "events": 46,
+      "result": "pass"
+    }
+  ],
+  "runner": "test/e2e/run-ios-session-persist-restart.sh",
+  "screens": [
+    "screens/01-create-settled.png",
+    "screens/02-resume-settled.png"
+  ],
+  "timestamp": "2026-10-11T21:41:02+08:00",
+  "exitCode": 0
+}

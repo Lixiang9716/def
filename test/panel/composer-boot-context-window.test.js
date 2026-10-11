@@ -68,4 +68,28 @@ describe('the boot carrier forwards the route contextWindow', () => {
     expect(opts.container.scopeRoot).toBe('/w');
     expect(opts.container.env.DSH_MOCK_LLM_URL).toBe('http://127.0.1:9');
   });
+
+});
+
+// The SESSION-PERSISTENCE gate (T-0212), pinned at the same pure module: the
+// evidence/drive seats' cfg carries no sessionPersistence row, and the boot
+// options must stay exactly as before — the key ABSENT (the
+// `identity.sessionPersistence; absent = off` gate, boot.js), so every
+// ungated boot stays byte-identical. The interactive seat feeds `true`; the
+// forward is the gate's config object `{}` — DEFAULTS, deliberately: root
+// omitted → `<profileCwd>/dsh/sessions` (inside the pinned profile
+// container), compression omitted → the vendored default 'zstd'. Anything
+// richer here would invent a path the seat never granted.
+describe('the boot carrier carries the session-persistence gate', () => {
+  it('a cfg without the persistence flag leaves the key off the boot options', () => {
+    const opts = bootOptions(CFG, mockRoute, ROOT, EXTRAS);
+    expect(opts.sessionPersistence).toBeUndefined();
+    expect('sessionPersistence' in opts).toBe(false);
+  });
+
+  it('the interactive persistence flag forwards as the DEFAULTS config object', () => {
+    const opts = bootOptions({ ...CFG, sessionPersistence: true },
+      mockRoute, ROOT, EXTRAS);
+    expect(opts.sessionPersistence).toEqual({});
+  });
 });
