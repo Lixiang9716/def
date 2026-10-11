@@ -1854,7 +1854,7 @@ static void dsh_close_all(int fds[], int n) {
 static const char *dsh_bundle_root_real(dsh_runtime_t *s) {
     static char real_root[4096];
     if (real_root[0] == 0) {
-        if (realpath(s->base && s->base[0] ? s->base : ".", real_root) == NULL) {
+        if (realpath(s->base[0] ? s->base : ".", real_root) == NULL) {
             real_root[0] = 0;
         }
     }

@@ -461,7 +461,7 @@ if [ "$rc" != "0" ]; then
   exit 1
 fi
 
-# ---- 5. driver: react to dsh: markers on the live log --------------------
+# ---- 5. driver: react to rt: markers on the live log ---------------------
 log "5/6 driving scenario markers (deadline 900s)"
 wda_bootstrap || echo "run-ios: WARNING: WDA unavailable — system-UI legs degraded"
 FIFO="$ART/.driver.fifo"
@@ -486,12 +486,12 @@ while true; do
         shot 03-approval
         wda_click "Approve" || tap_label "Approve" "${PT_APPROVE[@]}" ;;
       *"ui-wait picker"*) drive_picker ;;
-      *"dsh: sequence"*)
+      *"rt: sequence boot="*)
         log "terminal marker: $line"; break ;;
     esac
   fi
   if [ "$SECONDS" -ge "$DEADLINE" ]; then
-    fail_deadline "900s deadline — 'dsh: sequence' never appeared"
+    fail_deadline "900s deadline — 'rt: sequence boot=' never appeared"
   fi
 done
 exec 3<&-; { kill "$TAIL_PID" && wait "$TAIL_PID"; } 2>/dev/null || true

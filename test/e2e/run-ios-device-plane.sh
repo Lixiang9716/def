@@ -157,7 +157,7 @@ SHARES=0
 while true; do
   if IFS= read -r -t 5 line <&3; then
     case "$line" in
-      *"dsh: ui-wait clipboard-read"*)
+      *"rt: ui-wait clipboard-read"*)
         READS=$((READS + 1))
         shot() { xcrun simctl io "$UDID" screenshot "$ART/screens/clipboard-$READS.png" >/dev/null 2>&1 || true; }
         shot
@@ -169,7 +169,7 @@ while true; do
           log "clipboard read #$READS -> Approve & Remember"
           wda_click "Approve & Remember" || wda_click "Approve" || true
         fi ;;
-      *"dsh: ui-wait share"*)
+      *"rt: ui-wait share"*)
         SHARES=$((SHARES + 1))
         xcrun simctl io "$UDID" screenshot "$ART/screens/share-$SHARES.png" >/dev/null 2>&1 || true
         sleep 1.5
@@ -185,7 +185,7 @@ while true; do
         done
         [ "$copied" = "1" ] || idb ui tap --udid "$UDID" 152 700 --duration 0.15 >/dev/null 2>&1 || true ;;
 
-      *"dsh: ui-wait picker"*)
+      *"rt: ui-wait picker"*)
         xcrun simctl io "$UDID" screenshot "$ART/screens/picker-media.png" >/dev/null 2>&1 || true
         sleep 1.5
         # single-select PHPicker: the grid loads for seconds on a cold photo
@@ -205,7 +205,7 @@ while true; do
         else
           log "media picker -> cell tapped by label"
         fi ;;
-      *"dsh: device-plane drive finished"*)
+      *"rt: device-plane drive finished"*)
         log "terminal marker: $line"; break ;;
     esac
   fi
