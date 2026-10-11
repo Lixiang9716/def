@@ -37,11 +37,26 @@ vendored `cordis@4.0.2` the callback runs **immediately as setup and its
 return value is the disposer**:
 
 ```js
+import 'upstream/shims/timers.js';
+
 export const apply = (ctx) => {
-  const heartbeat = setInterval(() => {}, 1000);
-  ctx.effect(() => () => clearInterval(heartbeat));   // setup returns the cleanup
+  ctx.effect(() => {
+    let beats = 60;
+    (async () => {
+      while (beats > 0) {
+        await new Promise((r) => setTimeout(r, 1000));   // one-shot re-arm
+        beats -= 1;
+      }
+    })();
+    return () => { beats = 0; };                          // setup returns the cleanup
+  });
 };
 ```
+
+The timers seam is the only source of the globals and `setTimeout` is
+one-shot by contract — repetition is the caller's re-arm loop. `setInterval`
+exists as a re-arm polyfill, but a throwing callback stops its loop; the
+discipline (and the `plugin_create` authoring contract) is the loop.
 
 ## How plugins mount (the mobile differences)
 
@@ -68,6 +83,62 @@ the tutorial's `cordis.yml` insert:
    `my-plugin/` is the tutorial's scratch-plugin in mobile spelling:
    `plugin.json` (`{id, name?, version?, entry?, capabilities?}`) plus
    `src/index.ts` (or `.js`, passed through verbatim).
+
+## The chat-created plugin contract (plugin_create)
+
+The chat path is the `plugin_create` tool (`system-plugins/dsh-create`); its
+tool description is the model-facing authority, and this section is the same
+contract for humans:
+
+- **Trigger**: ANY make-a-runnable-thing ask (a plugin, an app, a pomodoro, a
+  calendar, a countdown, a habit tracker, …) is answered by a `plugin_create`
+  call in the model's FIRST reply — never prose instead, never a confirmation
+  question.
+- **Two authoring faces**: `indexSource` (the author's own cordis plugin —
+  the object / function / Service-class forms above) or the generated
+  template (`kind: "timer"` — a countdown needing a positive `durationMs`;
+  `kind: "calendar"` — today's date face). Those two are the ONLY template
+  kinds: any other `kind` without `indexSource` is refused with the supported
+  list, while WITH `indexSource` `kind` is a free manifest field.
+- **Authoring contract** — each violation refuses the mount with `step` +
+  `reason`:
+  - `apply` runs once on mount; resources register through
+    `ctx.effect`/`ctx.on` and the cleanup is RETURNED (the setup runs
+    immediately; its return value is the disposer — a Promise/generator
+    return collects async disposers, null/undefined register no cleanup,
+    anything else throws `TypeError`).
+  - Timers `import 'upstream/shims/timers.js'` and keep the ONE-SHOT re-arm
+    discipline. An `indexSource` that calls `setInterval` still mounts — the
+    result carries a non-blocking warn, because the polyfill's loop dies on
+    a throwing callback.
+  - Imports resolve only through the loader's bare map (the runtime's
+    bundle-root modules `logger.js`, `gateway.js`, `plugin-mount.js`,
+    `workspace-registry.js`, `llm.js`, `upstream/shims/timers.js`; the
+    shimmed `node:` builtins; the pinned `@deepseek-ai/dsh-tools`,
+    `@deepseek-ai/cordis`, `@deepseek-ai/schemastery`, `@deepseek-ai/dsh-llm`,
+    `zod`, plus the closure's own npm pins such as `js-yaml` — the supported
+    surface). Anything the map cannot resolve — or that is absent from the
+    bundle tree — fails the link (`linked` step).
+  - LLM adapters must `class X extends LlmAdapter` and implement
+    `async *stream(options)` — a bare object fails `registerAdapter` with
+    "not a function"; every provider HTTP request carries
+    `attributionHeaders()`.
+  - Cards are the plugin's own `__dshBusPost` JSON lines. `card.id` is the
+    one REQUIRED field (a missing id is silently dropped by every host);
+    only `kind: "timer"` gets the countdown face (`durationMs` anchors the
+    local tween); `card.state` reads `{remainingMs, label}` and
+    `card.complete` reads `{message}` — iOS/Android auto-dismiss ~2.5s,
+    harmony keeps the card; unknown fields are ignored; presenting again
+    replaces, and hosts tween locally so 1Hz patches suffice.
+- **Structured refusals**: the mount chain never throws — the model receives
+  `挂载未完成(step): reason` with the underlying parse/link error verbatim,
+  plus the remediation: fix `indexSource` and re-call with the SAME name
+  (renaming never fixes source); a declined approval is a verdict, not a
+  retry; an already-mounted name is told the truth — NO session tool
+  unmounts a live fiber (`plugin_manager` `remove_bundle` edits the registry
+  row only; the remove face that unmounts first lives in the app's
+  plugin-management plane), so the model authors under a new name or has the
+  user remove the plugin and remount.
 
 ## Unload and reload
 
@@ -133,12 +204,12 @@ desktop-composition features.
 
 ## Events (develop/framework/events)
 
-The four dispatch modes are the cordis kernel's, verbatim: `ctx.emit`
-(broadcast), `ctx.bail` (first non-null answer short-circuits),
-`ctx.serial`, `ctx.waterfall` (each listener wraps `next()`). Every
-`ctx.on` is an effect — unmount detaches the listeners. `tools/result` and
-the other `namespace/action` harness events observe exactly as the tutorial
-shows.
+The five dispatch modes are the cordis kernel's, verbatim: `ctx.emit`
+(broadcast), `ctx.parallel` (fan-out), `ctx.bail` (first non-null answer
+short-circuits), `ctx.serial`, `ctx.waterfall` (each listener wraps
+`next()`). Every `ctx.on` is an effect — unmount detaches the listeners.
+`tools/result` and the other `namespace/action` harness events observe
+exactly as the tutorial shows.
 
 ## Services and the dependency cascade (develop/framework/service)
 
@@ -193,11 +264,15 @@ tarballs.
 `scenario/plugin-forms.js` (deterministic, no model): all three forms mount,
 `inject` orders the load, the service answers through the resolver, effect
 cleanups run on unload, edited source reloads, config validates (explicit →
-default → invalid-loud), the four event modes dispatch, the greet tool runs
-through the real ToolRuntime under an independent observer, the dependency
-cascade disposes and reloads, a PENDING mount refuses with its diagnosis, a
-workspace LLM adapter serves a real stream, and the boot list mounts exactly
-the enabled rows — 23 events, one-to-one. Run it with
+default → invalid-loud), all five dispatch modes dispatch (emit, bail,
+serial, waterfall, parallel), the greet tool runs through the real
+ToolRuntime under an independent observer, the dependency cascade disposes
+and reloads, a PENDING mount refuses with its diagnosis, a workspace LLM
+adapter serves a real stream, the boot list mounts exactly the enabled rows,
+and the creation-refusal probes refuse loud (bad syntax, a plugin-less
+export, an unknown template kind, a same-name remount, and the setInterval
+discipline warn riding an otherwise-clean result) — 34 events, one-to-one.
+Run it with
 `runtime/dsh/ci/run-plugin-forms-e2e.sh` (wired into
 `build/build.sh test core`); the manifest is
 `test/e2e/scenarios/plugin-forms.json`.

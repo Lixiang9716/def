@@ -27,11 +27,23 @@ export class MyService extends Service {
 通过 `ctx` 注册的一切(监听器、工具、定时器)在卸载时自动清理。手工资源(网络连接等)用 `ctx.effect`——在 vendored 的 `cordis@4.0.2` 里,回调**立即作为 setup 执行,返回值才是清理器**:
 
 ```js
+import 'upstream/shims/timers.js';
+
 export const apply = (ctx) => {
-  const heartbeat = setInterval(() => {}, 1000);
-  ctx.effect(() => () => clearInterval(heartbeat));   // setup 返回清理函数
+  ctx.effect(() => {
+    let beats = 60;
+    (async () => {
+      while (beats > 0) {
+        await new Promise((r) => setTimeout(r, 1000));   // one-shot 重臂
+        beats -= 1;
+      }
+    })();
+    return () => { beats = 0; };                          // setup 返回清理函数
+  });
 };
 ```
+
+timers shim 是这些全局量的唯一来源,且按契约 `setTimeout` 是一次性的——重复靠调用方重臂循环。`setInterval` 以重臂 polyfill 的形式存在,但回调一抛错整个循环就停;纪律做法(也是 `plugin_create` 创作契约的要求)是重臂循环。
 
 ## 插件如何挂载(移动端的差异点)
 
@@ -46,6 +58,20 @@ export const apply = (ctx) => {
    ```
 
    `my-plugin/` 就是教程 scratch-plugin 的移动端拼写:`plugin.json`(`{id, name?, version?, entry?, capabilities?}`)+ `src/index.ts`(或 `.js`,原样透传)。
+
+## 聊天创作插件契约(plugin_create)
+
+聊天路径就是 `plugin_create` 工具(`system-plugins/dsh-create`);工具描述是面向模型的权威文本,本节是同一份契约的人读版:
+
+- **触发**:任何「做一个可运行的东西」的请求(插件、应用、番茄钟、日历、倒计时、打卡……)都必须以模型**首条回复**里的 `plugin_create` 调用作答——不用文字代替,也不询问确认。
+- **两种创作面**:`indexSource`(作者自己的 cordis 插件——上面的对象/函数/Service 类三形态)或生成模板(`kind: "timer"`——倒计时,需要正的 `durationMs`;`kind: "calendar"`——今日日期面)。这两者是**仅有的**模板 kind:不带 `indexSource` 的其他任何 `kind` 会被拒绝并返回支持的列表;而**带上** `indexSource` 时,`kind` 是清单里的自由字段。
+- **创作契约**——每条违反都会以 `step` + `reason` 拒绝挂载:
+  - `apply` 在挂载时执行一次;资源一律经 `ctx.effect`/`ctx.on` 注册并**返回**清理器(setup 立即执行,返回值就是清理器——返回 Promise/generator 收集异步清理器,null/undefined 表示无清理器,其余类型抛 `TypeError`)。
+  - 定时器先 `import 'upstream/shims/timers.js'`,并遵守 ONE-SHOT 重臂纪律。调用 `setInterval` 的 `indexSource` 仍会挂载——结果里会附一条非阻断 warn,因为 polyfill 的循环一遇回调抛错即停。
+  - import 只经装载器裸名映射解析(运行时 bundle 根模块 `logger.js`、`gateway.js`、`plugin-mount.js`、`workspace-registry.js`、`llm.js`、`upstream/shims/timers.js`;被 shim 的 `node:` 内建;钉版的 `@deepseek-ai/dsh-tools`、`@deepseek-ai/cordis`、`@deepseek-ai/schemastery`、`@deepseek-ai/dsh-llm`、`zod`,以及闭包自己的 npm 钉版如 `js-yaml`——以上即受支持面)。映射解析不了(或 bundle 树上不存在)的一切都会在链接步失败(`linked`)。
+  - LLM 适配器必须 `class X extends LlmAdapter` 并实现 `async *stream(options)`——裸对象会在 `registerAdapter` 处以 "not a function" 失败;每次 provider HTTP 请求必须带 `attributionHeaders()`。
+  - 卡面是插件自己发的 `__dshBusPost` JSON 行。`card.id` 是唯一的必填字段(缺失时每家宿主都整条静默丢弃);只有 `kind: "timer"` 有倒计时面(`durationMs` 是本地补间锚点);`card.state` 只读 `{remainingMs, label}`,`card.complete` 只读 `{message}`——iOS/Android 约 2.5 秒后自动收卡,harmony 不收;多余字段一律忽略;重复 present 即替换;宿主本地补间,1Hz 补丁足够。
+- **结构化拒绝**:挂载链从不 throw——模型收到 `挂载未完成(step): reason`(底层解析/链接错误原文随附),外加修复指引:修好 `indexSource` 后**同名**重调本工具(换名字从不修复源码);用户拒绝审批是一个决定,不是重试点;同名已挂载时如实相告——**没有任何会话工具能卸载活挂载**(`plugin_manager` 的 `remove_bundle` 只改注册表行;先卸载再移除的面在应用的插件管理面里),模型要么换新名字重新创作,要么请用户在插件管理里移除后再同名重挂。
 
 ## 卸载与重载
 
@@ -93,7 +119,7 @@ export const apply = (ctx, config) => { /* config.greeting 总是有值 */ };
 
 ## 事件(develop/framework/events)
 
-四种分发模式是 cordis 内核原生的,逐字可用:`ctx.emit`(广播)、`ctx.bail`(首个非空返回短路)、`ctx.serial`、`ctx.waterfall`(每个监听器包裹 `next()`)。每个 `ctx.on` 都是 effect——卸载即摘除监听器。`tools/result` 及其他 `namespace/action` harness 事件与教程所示完全一致。
+五种分发模式是 cordis 内核原生的,逐字可用:`ctx.emit`(广播)、`ctx.parallel`(扇出)、`ctx.bail`(首个非空返回短路)、`ctx.serial`、`ctx.waterfall`(每个监听器包裹 `next()`)。每个 `ctx.on` 都是 effect——卸载即摘除监听器。`tools/result` 及其他 `namespace/action` harness 事件与教程所示完全一致。
 
 ## 服务与依赖级联(develop/framework/service)
 
@@ -126,7 +152,7 @@ Definition / Provider / Consumer 对应三个工作区树(或三个市场包),�
 
 ## E2E 实证在哪
 
-`scenario/plugin-forms.js`(确定性、无模型):三形态全部挂载、`inject` 排序加载、服务经解析器应答、effect 清理在卸载时运行、编辑后的源码重载、配置校验(显式值 → 默认值 → 非法响亮失败)、四种事件模式分发、greet 工具经真实 ToolRuntime 执行且有独立观察者、依赖级联销毁与重载、PENDING 挂载带诊断拒绝、工作区 LLM 适配器服务真实流、启动列表恰好挂载启用的行——23 个事件一一对应。用 `runtime/dsh/ci/run-plugin-forms-e2e.sh` 运行(已接入 `build/build.sh test core`);清单在 `test/e2e/scenarios/plugin-forms.json`。
+`scenario/plugin-forms.js`(确定性、无模型):三形态全部挂载、`inject` 排序加载、服务经解析器应答、effect 清理在卸载时运行、编辑后的源码重载、配置校验(显式值 → 默认值 → 非法响亮失败)、全部五种分发模式分发(emit、bail、serial、waterfall、parallel)、greet 工具经真实 ToolRuntime 执行且有独立观察者、依赖级联销毁与重载、PENDING 挂载带诊断拒绝、工作区 LLM 适配器服务真实流、启动列表恰好挂载启用的行、创作拒绝探针响亮拒绝(坏语法、无插件导出、未知模板 kind、同名重挂、以及骑在正常结果上的 setInterval 纪律 warn)——34 个事件一一对应。用 `runtime/dsh/ci/run-plugin-forms-e2e.sh` 运行(已接入 `build/build.sh test core`);清单在 `test/e2e/scenarios/plugin-forms.json`。
 
 ## 策略钩子、后台任务与工具编写参考的其余部分(reference/cookbook)
 
