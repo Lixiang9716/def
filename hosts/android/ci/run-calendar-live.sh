@@ -25,7 +25,9 @@
 # container on a shared emulator.
 #
 # Every wait is a polled condition with a deadline (rules.md rule 8); every
-# exhaustion is loud (rule 5).
+# exhaustion is loud (rule 5). A FAILING run moves its evidence dir aside
+# (OUT.failed.<ts>) instead of leaving it to be overwritten by the next
+# green run — a red checker's logs must stay examinable.
 #
 # usage: run-calendar-live.sh [--skip-build]   (env: DSH_ANDROID_SERIAL,
 #        DSH_CRED_FILE, DSH_CALENDAR_OUT)
@@ -43,6 +45,17 @@ SKIP_BUILD=0
 say() { echo "run-calendar-live: $*"; }
 die() { echo "::error::run-calendar-live: $*" >&2; exit 1; }
 adbsh() { if [ -n "$SERIAL" ]; then adb -s "$SERIAL" "$@"; else adb "$@"; fi; }
+
+# The evidence dir is per-run overwrite-style; a failing run preserves its
+# own evidence under a timestamped sibling instead of abandoning it to the
+# next run's overwrite (the unattributable checker-red of the review round
+# is exactly what this prevents).
+preserve_failed_evidence() {
+    FAILED_DIR="$OUT.failed.$(date -u +%Y%m%dT%H%M%SZ)"
+    if mv "$OUT" "$FAILED_DIR" 2>/dev/null; then
+        say "failing evidence preserved at $FAILED_DIR (the next run starts a fresh $OUT)"
+    fi
+}
 
 # validate_cred: reads JSON on stdin; prints "OK" when it names a usable
 # route ({baseUrl: https, apiKey, model}), nothing otherwise. NEVER echoes
@@ -197,6 +210,7 @@ until adbsh logcat -d -s dsh.runtime dsh.runtime.result dsh.runtime.ui > "$DUMP"
         && grep -q "dsh.runtime.result: ALL" "$DUMP"; do
     [ "$(date +%s)" -ge "$result_deadline" ] && {
         tail -40 "$DUMP"
+        preserve_failed_evidence
         die "create.calendar.live did not complete within 480s"
     }
     if [ -f "$OUT/screens/01-card.png" ]; then :; else
@@ -219,6 +233,7 @@ say "5/6 key-leak re-check + checker"
 cp "$DUMP" "$OUT/logs.txt"
 grep 'dsh.runtime.log:' "$OUT/logs.txt" > "$OUT/scenario.jsonl" || true
 if [ -n "$CRED_KEY" ] && grep -qF "$CRED_KEY" "$OUT/logs.txt" "$OUT/receipt.json" 2>/dev/null; then
+    preserve_failed_evidence
     die "THE API KEY APPEARED IN THE CAPTURED LOG"
 fi
 say "key-leak re-check clean (the captured log carries no API key)"
@@ -227,7 +242,10 @@ FAIL=0
 node test/e2e/check.mjs --manifest test/e2e/scenarios/create-calendar-live.json \
     --log "$OUT/logs.txt" --out "$OUT/verdict-create-calendar-live.json" || FAIL=1
 cat "$OUT/verdict-create-calendar-live.json"
-[ "$FAIL" = "0" ] || die "checker red — evidence stays unreceipted"
+[ "$FAIL" = "0" ] || {
+    preserve_failed_evidence
+    die "checker red — failing evidence preserved under $OUT.failed.* (unreceipted)"
+}
 
 cp "$DUMP" "$OUT/logs.txt"
 UDID="$(adbsh get-serialno | tr -d '\r')"
