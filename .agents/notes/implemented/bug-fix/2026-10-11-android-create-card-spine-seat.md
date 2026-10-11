@@ -1,4 +1,6 @@
 # The Android create-card leg rides a real spine seat (and the scripted approval actually settles)
+Status: implemented
+
 
 ## Problem
 

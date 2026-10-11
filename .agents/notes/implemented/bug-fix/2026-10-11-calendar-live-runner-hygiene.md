@@ -1,4 +1,5 @@
 # The calendar-live runner cleans its staged credential and keeps failing evidence
+Status: implemented
 
 ## Problem
 

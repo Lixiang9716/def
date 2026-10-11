@@ -1,4 +1,5 @@
 # The release seat gets its CI leg — build, sign, boot, and assert the state seam
+Status: implemented
 
 ## Problem
 

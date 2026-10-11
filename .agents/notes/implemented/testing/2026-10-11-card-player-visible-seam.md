@@ -1,4 +1,5 @@
 # The card-player leg asserts the face through the state seam — visible=true, in-window
+Status: implemented
 
 ## Problem
 

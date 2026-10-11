@@ -1,4 +1,5 @@
 # The Harmony notification leg's banner: forensics and the skip-loud shade
+Status: implemented
 
 ## Problem
 

@@ -1,4 +1,5 @@
 # The Android calendar-live drive — a real model turn, the live mount, and the card
+Status: implemented
 
 ## Problem
 

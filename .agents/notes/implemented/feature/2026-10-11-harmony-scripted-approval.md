@@ -1,4 +1,5 @@
 # The scripted-approval seam — the approval dialog answers itself, human-shaped
+Status: implemented
 
 ## Problem
 
