@@ -1,25 +1,20 @@
 /**
  * parser.js — the command-line parser route (DECISION §1) and the plugin's
- * transitional CJS vendor seam (DECISION §5 rule 4).
+ * CJS vendor seam for shelljs (DECISION §5 rule 4).
  *
  * ## The parser
  *
- * `bash-parser@0.5.0`, vendored pristine in the repo's pinned vendor
- * closure (`runtime/dsh/vendor/npm/…`, materialized by ensure-dsh.sh) and
- * loaded through the seam below, with `{ mode: 'bash' }` (this is a
- * bash-subset shell; the spike found the mode identical to posix on the
- * whole dialect checklist).
- * The accepted costs are on record in DECISION §1: the parser is
- * unmaintained since 2017 (exact-pin forever), the 230KB babylon rides the
- * closure unconditionally even though `$((…))` is refused by the executor,
- * and grammar errors arrive as plain `Error` while only unclosed quotes are
- * `SyntaxError` — so `ShellParseError.syntax` classifies by that contract,
- * and the message text is the only fragile part (a re-pin can change it).
- *
- * Dialect corners beyond the audited checklist are NOT trusted: the executor
- * (index.js) evaluates an explicit node-type whitelist and refuses anything
- * else by name, so an unaudited grammar construct fails loud, never silently
- * wrong (DECISION §1.6).
+ * Since 2026-10-11 the command-line parser is HAND-WRITTEN — a recursive-
+ * descent bash-subset parser in parser-syntax.js (split out for the
+ * code-size gate's file budgets, the same move exec.js made out of
+ * index.js). It replaces the vendored `bash-parser@0.5.0` (unmaintained
+ * since 2017, exact-pin forever; its 230KB babylon dependency rode the
+ * closure unconditionally for a `$((…))` form the executor refuses anyway
+ * — the accepted costs on record in DECISION §1 no longer buy anything).
+ * This module only re-exports the two parse faces (`parseCommandLine`,
+ * `ShellParseError`), so the executor's import (exec.js) is unchanged; the
+ * dialect, the by-name refusals and the AST contract are documented at the
+ * top of parser-syntax.js.
  *
  * ## The vendor seam
  *
@@ -39,8 +34,8 @@
  * runtime's own CJS loader uses), under Node through `node:fs` relative to
  * this module. Both legs are synchronous (a host binding and readFileSync)
  * because `require()` inside vendored code is sync; the async bootstrap
- * (`ensureVendorReader`) is what installs the Node leg, so the first parse
- * or shelljs load must follow an `await` of it — enforced loud below. User
+ * (`ensureVendorReader`) is what installs the Node leg, so the first
+ * shelljs load must follow an `await` of it — enforced loud below. User
  * files flow exclusively through the gateway primitives (applets.js's
  * adapter); the two paths never mix.
  */
@@ -49,16 +44,16 @@ import { createLogger } from 'logger.js';
 
 const log = createLogger('dsh.shell.js.parser');
 
+export { parseCommandLine, ShellParseError } from './parser-syntax.js';
+
 // ---------------------------------------------------------------------------
-// The process presence guard (DECISION §1.3) — MUST run before the first
-// parse and before shelljs loads. bash-parser reads `process.env.NODE_NEV`
-// on every parse and QuickJS has no `process` binding at all (verified by
-// the spike: parse fails immediately without one); shelljs additionally
-// reads `process.versions.electron` and `process.execPath` at link time and
-// deletes `process.env.OLDPWD`. Presence is all that matters — the NODE_NEV
-// typo means even Node never takes the branch the read guards — so an
-// idempotent, never-overwriting install is the whole mitigation.
-// Environmental, deliberately NOT a source patch (D6).
+// The process presence guard (DECISION §1.3) — MUST run before shelljs
+// loads. shelljs reads `process.versions.electron` and `process.execPath`
+// at link time (src/common.js:19,37) and `process.env.OLDPWD` in its cd
+// body, and QuickJS has no `process` binding at all. Presence is all that
+// matters (common.js only probes truthiness), so an idempotent,
+// never-overwriting install is the whole mitigation. Environmental,
+// deliberately NOT a source patch (D6).
 //
 // It lives in readTextSync (the vendor-read chokepoint), NOT at module load:
 // since dsh-shell-js took the shell seat (2026-10-11) this module evaluates
@@ -71,21 +66,8 @@ const log = createLogger('dsh.shell.js.parser');
 // must also be FIELD-level, filling absent fields only.
 // ---------------------------------------------------------------------------
 
-/** bash-parser rethrows unclosed quotes as `SyntaxError`; every other
- * grammar failure arrives as a plain `Error` (its src/index.js catch-all).
- * The executor keeps "did not parse" strictly separate from "parsed but
- * unimplemented node type". */
-export class ShellParseError extends Error {
-  constructor(message, syntax) {
-    log.debug('shell parse error', { syntax: syntax === true });
-    super(message);
-    this.name = 'ShellParseError';
-    this.syntax = syntax === true;
-  }
-}
-
 // ---------------------------------------------------------------------------
-// The transitional vendor seam
+// The vendor seam (shelljs + minimatch only now)
 // ---------------------------------------------------------------------------
 
 /** This module's directory: specifier-space on device ('system-plugins/
@@ -96,8 +78,7 @@ export class ShellParseError extends Error {
 const MODULE_DIR = (import.meta.dirname
   ?? new URL('.', import.meta.url).pathname.replace(/\/+$/, ''));
 
-/** Lexically fold '.'/'..' segments without I/O; null escapes the root.
- * (Defined early: the vendor root below folds through it.) */
+/** Lexically fold '.'/'..' segments without I/O; null escapes the root. */
 const lexicalResolve = (fromDir, request) => {
   log.debug('lexical resolve', { fromDir, request });
   const segs = fromDir === '' ? [] : fromDir.split('/');
@@ -124,53 +105,23 @@ const VENDOR_ROOT = lexicalResolve(MODULE_DIR, '../../vendor');
 const VENDOR_PREFIX = `${VENDOR_ROOT}/`;
 
 /**
- * The vendor map (the formal add-package.sh round): every bare name the
- * vendored closure resolves — bash-parser 0.5.0's full 28-package
- * transitive closure (the spike's lockfile-pinned node_modules overlay,
- * flattened) plus shelljs and its minimatch glob chain — each a pinned
- * `vendor/npm/<name>@<ver>` tree (tarball sha256 pins live in
- * NPM_PACKAGES, runtime/dsh/vendor/ensure-dsh.sh: the tracked provenance
- * record this map superseded VENDOR.md for). The trees are FLAT (no nested
- * node_modules), so a bare name outside this map is a loud resolution
- * error, never a walk-up hit. `fast-glob`, `child_process` and `execa` are
+ * The vendor map: shelljs 0.10.0 (the applet bodies, pristine behind
+ * outboard seams) and its minimatch 10.0.3 glob chain (the matcher for the
+ * executor's glob route, §3). Each a pinned `vendor/npm/<name>@<ver>` tree
+ * (tarball sha256 pins live in NPM_PACKAGES, runtime/dsh/vendor/
+ * ensure-dsh.sh). The trees are FLAT (no nested node_modules), so a bare
+ * name outside this map is a loud resolution error, never a walk-up hit.
+ * The 29-tree bash-parser parser closure left with the 2026-10-11
+ * hand-written-parser swap. `fast-glob`, `child_process` and `execa` are
  * deliberately absent — they are provided by applets.js (the minimatch
  * -based glob provider and the no-subprocess refusals); `fs`, `path`, `os`
  * and `util` likewise ride providers.
  */
 const VENDOR_TREES = {
-  'bash-parser': 'npm/bash-parser@0.5.0',
   shelljs: 'npm/shelljs@0.10.0',
   minimatch: 'npm/minimatch@10.0.3',
   '@isaacs/brace-expansion': 'npm/@isaacs/brace-expansion@5.0.1',
   '@isaacs/balanced-match': 'npm/@isaacs/balanced-match@4.0.1',
-  'array-last': 'npm/array-last@1.3.0',
-  babylon: 'npm/babylon@6.18.0',
-  'compose-function': 'npm/compose-function@3.0.3',
-  curry: 'npm/curry@1.2.0',
-  'deep-freeze': 'npm/deep-freeze@0.0.1',
-  'filter-iterator': 'npm/filter-iterator@0.0.1',
-  'filter-obj': 'npm/filter-obj@1.1.0',
-  'has-own-property': 'npm/has-own-property@0.1.0',
-  'identity-function': 'npm/identity-function@1.0.0',
-  'iterable-lookahead': 'npm/iterable-lookahead@1.0.0',
-  'iterable-transform-replace': 'npm/iterable-transform-replace@1.2.0',
-  'magic-string': 'npm/magic-string@0.16.0',
-  'map-iterable': 'npm/map-iterable@1.0.1',
-  'map-obj': 'npm/map-obj@2.0.0',
-  'object-pairs': 'npm/object-pairs@0.1.0',
-  'object-values': 'npm/object-values@1.0.0',
-  'reverse-arguments': 'npm/reverse-arguments@1.0.0',
-  'shell-quote-word': 'npm/shell-quote-word@1.0.1',
-  'to-pascal-case': 'npm/to-pascal-case@1.0.0',
-  'transform-spread-iterable': 'npm/transform-spread-iterable@1.4.1',
-  'unescape-js': 'npm/unescape-js@1.1.4',
-  'arity-n': 'npm/arity-n@1.0.4',
-  'is-number': 'npm/is-number@4.0.0',
-  vlq: 'npm/vlq@0.2.3',
-  'is-iterable': 'npm/is-iterable@1.1.2',
-  'to-space-case': 'npm/to-space-case@1.0.0',
-  'to-no-case': 'npm/to-no-case@1.0.2',
-  'string.fromcodepoint': 'npm/string.fromcodepoint@0.2.1',
 };
 
 /** Builtin/module providers (applets.js registers `fs`, `path`, `os`,
@@ -193,8 +144,8 @@ let nodeReadText = null;
 
 const readTextSync = (spec) => {
   log.debug('read text', { spec });
-  // The process presence guard (DECISION §1.3 — block comment above): field-
-  // level so a fuller host-installed process keeps every face it has.
+  // The process presence guard (block comment above): field-level so a
+  // fuller host-installed process keeps every face it has.
   const proc = (globalThis.process ??= {});
   proc.env ??= {};
   proc.versions ??= {};
@@ -253,17 +204,6 @@ const dirOf = (p) => {
   const cut = p.lastIndexOf('/');
   return cut > 0 ? p.slice(0, cut) : '';
 };
-
-/** Node's candidate spellings for one extensionless path. */
-const candidatePaths = (candidate) => [
-  candidate,
-  `${candidate}.js`,
-  `${candidate}.cjs`,
-  `${candidate}.json`,
-  `${candidate}/index.js`,
-  `${candidate}/index.cjs`,
-  `${candidate}/index.json`,
-];
 
 /** Does the spec name a directory? A vendored package dir always carries
  * package.json or index.js — probing both is exact for these trees and
@@ -355,36 +295,4 @@ export const vendorRequire = (name) => {
       + `(vendored: ${Object.keys(VENDOR_TREES).join(', ')})`);
   }
   return makeRequire('')(name);
-};
-
-// ---------------------------------------------------------------------------
-// The parse face
-// ---------------------------------------------------------------------------
-
-/** bash-parser 0.5.0 cannot parse a comment-ONLY line (it throws
- * 'Unexpected EOF' — verified during the decision round), so full-line
- * comments are stripped before parsing, the same way bash treats them: a
- * no-op. Trailing comments are already dropped by the grammar. Returns null
- * when nothing remains. */
-const stripCommentLines = (source) => String(source).split('\n')
-  .filter((line) => !/^\s*#/.test(line)).join('\n');
-
-/** Parse one command line into the bash-parser AST (`{ mode: 'bash' }`).
- * Throws ShellParseError on syntax/grammar failure; returns null for an
- * empty or comment-only line (the no-op shell convention). */
-export const parseCommandLine = (source) => {
-  const text = stripCommentLines(source);
-  if (text.trim().length === 0) return null;
-  log.debug('parse', { chars: text.length });
-  let parser;
-  try {
-    parser = vendorRequire('bash-parser');
-  } catch (error) {
-    throw new ShellParseError(`the vendored parser failed to load: ${error?.message ?? error}`, false);
-  }
-  try {
-    return parser(text, { mode: 'bash' });
-  } catch (error) {
-    throw new ShellParseError(error?.message ?? String(error), error instanceof SyntaxError);
-  }
 };

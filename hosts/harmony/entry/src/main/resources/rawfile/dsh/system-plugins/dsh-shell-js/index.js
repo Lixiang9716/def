@@ -10,7 +10,9 @@
  * and an exit status out.
  *
  * Composition (decision of record: tmp/shell-js-spikes/DECISION.md):
- *   - parser: vendored bash-parser@0.5.0, `{mode:'bash'}` (parser.js)
+ *   - parser: hand-written recursive-descent bash-subset parser
+ *     (parser-syntax.js — replaced the vendored bash-parser@0.5.0 on
+ *     2026-10-11; parser.js re-exports its two faces)
  *   - executor: the §4.3 whitelist evaluator (exec.js)
  *   - applet bodies: vendored shelljs@0.10.0 pristine behind outboard
  *     seams, four hand-written applets, two backed by repo modules
