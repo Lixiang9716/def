@@ -45,11 +45,20 @@ if (!globalThis.__dshGatewayNegotiate('gateway@1')) {
     kind: 'timer',
     durationMs: DURATION_MS,
   });
+  // The success predicate rides the plugin's OWN success vocabulary, both
+  // spellings of it: the live-mount rewrite (dsh-create 0.1.6-alpha.2)
+  // answers 已作为真实 cordis 插件在线插入 where the pre-cordis installer
+  // answered 已安装并激活 — a stale predicate here failed the leg AFTER the
+  // mount had in fact succeeded (measured on-device, 2026-10-11: package
+  // written, approval answered, registry row installed, the plugin live in
+  // ctx.plugin — then the scenario failed on its own string).
+  const installed = typeof result === 'string'
+    && (result.includes('已安装并激活') || result.includes('在线插入'));
   emit('tool.returned', {
-    ok: typeof result === 'string' && result.includes('已安装并激活'),
+    ok: installed,
     text: typeof result === 'string' ? result.slice(0, 80) : String(result),
   });
-  if (!(typeof result === 'string' && result.includes('已安装并激活'))) {
+  if (!installed) {
     fail(`plugin_create did not install: ${JSON.stringify(result)}`);
   } else {
     // The card face runs fire-and-forget; let the ticks land (present +

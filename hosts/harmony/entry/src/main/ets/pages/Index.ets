@@ -79,6 +79,15 @@ const LEG_UPSTREAM_SUITE: string = 'upstream.suite';
  * creation client on the STAGED real backend — one Pomodoro-clock creation
  * turn, streamed into the page. A demo: no one-to-one manifest. */
 const LEG_REAL_CREATE: string = 'real.create';
+/** The create.card leg (`--ps dsh.e2e.leg create.card`, the create-approve-
+ * hotmount loop's PR-2/PR-3): the SPINE seat (OfficialServe.beginInteractive)
+ * composes, then the canonical create-card scenario evals on the live spine —
+ * plugin_create writes the package, the approval dialog answers (the
+ * scripted seam when the want is staged, a human otherwise), the registry
+ * row installs, and the card.* lines project into the PiP face. */
+const LEG_CREATE_CARD: string = 'create.card';
+/** The create-card scenario (bundle-root relative) — the canonical bytes. */
+const ENTRY_CREATE_CARD: string = 'scenario/create-card.js';
 
 // bundle-root-relative files shipped under resources/rawfile/dsh/ —
 // logger.js must sit at <bundle>/logger.js, gateway.js at <bundle>/gateway.js,
@@ -1357,6 +1366,9 @@ struct Index {
   /** The release boot's serving seat (null in the harness: OfficialPhase
    * owns the seat there). */
   private releaseServe: OfficialServe | null = null;
+  /** The create-card leg's spine seat (null until that leg runs; the
+   * harness counterpart of releaseServe). */
+  private legServe: OfficialServe | null = null;
 
   aboutToAppear(): void {
     // The render surface overlay + the official seat's approval dialog are
@@ -1459,6 +1471,9 @@ struct Index {
     } else if (leg === LEG_REAL_CREATE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runRealCreateLeg();
+    } else if (leg === LEG_CREATE_CARD) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runCreateCardLeg();
     } else if (leg === LEG_UPSTREAM_SUITE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch, spec %{public}s', leg, E2eLeg.getSpec());
       this.runSuiteLeg(E2eLeg.getSpec());
@@ -1474,6 +1489,10 @@ struct Index {
         this.releaseServe.destroy();
       }
       return;
+    }
+    if (this.legServe !== null) {
+      this.legServe.destroy();
+      this.legServe = null;
     }
     HostPhase.getInstance().destroy();
     OfficialPhase.getInstance().destroy();
@@ -2108,6 +2127,67 @@ struct Index {
       .catch((err: BusinessError): void => {
         this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
         hilog.error(0x0000, TAG, 'ble leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
+  /** The create.card leg (`create.card`, ONE launch; ci/run-create-card.sh):
+   * the SPINE seat — OfficialServe.beginInteractive boots the full vendored
+   * spine (the commands registry + skill plane, the write surface, and the
+   * runtime.config's workspace/model route; the staged credential when
+   * present, else the carrier's scripted endpoint), and once the seat's own
+   * web.boot has LANDED (onWebBoot — a condition, never a clock: the bus
+   * message the composer's runtime half posts only after bootUpstream's
+   * cordis composition — dsh-create's apply, the spine capture — has
+   * resolved) the canonical create-card scenario evals on the SAME live
+   * runtime: plugin_create writes the workspace package, presentApproval
+   * presents the native dialog (the scripted seam answers it when
+   * `--ps dsh.script.approval` is staged — this page's showApproval, shared
+   * by both seats), the registry row installs, and the card.* lines cross
+   * onBusLine into CardFace → the PiP face (the official page renders
+   * beneath it). The verdict is the scenario's own records in the capture
+   * (create.card.*) — a demo-shaped leg: no one-to-one manifest. */
+  private runCreateCardLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const serve = new OfficialServe();
+    this.legServe = serve;
+    // The card face's record hook: the seat's onBusLine routes card.*
+    // through CardFace, then this pushes the projection into the PiP
+    // @State bindings (the #455 face, above the mounted official page).
+    serve.onCardRecord = (): void => this.refreshCardFace();
+    serve.onOrigin = (url: string): void => {
+      // The official origin becomes the Web's initial src (the seat's own
+      // face — the PiP card rides above it).
+      this.webUrl = url;
+    };
+    // The approval presenter is the page's dialog (aboutToAppear registered
+    // it into OfficialServe's static store — both seats share this page's
+    // showApproval, so the scripted-approval seam covers this leg too).
+    this.materializeBundle(ctx)
+      .then((root: string): void => {
+        this.verdict = 'create-card leg: booting the interactive spine...';
+        // The eval rides the seat's own web.boot landing. One-shot: the
+        // boot wire lands once per leg.
+        let booted = false;
+        serve.onWebBoot = (rows: number, entries: string[]): void => {
+          if (booted) {
+            return;
+          }
+          booted = true;
+          this.verdict = 'create-card leg: spine composed — running the create scenario...';
+          hilog.info(0x0000, TAG,
+            'create-card: web.boot landed (rows %{public}d), eval %{public}s',
+            rows, ENTRY_CREATE_CARD);
+          serve.evalEntry(ENTRY_CREATE_CARD);
+        };
+        serve.beginInteractive(ctx, root,
+          ctx.cacheDir + '/dsh-create-card-capture.log', fsRoot,
+          OfficialServe.loadCredential(ctx));
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'create-card leg failed: %{public}s',
           err.message ?? 'unknown');
       });
   }
