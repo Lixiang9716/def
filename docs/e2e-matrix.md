@@ -678,6 +678,31 @@ cites, and the register's rows in order):
   (index volatility beyond rewrites, archive-a-green-dir-before-rerun,
   driver deadline wedge).
 
+### Product follow-ups owned in writing (2026-10-12 — not register rows)
+
+The 2026-10-12 plugin-dev disposition closeout left two product-scope
+follow-ups open. The checker reports no finding for either, so neither can
+be a row of the register above (a row without a finding is a register
+defect); they are owned here instead, with dates and reasons:
+
+- **Compaction cross-host UI integration** (2026-10-12): the vendored
+  `BasicCompactionEngine` mounts behind the runtime's `compaction` gate
+  (#456, `upstream/boot-compaction.js`; CLI evidence
+  `runtime/dsh/artifacts/macos-cli-upstream-compaction/`), but no host UI
+  drives the engine — with the gate off, `/compact` (command-compact) stays
+  the only consumer. Closes with: a per-host seat that surfaces the
+  engine's pressure/preview on device, evidence legs included.
+- **Page-session list-merge/re-attach** (2026-10-12): #463's restart legs
+  recover the CONFIGURED session; page-created conversations are not
+  re-attached after a restart. `makeListSessions` deliberately does not
+  merge `ctx.get('sessionPersistence').list()` snapshots — without a
+  re-attach path those rows are not page-addressable (`session/follow`
+  would fail), trading a silent gap for a broken tap; the deferral is
+  recorded in
+  `.agents/notes/implemented/feature/2026-10-11-session-persistence-seat-wiring.md`.
+  Closes with: the merge + a page-addressable re-attach path, proven by a
+  restart leg that creates a page session, force-kills, and re-opens it.
+
 ## Informational, not failures
 
 - **Manifest-revision drift** (25 verdicts): `m1.spike.boot` was captured
