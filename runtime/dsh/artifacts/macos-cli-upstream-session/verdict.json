@@ -1,71 +1,8 @@
 {
   "scenario": "upstream.session",
-  "pass": false,
+  "pass": true,
   "expected": 31,
   "logged": 31,
-  "failures": [
-    {
-      "index": 5,
-      "expected": {
-        "event": "llm/request/built",
-        "match": {
-          "provider": "mock",
-          "model": "mock-1",
-          "messages": 2,
-          "tools": 15,
-          "path": "/chat/completions",
-          "method": "POST",
-          "agentLoopMarked": true,
-          "stream": true
-        }
-      },
-      "logged": {
-        "line": 48,
-        "payload": {
-          "scenario": "upstream.session",
-          "event": "llm/request/built",
-          "provider": "mock",
-          "model": "mock-1",
-          "messages": 2,
-          "tools": 17,
-          "path": "/chat/completions",
-          "method": "POST",
-          "agentLoopMarked": true,
-          "stream": true
-        }
-      }
-    },
-    {
-      "index": 28,
-      "expected": {
-        "event": "llm/request/built",
-        "match": {
-          "provider": "mock",
-          "model": "mock-1",
-          "messages": 1,
-          "tools": 1,
-          "path": "/chat/completions",
-          "method": "POST",
-          "agentLoopMarked": false,
-          "stream": true
-        }
-      },
-      "logged": {
-        "line": 114,
-        "payload": {
-          "scenario": "upstream.session",
-          "event": "llm/request/built",
-          "provider": "mock",
-          "model": "mock-1",
-          "messages": 1,
-          "tools": 0,
-          "path": "/chat/completions",
-          "method": "POST",
-          "agentLoopMarked": false,
-          "stream": true
-        }
-      }
-    }
-  ],
+  "failures": [],
   "parseErrors": []
 }
