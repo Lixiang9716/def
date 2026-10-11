@@ -170,7 +170,7 @@ quickstart 的 Web-UI 流程(模型设置 → 工作区选择 → 带审批的�
 
 `scenario/seam-inventory.js` 以生产等价脊柱(全部产品旗 + 组合面)启动,经与 `inject` 同一个解析器逐一探针上游目录的服务名。由 `test/e2e/scenarios/seam-inventory.json` 冻结;运行 `runtime/dsh/ci/run-seam-inventory-e2e.sh`。运行时的回答:
 
-**已挂载(22)**:sessions、agents、systemPrompt、tools、sessionProjections、settings、agentLoop、llm、tokenMeter、jobs、userQuestions、subagentModelSelection、shell(wasm 执行器)、shellEnv、goals、commands、agentPresets、skills、fileReferences、web(免密钥面)、sessionQuery、sessionFeedback。
+**已挂载(22)**:sessions、agents、systemPrompt、tools、sessionProjections、settings、agentLoop、llm、tokenMeter、jobs、userQuestions、subagentModelSelection、shell(dsh-shell-js 的 JS shell)、shellEnv、goals、commands、agentPresets、skills、fileReferences、web(免密钥面)、sessionQuery、sessionFeedback。
 
 **缺席,属设计**——每一项都有移动等价物或记录在案的墙:
 
@@ -179,9 +179,9 @@ quickstart 的 Web-UI 流程(模型设置 → 工作区选择 → 带审批的�
 | credentials | 宿主侧存储:网关钥匙串 + profile 凭据文件(`loadCredential`) |
 | approval | 网关 `presentApproval` 原语(契约优先;原生弹窗) |
 | fs(网关,非 seam) | 宿主网关的 fs 原语就是 fs |
-| subprocess、sandbox、terminals | 移动墙:无进程——wasm shell(+可选 iSH)路线 |
-| compaction | 闭包里唯一消费者是 `/compact`(command-compact),上游 README 记录为不携带的桌面行;长会话自动压实列为产品后续 |
-| sessionPersistence | 抽象 seam 已 vendor 但 jsonl 后端未钉版;resume 响亮报错("cannot resume: session persistence is not configured")——会话随启动而生;持久性列为产品后续 |
+| subprocess、sandbox、terminals | 移动墙:无进程——shell 座位是走网关作用域 fs 面的 `dsh-shell-js` JS shell(wasm shell + 可选 iSH 两个座位已于 2026-10-11 退役,#457——再无任何宿主 stage 或挂载它们) |
+| compaction | vendored 的 `BasicCompactionEngine` 挂在运行时的 `compaction` 门后(`upstream/boot-compaction.js`,#456;CLI 证据 `runtime/dsh/artifacts/macos-cli-upstream-compaction/`);门关时 `/compact`(command-compact)仍是唯一消费者——跨宿主 UI 集成是剩余后续(已登记于 e2e-matrix known gaps,2026-10-12) |
+| sessionPersistence | jsonl 后端已 vendor 且经 ensure-dsh.sh sha256 钉版(`session-persistence@0.1.6-alpha.2`);#463 把 `sessionPersistence: true` 接进三宿主 serve 座——强杀重启恢复三宿主各有实证(`hosts/{android,harmony,ios}/artifacts/session-persist-restart/` + CLI 腿 `runtime/dsh/artifacts/macos-cli-session-persistence/`);页面会话 list-merge/re-attach 缝是剩余后续(已登记于 e2e-matrix known gaps,2026-10-12) |
 | sessionTitle、attachments、schedule、planMode、messageFeedback、mcpResources、spillStore、workflowEngine、lsp | 尚未携带的桌面产品特性(每个都是候选后续,无一静默损坏) |
 | invariant、configEditor、setting、workspaceRegistry | 桌面诊断/组合面;移动等价物是 settings 服务、网关工作区选择器、宿主工作区模型 |
 | api-gateway(typert/Remote) | carrier API 桥:`/api/<endpoint>` + bus 认领端点表(session/*、goals/*、commands/*、marketplace/* 等)——同一命名空间面走 carrier 契约,无 typert wire |

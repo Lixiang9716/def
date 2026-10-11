@@ -582,6 +582,27 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
   台账（超越重写的索引易变性、绿色目录先归档再重跑、驱动截止看门狗
   失灵）。
 
+### 以书面形式认领的产品后续（2026-10-12 —— 非登记行）
+
+2026-10-12 的 plugin-dev 处置收口留下两个产品范围的后续。检查器对两者都
+不报 finding，所以它们都不能成为上文的登记行（没有 finding 的行本身就是
+登记缺陷）；改在此处认领，带日期与理由：
+
+- **压实的跨宿主 UI 集成**（2026-10-12）：vendored 的
+  `BasicCompactionEngine` 挂在运行时的 `compaction` 门后（#456，
+  `upstream/boot-compaction.js`；CLI 证据
+  `runtime/dsh/artifacts/macos-cli-upstream-compaction/`），但尚无宿主 UI
+  驱动引擎——门关时，`/compact`（command-compact）仍是唯一消费者。闭合
+  条件：每宿主一个在设备上呈现引擎压力/预览的座位，证据腿随行。
+- **页面会话 list-merge/re-attach**（2026-10-12）：#463 的重启腿恢复的是
+  CONFIGURED 会话；页面创建的会话在重启后不会被重新挂接。`makeListSessions`
+  刻意不合并 `ctx.get('sessionPersistence').list()` 快照——没有 re-attach
+  路径时这些行不可被页面寻址（`session/follow` 会失败），等于用坏点击换
+  静默缺口；推迟理由记录在
+  `.agents/notes/implemented/feature/2026-10-11-session-persistence-seat-wiring.md`。
+  闭合条件：合并 + 页面可寻址的 re-attach 路径，由一条「页面建会话 →
+  强杀 → 重新打开」的重启腿实证。
+
 ### 信息性说明，不算失败
 
 - **Manifest 版本漂移**（25 条 verdict）：`m1.spike.boot` 在
