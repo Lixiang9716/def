@@ -286,6 +286,22 @@ const mountRecoveryRings = async (ctx) => {
   await ctx.plugin(TurnRecovery, {});
 };
 
+
+/** Ported tool packages (D9): after `tools`; `allowParallelInProgress: false`
+ * is the mobile one-agent shape. The OFFICE and WEB rows are dynamic — bare
+ * `fflate`/turndown need the bridges body registered first. */
+const mountToolRows = async (ctx, cwd) => {
+    await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
+    await ctx.plugin(ShellWasm);
+    await ctx.plugin(ShellIsh);
+    await ctx.plugin(OpenDesign);
+    await ctx.plugin(PluginManagerTools);
+    await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
+    await ctx.plugin(await import('system-plugins/dsh-office/index.js'));
+    await mountWebPlane(ctx);
+  await mountFileTools(ctx, cwd);
+};
+
 const mountSpine = async (ctx, identity) => {
   await ctx.plugin(SessionStore);
   await ctx.plugin(AgentRegistry);
@@ -294,19 +310,8 @@ const mountSpine = async (ctx, identity) => {
   await ctx.plugin(ToolDeadline, {}); // Ring 1 (inject waits for `tools`).
   await ctx.plugin(SessionProjectionRegistry);
   await ctx.plugin(SettingsMemory);
-  // The SUBAGENT row (T-0050 item 2; boot-subagent-rows.js).
   await mountSubagentRows(ctx);
-  // Ported tool packages (D9): after `tools`; `allowParallelInProgress: false` is the mobile one-agent shape.
-    await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
-    await ctx.plugin(ShellWasm);
-    await ctx.plugin(ShellIsh);
-    await ctx.plugin(OpenDesign);
-    await ctx.plugin(PluginManagerTools);
-    await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
-    await ctx.plugin(await import('system-plugins/dsh-office/index.js')); // the OFFICE row — dynamic: bare `fflate` needs the bridges body first
-    // The WEB row (#335 B5): dynamic — the bridges register turndown/domino first.
-    await mountWebPlane(ctx);
-  await mountFileTools(ctx, identity.cwd);
+  await mountToolRows(ctx, identity.cwd);
   // The SKILL row (agent-flow E2E): after the file tools (its
   // discovery prefers the `fs` service) and before the agent loop (the
   // tool-skill catalog registers its `agent/pre-step` listeners on the
