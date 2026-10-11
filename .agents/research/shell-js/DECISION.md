@@ -4,11 +4,14 @@
 - **Worktree**: `/Users/lixiang/workspace/dsh-mobile-shell-js`, branch `feat/dsh-shell-js` (verified clean
   before writing; `tmp/` is gitignored; nothing committed or pushed)
 - **Inputs**: Spike A (`A-bash-parser.md`), Spike B (`B-shelljs.md`), Spike C (`C-minimatch.md`) in this
-  directory, plus repo facts re-verified during this decision (§0).
+  directory, plus repo facts re-verified during this decision (§0). The same-day parser supersession
+  (§8) adds the diligence survey (`D-parser-survey.md`).
 
 **Decisions in one line each:**
 
 1. **Parser**: vendor `bash-parser@0.5.0` (Spike A verdict *degrade* — accepted with the costs in §1).
+   **SUPERSEDED same day, owner-directed (§8)**: the adoption is revoked; the parser is the hand-written
+   bash-subset parser (`parser-syntax.js`).
 2. **Applet bodies**: shelljs 0.10.0 as the source for the fs-family bodies — **vendored byte-pristine**, all
    adaptation in outboard module seams; re-filtered against the **gateway** fs face (narrower than the shim
    face Spike B analyzed — see §2.2, the load-bearing correction); plus four hand-written applets and two
@@ -54,6 +57,11 @@
    is invisible to ensure and silently diverges*.
 
 ## 1. Parser route — vendor `bash-parser@0.5.0` (degrade accepted)
+
+> **SUPERSEDED 2026-10-11, owner-directed — see §8.** bash-parser left the closure the same day;
+> the text below is the record of the decision it replaced, kept so §8's "what it beat" is
+> readable. The costs accepted here (weight, the process shim, message-text error
+> classification, the node-type whitelist) are retired by §8.
 
 Spike A's verdict is **degrade**: functionally 14/14 on the dialect checklist (identical under `{mode:'bash'}`),
 syntax ≤ ES2020 across the whole 91-file closure (inside quickjs-ng's ES2023), no Buffer/timers/streams/events
@@ -311,3 +319,63 @@ documented ones.
 9. shelljs is BSD-3-Clause (not MIT) with embedded MIT passages — pin/license records must say so exactly.
 10. Transitional `vendor/` staging is outside the closures gate — divergence risk until the formal round
     lands; keep the window short.
+
+## 8. Supersession (2026-10-11, owner-directed) — the bash-parser adoption is revoked; the hand-written subset parser takes the seat
+
+Same day as §1, the owner directed the swap that retires it: **bash-parser@0.5.0 is out of the
+closure**, and the parser is the hand-written recursive-descent bash-subset parser,
+`runtime/dsh/system-plugins/dsh-shell-js/parser-syntax.js` (423 lines), re-exported through
+`parser.js`'s vendor seam so `exec.js`'s import is unchanged. The directive's grounds are §1's
+own accepted costs turned verdict: the dependency is unmaintained (~9 years) and its closure
+costs ~0.7 MB per host embed — mostly bytes for constructs the executor refuses. The swap
+preserved the executor-observable contract: the supported-dialect AST is byte-identical to
+bash-parser's (74-case differential at swap time), the fold table is bash-parser's exact one,
+`exec.js` is untouched, the panel suite — `test/panel/shell-js.test.js`, 86 cases, the dialect
+contract — passed **unmodified**, and the e2e scenario logged 35/35 in order. Constructs outside
+the whitelist now fail at PARSE time by name (exit 2 naming the construct — command
+substitution, arithmetic, heredocs, process substitution, brace groups, loops/conditionals/
+functions, parameter-expansion operators, extglob/ANSI-C quoting), ending §1.5's message-text
+error classification.
+
+### The diligence behind the directive
+
+Five candidates measured before the hand-written route was chosen — the full record is
+`D-parser-survey.md` in this directory (method, per-candidate measurements, the engine probe);
+the decisive facts:
+
+- **bash-parser@0.5.0** (incumbent): 21 runtime deps, last publish 2017-06-22; closure
+  29 packages / 1.6 MB — magic-string 388 KB + babylon 292 KB (a full Babel 6 parser, carried
+  for string escaping alone).
+- **@ericcornelissen/bash-parser@0.5.3** (fork, verified real scoped package): 17 deps, last
+  publish 2024-06-08, "dependency maintenance" fork (2 stars); closure 24 packages / 1.6 MB,
+  **still dragging babylon + magic-string** — no substantive improvement.
+- **mvdan-sh@0.10.1**: the premise needed correcting — it does NOT need WebAssembly (single
+  1.4 MB GopherJS-transpiled `index.js`, zero wasm occurrences); excluded because it
+  `require("util")` and uses `process.stderr`/`process.exit` while the dsh-cli engine measures
+  `process=undefined`/`require=undefined`, plus the 1.4 MB single-file closure.
+- **web-tree-sitter@0.27.1**: premise confirmed — needs the JS WebAssembly API (dozens of
+  `WebAssembly.*` references in the bundle; ships a 210 KB `web-tree-sitter.wasm`), and the
+  engine probe shows `typeof WebAssembly === 'undefined'` with quickjs-ng upstream refusing to
+  embed WASM (github.com/quickjs-ng/quickjs/issues/75) → structurally unavailable.
+- **unbash@5.0.0**: the only technically feasible vendor candidate (0 deps, pure ESM, ISC,
+  57.6 KB tarball) — but young and churning (first publish 2026-02-25; 21 releases, 5 breaking
+  majors in 7 months). The owner directed the hand-written route anyway: the dialect contract
+  comes in-repo, pinned by the 86-case panel suite, not by an upstream release train.
+
+### What the swap settles
+
+- **The license gap closed by subtraction**: `curry@1.2.0` and `filter-iterator@0.0.1` (no
+  license field; recorded UNKNOWN, never assumed MIT) leave WITH the bash-parser closure — the
+  vendor-round follow-up "confirm intended licensing upstream with bash-parser" is moot; its
+  subject is gone from the tree. The dsh-shell-js vendor block drops **33 rows → 4** (shelljs +
+  minimatch + the two @isaacs packages; `ensure-dsh.sh` comment block updated at swap time).
+- **§7 risks retired**: 1 (unmaintained pin), 2 (babylon weight), 3 (the `NODE_NEV` process
+  shim), 5 (message-text error classification), and 6 in its bash-parser form (unaudited
+  grammar tables behind a node-type whitelist — the parser now refuses out-of-dialect
+  constructs by name at parse time). Risks 4 and 10 were already settled by the formal vendor
+  round (T-0211). The swap's own new risk — the hand-written parser's correctness — is carried
+  by the 86-case panel dialect contract plus the 74-case differential against bash-parser at
+  swap time.
+- **What stands**: §2 (shelljs applet bodies), §3 (minimatch glob), §4 (applet list and
+  refusals), §5→ the formal vendor round, §6 (dialect disclosures) are untouched by the swap;
+  risks 7–9 remain live.

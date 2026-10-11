@@ -3,9 +3,14 @@
 Status: implemented
 Related: D6, D5, T-0211/T-0212/T-0213, the three same-day leg notes (the
 parser-closure vendor round and the seat switch under `implemented/architecture/`,
-the CLI e2e under `implemented/testing/`), and the research record this note
-indexes: `.agents/research/shell-js/` (DECISION.md + spike reports A/B/C,
-copied verbatim out of the gitignored `tmp/shell-js-spikes/` scratch so the
+the CLI e2e under `implemented/testing/`), the same-day revocation note
+that supersedes this note's parser paragraphs
+(`implemented/architecture/2026-10-11-the-bash-parser-adoption-is-revoked-the-.md`),
+and the research record this note
+indexes: `.agents/research/shell-js/` (DECISION.md + spike reports A/B/C +
+the D-parser-survey diligence record,
+copied verbatim out of the gitignored `tmp/shell-js-spikes/` and
+`tmp/parser-survey/` scratch so the
 links below hold)
 
 ## Problem
@@ -71,6 +76,12 @@ corrected once — the seat-switch note); grammar errors arrive as plain
 dialect corners the spike never probed are neutralized structurally — a
 node-type whitelist, with any other AST node type refused by name, exit 2
 (DECISION §4.3), so unaudited corners fail safe rather than silently wrong.
+
+(**Superseded the same day, owner-directed**: this parser paragraph is
+historical — bash-parser left the closure and the hand-written subset
+parser `parser-syntax.js` took the seat; see
+`implemented/architecture/2026-10-11-the-bash-parser-adoption-is-revoked-the-.md`
+and DECISION §8.)
 
 Applet bodies come from shelljs 0.10.0 vendored **byte-pristine**, with all
 adaptation in five outboard seams (DECISION §2.3): an `fs` adapter mapping
@@ -151,7 +162,9 @@ one `shell/call` → one `shell/stdout`/`shell/refused` → one `shell/exit`,
   unbounded correctness risk concentrated exactly where hand-rolled shells
   break (quoting, escaping, expansion interleaving); parser over-coverage
   costs nothing semantically because the refusal table refuses unimplemented
-  node types by name.
+  node types by name. (**Superseded the same day, owner-directed**: the
+  hand-written route is what shipped — the revocation note judged the
+  accepted costs the heavier side; DECISION §8.)
 - **Vendoring fast-glob** — rejected (DECISION §2.3, Spike B §7.2): seven or
   more packages whose @nodelib walkers are designed for real disks; the
   shell needs only minimatch's pattern ↔ path answer plus its own `fsList`
@@ -197,6 +210,11 @@ one `shell/call` → one `shell/stdout`/`shell/refused` → one `shell/exit`,
   whole-file utf8 I/O bounded by the host max read; `env` prints the SHELL
   variable table; `tar` is uncompressed; `ls` never shows `.`/`..`) are
   disclosed in the tool description, never silent (DECISION §6).
+  (**Resolved the same day, owner-directed**: the handwritten-parser swap
+  happened — babylon, the ~0.7 MB embed cost, the message-text
+  classification, and the curry/filter-iterator gap all left with the
+  bash-parser closure, vendor block 33 → 4 rows; the revocation note and
+  DECISION §8.)
 - **The decision record itself moved into the repo.** DECISION.md and the
   three spike reports now live at `.agents/research/shell-js/` (copied
   byte-identical from the gitignored scratch, original filenames kept so the

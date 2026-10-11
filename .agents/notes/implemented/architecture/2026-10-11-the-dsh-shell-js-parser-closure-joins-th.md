@@ -79,3 +79,13 @@ byte-identically from a cold clone (verified). A future minimatch bump past
 license gaps are on record; filing an upstream issue with bash-parser to
 confirm intended licensing is open follow-up (the package has been
 unmaintained since 2017 — exact-pin forever).
+
+**Resolved the same day, owner-directed** (the revocation note,
+`implemented/architecture/2026-10-11-the-bash-parser-adoption-is-revoked-the-.md`):
+the entire bash-parser closure — this round's 29 bash-parser trees
+included — left the vendor block when the hand-written subset parser
+replaced it, so the ~0.7MB per-host cost retired with it and the
+curry/filter-iterator follow-up closed by subtraction (its subject is gone
+from the tree). The dsh-shell-js vendor block this note pinned at 33 rows
+stands at 4 (shelljs + minimatch + the two @isaacs packages); the
+minimatch 10.0.3 ISC-ceiling pin is unchanged.
