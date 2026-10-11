@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "dsh-shell-js",
+  "version": "0.1.0",
+  "type": "service",
+  "entry": "index.js",
+  "capabilities": {
+    "required": ["fsRead", "fsWrite", "fsStat", "fsList", "fsMkdir", "fsRemove", "fsRename"],
+    "optional": []
+  },
+  "hooks": {
+    "activate": "activate"
+  }
+}
