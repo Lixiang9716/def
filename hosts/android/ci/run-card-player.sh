@@ -74,16 +74,58 @@ done
 # ---- 4. drive ----------------------------------------------------------------
 DUMP="$OUT/.dp-dump.txt"
 : > "$DUMP"
-snapshot() { adbsh logcat -d -s dsh.runtime dsh.runtime.result dsh.runtime.ui dsh.snapshot > "$DUMP" 2>/dev/null; }
+snapshot() { adbsh logcat -d -s dsh.runtime dsh.runtime.result dsh.runtime.ui dsh.snapshot dsh.serve > "$DUMP" 2>/dev/null; }
+
+# The state seam's harvest (rule 8: poll the condition, never a clock): the
+# drive seat logs `dsh.serve: origin token=… port=…` once its carrier
+# listens — poll the dump until the line exists, deadline bounded. The old
+# single grep ran before the line could exist and harvested air, every run.
+say "4/6 origin harvest (polling the dump, deadline 120s)"
+origin_deadline=$(( $(date +%s) + 120 ))
+until snapshot && grep -q "origin token=" "$DUMP"; do
+    [ "$(date +%s)" -ge "$origin_deadline" ] && {
+        tail -20 "$DUMP"
+        die "no dsh.serve origin line within 120s of am start"
+    }
+    sleep 1
+done
+PORT=$(grep -o 'origin token=[a-f0-9]* port=[0-9]*' "$DUMP" | tail -1 | grep -o 'port=[0-9]*' | cut -d= -f2)
+TOKEN=$(grep -o 'origin token=[a-f0-9]*' "$DUMP" | tail -1 | cut -d= -f2)
+[ -n "$PORT" ] && [ -n "$TOKEN" ] || die "origin line present but PORT/TOKEN harvest failed"
+adbsh forward tcp:$PORT tcp:$PORT || die "adb forward tcp:$PORT failed"
+
+# The mid-tick face probe: the card lives from card.present until ~2.5s
+# after card.complete (the surface's own dismiss) — curl /api/state the
+# moment the posted-present record shows in the dump, ONE probe per run, so
+# the snapshot reads the face INSIDE its window. visible=true is the seam
+# assertion the log alone cannot give (the previous generation's comment
+# deferred this exact check to "the next live generation" — this is it).
+probe_state() {
+    state_probe=$(curl -s --max-time 5 -H "Cookie: dsh.session=$TOKEN" \
+        "http://127.0.0.1:$PORT/api/state")
+    echo "$state_probe" > "$OUT/state-snapshot.json"
+    visible=$(printf '%s' "$state_probe" | node -e '
+        let raw = "";
+        process.stdin.on("data", (c) => { raw += c; });
+        process.stdin.on("end", () => {
+            try { console.log(JSON.parse(raw)?.app?.card?.visible === true ? "true" : "false"); }
+            catch { console.log("false"); }
+        });
+    ')
+}
 
 saw_present=0
 saw_complete=0
 state_probe=""
+visible=""
 deadline=$(( $(date +%s) + 240 ))
 until snapshot && grep -q "card.player.*scenario.complete\|scenario.failed" "$DUMP"; do
     if [ "$(date +%s)" -ge "$deadline" ]; then
         tail -60 "$DUMP"
         die "card.player scenario did not complete within 240s"
+    fi
+    if [ -z "$state_probe" ] && grep -q "card.present.posted" "$DUMP"; then
+        probe_state
     fi
     presents=$(grep -c "card.present.posted" "$DUMP")
     if [ "$presents" -gt "$saw_present" ]; then
@@ -100,23 +142,13 @@ until snapshot && grep -q "card.player.*scenario.complete\|scenario.failed" "$DU
     sleep 1
 done
 sleep 1
+# A completed scenario with no probe taken means the poll never saw the
+# present in time (a one-iteration race): probe once anyway, and let the
+# visible assertion below judge the result honestly.
+[ -n "$state_probe" ] || probe_state
 
-# ---- 5. the mid-tick face probe: the card surface attaches at boot; a
-# /api/state read DURING a card's life answers visible=true. The scenario's
-# own five-second window is too tight to race from outside — the surface's
-# presence in the snapshot (attached=true) is the seam assertion here; the
-# visible=true case is covered by the next live generation.
-PORT=$(grep -o 'origin token=[a-f0-9]* port=[0-9]*' "$DUMP" | tail -1 | grep -o 'port=[0-9]*' | cut -d= -f2)
-TOKEN=$(grep -o 'origin token=[a-f0-9]*' "$DUMP" | tail -1 | cut -d= -f3)
-if [ -n "$PORT" ] && [ -n "$TOKEN" ]; then
-    adbsh forward tcp:$PORT tcp:$PORT
-    state_probe=$(curl -s --max-time 5 -H "Cookie: dsh.session=$TOKEN" \
-        "http://127.0.0.1:$PORT/api/state")
-    echo "$state_probe" > "$OUT/state-snapshot.json"
-fi
-
-# ---- 6. checkers -------------------------------------------------------------
-say "6/6 checkers"
+# ---- 5. checkers -------------------------------------------------------------
+say "5/6 checkers"
 cp "$DUMP" "$OUT/logs.txt"
 grep 'dsh.runtime.log:' "$OUT/logs.txt" > "$OUT/scenario.jsonl" || true
 shot 03-final
@@ -126,6 +158,13 @@ node test/e2e/check.mjs --manifest $SCEN/card-player-android.json \
     --log "$OUT/logs.txt" --out "$OUT/verdict-card-player.json" || FAIL=1
 cat "$OUT/verdict-card-player.json"
 [ "$FAIL" = "0" ] || die "checkers red — evidence stays unreceipted"
+# The seam assertion the leg exists for: the snapshot must carry the face
+# PRESENTED (visible=true) — a snapshot without it is a probe outside the
+# card's window, and the leg has not proven what it names.
+[ "$visible" = "true" ] || {
+    cat "$OUT/state-snapshot.json"
+    die "app.card.visible is not true in the mid-tick snapshot (probe raced the window)"
+}
 
 UDID="$(adbsh get-serialno | tr -d '\r')"
 TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at receipt time)')"
@@ -141,9 +180,13 @@ cat > "$OUT/receipt.json" <<EOF
   "scenarios": [
     { "manifest": "card-player", "verdict": "verdict-card-player.json", "pass": true }
   ],
-  "stateSeam": "$OUT/state-snapshot.json",
+  "stateSeam": {
+    "snapshot": "$OUT/state-snapshot.json",
+    "app.card.visible": $visible,
+    "asserted": true
+  },
   "screens": ["screens/01-card-present.png", "screens/02-card-complete.png", "screens/03-final.png"],
   "producedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
-say "receipt written — card.player green ($OUT)"
+say "receipt written — card.player green, app.card.visible=$visible ($OUT)"

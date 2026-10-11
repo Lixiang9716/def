@@ -245,6 +245,14 @@ class BindingHost private constructor(
     val mic = MicPrimitives(activity)
     private val wasm = WasmPrimitive(fs)
 
+    /** The state-snapshot seam (GET /api/state behind the session cookie —
+     * the same CarrierAPIBridge face the session seats serve): the drive
+     * plane's observable state for the runner's probes. The origin line
+     * below names the token + port once the carrier listens; it rides the
+     * `dsh.serve` tag, never the checker stream. */
+    private val apiToken = newSessionToken()
+    private val apiBridge = CarrierAPIBridge(apiToken)
+
     private var handle: Long = 0
 
     /** The upstream-parity drive: arms the mock route's parity script and
@@ -313,6 +321,20 @@ class BindingHost private constructor(
             }
         }
         carrier.start(webRoot) { /* readiness consumed below */ }
+        // The drive plane's state seam: /api/state behind the session token,
+        // the app block carrying this drive's card face projection (the
+        // card-player leg's visible=true proof reads it mid-tick). The
+        // origin-token line is the runner's harvest point — it appears once
+        // the carrier listens, so the harvest polls for IT, never a clock.
+        apiBridge.install(carrier)
+        apiBridge.appState = {
+            JSONObject().apply {
+                val script = ui.scriptedApprovalFlag()
+                put("scriptApproval", script ?: JSONObject.NULL)
+                cardSurface?.let { put("card", it.snapshot().optJSONObject("card")) }
+            }
+        }
+        Log.i("dsh.serve", "origin token=$apiToken port=${carrier.port}")
         val entry = File(bundle, entryPath)
         handle = JsRuntime.m4Begin(
             activity.filesDir.absolutePath, entryPath, entry.readText(), DESCRIPTOR,
@@ -493,6 +515,14 @@ class BindingHost private constructor(
     }
 
     // ---- settling ---------------------------------------------------------------
+
+    /** The session token face (the SessionServe shape): SecureRandom bytes
+     * spelled hex — the /api plane's cookie credential, never a constant. */
+    private fun newSessionToken(): String {
+        val bytes = ByteArray(16)
+        java.security.SecureRandom().nextBytes(bytes)
+        return bytes.joinToString("") { "%02x".format(it) }
+    }
 
     private fun pass() = finish(true, "")
 
