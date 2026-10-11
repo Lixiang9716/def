@@ -376,6 +376,7 @@ upstream/retry-telemetry.js
 upstream/turn-watchdog.js
 upstream/web-search-keyless.js
 upstream/boot-coverage-rows.js
+upstream/boot-session-persistence.js
 upstream/shims/async-hooks.js
 upstream/shims/util.js
 upstream/shims/fs-promises.js
@@ -428,6 +429,7 @@ upstream/shims/source-bootstrap-loader-smoke.js
 upstream/shims/string-decoder.js
 upstream/shims/node-http-loopback-client.js
 upstream/shims/node-http-loopback-dispatch.js
+upstream/shims/node-stream-readable.js
 upstream/shims/node-stream-duplex.js
 upstream/shims/node-stream-writable.js
 upstream/shims/node-stream.js

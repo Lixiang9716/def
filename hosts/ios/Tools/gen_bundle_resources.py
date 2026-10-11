@@ -131,6 +131,7 @@ RESOURCES = [
     ("upstream_turn_recovery_js", DSH / "upstream" / "turn-recovery.js"),
     ("upstream_retry_telemetry_js", DSH / "upstream" / "retry-telemetry.js"),
     ("upstream_boot_coverage_rows_js", DSH / "upstream" / "boot-coverage-rows.js"),
+    ("upstream_boot_session_persistence_js", DSH / "upstream" / "boot-session-persistence.js"),
 ]
 # Directory trees embedded whole and staged back under the same
 # bundle-relative paths: the vendored upstream spine packages (verbatim
