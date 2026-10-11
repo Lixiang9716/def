@@ -7,7 +7,9 @@
 #
 #   1. the C gate — runtime/dsh/build/ish/ish-smoke boots the guest and runs
 #      commands straight through the seam (no JS, no simulator);
-#   2. the JS gate — the desktop CLI runs scenario/userland-shell.js, which goes
+#   2. the JS gate — the desktop CLI runs scenario-local/userland-shell.js (a
+#      checkout-local scenario, deliberately outside the device-staged
+#      scenario/ closure since the dsh-shell-ish seat retired), which goes
 #      scenario → plugin executor → gateway `ishRun` → the host backend → the
 #      guest, and whose records test/e2e/scenarios/userland-shell-local.json matches
 #      one-to-one.
@@ -165,7 +167,7 @@ rm -f "$LOG"
 # workspace so the deliverable below is a known path.
 (cd runtime/dsh && \
     DSH_ISH_ROOTFS="$ROOTFS" DSH_SPIKE_TMPDIR="$WORKSPACE" \
-    ./build/dsh-cli . scenario/userland-shell.js > "$LOG" 2>&1) || true
+    ./build/dsh-cli . scenario-local/userland-shell.js > "$LOG" 2>&1) || true
 grep '^dsh.runtime.log:' "$LOG" > "$ART/scenario.jsonl" || true
 node test/e2e/check.mjs --manifest test/e2e/scenarios/userland-shell-local.json \
     --log "$LOG" --out "$ART/verdict-userland-shell-local.json"
@@ -196,7 +198,7 @@ cat > "$ART/receipt.json" <<EOF
  "engineVersion": "OpenMinis/ish-arm64 e1d579480fba88e8f0428e3cf23811bcdd05421f, vendored + sha256-pinned by runtime/dsh/vendor/ensure-ish.sh",
  "guestRoot": "Alpine 3.21.8 aarch64 minirootfs (sha256 $ROOTFS_SHA256)",
  "phase": "contract v1.3.0 \`ishRun\` — a real Linux userland running INSIDE the host process (no child process, no second OS), driven from the JS layer through system-plugins/dsh-shell-ish",
- "launchConfiguration": "(cd runtime/dsh) ./build/dsh-cli . scenario/userland-shell.js, with DSH_ISH_ROOTFS set to the extracted guest root and DSH_SPIKE_TMPDIR pinned to the staged workspace",
+ "launchConfiguration": "(cd runtime/dsh) ./build/dsh-cli . scenario-local/userland-shell.js, with DSH_ISH_ROOTFS set to the extracted guest root and DSH_SPIKE_TMPDIR pinned to the staged workspace",
  "scenarios": [
   {
    "id": "userland.shell",

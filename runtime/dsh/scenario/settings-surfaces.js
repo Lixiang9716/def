@@ -317,7 +317,7 @@ const emitPlaneCounts = (snapshot, ctx) => {
     presets: snapshot.agentPresets.length,
     presetRows: snapshot.agentPresets.reduce((sum, p) => sum + (p.rows?.length ?? 0), 0),
     spineSample: spineEntries
-      .filter((e) => ['agent-loop', 'llm', 'shell-wasm', 'shell-ish'].includes(e.entryId))
+      .filter((e) => ['agent-loop', 'llm', 'shell-js'].includes(e.entryId))
       .map((e) => ({ id: e.entryId, enabled: e.enabled, fiberPhase: e.fiberPhase })),
   });
 };

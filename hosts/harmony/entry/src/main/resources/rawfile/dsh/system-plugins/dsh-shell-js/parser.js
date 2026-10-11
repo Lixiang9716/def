@@ -59,8 +59,17 @@ const log = createLogger('dsh.shell.js.parser');
 // typo means even Node never takes the branch the read guards — so an
 // idempotent, never-overwriting install is the whole mitigation.
 // Environmental, deliberately NOT a source patch (D6).
+//
+// It lives in readTextSync (the vendor-read chokepoint), NOT at module load:
+// since dsh-shell-js took the shell seat (2026-10-11) this module evaluates
+// during the BOOT's static import graph — before the web-shims prelude
+// installs the real process global — and a module-load install (even a
+// whole-object `??=`) would preempt that fuller face: the first
+// `process.cwd()` afterwards (the fs-local Config class field) died with
+// "not a function" (measured live, settings-surfaces leg). The web-shims
+// prelude's install is itself never-overwriting, so the guard's install
+// must also be FIELD-level, filling absent fields only.
 // ---------------------------------------------------------------------------
-globalThis.process ??= { env: {}, versions: {}, execPath: '' };
 
 /** bash-parser rethrows unclosed quotes as `SyntaxError`; every other
  * grammar failure arrives as a plain `Error` (its src/index.js catch-all).
@@ -184,6 +193,12 @@ let nodeReadText = null;
 
 const readTextSync = (spec) => {
   log.debug('read text', { spec });
+  // The process presence guard (DECISION §1.3 — block comment above): field-
+  // level so a fuller host-installed process keeps every face it has.
+  const proc = (globalThis.process ??= {});
+  proc.env ??= {};
+  proc.versions ??= {};
+  proc.execPath ??= '';
   const seam = bundleSeam();
   if (typeof seam === 'function') {
     const cut = spec.lastIndexOf('/');

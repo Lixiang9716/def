@@ -339,9 +339,9 @@ done
 # grants, so it rides the same byte-identity sync as the runtime files.
 cmp -s "$DSH/manifest.json" "$ASSETS/manifest.json" || cp "$DSH/manifest.json" "$ASSETS/manifest.json"
 
-# The system-plugins the boot's static graph imports (the two shell tools;
-# the three older plugins are committed in assets directly and refreshed
-# here too — byte-identical to runtime/dsh, the single source).
+# The system-plugins the boot's static graph imports (dsh-shell-js, the one
+# shell seat; the three older plugins are committed in assets directly and
+# refreshed here too — byte-identical to runtime/dsh, the single source).
 # The TEST closure: every additional vendored package the upstream suites
 # import (same tag; materialized by vendor/ensure-dsh-tests.sh). Untracked
 # in assets by the same accepted pattern as the Gradle-materialized staged
@@ -363,8 +363,17 @@ done
 say "staged the test closure ($(find "$ASSETS/vendor/dsh" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ') packages total)"
 
 say "staging system-plugins (whole directories — a plugin joins by existing)"
+# The RETIRED seats (the dsh-shell-js takeover, 2026-10-11): a plugin leaves
+# the staged seat by joining this hand-declared list IN THE SAME COMMIT its
+# boot.js registry row leaves the composition — the source tree stays under
+# runtime/dsh/system-plugins (the local engine gates + workspace installs
+# still read it), but the mirror no longer stages it, so assets never carry
+# a plugin nothing mounts. A name here that boot.js still imports is a boot
+# that cannot load — the seat grep in the agent note is the audit.
+RETIRED_PLUGINS="dsh-shell-wasm dsh-shell-ish"
 for src in "$DSH"/system-plugins/*/; do
     p=$(basename "$src")
+    case " $RETIRED_PLUGINS " in *" $p "*) continue ;; esac
     mkdir -p "$ASSETS/system-plugins/$p"
     (cd "$src" && find . -type f) |
         while IFS= read -r rel; do

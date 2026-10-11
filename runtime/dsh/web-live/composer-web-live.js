@@ -277,7 +277,7 @@ const probeSettingsPlugins = async () => {
       (r) => `${r.moduleName ?? r.name ?? r.id}`)
       .filter((n) => n.startsWith('@deepseek-ai/dsh-tool-')))].sort(),
     spineSample: snapshot.entries
-      .filter((e) => ['agent-loop', 'llm', 'shell-wasm', 'shell-ish'].includes(e.entryId))
+      .filter((e) => ['agent-loop', 'llm', 'shell-js'].includes(e.entryId))
       .map((e) => ({ id: e.entryId, enabled: e.enabled, fiberPhase: e.fiberPhase })),
   });
   await probeManagerLegs();

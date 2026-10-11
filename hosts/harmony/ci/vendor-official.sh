@@ -787,7 +787,6 @@ system-plugins/dsh-open-design/manifest.json
 system-plugins/dsh-open-design/index.js
 system-plugins/dsh-plugin-manager-tools/manifest.json
 system-plugins/dsh-plugin-manager-tools/index.js
-system-plugins/dsh-shell-ish/manifest.json
 system-plugins/dsh-shell-js/applets-hand.js
 system-plugins/dsh-shell-js/applets-shelljs-cmds.js
 system-plugins/dsh-shell-js/applets-shelljs.js
@@ -799,10 +798,6 @@ system-plugins/dsh-shell-js/index.js
 system-plugins/dsh-shell-js/manifest.json
 system-plugins/dsh-shell-js/parser.js
 system-plugins/dsh-shell-js/stream.js
-system-plugins/dsh-shell-ish/index.js
-system-plugins/dsh-shell-wasm/manifest.json
-system-plugins/dsh-shell-wasm/index.js
-system-plugins/dsh-shell-wasm/programs.js
 system-plugins/dsh-subprocess-quickjs/manifest.json
 system-plugins/dsh-subprocess-quickjs/index.js
 system-plugins/dsh-ui/manifest.json

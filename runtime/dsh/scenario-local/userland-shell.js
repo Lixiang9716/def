@@ -7,10 +7,13 @@
  *            → the host's dispatch backend
  *            → dsh_ish.c → the emulated Alpine userland
  *
- * It runs on the desktop CLI (`runtime/dsh/build/dsh-cli … scenario/
- * userland-shell.js`) and its records are the ones `tools/e2e/scenarios/
- * userland-shell-local.json` matches one-to-one, so "the logs match" is checked the
- * same way every other evidence dir in this repository checks it.
+ * It runs on the desktop CLI (`runtime/dsh/build/dsh-cli … scenario-local/
+ * userland-shell.js` — this directory is deliberately OUTSIDE the staged
+ * scenario/ closure: the dsh-shell-ish seat retired from every host's
+ * staging, so a device-staged copy would carry a dangling import) and its
+ * records are the ones `test/e2e/scenarios/userland-shell-local.json` matches
+ * one-to-one, so "the logs match" is checked the same way every other evidence
+ * dir in this repository checks it.
  *
  * The command chain is deliberately not all `echo`: a real guest has to show
  * that it is a real one — an aarch64 ELF userland with its own release file, a

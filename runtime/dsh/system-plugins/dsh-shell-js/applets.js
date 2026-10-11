@@ -79,8 +79,9 @@
 
 import {
   session, ShellRefusal, normalizeInternal, resolveAgainstCwd, toGateway,
+  wordHasGlobMagic,
 } from './applets-support.js';
-import { ensureApplets, expandGlob, wordHasGlobMagic } from './applets-shelljs.js';
+import { ensureApplets, expandGlob } from './applets-shelljs.js';
 import {
   appletCat, appletEcho, appletCd, appletLs, appletGrep, appletSed,
   headTail, appletSort, appletUniq, appletMkdir, appletRm, appletMv,
