@@ -1,0 +1,19 @@
+{
+  "title": "test core first leg aborts: upstream.session pins tools:15, the runtime mounts 17",
+  "created": "2026-10-11T12:04:19+00:00",
+  "rules": {
+    "hash": "5fed98aae9738ce8e6003d93fd785d78c60c44c5e11d3f278acdb20a08d968d0",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "6d186be6616493c3d8ae7d24174a4e1634711180ca5b3b760452d3c09d7cdb90"
+    }
+  },
+  "checklist": [
+    "re-pin the upstream.session manifest pin to 17 (or derive the count from the mounted rows) and make run-upstream-e2e.sh honest again",
+    "full build/build.sh test core sequence passes end to end on a clean tree",
+    "close with an all-green receipt"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0218"
+}
