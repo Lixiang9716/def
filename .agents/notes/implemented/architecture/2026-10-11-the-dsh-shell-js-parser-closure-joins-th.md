@@ -44,10 +44,13 @@ block. Embed rows landed on all three hosts: iOS TREES (30 whole-tree rows
 Index.ets BUNDLE_FILES (the same 175-row set both directions), and android
 stage blocks each with a `--check` verify twin — drift injection on a
 tracked staged file was tested red on both byte-check legs before trusting
-the green. The plugin's own five sources land in the same change (the
-harmony CLOSURE rows reference them; android's whole-dir mirror stages
-them). Two commits, per the closures ordering: runtime closure + rows
-first, regenerated embeds second.
+the green. The plugin's own sources land in the same change (the harmony CLOSURE
+rows reference them; android's whole-dir mirror stages them) — split under
+the code-size budgets into the applets-support/snapshot/shelljs/
+shelljs-cmds/hand modules with applets.js as the facade, plus exec.js for
+the executor core: eleven files, every embed list naming the set. Two
+commits, per the closures ordering: runtime closure + rows first,
+regenerated embeds second.
 
 ## Alternatives considered
 
