@@ -123,7 +123,12 @@ const writePackage = async (args, dir) => {
 };
 
 /** Live-mount through the cordis seam: approval → registry → dynamic
- * import → ctx.plugin — the plugin's apply() runs as a result. */
+ * import → ctx.plugin — the plugin's apply() runs as a result. The mount
+ * pipeline's own records stay under its plugin.mount.* scenario; the
+ * creation chain's OWN narration (the create.card scenario the E2E
+ * manifest pins — the same id writePackage's package.written already
+ * rides) subscribes through opts.onStep and names the steps:
+ *   approved → approval.answered, adopted → registry.installed. */
 const execute = async (args) => {
   const name = String(args.name ?? '');
   // The SAME derivation plugin-mount reads with (the pinned globals passed
@@ -137,7 +142,16 @@ const execute = async (args) => {
   const written = await writePackage(args, dir);
   if (typeof written === 'string') return written;
   if (!spine) return 'plugin_create: no cordis spine on this seat (mount impossible)';
-  const outcome = await mountWorkspacePlugin(spine, written.name);
+  const onStep = (step, fields) => {
+    if (step === 'approved') {
+      log.info('e2e', { scenario: 'create.card', event: 'approval.answered',
+        name: fields.spec, approved: fields.approved === true });
+    } else if (step === 'adopted') {
+      log.info('e2e', { scenario: 'create.card', event: 'registry.installed',
+        name: fields.spec });
+    }
+  };
+  const outcome = await mountWorkspacePlugin(spine, written.name, { onStep });
   if (!outcome.mounted) {
     return `plugin_create: 挂载未完成(${outcome.step}): ${outcome.reason ?? ''}`;
   }

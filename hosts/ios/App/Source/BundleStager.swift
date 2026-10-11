@@ -211,6 +211,8 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_upstream_web_write_marketplace_js), under: root)
         try write("upstream/web-write-onboarding.js",
                   data: resData(dsh_runtime_res_upstream_web_write_onboarding_js), under: root)
+        // The spine seat's llm route wiring (the create-card round).
+        try writeSpineSeatLlmRows(root)
         // The marketplace resolver seam and its crypto pair (the second live
         // measurement, same leg): web-write-marketplace.js imports
         // marketplace-resolver.js, which imports canonical-json.js + ed25519.js.
@@ -232,6 +234,18 @@ enum BundleStager {
         // resolve it (upstream/boot.js's FILE-TOOLS row).
         // The writable workspace VFS half of the fs shim (the FILE-TOOLS
         // row's world; split from fs.js at the file-size gate).
+    }
+
+    /// The spine seat's llm route wiring: boot.js imports the gateway llm
+    /// mount at the top level — missing here made the create-card spine
+    /// boot die with `cannot load module
+    /// 'upstream/llm-gateway-mount.js'`, measured live 2026-10-11. The
+    /// gated pi-ai mount rides the same round.
+    private static func writeSpineSeatLlmRows(_ root: URL) throws {
+        try write("upstream/llm-gateway-mount.js",
+                  data: resData(dsh_runtime_res_upstream_llm_gateway_mount_js), under: root)
+        try write("upstream/llm-piai-mount.js",
+                  data: resData(dsh_runtime_res_upstream_llm_piai_mount_js), under: root)
     }
 
     /// Seven top-level boot.js imports the stager missed while their
@@ -256,6 +270,16 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_upstream_turn_watchdog_js), under: root)
         try write("upstream/web-search-keyless.js",
                   data: resData(dsh_runtime_res_upstream_web_search_keyless_js), under: root)
+        // The file-size-gate splits mainline's boot.js grew (the spine-seat
+        // round, 2026-10-11): the demand facts, the optional compaction row,
+        // and the gated session-persistence row are TOP-LEVEL imports — the
+        // static graph resolves at eval whether or not the gates open.
+        try write("upstream/boot-demand.js",
+                  data: resData(dsh_runtime_res_upstream_boot_demand_js), under: root)
+        try write("upstream/boot-compaction.js",
+                  data: resData(dsh_runtime_res_upstream_boot_compaction_js), under: root)
+        try write("upstream/boot-session-persistence.js",
+                  data: resData(dsh_runtime_res_upstream_boot_session_persistence_js), under: root)
     }
 
     /// The same drift, second layer (transitive imports, caught live the

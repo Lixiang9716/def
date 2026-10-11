@@ -13,6 +13,17 @@ final class GatewaySession {
     static let defaultEntry = "scenario/gateway-binding.js"
     static let watchdogSeconds = 180
 
+    /// The create-card seat's self-narration (BindingHost.kt parity): the
+    /// seat announces its client (`client.selected`, before the scenario's
+    /// first record) and narrates the native card face's own acts
+    /// (`card.face.presented` / `card.face.completed` — the manifest pins
+    /// the NATIVE surface's render, a fact only this side of the bus owns).
+    /// nil (every other drive) keeps those streams byte-shaped.
+    struct SeatAnnounce {
+        let scenario: String
+        let client: String
+    }
+
     /// The entry module + its embedded source (a generated
     /// dsh_runtime_res_* accessor). Defaults keep the m2 gateway-binding drive.
     private let entryModule: String
@@ -21,17 +32,22 @@ final class GatewaySession {
     /// The BLE face's radio (nil = the real CoreBluetooth radio; the
     /// ble-plane-mock drive passes the deterministic mock).
     private let bleRadio: BleRadio?
+    private let seatAnnounce: SeatAnnounce?
+    private let seatLog: CarrierEventLog?
 
     init(
         entryModule: String = GatewaySession.defaultEntry,
         sourceProvider: @escaping () -> String = {
             String(cString: dsh_runtime_res_scenario_m2_js(nil))
         },
-        bleRadio: BleRadio? = nil
+        bleRadio: BleRadio? = nil,
+        seatAnnounce: SeatAnnounce? = nil
     ) {
         self.entryModule = entryModule
         self.sourceProvider = sourceProvider
         self.bleRadio = bleRadio
+        self.seatAnnounce = seatAnnounce
+        self.seatLog = seatAnnounce.map { CarrierEventLog(scenario: $0.scenario) }
     }
 
     private let runtimeThread = RuntimeThread(name: "org.dsh.runtime.gateway")
@@ -99,6 +115,11 @@ final class GatewaySession {
                 callId: Int(callId), name: String(cString: name),
                 argsJSON: String(cString: argsJSON))
         }, Unmanaged.passUnretained(self).toOpaque())
+        // The seat's own face, announced before the scenario's first record
+        // (BindingHost.kt begin() parity — the manifest pins it first).
+        if let announce = seatAnnounce {
+            seatLog?.emit("client.selected", ["client": announce.client])
+        }
         if dsh_runtime_eval(host, entryModule, sourceProvider()) != 0 {
             return finish(failOutcome("eval: \(String(cString: dsh_runtime_error(host)))"))
         }
@@ -190,6 +211,11 @@ final class GatewaySession {
             }
         case "card.present", "card.state", "card.dismiss", "card.complete":
             // A plugin's live card (PR-1): the native surface's channel.
+            // Narration runs HERE (runtime thread), before the mount's
+            // continuation can emit tool.returned — the main-thread surface
+            // hop cannot be trusted to win that race (BindingHost.kt
+            // narrates on the bus thread for the same reason).
+            narrateCardFace(msg)
             onCardEvent?(msg)
         default:
             break
@@ -198,6 +224,23 @@ final class GatewaySession {
 
     /// The plugin card seam — see SessionServe.onCardEvent (PR-1).
     var onCardEvent: (([String: Any]) -> Void)?
+
+    /// The create-card drive's face narration under its own scenario; every
+    /// other drive's stream stays byte-shaped (their manifests pin them).
+    private func narrateCardFace(_ msg: [String: Any]) {
+        guard let announce = seatAnnounce, let log = seatLog,
+              announce.scenario == "create.card",
+              let type = msg["type"] as? String else { return }
+        if type == "card.complete" {
+            log.emit("card.face.completed", ["id": msg["id"] as? String ?? ""])
+        } else if type == "card.present" {
+            let card = msg["card"] as? [String: Any] ?? [:]
+            log.emit("card.face.presented", [
+                "id": card["id"] as? String ?? "",
+                "kind": card["kind"] as? String ?? "",
+            ])
+        }
+    }
 
     /// Called on the server queue; hops onto the runtime thread.
     private func ingest(_ text: String) {

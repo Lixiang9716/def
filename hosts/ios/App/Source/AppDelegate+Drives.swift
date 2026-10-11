@@ -53,7 +53,11 @@ extension AppDelegate {
         cardSurface = surface
         let session = GatewaySession(
             entryModule: "scenario/create-card.js",
-            sourceProvider: { String(cString: dsh_runtime_res_scenario_create_card_js(nil)) })
+            sourceProvider: { String(cString: dsh_runtime_res_scenario_create_card_js(nil)) },
+            // The seat announces itself and narrates the card face under this
+            // scenario (BindingHost.kt parity — the manifest pins both).
+            seatAnnounce: GatewaySession.SeatAnnounce(
+                scenario: "create.card", client: "dsh-web-client"))
         session.onCardEvent = { [weak surface] msg in
             DispatchQueue.main.async { surface?.handle(msg) }
         }
