@@ -45,6 +45,11 @@ class BindingHost private constructor(
         const val CARD_PLAYER_ENTRY = "scenario/card-player.js"
         const val CREATE_CARD_SCENARIO = "create.card"
         const val CREATE_CARD_ENTRY = "scenario/create-card.js"
+        const val CALENDAR_LIVE_SCENARIO = "create.calendar.live"
+        const val CALENDAR_LIVE_ENTRY = "scenario/create-calendar-live.js"
+        /** The real-turn budget (see startCalendarLive): turn + mount within
+         * one drive, headroom for a thinking model's minutes-long first byte. */
+        const val CALENDAR_LIVE_WATCHDOG_SECONDS = 480L
         const val PARITY_SCENARIO = "upstream.parity"
         const val PARITY_ENTRY = "scenario/upstream-parity.js"
         const val SUITE_SCENARIO = "upstream.suite"
@@ -60,7 +65,7 @@ class BindingHost private constructor(
         const val MIC_PLANE_SCENARIO = "android.mic-plane"
         const val MIC_PLANE_ENTRY = "scenario/mic-plane.js"
         const val WHALE_CLIENT_ID = "dsh-web-client-compact"
-        const val WATCHDOG_SECONDS = 180
+        const val WATCHDOG_SECONDS = 180L
         const val EXTRA_NOTIFY_RESPONSE = "dsh.notify.response"
 
         private const val TAG = "dsh.runtime"
@@ -152,6 +157,26 @@ class BindingHost private constructor(
         fun startCreateCard(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
             drive("create-card", CREATE_CARD_SCENARIO, CREATE_CARD_ENTRY, activity, webView, onFinished)
 
+        /**
+         * The calendar-live drive (`create.calendar.live`, the
+         * gaps3/android-04 port of the iOS `-dsh-mode calendar-live` seat):
+         * ONE REAL-backend turn driven on the agent (the staged credential
+         * at fs-app llm/config.json is the model route — the runner stages
+         * it and skips LOUD when there is none), then the authored calendar
+         * plugin LIVE-mounts through the approval → registry → import →
+         * ctx.plugin chain and its own apply() drives the card face. The
+         * watchdog is the turn-scale budget (a reasoning model's first byte
+         * takes minutes over the emulator network — the 180 s default would
+         * kill a legitimate turn mid-flight); the runtime.config delivery
+         * after begin is the scenario's GO trigger. */
+        fun startCalendarLive(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost = spawn(
+            activity, webView, onFinished,
+            scenarioId = CALENDAR_LIVE_SCENARIO,
+            entryPath = CALENDAR_LIVE_ENTRY,
+            captureLabel = "calendar-live",
+            watchdogSeconds = CALENDAR_LIVE_WATCHDOG_SECONDS,
+        ).also { it.calendarLive = true }
+
         /** The camera drive (`android.camera-plane`, v1.10.0): the capture burst
          * against the emulator's virtual camera, the phased rows' honest `unavailable`. */
         fun startCameraPlane(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
@@ -201,6 +226,7 @@ class BindingHost private constructor(
             webRootDir: String = "webclient/web",
             compactLeg: Boolean = false,
             parityMode: Boolean = false,
+            watchdogSeconds: Long = WATCHDOG_SECONDS,
         ): BindingHost {
             val host = BindingHost(
                 activity,
@@ -213,8 +239,18 @@ class BindingHost private constructor(
                 mockRadio = mockRadio,
             )
             if (parityMode) host.parityMode = true
+            host.watchdogSeconds = watchdogSeconds
             host.pump.attach(webView)
             instance = host
+            // The card face rides EVERY drive: the spawn seat boots the FULL
+            // spine (boot.js mounts dsh-create), so a plugin can mount and
+            // post card.* lines mid-drive — the calendar-live leg's card is
+            // exactly that. A drive whose scenario posts none carries an
+            // empty overlay (the previous asymmetry — drive() attached,
+            // spawn() didn't — silently dropped the calendar card: measured
+            // gaps3/android-04, plugin.calendar-plugin's card.present crossed
+            // with cardSurface still null).
+            host.cardSurface = CardSurface.attach(activity)
             host.start(onFinished)
             return host
         }
@@ -263,6 +299,14 @@ class BindingHost private constructor(
     /** The upstream-suite drive: the spec module path delivered in
      * runtime.config (set by startSuite before start). */
     internal var suiteSpec: String? = null
+
+    /** The calendar-live drive (set by startCalendarLive before start): the
+     * runtime.config delivery after begin is the scenario's GO trigger. */
+    internal var calendarLive = false
+
+    /** This drive's watchdog budget (spawn param; the default is the shared
+     * 180 s — the calendar-live real-turn drive overrides it). */
+    private var watchdogSeconds: Long = WATCHDOG_SECONDS
     private var finished = false
     private var busReady = false
     private var hostHelloDelivered = false
@@ -290,9 +334,9 @@ class BindingHost private constructor(
         }
         android.os.Handler(activity.mainLooper).postDelayed(
             {
-                if (!finished) fail("m4 watchdog: scenario did not complete in $WATCHDOG_SECONDS s")
+                if (!finished) fail("m4 watchdog: scenario did not complete in $watchdogSeconds s")
             },
-            WATCHDOG_SECONDS * 1000L,
+            watchdogSeconds * 1000L,
         )
     }
 
@@ -358,6 +402,14 @@ class BindingHost private constructor(
                 .put("spec", "upstream-tests/$spec")
                 .put("containerRoot", bundle.absolutePath)
             onRuntimeStatus(JsRuntime.m4BusDeliver(handle, config.toString()))
+        }
+        if (calendarLive) {
+            // The GO trigger: the calendar-live scenario takes one
+            // runtime.config off the bus queue and only then polls the
+            // staged credential and boots the spine.
+            onRuntimeStatus(
+                JsRuntime.m4BusDeliver(handle, JSONObject().put("type", "runtime.config").toString()),
+            )
         }
         deliverHostHello() // in case bus.ready arrived during eval
     }
