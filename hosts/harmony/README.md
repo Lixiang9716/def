@@ -27,6 +27,19 @@ ONE launch on the emulator now proves the host end to end in two phases:
    [artifacts/m5-host/](artifacts/m5-host/) (captures, verdicts 7/6/23/20,
    screenshots, receipt).
 
+   The notification leg on the emulator, measured (2026-10-11 forensics,
+   [artifacts/banner-forensics/](artifacts/banner-forensics/)): the dsh_phone
+   image renders NO heads-up banner — not while the app is foregrounded
+   (uitest dumpLayout at notify+1s/+4s carries no banner nodes) and not
+   after the background edge (the 90-minute watch). The leg completes
+   through the NOTIFICATION-CENTER ROW instead: it renders immediately and
+   its wantAgent tap delivers `notify.response` + the foreground edge
+   (scenario verdict PASS through that path the same day). The drive fails
+   loud by name when even the row is missing — an asleep/locked screen
+   freezes the emulator's notification mirror (keep the emulator awake
+   through the window), or the image genuinely drops the row and the
+   banner leg needs a real device.
+
 - `entry/src/main/cpp/gateway_smoke.cpp|h` — the platform twin of the desktop CLI
   smoke backend (`runtime/dsh/host/main_cli.c`): it answers the dispatched calls of
   the gateway scenarios — fsRead/fsWrite/fsScope over the app files dir exposed as
