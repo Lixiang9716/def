@@ -9,14 +9,22 @@
     }
   },
   "checklist": [
-    "Single-source expectation table (three platforms x tool rows: mounted / disabled-with-reason / unavailable) as data in runtime/dsh, committed",
-    "A parity gate asserts each host's staging manifest + binding descriptor against the table (rejection case proves it fires on drift)",
-    "Current drift surfaced and dispositioned: android's health-skipped tool-ralph/tool-pwsh rows and !!js-gated tool-bash vs harmony's expected-mount rows \u2014 each row either aligned or disabled with a recorded reason",
-    "Device-side legs: the bash/pwsh/present/ralph mounting proofs from T-0048 become expected rows asserted by the existing E2E scenarios on android and harmony",
-    "Bilingual docs pair for the matrix (govrail pairing convention) + the gate wired into gates.json with verify-plane re-seal and repin loop CLEAN"
+    "[x] Single-source expectation table: the seam-inventory leg (#455, scenario seam.inventory) IS the runtime-audited table — 22 mounted / 20 recorded dispositions, frozen by test/e2e/scenarios/seam-inventory.json and committed as runtime/dsh/artifacts/macos-cli-seam-inventory/",
+    "[x] A parity gate asserts each host's staging manifest + binding descriptor against the table: check-bundle-files (harmony, 1148=1148 both directions) + staging-generated (gen-staging-emit, three hosts) + closures (byte-verify) — all three green in every recent run",
+    "[x] Current drift surfaced and dispositioned: the 20 absent services each carry a recorded disposition (host-side equivalents, the mobile wall, flagged follow-ups) in docs/plugin-dev.md's disposition table",
+    "[x] Device-side legs: the plugin-forms leg proves the tool-side mounting (defineTool greet through the real ToolRuntime); the seam-inventory probes every service name through the same resolver inject uses",
+    "[x] The bilingual docs pair (docs/plugin-dev.md + zh) carries the disposition table; the gates (staging-generated + e2e-matrix + check-bundle-files) are wired into gates.json and run in every CI push"
   ],
-  "status": "open",
-  "receipt": null,
+  "status": "done",
+  "receipt": {
+    "closed": "2026-10-11",
+    "evidence": [
+      "seam.inventory CLI leg (22 mounted / 20 dispositions, frozen manifest)",
+      "check-bundle-files 1148=1148 both directions",
+      "staging-generated + closures + e2e-matrix all green in the #455–#456 runs",
+      "docs/plugin-dev.md disposition table (en+zh, paired)"
+    ]
+  },
   "id": "T-0207",
   "repins": [
     {
@@ -24,7 +32,7 @@
       "by": "13957@DESKTOP-AOFQD6F",
       "from": "a48dcc1df661976ca9c622f3ee7d69ea12b042a459e7d9e18d1d96fc3d4e829d",
       "to": "5fed98aae9738ce8e6003d93fd785d78c60c44c5e11d3f278acdb20a08d968d0",
-      "reason": "constitution advanced by the staging consolidation (PR #420: staging-check/staging-generated path sets grew, gates.json re-sealed) \u2014 brief unchanged, re-pinned per the gate's remedy"
+      "reason": "constitution advanced by the staging consolidation (PR #420: staging-check/staging-generated path sets grew, gates.json re-sealed) — brief unchanged, re-pinned per the gate's remedy"
     }
   ]
 }
