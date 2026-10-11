@@ -27,10 +27,27 @@ export default class EntryAbility extends UIAbility {
     const leg = want.parameters?.['dsh.e2e.leg'];
     const spec = want.parameters?.['dsh.e2e.spec'];
     const webClient = want.parameters?.['dsh.web.client'];
+    const scriptApproval = want.parameters?.['dsh.script.approval'];
     const bleMock = want.parameters?.['dsh.e2e.ble.mock'];
     if (bleMock === 'true' || bleMock === true) {
       E2eLeg.setBleMock(true);
       hilog.info(DOMAIN, TAG, 'ble mock radio selected at launch');
+    }
+    if (typeof scriptApproval === 'string' && scriptApproval.length > 0) {
+      // The scripted-approval seam's vocabulary is closed (the Android
+      // UiPrimitives twin): an unknown value fails loud here and stages
+      // NOWHERE — the human answers, a typo must never auto-approve.
+      if (scriptApproval === 'approve' || scriptApproval === 'remember'
+        || scriptApproval === 'decline') {
+        E2eLeg.setScriptApproval(scriptApproval);
+        // The AppStorage mirror is the seat-facing seam (OfficialServe's
+        // scriptApprovalFlag reads this key for the /api/state row).
+        AppStorage.setOrCreate<string>('dsh.script.approval', scriptApproval);
+        hilog.info(DOMAIN, TAG, 'script approval %{public}s staged at launch', scriptApproval);
+      } else {
+        hilog.error(DOMAIN, TAG,
+          'unknown dsh.script.approval: %{public}s — a human answers', scriptApproval);
+      }
     }
     if (typeof spec === 'string' && spec !== '') {
       E2eLeg.setSpec(spec);
