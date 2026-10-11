@@ -17,6 +17,22 @@
  *                                      foreground edges)
  *   dsh.runtime.verdict: harmony.capability-binding → done (exit 0 on PASS)
  *
+ * The notification leg's tap surface is the NOTIFICATION-CENTER ROW, never
+ * a heads-up banner: measured on the dsh_phone emulator image
+ * (HarmonyOS 7.0.0.107, 2026-10-11 forensics, hosts/harmony/artifacts/
+ * banner-forensics/) the emulator renders NO heads-up banner — not while
+ * the app is foregrounded (uitest dumpLayout at notify+1s and +4s carries
+ * no banner nodes) and not after the background edge (the 90-minute watch
+ * that motivated the skip-loud probe below). The row, though, renders
+ * immediately ("DSH E2E … 刚刚") and its tap delivers notify.response +
+ * the foreground edge — the scenario completes through it. Two measured
+ * degradations make the row ABSENT, and both fail loud by name instead of
+ * starving a deadline: (1) the screen asleep/locked — the emulator's
+ * notification mirror freezes with the display (keep the emulator awake
+ * through the window; the runner wakes+unlocks at start, and the dialog
+ * taps keep the idle timer reset until the shade); (2) an image whose
+ * mirror genuinely drops the row — that banner leg needs a real device.
+ *
  * tools/ dev script (out of the logging gate's scope; console IS the
  * product). It never asserts on pixels — screenshots are local evidence.
  *
@@ -303,7 +319,38 @@ const act = async () => {
       ['shell', 'uitest', 'uiInput', 'swipe', '360', '30', '360', '1800', '600']);
     console.log('drive: opened the notification shade');
     await pollUntil('app.state background edge', async () => state.backgrounded, STEP);
-    await tapText('DSH notification', /DSH E2E/, STEP);
+    // SKIP-LOUD on the shade row: absence is a named diagnosis, never a
+    // bare deadline death. The heads-up banner never renders on this
+    // emulator image (see the header forensics); the ROW is the tap
+    // surface — when even the row is missing, the notification mirror is
+    // degraded (asleep/locked screen freezing the mirror, or an image
+    // that needs a real device for this leg). Evidence lands beside the
+    // final shot so the failure is diagnosable from the artifacts.
+    const rowAt = await pollUntil('DSH notification row', async () => {
+      try {
+        return findText(dumpLayout(), /DSH E2E/);
+      } catch {
+        return null; // transient dump failures (shade animation) — keep polling
+      }
+    }, STEP, true);
+    if (rowAt === null) {
+      try {
+        shell('snapshot_display -f /data/local/tmp/dsh-drive-shade-miss.jpeg');
+        const miss = (args['shot-final'] ?? '/tmp/dsh-drive-shot.png')
+          .replace(/[^/]*$/, 'shade-miss.png');
+        hdcHere(['file', 'recv', '/data/local/tmp/dsh-drive-shade-miss.jpeg', miss]);
+        console.log(`drive: shade-miss evidence -> ${miss}`);
+      } catch { /* best effort */ }
+      die('notification leg skipped loud: the DSH row never rendered in the '
+        + 'shade — the heads-up banner never renders on this emulator image '
+        + '(measured, see hosts/harmony/artifacts/banner-forensics/), and '
+        + 'with even the row absent the notification mirror is degraded '
+        + '(asleep/locked screen, or an image whose mirror drops the row: '
+        + 'that banner leg needs a real device). Not retrying blind.');
+    }
+    execFileSync(args.hdc, ['shell', 'uitest', 'uiInput', 'click',
+      String(rowAt.x), String(rowAt.y)]);
+    console.log(`drive: tapped DSH notification at ${rowAt.x},${rowAt.y}`);
   }
 };
 
