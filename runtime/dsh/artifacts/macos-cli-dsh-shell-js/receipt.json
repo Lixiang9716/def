@@ -1,0 +1,18 @@
+{
+  "host": "darwin-cli (Darwin Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "kernel": "@deepseek-ai/cordis@4.0.2",
+  "scenario": "dsh-shell-js",
+  "proves": [
+    "the dsh-shell-js system plugin mounts with the spine and offers the one shell tool (shell/offered)",
+    "quotes + variables: a prefix assignment seeds the table, double quotes fold over $VAR/${VAR} expansion, single quotes stay literal (shell/call → shell/stdout → shell/exit)",
+    "redirects: > creates and >> appends through the gateway fsWrite, round-tripped in-shell (cat) and out-of-band (fsRead sees the exact bytes) (shell/persisted)",
+    "pipelines: a three-member cat | sort | head -n 1 over the in-memory 64KB-window pipes",
+    "by-name refusals: command substitution $(…) → exit 2 naming the construct; chmod → exit 2 naming the missing permission primitive and the D5 contract path; unknown program → exit 127 naming the applet list (shell/refused)"
+  ],
+  "checker": "test/e2e/scenarios/dsh-shell-js.json",
+  "events": 3243,
+  "exitCode": 0
+}
