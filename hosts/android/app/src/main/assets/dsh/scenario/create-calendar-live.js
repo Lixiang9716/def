@@ -146,6 +146,40 @@ const spineOptions = (cfg, containerRoot) => ({
   onEvent: (event, fields) => log.debug('boot', { event, ...fields }),
 });
 
+/** The configured agent appears asynchronously past the AgentLoop mount
+ * (the parity leg's wait). */
+const waitForAgent = async (booted) => {
+  let agent = null;
+  let guard = 0;
+  while (agent === null && guard++ < 10000) {
+    agent = booted.ctx.agents.get(SESSION_ID) ?? null;
+    if (agent === null) await Promise.resolve();
+  }
+  demand(agent !== undefined, `agent "${SESSION_ID}" never appeared in the registry`);
+  return agent;
+};
+
+/** THE LIVE MOUNT — usually already done BY THE PRODUCT: the turn's own
+ * plugin_create tool call runs the WHOLE pipeline (approval → registry →
+ * dynamic import → ctx.plugin) inside dsh-create's execute, and the
+ * plugin's apply() has been driving its card since. Re-mounting a live
+ * spec is the one refusal mountWorkspacePlugin keeps (a spec cannot mount
+ * twice), so this drive mounts only when the model authored the tree
+ * WITHOUT the tool's mount landing (the reload case), and records the
+ * truth either way. */
+const ensureMounted = async (booted) => {
+  if (isMounted(SPEC)) {
+    emit('calendar/mounted', { spec: SPEC, mountedBy: 'plugin_create' });
+    return;
+  }
+  const outcome = await mountWorkspacePlugin(booted.ctx, SPEC);
+  if (!outcome.mounted) {
+    fail(`mount refused at ${outcome.step}: ${outcome.reason ?? ''}`);
+    return;
+  }
+  emit('calendar/mounted', { spec: outcome.spec, version: outcome.version });
+};
+
 const main = async () => {
   await takeRuntimeConfig();
 
@@ -164,16 +198,7 @@ const main = async () => {
     'the spine boot returned no ctx');
   emit('calendar/spine/booted', { sessionId: SESSION_ID });
 
-  // The configured agent appears asynchronously past the AgentLoop mount
-  // (the parity leg's wait).
-  let agent = null;
-  let guard = 0;
-  while (agent === null && guard++ < 10000) {
-    agent = booted.ctx.agents.get(SESSION_ID) ?? null;
-    if (agent === null) await Promise.resolve();
-  }
-  demand(agent !== undefined, `agent "${SESSION_ID}" never appeared in the registry`);
-
+  const agent = await waitForAgent(booted);
   emit('calendar/turn/begin', { prompt: PROMPT });
   agent.followup(createUserMessage({
     content: [{ type: 'text', text: PROMPT }],
@@ -189,24 +214,7 @@ const main = async () => {
     return;
   }
 
-  // THE LIVE MOUNT — usually already done BY THE PRODUCT: the turn's own
-  // plugin_create tool call runs the WHOLE pipeline (approval → registry →
-  // dynamic import → ctx.plugin) inside dsh-create's execute, and the
-  // plugin's apply() has been driving its card since. Re-mounting a live
-  // spec is the one refusal mountWorkspacePlugin keeps (a spec cannot mount
-  // twice), so this drive mounts only when the model authored the tree
-  // WITHOUT the tool's mount landing (the reload case), and records the
-  // truth either way.
-  if (isMounted(SPEC)) {
-    emit('calendar/mounted', { spec: SPEC, mountedBy: 'plugin_create' });
-  } else {
-    const outcome = await mountWorkspacePlugin(booted.ctx, SPEC);
-    if (!outcome.mounted) {
-      fail(`mount refused at ${outcome.step}: ${outcome.reason ?? ''}`);
-      return;
-    }
-    emit('calendar/mounted', { spec: outcome.spec, version: outcome.version });
-  }
+  await ensureMounted(booted);
   emit('scenario.complete', { status: 'pass' });
   globalThis.__dshComplete(true, `create.calendar.live: ${SPEC} live-mounted`);
 };

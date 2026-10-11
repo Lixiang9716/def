@@ -3,8 +3,6 @@ package com.dshmobile.host
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import java.io.File
 import org.json.JSONArray
 import org.json.JSONObject
@@ -16,8 +14,13 @@ import org.json.JSONObject
  * the REAL nine-primitive gateway through the frozen bridge, the projection
  * pushed JS → bus → WS → WebView. The outcome settles once (scenario or 180 s
  * watchdog). JS runs ONLY on the runtime thread; every settle/event hops via
- * JsRuntime.post (§6); carrier evidence rides the canonical envelope. */
-class BindingHost private constructor(
+ * JsRuntime.post (§6); carrier evidence rides the canonical envelope.
+ *
+ * The drive factory family (which scenario this launch runs) lives in
+ * BindingDrives.kt — split at the code-size gate; the constructor and the
+ * internal seams it drives (pump/cardSurface/start/watchdog/instance) are
+ * module-internal for that file. */
+class BindingHost internal constructor(
     private val activity: Activity,
     /** Carrier-side evidence scenario id + JS entry + capture label for this
      * drive. The default is the M4 binding; the real-LLM drive (`llm.live-stream`)
@@ -37,35 +40,9 @@ class BindingHost private constructor(
 ) {
 
     companion object {
-        const val SCENARIO = "android.capability-binding"
-        const val ENTRY = "scenario/android-capability-binding.js"
-        const val LLM_SCENARIO = "llm.live-stream.carrier"
-        const val LLM_ENTRY = "scenario/llm-live-stream.js"
-        const val CARD_PLAYER_SCENARIO = "card.player"
-        const val CARD_PLAYER_ENTRY = "scenario/card-player.js"
-        const val CREATE_CARD_SCENARIO = "create.card"
-        const val CREATE_CARD_ENTRY = "scenario/create-card.js"
-        const val CALENDAR_LIVE_SCENARIO = "create.calendar.live"
-        const val CALENDAR_LIVE_ENTRY = "scenario/create-calendar-live.js"
-        /** The real-turn budget (see startCalendarLive): turn + mount within
-         * one drive, headroom for a thinking model's minutes-long first byte. */
-        const val CALENDAR_LIVE_WATCHDOG_SECONDS = 480L
-        const val PARITY_SCENARIO = "upstream.parity"
-        const val PARITY_ENTRY = "scenario/upstream-parity.js"
-        const val SUITE_SCENARIO = "upstream.suite"
-        const val SUITE_ENTRY = "scenario/upstream-suite-leg.js"
-        const val COMPACT_SCENARIO = "android.compactweb.mount"
-        const val COMPACT_ENTRY = "scenario/session-mock-llm.js"
-        const val DEVICE_PLANE_SCENARIO = "android.device-plane"
-        const val DEVICE_PLANE_ENTRY = "scenario/device-plane.js"
-        const val CAMERA_PLANE_SCENARIO = "android.camera-plane"
-        const val CAMERA_PLANE_ENTRY = "scenario/camera-plane.js"
-        const val BLE_SCENARIO = "android.ble-plane"
-        const val BLE_ENTRY = "scenario/ble-plane.js"
-        const val MIC_PLANE_SCENARIO = "android.mic-plane"
-        const val MIC_PLANE_ENTRY = "scenario/mic-plane.js"
-        const val WHALE_CLIENT_ID = "dsh-web-client-compact"
-        const val WATCHDOG_SECONDS = 180L
+        // The scenario table (scenario ids / entries / watchdog budgets) and
+        // the drive factory family live in BindingDrives.kt — moved at the
+        // code-size gate; this companion keeps the shared runtime facts.
         const val EXTRA_NOTIFY_RESPONSE = "dsh.notify.response"
 
         private const val TAG = "dsh.runtime"
@@ -80,180 +57,7 @@ class BindingHost private constructor(
             .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS))
             .toString()
 
-        @Volatile private var instance: BindingHost? = null
-
-        /** Creates and starts the session; [onFinished] gets the verdict text. */
-        fun start(
-            activity: Activity,
-            webView: WebView?,
-            onFinished: (String) -> Unit,
-        ): BindingHost {
-            val host = BindingHost(activity)
-            host.pump.attach(webView)
-            instance = host
-            host.start(onFinished)
-            return host
-        }
-
-        /** The M2 real-LLM drive (scenario `llm.live-stream`): same carrier + WebView
-         * + gateway flow, but the JS entry streams one real chat completion
-         * through the gateway httpFetch. Credentials ride fs scope "app"
-         * (files/profiles/default/llm-live-stream/config.json), staged by the E2E
-         * runner before launch. */
-        fun startLlm(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("llm-live-stream", LLM_SCENARIO, LLM_ENTRY, activity, webView, onFinished)
-
-        /** The v1.5.0 device-plane drive (scenario `android.device-plane`):
-         * the six SDK primitives + the media picker, driven marker-by-marker
-         * from the runner. */
-        fun startDevicePlane(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("device-plane", DEVICE_PLANE_SCENARIO, DEVICE_PLANE_ENTRY, activity, webView, onFinished)
-        /** The capability plane's BLE drive (scenario `android.ble-plane`):
-         * the real radio by default (an emulator answers `unavailable` honestly
-         * — the CI skip leg), the deterministic mock on the mock extra. */
-        fun startBle(activity: Activity, webView: WebView?, onFinished: (String) -> Unit, mockRadio: Boolean): BindingHost =
-            drive("ble-plane", BLE_SCENARIO, BLE_ENTRY, activity, webView, onFinished, mockRadio)
-
-        /** One scenario drive factory: the binding machinery with the leg's scenario
-         * id, entry and capture label. The compact/parity/suite legs keep their own factories. */
-        private fun drive(
-            captureLabel: String,
-            scenarioId: String,
-            entryPath: String,
-            activity: Activity,
-            webView: WebView?,
-            onFinished: (String) -> Unit,
-            mockRadio: Boolean = false,
-        ): BindingHost {
-            val host = BindingHost(
-                activity,
-                scenarioId = scenarioId,
-                entryPath = entryPath,
-                captureLabel = captureLabel,
-                mockRadio = mockRadio,
-            )
-            host.pump.attach(webView)
-            instance = host
-            host.cardSurface = CardSurface.attach(activity) // the card face
-            host.start(onFinished)
-            return host
-        }
-        /** The mic drive (`android.mic-plane`): micStart/micStop + the mic.frame channel; the OS prompt pre-granted in automation. */
-        fun startMicPlane(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("mic-plane", MIC_PLANE_SCENARIO, MIC_PLANE_ENTRY, activity, webView, onFinished)
-
-        /** The card-player drive (`card.player`): the card face's proof. */
-        fun startCardPlayer(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("card-player", CARD_PLAYER_SCENARIO, CARD_PLAYER_ENTRY, activity, webView, onFinished)
-
-        /**
-         * The create-card drive (`create.card`, the gaps3/android-01 spine
-         * seat): the scenario boots the FULL upstream spine (boot.js mounts
-         * dsh-create, capturing the real cordis context), then plugin_create's
-         * execute writes the package, the scripted-approval seam answers the
-         * native dialog, the registry row lands, and the authored plugin
-         * LIVE-mounts into that spine — its own apply() posts the card.* bus
-         * lines this surface renders. */
-        fun startCreateCard(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("create-card", CREATE_CARD_SCENARIO, CREATE_CARD_ENTRY, activity, webView, onFinished)
-
-        /**
-         * The calendar-live drive (`create.calendar.live`, the
-         * gaps3/android-04 port of the iOS `-dsh-mode calendar-live` seat):
-         * ONE REAL-backend turn driven on the agent (the staged credential
-         * at fs-app llm/config.json is the model route — the runner stages
-         * it and skips LOUD when there is none), then the authored calendar
-         * plugin LIVE-mounts through the approval → registry → import →
-         * ctx.plugin chain and its own apply() drives the card face. The
-         * watchdog is the turn-scale budget (a reasoning model's first byte
-         * takes minutes over the emulator network — the 180 s default would
-         * kill a legitimate turn mid-flight); the runtime.config delivery
-         * after begin is the scenario's GO trigger. */
-        fun startCalendarLive(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost = spawn(
-            activity, webView, onFinished,
-            scenarioId = CALENDAR_LIVE_SCENARIO,
-            entryPath = CALENDAR_LIVE_ENTRY,
-            captureLabel = "calendar-live",
-            watchdogSeconds = CALENDAR_LIVE_WATCHDOG_SECONDS,
-        ).also { it.calendarLive = true }
-
-        /** The camera drive (`android.camera-plane`, v1.10.0): the capture burst
-         * against the emulator's virtual camera, the phased rows' honest `unavailable`. */
-        fun startCameraPlane(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
-            drive("camera-plane", CAMERA_PLANE_SCENARIO, CAMERA_PLANE_ENTRY, activity, webView, onFinished)
-
-        /** The upstream-suite drive (scenario `upstream.suite`): ONE transpiled
-         * upstream spec executed by the quickjs-shaped harness in our runtime;
-         * the spec name rides the runtime.config bus delivery. */
-        fun startSuite(activity: Activity, webView: WebView?, onFinished: (String) -> Unit, spec: String): BindingHost = spawn(
-            activity, webView, onFinished,
-            scenarioId = SUITE_SCENARIO,
-            entryPath = SUITE_ENTRY,
-            captureLabel = "upstream-suite",
-        ).also { it.suiteSpec = spec }
-
-        /** The upstream-parity drive (scenario `upstream.parity`): the port leg against the committed golden. */
-        fun startParity(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost = spawn(
-            activity, webView, onFinished,
-                scenarioId = PARITY_SCENARIO,
-                entryPath = PARITY_ENTRY,
-                captureLabel = "upstream-parity",
-                parityMode = true,
-        )
-
-        /** The compact creation-client drive (scenario `android.compactweb.mount`). */
-        fun startWhale(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost = spawn(
-            activity, webView, onFinished,
-                scenarioId = COMPACT_SCENARIO,
-                entryPath = COMPACT_ENTRY,
-                captureLabel = "android-compact-mount",
-                clientId = WHALE_CLIENT_ID,
-                webRootDir = "webclient-compact/web",
-                compactLeg = true,
-        )
-
-        /** The shared factory tail of the scenario-swap drives (the
-         * device/camera/BLE siblings): construct, attach, park, start. */
-        private fun spawn(
-            activity: Activity,
-            webView: WebView?,
-            onFinished: (String) -> Unit,
-            scenarioId: String,
-            entryPath: String,
-            captureLabel: String,
-            mockRadio: Boolean = false,
-            clientId: String = "dsh-web-client",
-            webRootDir: String = "webclient/web",
-            compactLeg: Boolean = false,
-            parityMode: Boolean = false,
-            watchdogSeconds: Long = WATCHDOG_SECONDS,
-        ): BindingHost {
-            val host = BindingHost(
-                activity,
-                scenarioId = scenarioId,
-                entryPath = entryPath,
-                captureLabel = captureLabel,
-                clientId = clientId,
-                webRootDir = webRootDir,
-                compactLeg = compactLeg,
-                mockRadio = mockRadio,
-            )
-            if (parityMode) host.parityMode = true
-            host.watchdogSeconds = watchdogSeconds
-            host.pump.attach(webView)
-            instance = host
-            // The card face rides EVERY drive: the spawn seat boots the FULL
-            // spine (boot.js mounts dsh-create), so a plugin can mount and
-            // post card.* lines mid-drive — the calendar-live leg's card is
-            // exactly that. A drive whose scenario posts none carries an
-            // empty overlay (the previous asymmetry — drive() attached,
-            // spawn() didn't — silently dropped the calendar card: measured
-            // gaps3/android-04, plugin.calendar-plugin's card.present crossed
-            // with cardSurface still null).
-            host.cardSurface = CardSurface.attach(activity)
-            host.start(onFinished)
-            return host
-        }
+        @Volatile internal var instance: BindingHost? = null
 
         /** Lifecycle entry points (null until the session is live). */
         fun dispatchPause() = instance?.lifecycle("background")
@@ -305,8 +109,9 @@ class BindingHost private constructor(
     internal var calendarLive = false
 
     /** This drive's watchdog budget (spawn param; the default is the shared
-     * 180 s — the calendar-live real-turn drive overrides it). */
-    private var watchdogSeconds: Long = WATCHDOG_SECONDS
+     * 180 s — the calendar-live real-turn drive overrides it). Set by the
+     * BindingDrives spawn tail, hence module-internal. */
+    internal var watchdogSeconds: Long = WATCHDOG_SECONDS
     private var finished = false
     private var busReady = false
     private var hostHelloDelivered = false
@@ -316,14 +121,14 @@ class BindingHost private constructor(
      * the ws.* records + the host.info gate + the origin load) — extracted
      * to keep this file under the size gate; the records still ride this
      * drive's scenario id through carrierLog. */
-    private val pump = PagePump(
+    internal val pump = PagePump(
         activity, carrier,
         log = { event, fields -> carrierLog(event, fields) },
         onEvent = { json -> event(json) },
         runtimeReady = { handle != 0L && carrier.port != 0 },
     )
 
-    private fun start(onFinished: (String) -> Unit) {
+    internal fun start(onFinished: (String) -> Unit) {
         this.onFinished = onFinished
         JsRuntime.post {
             try {
@@ -385,10 +190,17 @@ class BindingHost private constructor(
             captureLabel, bridge,
         )
         if (handle == 0L) fail("m4 begin: ${JsRuntime.bindingLastError()}")
+        deliverDriveConfigs(bundle)
+        deliverHostHello() // in case bus.ready arrived during eval
+    }
+
+    /** The drive-specific runtime.config deliveries after begin (runtime
+     * thread): the parity route facts, the suite spec, the calendar-live GO
+     * trigger. Same handoff shape as the session-live drives: the scenario's
+     * bus subscription is installed during eval, so a delivery lands
+     * whenever it is posted after m4Begin returns. */
+    private fun deliverDriveConfigs(bundle: File) {
         if (parityMode) {
-            // Same handoff shape as the session-live drives: the scenario's
-            // bus subscription is installed during eval, so the delivery
-            // lands whenever it is posted after m4Begin returns.
             val config = JSONObject()
                 .put("type", "runtime.config")
                 .put("mockLlmUrl", "http://127.0.0.1:${carrier.port}/mock-llm")
@@ -411,7 +223,6 @@ class BindingHost private constructor(
                 JsRuntime.m4BusDeliver(handle, JSONObject().put("type", "runtime.config").toString()),
             )
         }
-        deliverHostHello() // in case bus.ready arrived during eval
     }
 
     /** Full capability surface: all nine primitives real. */
@@ -442,8 +253,9 @@ class BindingHost private constructor(
         timer.register(core)
     }
 
-    /** The card face — attached at drive construction (main), fed by the bus. */
-    @Volatile private var cardSurface: CardSurface? = null
+    /** The card face — attached at drive construction (main), fed by the bus.
+     * Attached by the BindingDrives factories, hence module-internal. */
+    @Volatile internal var cardSurface: CardSurface? = null
     private val bridge = object : JsRuntime.BindingBridge {
         override fun onGatewayCall(callId: Int, name: String, args: String) {
             if (finished) return
@@ -475,31 +287,28 @@ class BindingHost private constructor(
                 carrier.send(payload.toString()) // CarrierServer.send is thread-safe
             }
             // The card face is main-thread confined; the bus line is not.
-            // The create-card drive additionally narrates the face's own
-            // acts under its scenario (card.face.presented / completed —
-            // the manifest's chain names the NATIVE surface's render, a
-            // fact only this side of the bus owns); the other drives'
-            // streams stay byte-shaped (their manifests pin them).
             "card.present", "card.state", "card.dismiss", "card.complete" -> {
-                if (scenarioId == CREATE_CARD_SCENARIO) {
-                    when (msg.optString("type")) {
-                        "card.present" -> {
-                            val face = msg.optJSONObject("card")
-                            carrierLog(
-                                "card.face.presented",
-                                JSONObject()
-                                    .put("id", face?.optString("id") ?: "")
-                                    .put("kind", face?.optString("kind") ?: ""),
-                            )
-                        }
-                        "card.complete" -> carrierLog(
-                            "card.face.completed",
-                            JSONObject().put("id", msg.optString("id")),
-                        )
-                    }
-                }
+                narrateCardFace(msg)
                 activity.runOnUiThread { cardSurface?.handle(msg) }
             }
+        }
+    }
+
+    /** The create-card drive narrates the face's own acts under its scenario
+     * (card.face.presented / completed — the manifest's chain names the
+     * NATIVE surface's render, a fact only this side of the bus owns); the
+     * other drives' streams stay byte-shaped (their manifests pin them). */
+    private fun narrateCardFace(msg: JSONObject) {
+        if (scenarioId != CREATE_CARD_SCENARIO) return
+        val type = msg.optString("type")
+        if (type == "card.complete") {
+            carrierLog("card.face.completed", JSONObject().put("id", msg.optString("id")))
+        } else if (type == "card.present") {
+            val face = msg.optJSONObject("card")
+            val fields = JSONObject()
+            fields.put("id", face?.optString("id") ?: "")
+            fields.put("kind", face?.optString("kind") ?: "")
+            carrierLog("card.face.presented", fields)
         }
     }
 
@@ -613,6 +422,3 @@ class BindingHost private constructor(
         Log.i(TAG, "dsh.runtime.log: $record")
     }
 }
-
-private const val MIC_PLANE_SCENARIO = "android.mic-plane"
-private const val MIC_PLANE_ENTRY = "scenario/mic-plane.js"

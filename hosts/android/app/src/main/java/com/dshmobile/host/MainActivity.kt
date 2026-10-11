@@ -27,9 +27,6 @@ import java.io.File
  */
 class MainActivity : Activity() {
 
-    /** The per-tree asset manifest stamp (syncAssetDir). */
-    private val assetStampName = ".dsh-asset-stamp"
-
     private lateinit var verdictView: TextView
     private var spikeHost: BindingHost? = null
     private var webView: WebView? = null
@@ -48,6 +45,13 @@ class MainActivity : Activity() {
             textSize = 16f
             text = "dsh rt host: booting quickjs-ng..."
         }
+        dispatchLaunchExtras(savedInstanceState)
+    }
+
+    /** The launch-extra dispatch: which drive this harness launch runs (the
+     * runner's `--ez dsh.<leg> true` picks the leg; no extra means the
+     * default M1 leg — the three-scenario regression on the runtime thread). */
+    private fun dispatchLaunchExtras(savedInstanceState: Bundle?) {
         if (intent.getBooleanExtra(EXTRA_SUITE, false)) {
             startBinding(savedInstanceState, parity = true, suite = intent.getStringExtra(EXTRA_SPEC))
         } else if (intent.getBooleanExtra(EXTRA_PARITY, false)) {
@@ -82,7 +86,7 @@ class MainActivity : Activity() {
         } else {
             setContentView(verdictView)
             JsRuntime.post {
-                materializeBundle()
+                AssetSync.materializeBundle(this)
                 val verdict = JsRuntime.runOnce(filesDir.absolutePath)
                 runOnUiThread { verdictView.text = verdict }
             }
@@ -191,7 +195,7 @@ class MainActivity : Activity() {
         // The gateway core reads filesDir/rt at construction: materialize
         // the bundle FIRST (runtime thread), then construct the host.
         JsRuntime.post {
-            materializeBundle()
+            AssetSync.materializeBundle(this)
             runOnUiThread {
                 spikeHost = startHost(llm, view, parity, suite, compact, devicePlane, cameraPlane, ble, bleMock, micPlane, cardPlayer, createCard, calendarLive)
             }
@@ -256,9 +260,9 @@ class MainActivity : Activity() {
         // The carrier + drive read filesDir trees: materialize FIRST (runtime
         // thread: rt bundle + official dist + web-plugins), then start.
         JsRuntime.post {
-            materializeBundle()
-            syncAssetDir("official-web", File(filesDir, "official-web"))
-            syncAssetDir("web-plugins", File(filesDir, "web-plugins"))
+            AssetSync.materializeBundle(this)
+            AssetSync.sync(this, "official-web", File(filesDir, "official-web"))
+            AssetSync.sync(this, "web-plugins", File(filesDir, "web-plugins"))
             runOnUiThread {
                 session = OfficialWebSession.start(this, view, onFinished = { verdict ->
                     verdictView.text = verdict
@@ -289,8 +293,8 @@ class MainActivity : Activity() {
         // The seat reads filesDir trees: materialize FIRST (runtime thread:
         // rt bundle incl. webclient-v2 + web-plugins), then drive.
         JsRuntime.post {
-            materializeBundle()
-            syncAssetDir("web-plugins", File(filesDir, "web-plugins"))
+            AssetSync.materializeBundle(this)
+            AssetSync.sync(this, "web-plugins", File(filesDir, "web-plugins"))
             runOnUiThread {
                 v2Web = V2WebSession.start(this, view) { verdict ->
                     verdictView.text = verdict
@@ -376,9 +380,9 @@ class MainActivity : Activity() {
         // The carrier + runtime read filesDir trees: materialize FIRST, then
         // serve. No verdict callback — a user-facing boot has nothing to assert.
         JsRuntime.post {
-            materializeBundle()
-            syncAssetDir("official-web", File(filesDir, "official-web"))
-            syncAssetDir("web-plugins", File(filesDir, "web-plugins"))
+            AssetSync.materializeBundle(this)
+            AssetSync.sync(this, "official-web", File(filesDir, "official-web"))
+            AssetSync.sync(this, "web-plugins", File(filesDir, "web-plugins"))
             runOnUiThread {
                 val client = intent.getStringExtra(EXTRA_WEB_CLIENT)
                     ?: SessionServe.CLIENT_ID
@@ -418,9 +422,9 @@ class MainActivity : Activity() {
         // The carrier + drive read filesDir trees: materialize FIRST (runtime
         // thread: rt bundle + official dist + web-plugins), then start.
         JsRuntime.post {
-            materializeBundle()
-            syncAssetDir("official-web", File(filesDir, "official-web"))
-            syncAssetDir("web-plugins", File(filesDir, "web-plugins"))
+            AssetSync.materializeBundle(this)
+            AssetSync.sync(this, "official-web", File(filesDir, "official-web"))
+            AssetSync.sync(this, "web-plugins", File(filesDir, "web-plugins"))
             runOnUiThread {
                 sessionLive = SessionLiveSession.start(this, view) { verdict ->
                     verdictView.text = verdict
@@ -443,9 +447,9 @@ class MainActivity : Activity() {
         // The carrier + drive read filesDir trees: materialize FIRST (runtime
         // thread: rt bundle + official dist + web-plugins), then start.
         JsRuntime.post {
-            materializeBundle()
-            syncAssetDir("official-web", File(filesDir, "official-web"))
-            syncAssetDir("web-plugins", File(filesDir, "web-plugins"))
+            AssetSync.materializeBundle(this)
+            AssetSync.sync(this, "official-web", File(filesDir, "official-web"))
+            AssetSync.sync(this, "web-plugins", File(filesDir, "web-plugins"))
             runOnUiThread {
                 sessionWrite = SessionWriteSession.start(this, view) { verdict ->
                     verdictView.text = verdict
@@ -454,55 +458,7 @@ class MainActivity : Activity() {
         }
     }
 
-    /** Copies the asset rt bundle to filesDir/rt preserving the layout. */
-    private fun materializeBundle() {
-        syncAssetDir("dsh", File(filesDir, "dsh"))
-    }
-
-    /** The asset-set stamp written INSIDE each synced tree: the exact sorted
-     * relative-path manifest of what the current APK ships. */
-    private fun collectAssetNames(assetPath: String, prefix: String, names: MutableSet<String>) {
-        val children = assets.list(assetPath).orEmpty()
-        if (children.isEmpty()) {
-            names.add(prefix)
-            return
-        }
-        for (child in children) {
-            collectAssetNames("$assetPath/$child", if (prefix.isEmpty()) child else "$prefix/$child", names)
-        }
-    }
-
-    /** Reconciles one served tree with the APK's assets (loop-g): an
-     * overwrite-only copy let every entry an OLDER APK shipped survive
-     * `install -r` forever — the device's files/rt/vendor/dsh carried
-     * 274 pre-lean dirs the current closure never materializes, and no
-     * clean-install proof could pass over them. The stamped manifest makes
-     * drift loud and self-healing: matching stamp → no-op; missing or
-     * differing stamp (first boot after this fix, a lean change, a new
-     * file) → wipe the tree and re-materialize exactly the shipped set.
-     * Crash-safe: the stamp lands only after the copy completes. Trees are
-     * app-owned scratch (the workspace lives under files/profiles/, and the
-     * presets seed re-delivers its rows every boot), so the wipe never
-     * takes user data with it. */
-    private fun syncAssetDir(assetPath: String, target: File) {
-        val stamp = File(target, assetStampName)
-        val names = sortedSetOf<String>()
-        collectAssetNames(assetPath, "", names)
-        val desired = names.joinToString("\n")
-        if (stamp.isFile && stamp.readText() == desired) return
-        if (target.exists()) target.deleteRecursively()
-        target.mkdirs()
-        for (rel in names) {
-            val out = File(target, rel)
-            out.parentFile?.mkdirs()
-            copyAssetFile("$assetPath/$rel", out)
-        }
-        stamp.writeText(desired)
-    }
-
-    private fun copyAssetFile(assetPath: String, target: File) {
-        assets.open(assetPath).use { input ->
-            target.outputStream().use { output -> input.copyTo(output) }
-        }
-    }
+    // The stamped asset-tree reconciler (materializeBundle / syncAssetDir)
+    // lives in AssetSync.kt — moved at the code-size gate; the behavior is
+    // unchanged (matching stamp → no-op, drift → wipe and re-materialize).
 }
