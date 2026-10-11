@@ -231,27 +231,22 @@ terminal|0.1.6-alpha.2|cb9b07571654bcfe6877f8ff860a3ebd17564fe17994a9e905aea0ef4
 # domino (served through the shims' cjs-loader), and the GFM rules plugin.
 # Shas mirror the suite-side pins in ensure-dsh-tests.sh (same bytes, one
 # pin per face).
-# The dsh-shell-js system plugin's parser closure (2026-10-11): bash-parser
-# 0.5.0 — the command-line parser, exact-pinned (unmaintained since 2017,
-# DECISION tmp/shell-js-spikes/DECISION.md §1) — plus its full 32-package
-# production dependency closure. Every row is in the static require graph;
-# a missing row is a MODULE_NOT_FOUND on the device's first parse. babylon
-# (most of the weight) rides UNCONDITIONALLY:
-# bash-parser@0.5.0/src/modes/posix/rules/arithmetic-expansion.js:5
-# requires it at module load even though the executor refuses $((…)) by
-# name (DECISION §1 — accepted cost; never prune a vendored tree by hand).
+# The dsh-shell-js system plugin's vendor faces (2026-10-11): shelljs
+# 0.10.0 — the applet bodies, pristine behind outboard seams — plus its
+# minimatch@10.0.3 glob chain (@isaacs/brace-expansion,
+# @isaacs/balanced-match). The bash-parser@0.5.0 parser closure (29 trees)
+# left with the hand-written-parser swap of the same date: the parser is
+# runtime/dsh/system-plugins/dsh-shell-js/parser-syntax.js now, so the
+# only remaining requires from this block are shelljs → (its own src tree)
+# and minimatch → @isaacs/* — verified at swap time by grepping the
+# require graph of every kept tree.
 # minimatch is pinned at 10.0.3, the ISC ceiling: 10.1.0+ relicenses
 # BlueOak-1.0.0, so a bump past it is a license-policy decision, not a
-# routine re-pin (DECISION §3). License notes exactly as the packages ship
-# them: curry@1.2.0 and filter-iterator@0.0.1 carry NO license field and NO
-# LICENSE file (UNKNOWN — recorded as-is, not assumed MIT);
-# string.fromcodepoint@0.2.1 declares MIT via the deprecated "licenses"
-# array + LICENSE-MIT.txt (no "license" field); deep-freeze@0.0.1 and
-# identity-function@1.0.0 declare public domain. shelljs@0.10.0 is
-# BSD-3-Clause (LICENSE) with an embedded wrench-js MIT notice that must
-# survive vendoring verbatim — the pristine bytes carry it; a hand edit
-# would break both D6 and the notice. Notice text, verified verbatim at
-# src/cp.js:90-96 and src/rm.js:12-19:
+# routine re-pin (DECISION §3). shelljs@0.10.0 is BSD-3-Clause (LICENSE)
+# with an embedded wrench-js MIT notice that must survive vendoring
+# verbatim — the pristine bytes carry it; a hand edit would break both D6
+# and the notice. Notice text, verified verbatim at src/cp.js:90-96 and
+# src/rm.js:12-19:
 #   Adapted from https://github.com/ryanmcgrath/wrench-js
 #   Copyright (c) 2010 Ryan McGrath
 #   Copyright (c) 2012 Artur Adib
@@ -301,39 +296,10 @@ pngjs@5.0.0|pngjs/-/pngjs-5.0.0.tgz|4d960bbbe078022d7a36822e2874f884c7410ead111f
 turndown@7.2.4|turndown/-/turndown-7.2.4.tgz|05f61bc3f0aeca5e5cd7f1b5492e26b9040bb00708cd41fb1b0f7b216e296fa0
 @mixmark-io/domino@2.2.0|@mixmark-io/domino/-/domino-2.2.0.tgz|b829bcca09544649f6432020dd6915b6fb054154d7a77eb6f8b3fb1f4165afec
 @joplin/turndown-plugin-gfm@1.0.67|@joplin/turndown-plugin-gfm/-/turndown-plugin-gfm-1.0.67.tgz|59f5c59b28bb690bc1cb2d00c67b5e798ce5b29032989892b27a491093e6cde5
-bash-parser@0.5.0|bash-parser/-/bash-parser-0.5.0.tgz|1b5cb199df333cddf5eb8ce416a39b430e32b958d052f56dd7b83ff7d82018a8
 shelljs@0.10.0|shelljs/-/shelljs-0.10.0.tgz|0908d4921a9e304cbf0aacf161f31aafaa7d5920b403c1493d1c99646ace9ff2
 minimatch@10.0.3|minimatch/-/minimatch-10.0.3.tgz|5c531a1fcdfab89b67470063e99d392d701027c41774f6ba957c819f91656ee4
 @isaacs/brace-expansion@5.0.1|@isaacs/brace-expansion/-/brace-expansion-5.0.1.tgz|c908309f6735b002952f2b02563e68d98cba0375322a189ebc4f6f47637ee95b
 @isaacs/balanced-match@4.0.1|@isaacs/balanced-match/-/balanced-match-4.0.1.tgz|b4593f0b61a94bb72521b5868b9da79e5f26b353d2cb958a1822adc3759915b0
-array-last@1.3.0|array-last/-/array-last-1.3.0.tgz|306f7046fbfe96826f70e9b1c1077ba47c2ded994160179d746980d0b8840ae6
-babylon@6.18.0|babylon/-/babylon-6.18.0.tgz|ce1e81d36b5789279f8aba716d2ec5aabecbc306585f867f1a6a1c8dc478d88c
-compose-function@3.0.3|compose-function/-/compose-function-3.0.3.tgz|143073e156c1cd7167b9f384d008362625f7bfedb112e779c956371c33ff523e
-curry@1.2.0|curry/-/curry-1.2.0.tgz|2af1794c312fbf75d66eb6fe5924173bff8ac89641eee9fec5fb97518b2d3ec2
-deep-freeze@0.0.1|deep-freeze/-/deep-freeze-0.0.1.tgz|8114a49a3e2bc05b612b45248faa07e82efd7da58bb1234fea488c02ebc2bb3d
-filter-iterator@0.0.1|filter-iterator/-/filter-iterator-0.0.1.tgz|726dc38b280fdcf8612db5011b400d0334080e4a01fedfb36e92ff7a4108d75b
-filter-obj@1.1.0|filter-obj/-/filter-obj-1.1.0.tgz|2a2a98929edba48e2cc11468bd35ec62a76122f4e6c96eaa9eddd26824b0004b
-has-own-property@0.1.0|has-own-property/-/has-own-property-0.1.0.tgz|940ce92f0879221d8c3a21023d9880135633234898db844c1bbcc385d9b995e1
-identity-function@1.0.0|identity-function/-/identity-function-1.0.0.tgz|624a5af7ad42c1656695725616f26d40c3c3c4e13796da6f8913f64b61a9a1d8
-iterable-lookahead@1.0.0|iterable-lookahead/-/iterable-lookahead-1.0.0.tgz|89c1046402f2f25c15473662d7472a94c6fce1467288d5abdacb16ebb18411b4
-iterable-transform-replace@1.2.0|iterable-transform-replace/-/iterable-transform-replace-1.2.0.tgz|c8a810aa71c2e937b0c547653d09822abe9ff1986c83b02f2ac57f1f2b23f4bc
-magic-string@0.16.0|magic-string/-/magic-string-0.16.0.tgz|d4f7ff9f0982ffabe70cd394a9ad64d96feab8687afd4328c87638bf5038b139
-map-iterable@1.0.1|map-iterable/-/map-iterable-1.0.1.tgz|b0c8d170f229338377b57d151dedfb07877960a762aa2560df0d9a124f335ff7
-map-obj@2.0.0|map-obj/-/map-obj-2.0.0.tgz|141c59e54c8348c06a89fc0ae9c88944695b728775eddad954cd970412115cdf
-object-pairs@0.1.0|object-pairs/-/object-pairs-0.1.0.tgz|047ff0f2bf179717cbea9618c1a22d19363e1453e7d9504ceb29803ba4c15b97
-object-values@1.0.0|object-values/-/object-values-1.0.0.tgz|76a51f5ae746b7c1e0134c3ce328d25d83ac63b3a968cccf7c6e309994df7e62
-reverse-arguments@1.0.0|reverse-arguments/-/reverse-arguments-1.0.0.tgz|27c9096b1d61d7afe0bcac16ec68a1cc4cbfcc41d8d89665250d055d4193d344
-shell-quote-word@1.0.1|shell-quote-word/-/shell-quote-word-1.0.1.tgz|1f895e32b89e70f385e06cb4a1cb4a8d453633a57b9db6b1dab0ce3173b7092e
-to-pascal-case@1.0.0|to-pascal-case/-/to-pascal-case-1.0.0.tgz|f26ff57326a9f676751133b93a4224fba39555b649f4a6095b7c57fc27d90296
-transform-spread-iterable@1.4.1|transform-spread-iterable/-/transform-spread-iterable-1.4.1.tgz|8be1951579088dea146d5a49f1327f01e79217510edafb2f9bdb6cc3c9938922
-unescape-js@1.1.4|unescape-js/-/unescape-js-1.1.4.tgz|0fdf2857c79bd7baf800d7d32dd3e02aa2ce806bbb863ec64e1560fd2b41b747
-arity-n@1.0.4|arity-n/-/arity-n-1.0.4.tgz|940ba167231874a3f970d7c1a308f6ee53fd1c36be3d273166a815e2146c0200
-is-number@4.0.0|is-number/-/is-number-4.0.0.tgz|5e5bccc70a0fcc5d10e146678a50ee0b2e1cf6ef0f054b6793ca70c025c587b8
-vlq@0.2.3|vlq/-/vlq-0.2.3.tgz|052ccffa1d717535e4f45eac3fbaadcde2193cd9348a8c3affaf95ba7b9ead56
-is-iterable@1.1.2|is-iterable/-/is-iterable-1.1.2.tgz|e5a5de1e7958c04004a5ae38e1b146581ad399ab5da5bde3b99d0fa3de191d17
-to-space-case@1.0.0|to-space-case/-/to-space-case-1.0.0.tgz|4947ab9264f2391061c3bd2f0f876ae013f1e8cebcbe2e65519996abb05259eb
-to-no-case@1.0.2|to-no-case/-/to-no-case-1.0.2.tgz|f6686a1205ac9133546d04e55604df85840623b8e8deab6b91593e0e5363a904
-string.fromcodepoint@0.2.1|string.fromcodepoint/-/string.fromcodepoint-0.2.1.tgz|e714ab7138eae2b1c74e283edf058166f2528efe10f689811360fb0a79c816dc
 
 "
 
