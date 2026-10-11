@@ -119,6 +119,8 @@ RESOURCES = [
     ("upstream_llm_transport_js", DSH / "upstream" / "llm-transport.js"),
     ("upstream_llm_read_idle_js", DSH / "upstream" / "llm-read-idle.js"),
     ("upstream_llm_retry_pacing_js", DSH / "upstream" / "llm-retry-pacing.js"),
+    ("upstream_llm_gateway_mount_js", DSH / "upstream" / "llm-gateway-mount.js"),
+    ("upstream_llm_piai_mount_js", DSH / "upstream" / "llm-piai-mount.js"),
     ("upstream_tool_present_js", DSH / "upstream" / "tool-present.js"),
     ("upstream_model_selection_projection_js", DSH / "upstream" / "model-selection-projection.js"),
     ("upstream_model_selection_holder_js", DSH / "upstream" / "model-selection-holder.js"),

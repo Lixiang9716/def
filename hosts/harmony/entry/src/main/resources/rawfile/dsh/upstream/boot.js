@@ -34,9 +34,11 @@ import { SettingsMemory } from 'upstream/settings-memory.js';
 import { mountSubagentRows } from 'upstream/boot-subagent-rows.js';
 import { providerSettingsNs } from 'upstream/web-write-settings.js';
 import { mountWebPlane } from 'upstream/web-search-keyless.js';
-import { LlmRuntime, attributionHeaders } from '@deepseek-ai/dsh-llm';
-import { createGatewayLlmAdapter } from 'upstream/llm-transport.js';
-import { registerRouteDisposer, registerDirectoryHandle } from 'upstream/llm-route.js';
+// The llm row split at the file-size gate (2026-10-11, the llm-pi-ai leg):
+// the gateway mount (llm-gateway-mount.js) and the GATED multi-protocol
+// mount (llm-piai-mount.js) both register into the ONE vendored LlmRuntime.
+import { mountGatewayLlm } from 'upstream/llm-gateway-mount.js';
+import { mountPiAiProviders } from 'upstream/llm-piai-mount.js';
 import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
@@ -346,7 +348,11 @@ const mountSpine = async (ctx, identity) => {
  * @param options.llm - the llm route {baseURL, apiKey, provider, model,
  *   onWire?, onSse?, readIdleTimeoutMs? (the loop-u2 attempt-level stall guard; absent = the 120s default),
  *   contextWindow? (the compaction capacity, consumed through resolveModelInfo;
- *   BYOK always carries one, staged only when runtime.config stages llmContextWindow)};
+ *   BYOK always carries one, staged only when runtime.config stages llmContextWindow),
+ *   piaiProviders? (the vendored @deepseek-ai/dsh-llm-pi-ai plugin's providers
+ *   dict — the GATED multi-protocol row: an absent field mounts nothing, a
+ *   present one registers one LlmAdapter for every named route besides the
+ *   gateway route above)};
  *   required, no transport-free fallback.
  * @param options.systemPrompt - optional override seam: {personaPrefix} —
  *   the vendored SystemPrompt's own config (the prompt's persona section),
@@ -371,45 +377,6 @@ const mountSpine = async (ctx, identity) => {
  * @param options.onEvent - observability hook: (event, fields) => void; boot
  *   emits `upstream.profile`, `llm/runtime`, `upstream.services`.
  */
-/** Mount the dsh-base row `llm`: the VENDORED LlmRuntime with the gateway transport
- * adapter registered for the caller's provider route, DECLARED in the configurable-
- * provider directory under the route's settings namespace (upstream/preset — the
- * models 设置页 renders a provider only when the directory names it; the namespace
- * itself is registered by the settings legs, web-write-settings.js). */
-const mountLlm = async (ctx, llm, onEvent) => {
-  await ctx.plugin(LlmRuntime);
-  const runtime = ctx.get('llm');
-  if (runtime === undefined) throw new Error('boot: the LlmRuntime failed to mount under "llm"');
-  const routeDisposer = runtime.registerAdapter([llm.provider], createGatewayLlmAdapter({
-    baseURL: llm.baseURL,
-    apiKey: llm.apiKey,
-    provider: llm.provider,
-    name: llm.adapterName ?? 'mock loopback chat-completions (dsh-llm-mock-server)',
-    userEndpoint: llm.userEndpoint === true,
-    onWire: llm.onWire,
-    onSse: llm.onSse,
-    onRequestBody: llm.onRequestBody, readIdleTimeoutMs: llm.readIdleTimeoutMs, // loop-u2's attempt-level stall guard; undefined = the 120s default
-    contextWindow: llm.contextWindow, // the compaction capacity (resolveModel's context); undefined = the route stages none
-  }));
-  registerRouteDisposer(ctx, routeDisposer); // the BYOK rebind seam (upstream/llm-route.js)
-  // The directory handle rides the same seam: a rebind/restore atomically replaces the
-  // models 设置页 row. Both registries key on the boot CONTEXT — ctx.get('llm') hands
-  // out a fresh wrapper per access, so the service object is not an identity.
-  registerDirectoryHandle(ctx, runtime.registerConfigurableProviders([{
-    provider: llm.provider,
-    displayName: llm.displayName ?? 'OpenAI 兼容',
-    settingsNs: providerSettingsNs(llm.provider),
-    settingsPath: ['providers', 'default'],
-  }]));
-  onEvent('llm/runtime', {
-    provider: llm.provider,
-    model: llm.model,
-    service: 'vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)',
-    transport: llm.transportLabel
-      ?? 'gateway httpFetch → loopback chat-completions mock server',
-    userAgent: attributionHeaders()['user-agent'],
-  });
-};
 
 /** The post-spine leg (split from bootUpstream at the function-size gate):
  * fail loud on missing mounts, then mount the modelSelection plane (the
@@ -423,8 +390,27 @@ const mountModelSelectionPlane = async (ctx, agentRoute, sessionId) => {
 
 /** Boot the mobile profile: empty root, the dsh-base-equivalent spine over
  * the pinned vendored packages, the vendored LlmRuntime under `llm`. */
+
+/** The mountSpine identity row: the boot options folded into the one spine
+ * fact (extracted at the function-size gate — the shape, not the sequence). */
+const spineIdentity = (options, agentRoute) => ({
+  agentId: options.agentId,
+  sessionId: options.sessionId,
+  cwd: options.cwd,
+  ...agentRoute,
+  personaPrefix: options.systemPrompt?.personaPrefix,
+  skills: options.skills,
+  commands: options.commands,
+  goals: options.goals,
+  fileReferences: options.fileReferences,
+  creation: options.creation,
+  // presetJoin boots the composition host plane; the join itself is the
+  // seat's runtime half, after the presets seed has landed.
+  presetJoin: options.presetJoin,
+});
+
 export async function bootUpstream(options) {
-  const { scenario, container, agentId, sessionId, cwd, onEvent } = options;
+  const { container, onEvent } = options;
   const llm = options.llm ?? {};
   if (!llm.baseURL || !llm.apiKey || !llm.provider || !llm.model) throw new Error('boot: options.llm {baseURL, apiKey, provider, model} is required — the profile boots the vendored LlmRuntime over the gateway transport');
   // The loop agent's route as ONE fact (mountSpine's row + the holder's fallback read it).
@@ -436,7 +422,7 @@ export async function bootUpstream(options) {
   // Lifecycle listeners first, so boot-time creation events are observable.
   for (const [type, fn] of Object.entries(options.listeners ?? {})) ctx.on(type, fn);
 
-  await mountLlm(ctx, llm, onEvent);
+  await mountGatewayLlm(ctx, llm, onEvent);
 
   onEvent('upstream/profile', {
     profile: 'mobile',
@@ -445,21 +431,15 @@ export async function bootUpstream(options) {
     layers: MOBILE_LAYERS.map(([id]) => id),
   });
 
-  await mountSpine(ctx, {
-    agentId, sessionId, cwd,
-    ...agentRoute,
-    personaPrefix: options.systemPrompt?.personaPrefix,
-    skills: options.skills,
-    commands: options.commands,
-    goals: options.goals,
-    fileReferences: options.fileReferences,
-    creation: options.creation,
-    compaction: options.compaction,
-    // presetJoin boots the composition host plane; the join is the seat's runtime half.
-    presetJoin: options.presetJoin,
-    sessionPersistence: options.sessionPersistence, // the resume leg's gate; absent = off
-  });
-  await mountModelSelectionPlane(ctx, agentRoute, sessionId);
+  // The mountSpine identity row: persist's spineIdentity fold + compact's
+  // gated compaction row + piai's gated multi-protocol adapter row (absent
+  // piaiProviders = nothing mounts, the empty boot-list precedent).
+  const identity = spineIdentity(options, agentRoute);
+  identity.compaction = options.compaction;
+  identity.sessionPersistence = options.sessionPersistence; // the resume gate; absent = off
+  await mountSpine(ctx, identity);
+  await mountModelSelectionPlane(ctx, agentRoute, options.sessionId);
+  if (llm.piaiProviders !== undefined) await mountPiAiProviders(ctx, llm.piaiProviders, onEvent);
 
   onEvent('upstream/services', {
     kernel: '@deepseek-ai/cordis@4.0.2',
@@ -470,5 +450,5 @@ export async function bootUpstream(options) {
   // The cordis.yml-insert equivalent: ENABLED workspace rows mount at boot.
   await mountBootRows(ctx, onEvent);
 
-  return { ctx, sessionId, agentId };
+  return { ctx, sessionId: options.sessionId, agentId: options.agentId };
 }
