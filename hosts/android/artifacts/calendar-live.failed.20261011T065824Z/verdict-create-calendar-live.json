@@ -1,0 +1,26 @@
+{
+  "scenario": "create.calendar.live",
+  "pass": false,
+  "expected": 8,
+  "logged": 8,
+  "failures": [
+    {
+      "index": 6,
+      "expected": {
+        "event": "calendar/mounted",
+        "match": {
+          "spec": "calendar-plugin"
+        }
+      },
+      "logged": {
+        "line": 10869,
+        "payload": {
+          "scenario": "create.calendar.live",
+          "event": "scenario.failed",
+          "reason": "mount refused at mounted: plugin is PENDING — an injected service is missing (tutorial ch.6: PENDING is a legal state, but a live mount must run now or not at all)"
+        }
+      }
+    }
+  ],
+  "parseErrors": []
+}
