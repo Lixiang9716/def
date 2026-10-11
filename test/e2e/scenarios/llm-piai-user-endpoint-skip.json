@@ -1,0 +1,9 @@
+{
+  "scenario": "llm.piai-user-endpoint",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "bridge/negative.fatal", "match": { "route": "anthropic", "declared": false } },
+    { "event": "bridge/skip.honest", "match": { "reason": "egress-unreachable" } },
+    { "event": "bridge.flow/completed", "match": { "status": "skipped-honest" } }
+  ]
+}

@@ -24,6 +24,21 @@ describe('provider presets', () => {
     expect(PROVIDERS['openai-compatible'].baseURL).toBe('');
     expect(PROVIDERS['openai-compatible'].model).toBe('');
   });
+
+  it('offers the Anthropic first-party row (the multi-protocol flavor)', () => {
+    expect(PROVIDER_IDS).toContain('anthropic');
+    expect(PROVIDERS.anthropic.baseURL).toBe('https://api.anthropic.com');
+    expect(PROVIDERS.anthropic.model).toBe('claude-sonnet-4-5');
+    expect(Number.isSafeInteger(PROVIDERS.anthropic.contextWindow)).toBe(true);
+  });
+
+  it('offers the Google row (the OpenAI-compatible Gemini face)', () => {
+    expect(PROVIDER_IDS).toContain('google');
+    expect(PROVIDERS.google.baseURL)
+      .toBe('https://generativelanguage.googleapis.com/v1beta/openai');
+    expect(PROVIDERS.google.model).toBe('gemini-2.5-flash');
+    expect(Number.isSafeInteger(PROVIDERS.google.contextWindow)).toBe(true);
+  });
 });
 
 describe('validateDraft — the same grammar the runtime save leg enforces', () => {

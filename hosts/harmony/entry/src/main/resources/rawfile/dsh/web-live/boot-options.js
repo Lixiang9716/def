@@ -18,6 +18,21 @@
  * llmContextWindow; the mock route stages none (scripted turns never
  * compact) and the field stays undefined — no invented capacity here.
  */
+/** The BYOK credential-ref derivation, MIRRORED (not imported — this
+ * module's import graph stays empty so the boot-carrier regression test can
+ * import it; the canonical home is upstream/llm-route.js deriveByokRef). */
+const deriveByokRef = (provider) =>
+  `${String(provider).toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_API_KEY`;
+
+/** The launch-env rows one boot carries: the mock endpoint facts (every
+ * boot) plus, for a pi-ai-served route, the credential under the BYOK ref
+ * name the piai dict names (llm-piai-mount's apiKeyEnv seam — the same
+ * in-memory plumbing; the keychain stays the durable store). */
+const launchEnvRows = (route) => ({
+  DSH_MOCK_LLM_URL: route.baseURL, DSH_MOCK_LLM_KEY: route.apiKey,
+  ...(route.piai === undefined ? {} : { [deriveByokRef(route.provider)]: route.apiKey }),
+});
+
 export const bootOptions = (cfg, route, root, extras) => ({
   scenario: extras.scenario,
   agentId: extras.agentId,
@@ -52,7 +67,7 @@ export const bootOptions = (cfg, route, root, extras) => ({
     // (scope, scope-relative path) through it. Absent on a host that grants
     // no scope, in which case the shims refuse rather than guess.
     scopeRoot: cfg.fsScopeRoot,
-    env: { DSH_MOCK_LLM_URL: route.baseURL, DSH_MOCK_LLM_KEY: route.apiKey },
+    env: launchEnvRows(route),
     argv: ['dsh', '--profile', 'mobile'],
   },
   llm: {

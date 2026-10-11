@@ -99,7 +99,7 @@ const makeSaveHandler = (ctx, llmRoute) => async (args) => {
     throw badRequest(`onboarding/save: ${invalid.error.field} — ${invalid.error.why}`);
   }
   await keychainSet(BYOK_REF, encodeCredential(args));
-  const route = rebindLlmRoute(ctx, args);
+  const route = await rebindLlmRoute(ctx, args);
   llmRoute.provider = args.provider;
   llmRoute.model = args.model;
   llmRoute.baseURL = args.baseURL;
@@ -119,7 +119,7 @@ const makeSaveHandler = (ctx, llmRoute) => async (args) => {
  * rebind has always had, in reverse. */
 const makeClearHandler = (ctx, llmRoute) => async () => {
   await keychainSet(BYOK_REF, null);
-  const route = restoreBootRoute(ctx);
+  const route = await restoreBootRoute(ctx);
   llmRoute.provider = route.provider;
   llmRoute.model = route.model;
   llmRoute.baseURL = route.baseURL;

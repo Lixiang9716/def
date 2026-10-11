@@ -1,0 +1,15 @@
+{
+  "host": "darwin-cli (darwin arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @earendil-works/pi-ai@0.85.1 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "scenario": "byok.anthropic-wire",
+  "events": 10,
+  "proves": [
+    "the BYOK save leg (the page's own onboarding wire) persists the credential into the frozen keychain ref and rebinds LIVE through the piai leg: the anthropic credential resolves into the piaiProviders dict (api anthropic-messages, apiKeyEnv ANTHROPIC_API_KEY, the one-model catalog with its context capacity, userEndpoint declared) — the dict names the credential REF, never the value",
+    "the rebind seam mounts the vendored dsh-llm-pi-ai plugin over the byok dict through its own settings section: the registry serves the 'anthropic' route beside the boot gateway route, the plugin's directory declares the row (settingsNs llm-pi-ai), and a SECOND save takes the section-replace path (rebind-over-mount)",
+    "ONE REAL turn streams pi-ai's anthropic-messages wire layer END TO END through the composed anthropic-client shim: the wire request is the protocol's own shape (POST /v1/messages, x-api-key present, anthropic-version 2023-06-01, stream:true) and the SSE reply translates into the harness StreamChunk vocabulary (block-start → text-delta → block-end → usage → finish stop) with the assembled text asserted",
+    "the 401 face refuses with neither key value in the error (the byok-leak discipline), and the clear leg restores the boot route LIVE: the keychain ref is gone, the plugin no longer serves the route",
+    "the key audit: the canary and the wrong-key probe appear NOWHERE in the raw captured log (matcher self-check proven), and the wire records key PRESENCE (a boolean), never the value"
+  ]
+}

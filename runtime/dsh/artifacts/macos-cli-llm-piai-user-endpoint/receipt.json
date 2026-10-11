@@ -1,0 +1,16 @@
+{
+  "host": "darwin-cli (darwin arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "scenario": "llm.piai-user-endpoint",
+  "plane": "pass",
+  "egressProbe": "available",
+  "events": 10,
+  "result": "pass",
+  "proves": [
+    "the named-exception gate: mounting a non-loopback piai route without userEndpoint: true fails loud AT MOUNT, naming the route and the declaration (deterministic, no network)",
+    "the bridge install is the mount's own honesty statement: llm/piai-bridge {installed, hosts:[localhost]} — hostnames only, never a path, never key material",
+    "the bridged fetch carries a declared user endpoint across the frozen gateway httpFetch seam: the dial comes back as a STRUCTURED 4xx provider refusal with the parsed error body — never the loud no-network TypeError; the CLI host's loopback-only httpFetch reaches the endpoint through the node-side forwarder companion (the same assertions hold on a device host where httpFetch egresses directly)"
+  ]
+}

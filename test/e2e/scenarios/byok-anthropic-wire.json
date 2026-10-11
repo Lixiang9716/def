@@ -1,0 +1,43 @@
+{
+  "scenario": "byok.anthropic-wire",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "byok/save.ok", "match": { "mode": "byok", "provider": "anthropic" } },
+    { "event": "byok/route.resolved.piai", "match": {
+      "api": "anthropic-messages",
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "model": "claude-sonnet-4-5",
+      "contextWindow": 200000,
+      "userEndpoint": true
+    } },
+    { "event": "byok/mount.piai", "match": {
+      "routes": ["anthropic"],
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "api": "anthropic-messages"
+    } },
+    { "event": "byok/directory.piai", "match": {
+      "provider": "anthropic",
+      "displayName": "Anthropic",
+      "settingsNs": "llm-pi-ai"
+    } },
+    { "event": "byok/wire", "match": {
+      "path": "/v1/messages",
+      "keyPresent": true,
+      "version": "2023-06-01",
+      "model": "claude-sonnet-4-5",
+      "stream": true
+    } },
+    { "event": "byok/stream", "match": {
+      "kinds": "block-start,text-delta,text-delta,text-delta,block-end,usage,finish",
+      "text": "Hello from pi-ai anthropic",
+      "finish": "stop",
+      "inputTokens": 11,
+      "outputTokens": 4,
+      "totalTokens": 15
+    } },
+    { "event": "byok/rebind.second", "match": { "provider": "anthropic" } },
+    { "event": "byok/auth-error.redacted", "match": { "keyInMessage": false } },
+    { "event": "byok/cleanup", "match": { "mode": "mock", "providerGone": true } },
+    { "event": "byok.flow/completed", "match": { "status": "pass" } }
+  ]
+}

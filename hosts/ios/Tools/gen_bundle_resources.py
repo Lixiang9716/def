@@ -117,6 +117,7 @@ RESOURCES = [
     ("upstream_llm_retry_pacing_js", DSH / "upstream" / "llm-retry-pacing.js"),
     ("upstream_llm_gateway_mount_js", DSH / "upstream" / "llm-gateway-mount.js"),
     ("upstream_llm_piai_mount_js", DSH / "upstream" / "llm-piai-mount.js"),
+    ("upstream_fetch_gateway_bridge_js", DSH / "upstream" / "fetch-gateway-bridge.js"),
     ("upstream_tool_present_js", DSH / "upstream" / "tool-present.js"),
     ("upstream_model_selection_projection_js", DSH / "upstream" / "model-selection-projection.js"),
     ("upstream_model_selection_holder_js", DSH / "upstream" / "model-selection-holder.js"),

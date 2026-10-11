@@ -27,7 +27,7 @@ import { createLogger } from 'logger.js';
 import { bootUpstream, spineInventory } from 'upstream/boot.js';
 import { createWebBootRuntime } from 'upstream/web-boot.js';
 import { WRITE_ENDPOINTS, WRITE_STREAMS, errorOf } from 'upstream/web-write.js';
-import { resolveLlmRoute as sharedResolveLlmRoute, bootRouteOf, registerBootRouteFactory } from 'upstream/llm-route.js';
+import { resolveLlmRoute as sharedResolveLlmRoute, bootRouteOf, registerBootRouteFactory, mountByokPiaiRoute } from 'upstream/llm-route.js';
 import { writeSurfaceOptions } from 'web-live/write-surface-options.js';
 import { probeManagerLegs as probeManagerLegsShared } from 'web-live/manager-legs-probe.js';
 import { makeProbeAwaiter } from 'web-live/probe-respond-await.js';
@@ -408,6 +408,10 @@ const main = async () => {
   const route = await resolveLlmRoute(cfg);
 
   const ctx = await bootPhase(cfg, route);
+  // A byok credential whose flavor the gateway adapter cannot speak hands
+  // the route to the pi-ai mount BEFORE any session dials (the boot gateway
+  // adapter satisfied the serving-route demand; it is disposed here).
+  if (route.piai !== undefined) await mountByokPiaiRoute(ctx, route);
   // The unbind seam's factory: the boot route re-derived from the SAME cfg
   // this boot resolved its route from (onboarding/clear's restore leg).
   registerBootRouteFactory(ctx, () => bootRouteOf(cfg));

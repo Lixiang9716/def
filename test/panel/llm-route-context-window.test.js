@@ -34,8 +34,10 @@ vi.mock('node:buffer', async (importOriginal) => ({
 const {
   BYOK_PROVIDERS, DEFAULT_CONTEXT_WINDOW, CONTEXT_WINDOW_MAX,
   validateCredential, encodeCredential, byokRoute, stagedRoute, mockRoute,
-  rebindLlmRoute, restoreBootRoute, registerBootRouteFactory,
+  rebindLlmRoute, restoreBootRoute, registerBootRouteFactory, deriveByokRef,
 } = await import('../../runtime/dsh/upstream/llm-route.js');
+const { mountPiAiProviders } =
+  await import('../../runtime/dsh/upstream/llm-piai-mount.js');
 const { createGatewayLlmAdapter } =
   await import('../../runtime/dsh/upstream/llm-transport.js');
 const {
@@ -111,6 +113,30 @@ describe('BYOK_PROVIDERS row defaults', () => {
   it('bounds the grammar above every known model context', () => {
     expect(CONTEXT_WINDOW_MAX).toBe(4000000);
   });
+
+  it('carries the Anthropic first-party row with its credential ref', () => {
+    expect(BYOK_PROVIDERS.anthropic.displayName).toBe('Anthropic');
+    expect(BYOK_PROVIDERS.anthropic.baseURL).toBe('https://api.anthropic.com');
+    expect(BYOK_PROVIDERS.anthropic.model).toBe('claude-sonnet-4-5');
+    expect(BYOK_PROVIDERS.anthropic.contextWindow).toBe(200000);
+    expect(BYOK_PROVIDERS.anthropic.api).toBe('anthropic-messages');
+    expect(deriveByokRef('anthropic')).toBe('ANTHROPIC_API_KEY');
+  });
+
+  it('carries the Google row on the OpenAI-compatible flavor', () => {
+    expect(BYOK_PROVIDERS.google.displayName).toBe('Google');
+    expect(BYOK_PROVIDERS.google.baseURL)
+      .toBe('https://generativelanguage.googleapis.com/v1beta/openai');
+    expect(BYOK_PROVIDERS.google.model).toBe('gemini-2.5-flash');
+    expect(BYOK_PROVIDERS.google.contextWindow).toBe(1048576);
+    expect(BYOK_PROVIDERS.google.api).toBe('openai-completions');
+    expect(deriveByokRef('google')).toBe('GOOGLE_API_KEY');
+  });
+
+  it('carries the wire flavor on the historical rows (unchanged serving)', () => {
+    expect(BYOK_PROVIDERS.deepseek.api).toBe('openai-completions');
+    expect(BYOK_PROVIDERS['openai-compatible'].api).toBe('openai-completions');
+  });
 });
 
 describe('validateCredential — the contextWindow grammar', () => {
@@ -156,6 +182,96 @@ describe('byokRoute — the effective capacity is never absent', () => {
   });
 });
 
+describe('byokRoute — the piaiProviders dict per flavor', () => {
+  it('an anthropic credential names its piai dict (ref, protocol, model row)', () => {
+    const route = byokRoute(credential({ provider: 'anthropic', baseURL: 'http://127.0.0.1:8442', model: 'claude-sonnet-4-5' }));
+    expect(route.api).toBe('anthropic-messages');
+    expect(route.piai).toBeDefined();
+    expect(route.piai.apiKeyEnv).toBe('ANTHROPIC_API_KEY');
+    expect(route.piai.api).toBe('anthropic-messages');
+    expect(route.piai.baseURL).toBe('http://127.0.0.1:8442');
+    expect(route.piai.models).toEqual([{ id: 'claude-sonnet-4-5', contextWindow: 200000 }]);
+    expect(route.piai.userEndpoint).toBe(true);
+    expect(route.piai.displayName).toBe('Anthropic');
+  });
+
+  it('the piai dict NEVER carries the credential value (the leak the audit hunts)', () => {
+    const route = byokRoute(credential({ provider: 'anthropic', apiKey: 'sk-ant-canary-0001' }));
+    expect(JSON.stringify(route.piai)).not.toContain('sk-ant-canary-0001');
+  });
+
+  it('an openai-completions credential rides the gateway adapter (no piai dict)', () => {
+    const route = byokRoute(credential({ provider: 'deepseek' }));
+    expect(route.piai).toBeUndefined();
+    expect(route.api).toBe('openai-completions');
+    const custom = byokRoute(credential({ provider: 'openai-compatible' }));
+    expect(custom.piai).toBeUndefined();
+  });
+
+  it('a custom provider id defaults to the openai-completions flavor', () => {
+    const route = byokRoute(credential({ provider: 'zai-coding-plan' }));
+    expect(route.api).toBe('openai-completions');
+    expect(route.piai).toBeUndefined();
+  });
+});
+
+describe('mountPiAiProviders — the userEndpoint gate (the named exception)', () => {
+  it('throws naming the route and the declaration a non-loopback row must carry', async () => {
+    const providers = {
+      anthropic: {
+        displayName: 'Anthropic', api: 'anthropic-messages',
+        baseURL: 'https://api.anthropic.com',
+        models: [{ id: 'claude-sonnet-4-5' }],
+      },
+    };
+    // The gate fires BEFORE the vendored plugin import — no pi-ai load here.
+    await expect(mountPiAiProviders({}, providers))
+      .rejects.toThrow(/anthropic[\s\S]*userEndpoint: true/);
+  });
+
+  it('a loopback row stays exempt (the probe face, byte-identical)', async () => {
+    const providers = {
+      'piai-test': {
+        displayName: 'pi-ai test route', api: 'openai-completions',
+        baseURL: 'http://127.0.0.1:9',
+        models: [{ id: 'piai-mock-1' }],
+      },
+    };
+    // Loopback passes the gate; the vendored plugin import is the next
+    // failure (unmapped under vitest), which proves the gate itself passed.
+    await expect(mountPiAiProviders({}, providers))
+      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+  });
+
+});
+
+describe('mountPiAiProviders gate — the unprovable shapes', () => {
+  it('a row with NO baseURL names an unprovable (catalog-default) target — it declares too', async () => {
+    const providers = {
+      anthropic: {
+        displayName: 'Anthropic', api: 'anthropic-messages',
+        models: [{ id: 'claude-sonnet-4-5' }],
+      },
+    };
+    // The catalog default is a real public origin; a row that names no
+    // baseURL cannot prove loopback, so the declaration demand covers it.
+    await expect(mountPiAiProviders({}, providers))
+      .rejects.toThrow(/anthropic[\s\S]*userEndpoint: true/);
+  });
+
+  it('declares itself and the gate passes (fails later only on the plugin load)', async () => {
+    const providers = {
+      anthropic: {
+        displayName: 'Anthropic', api: 'anthropic-messages',
+        baseURL: 'https://api.anthropic.com', userEndpoint: true,
+        models: [{ id: 'claude-sonnet-4-5' }],
+      },
+    };
+    await expect(mountPiAiProviders({}, providers))
+      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+  });
+});
+
 describe('stagedRoute / mockRoute — the boot routes', () => {
   const stagedCfg = (extra = {}) => ({
     llmBaseUrl: 'https://api.example.com', llmApiKey: 'sk-1', llmModel: 'glm-5.3-flash',
@@ -184,7 +300,7 @@ describe('stagedRoute / mockRoute — the boot routes', () => {
 describe('rebindLlmRoute / restoreBootRoute — the registered adapter', () => {
   it('registers an adapter whose resolveModel answers the resolved capacity', async () => {
     const capture = {};
-    const route = rebindLlmRoute(fakeCtx(capture), credential());
+    const route = await rebindLlmRoute(fakeCtx(capture), credential());
     expect(route.contextWindow).toBe(131072);
     const resolved = await capture.adapter.resolveModel('openai-compatible', 'glm-5.3-flash');
     expect(resolved.context).toEqual({ contextWindow: 131072 });
@@ -192,7 +308,7 @@ describe('rebindLlmRoute / restoreBootRoute — the registered adapter', () => {
 
   it('the credential override reaches the adapter through the rebind', async () => {
     const capture = {};
-    rebindLlmRoute(fakeCtx(capture), credential({ contextWindow: 65536 }));
+    await rebindLlmRoute(fakeCtx(capture), credential({ contextWindow: 65536 }));
     const resolved = await capture.adapter.resolveModel('openai-compatible', 'glm-5.3-flash');
     expect(resolved.context).toEqual({ contextWindow: 65536 });
   });
@@ -224,6 +340,15 @@ describe('the page-bundle mirror (onboarding-core.js)', () => {
     expect(PROVIDERS['openai-compatible'].contextWindow)
       .toBe(BYOK_PROVIDERS['openai-compatible'].contextWindow);
     expect(PAGE_CONTEXT_WINDOW_MAX).toBe(CONTEXT_WINDOW_MAX);
+  });
+
+  it('mirrors the anthropic and google rows line for line', () => {
+    for (const id of ['anthropic', 'google']) {
+      expect(PROVIDERS[id].baseURL).toBe(BYOK_PROVIDERS[id].baseURL);
+      expect(PROVIDERS[id].model).toBe(BYOK_PROVIDERS[id].model);
+      expect(PROVIDERS[id].contextWindow).toBe(BYOK_PROVIDERS[id].contextWindow);
+    }
+    expect(Object.keys(PROVIDERS)).toEqual(Object.keys(BYOK_PROVIDERS));
   });
 
   it('validateDraft accepts an absent or in-bound window, rejects garbage', () => {

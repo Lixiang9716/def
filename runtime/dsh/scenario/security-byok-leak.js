@@ -18,7 +18,13 @@
  *   4. the AUTH-FAILURE face: a 401 scripted by the vendored mock, driven
  *      with the canary key AND a separate wrong-key probe value — the
  *      error's message is asserted IN RUNTIME to carry neither value (an
- *      error face that echoed a credential would be the leak).
+ *      error face that echoed a credential would be the leak);
+ *   5. the PIAI-FLAVOR mapping: an ANTHROPIC credential (the multi-protocol
+ *      family) resolves through the piaiProviders dict the byokRoute builds
+ *      — the dict must name the credential REF (ANTHROPIC_API_KEY), never
+ *      the value: a route dict that embedded the key material would hand it
+ *      to the plugin config, the settings document, and every describe()
+ *      surface in one step.
  *
  * The runtime assertions above are the in-memory half; the RUNNER greps the
  * RAW captured log (stdout + stderr + audit stream) for BOTH values — the
@@ -84,6 +90,7 @@ const main = async () => {
   const route = await routePhase();
   await turnPhase(route);
   await authPhase(route);
+  await piaiPhase();
   await cleanupPhase();
   emit('scenario.complete', { status: 'pass' });
   globalThis.__dshComplete(true, 'ok');
@@ -134,6 +141,31 @@ const authPhase = async (route) => {
     'the auth-error message echoed a credential value');
   emit('leak.auth-error.redacted', {
     code: authError.code ?? 'unknown', keyInMessage: false, chars: message.length,
+  });
+};
+
+/** 5. the piai-flavor mapping: an anthropic credential resolves through the
+ *    piaiProviders dict (route.piai) — the REF is the only credential fact
+ *    it may carry, and neither probe value may appear anywhere in it. The
+ *    resolution is keychain-only (no dial): the endpoint is the loopback mock,
+ *    so this phase proves the MAPPING, not the wire. */
+const piaiPhase = async () => {
+  await keychainSet(BYOK_REF, encodeCredential({
+    provider: 'anthropic', baseURL: MOCK_URL, apiKey: CANARY, model: 'claude-sonnet-4-5',
+  }));
+  const route = await resolveLlmRoute({});
+  demand(route.kind === 'byok' && route.provider === 'anthropic',
+    `the anthropic credential resolved as ${route.kind}/${route.provider}`);
+  demand(route.piai !== undefined, 'the anthropic credential produced no piai dict');
+  demand(route.piai.apiKeyEnv === 'ANTHROPIC_API_KEY',
+    `the piai dict names ${JSON.stringify(route.piai.apiKeyEnv)}, not the credential ref`);
+  demand(route.piai.api === 'anthropic-messages',
+    `the piai dict speaks ${JSON.stringify(route.piai.api)}`);
+  const dictJson = JSON.stringify(route.piai);
+  demand(!dictJson.includes(CANARY) && !dictJson.includes(WRONG_KEY),
+    'the piai dict embedded credential material');
+  emit('leak.piai-dict.ref-only', {
+    provider: route.provider, apiKeyEnv: route.piai.apiKeyEnv, api: route.piai.api,
   });
 };
 

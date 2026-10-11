@@ -362,6 +362,21 @@ const BRIDGES_B = [
     "export default OpenAI;",
     "export { OpenAI };",
   ].join('\n')],
+
+  // @anthropic-ai/sdk — the SDK specifier pi-ai's anthropic-messages lazy api
+  // module dynamic-imports ONLY at live-transport build time (dist/api/
+  // anthropic-messages.js: `import Anthropic from "@anthropic-ai/sdk"`). No
+  // vendored tarball (the heavy SDK was deliberately left unfetched — the
+  // same stance as openai), so the face is the composed fetch/SSE client
+  // over our own shim (anthropic-client.js, the openai-client precedent);
+  // the surface is measured against the pinned pi-ai 0.85.1 dist (see the
+  // shim header). Until this row existed the protocol family failed loud at
+  // API construction ("unmapped module specifier '@anthropic-ai/sdk'").
+  ['@anthropic-ai/sdk', [
+    "import Anthropic from 'upstream/shims/anthropic-client.js';",
+    "export default Anthropic;",
+    "export { Anthropic };",
+  ].join('\n')],
 ];
 
 export { BRIDGES_B };
