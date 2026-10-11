@@ -22,6 +22,14 @@
  *
  * usage: drive-binding.mjs --hdc <path> [--overall-deadline S]
  *                          [--shot-live PNG] [--shot-final PNG]
+ *                          [--script-approval approve|remember|decline]
+ *
+ * --script-approval: the launch want carried the scripted-approval seam
+ * (`--ps dsh.script.approval …`) — the drive STANDS DOWN on the Approve
+ * tap (the dialog self-answers 350 ms after present; a live tap would
+ * only race it). The stand-down is what makes "the approval answered
+ * with no UI action" a provable statement: the drive log then carries no
+ * Approve tap at all.
  */
 import { spawn, execFileSync } from 'node:child_process';
 import { readFileSync, mkdtempSync } from 'node:fs';
@@ -277,6 +285,11 @@ const act = async () => {
   }
   if (state.approvalWait && !state.approvalTapped) {
     state.approvalTapped = true;
+    if (args['script-approval']) {
+      console.log(`drive: scripted approval staged (${args['script-approval']}) `
+        + '— standing down on the Approve tap (the seam answers)');
+      return;
+    }
     await tapText('approval Approve', /^Approve$/, STEP);
   }
   if (state.notifyScheduled && !state.notifyHandled) {

@@ -2207,6 +2207,34 @@ struct Index {
       customStyle: true
     });
     this.approvalController.open();
+    this.scriptAnswerIfAsked();
+  }
+
+  /** The scripted-approval seam (the launch want
+   * `--ps dsh.script.approval approve|remember|decline`, staged by
+   * EntryAbility into E2eLeg + AppStorage — the Android UiPrimitives
+   * twin): the dialog still PRESENTS — the native path is exercised —
+   * then self-answers 350 ms later, settling exactly the way the tapped
+   * button would: the same approvalResolve the human onPick takes, the
+   * same dialog close. 'remember' maps to this dialog's Approve (the
+   * ArkUI dialog has no remember button). One answer per presentation:
+   * the seam and a live tap can race, and both run on the main thread —
+   * whoever takes approvalResolve first wins and the other finds null. */
+  private scriptAnswerIfAsked(): void {
+    const script: string = E2eLeg.getScriptApproval();
+    if (script === '') {
+      return; // no staged want — a human answers, the product default
+    }
+    setTimeout((): void => {
+      const resolve = this.approvalResolve;
+      if (resolve === null) {
+        return; // a human tap won the race — one answer per presentation
+      }
+      this.approvalResolve = null;
+      hilog.info(0x0000, 'dsh.approval', 'script answered %{public}s', script);
+      this.approvalController?.close();
+      resolve(script !== 'decline');
+    }, 350);
   }
 
   /** The surface overlay's ops interpreter: surface.ops@1 onto the ArkTS
