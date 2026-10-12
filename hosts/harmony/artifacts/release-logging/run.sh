@@ -6,10 +6,11 @@
 #
 # Release (dsh-harmony): a plain launch — NO `--ps dsh.e2e.leg` parameter,
 # nothing staged into the app container — must reach the official DSH Web UI
-# from the vendored rawfile trees, emit ZERO `dsh.spike.log:` records, ZERO
-# verdict text and ZERO `"level":"debug"`/`"level":"info"` records in the
-# whole hilog window (and in the truncation-proof capture file); asking the
-# same binary for `--ps dsh.e2e.leg m2.llm` must refuse by name.
+# from the vendored rawfile trees, emit ZERO drive-machinery records (verdict
+# / result text), ZERO `"level":"debug"`/`"level":"info"` records in the
+# whole hilog window (and in the truncation-proof capture file) — warn/error
+# legitimately survive the release strip; asking the same binary for
+# `--ps dsh.e2e.leg m2.llm` must refuse by name.
 # Debug (dsh-harmony-harness): the plain launch still runs the full default
 # chain, and the whole E2E suite must stay green (the same eight checker
 # verdicts as hosts/harmony/artifacts/d9-*).
@@ -19,22 +20,38 @@
 # hilog window; the committed `.dsh.txt` files are that window's `dsh`-tag
 # lines (milestone-artifact convention, cf. artifacts/m5-host/logs.txt).
 #
-# usage: hosts/harmony/artifacts/release-logging/run.sh [--skip-build]
+# usage: hosts/harmony/artifacts/release-logging/run.sh [--skip-build] [--skip-harness]
+# env:   DSH_RELEASE_LOGGING_ART — redirect the evidence dir (the simulator
+#        matrix's harmony release leg lands its copy under simulator-matrix/
+#        without touching this committed verification record).
 set -eu
 
 ROOT=$(cd "$(dirname "$0")/../../../.." && pwd)
 cd "$ROOT"
 CLT=${DSH_CLT:-/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools}
 HDC="$CLT/sdk/default/openharmony/toolchains/hdc"
-ART="$ROOT/hosts/harmony/artifacts/release-logging"
-BUNDLE=com.dshmobile.spike
+ART="${DSH_RELEASE_LOGGING_ART:-$ROOT/hosts/harmony/artifacts/release-logging}"
+BUNDLE=com.dshmobile.host
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap
 REL_HAP=/tmp/dsh-harmony-release.hap
 DBG_HAP=/tmp/dsh-harmony-harness.hap
-BASE=/data/app/el2/100/base/$BUNDLE/haps/entry/cache
-RECORDS='dsh.spike.log:'
+# The asserted-zero set: the drive machinery's verdict/result text and the
+# debug/info logger levels. NOT the whole `dsh.runtime.log:` stream — a
+# release build legitimately keeps warn/error (RELEASE_CRITICAL_LEVELS), so
+# a whole-stream zero would be a lie the first warn disproves (the same
+# shape the android release leg asserts; the pre-#402 `dsh.spike.log:` tag
+# is gone — the canonical prefix is dsh.runtime.log, dsh_runtime_host.c).
+# The harness-side stream marker (the contrast phase counts ALL records).
+RECORDS='dsh.runtime.log:'
 SKIP_BUILD=0
-[ "${1:-}" = "--skip-build" ] && SKIP_BUILD=1
+SKIP_HARNESS=0
+for arg in "$@"; do
+    case "$arg" in
+        --skip-build) SKIP_BUILD=1 ;;
+        --skip-harness) SKIP_HARNESS=1 ;;
+        *) echo "release-logging(harmony): unknown argument: $arg" >&2; exit 2 ;;
+    esac
+done
 
 log() { echo "release-logging(harmony): $*"; }
 die() { echo "release-logging(harmony): FAIL: $*" >&2; exit 1; }
@@ -43,6 +60,22 @@ count() { grep -c -F "$2" "$1" 2>/dev/null || true; }
 # ---- build both configurations --------------------------------------------------
 
 if [ "$SKIP_BUILD" -eq 0 ]; then
+    if [ "$SKIP_HARNESS" -eq 1 ]; then
+        log "vendoring + building the release configuration only (--skip-harness)"
+        hosts/harmony/ci/vendor-official.sh >/dev/null
+        (cd hosts/harmony && "$CLT/bin/ohpm" install --all >/dev/null)
+        # THE NATIVE TRAP: hvigor's buildMode does NOT enter the native output
+        # path (see the both-modes loop below) — a stale obj tree would pack a
+        # foreign .so, so the release build gets the same clean-each-time rule.
+        rm -rf hosts/harmony/entry/build hosts/harmony/entry/.cxx
+        (cd hosts/harmony && "$CLT/bin/hvigorw" assembleHap --mode module \
+            -p product=default -p buildMode=release --no-daemon) \
+            > /tmp/dsh-hap-release.log 2>&1 \
+            || die "hvigorw release build failed — see /tmp/dsh-hap-release.log"
+        [ -f "$HAP" ] || die "hvigorw release produced no HAP"
+        cp "$HAP" "$REL_HAP"
+        log "built release HAP -> $REL_HAP"
+    else
     log "vendoring + building BOTH configurations (release, debug)"
     hosts/harmony/ci/vendor-official.sh >/dev/null
     (cd hosts/harmony && "$CLT/bin/ohpm" install --all >/dev/null)
@@ -71,9 +104,12 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
             log "built debug HAP -> $DBG_HAP"
         fi
     done
+    fi
 fi
 [ -f "$REL_HAP" ] || die "release HAP missing ($REL_HAP — build first or unset --skip-build)"
-[ -f "$DBG_HAP" ] || die "debug HAP missing ($DBG_HAP — build first or unset --skip-build)"
+if [ "$SKIP_HARNESS" -eq 0 ]; then
+    [ -f "$DBG_HAP" ] || die "debug HAP missing ($DBG_HAP — build first or unset --skip-build)"
+fi
 
 mkdir -p "$ART"
 
@@ -95,7 +131,11 @@ done
 for knob in pidoff domainoff; do
     out=$("$HDC" shell hilog -Q "$knob" 2>&1 || true)
     case "$out" in
-        *successfully*) ;;
+        # This hilog build answers "Set flow control by process to disabled,
+        # result: Success [CODE: 0]" — the older "successfully" spelling is
+        # kept for the CLT versions that print it (same widening
+        # ci/run-host-e2e.sh carries).
+        *successfully*|*"Success [CODE: 0]"*) ;;
         *) die "hilog -Q $knob failed ($out) — the record stream can be dropped, so a zero-record result would prove nothing" ;;
     esac
 done
@@ -126,7 +166,8 @@ launch() { # $1 = extra launch parameters ('' for the plain launch)
             || die "$BUNDLE process never appeared within 120s of aa start"
         "$HDC" shell power-shell wakeup >/dev/null 2>&1 || true
         "$HDC" shell uinput -T -m 400 1600 400 400 300 >/dev/null 2>&1 || true
-        # shellcheck disable=SC2086 — the parameters are a fixed literal here
+        # shellcheck disable=SC2086
+        # (the parameters are a fixed literal here)
         "$HDC" shell aa start -b $BUNDLE -a EntryAbility $1 >/dev/null 2>&1 || true
         sleep 3
     done
@@ -158,34 +199,61 @@ WINDOW=/tmp/dsh-harmony-release-window.txt
 log "1/3 install dsh-harmony (release) + plain launch (no leg parameter)"
 install_hap "$REL_HAP"
 launch ''
-# The official UI is up when the origin was served to ArkWeb, the app's remote
-# mux seat opened (the client module system is live), and the clean index
-# finished loading. Three serving facts, each a polled condition.
-await_log "arkweb: controller attached for http://127.0.0.1:17890/?token=" \
-    "the release build never served the official origin" 150
-await_log "carrier: ws established /api/remote.mux" \
-    "the official app never opened its remote mux seat" 150
-await_log "arkweb: page end http://127.0.0.1:17890/" \
-    "the official index never finished loading" 150
+# The serving proof is SOCKET-level, not log-level: on this image a release
+# build's hilog.info never reaches the buffer (hilog.error does — the refusal
+# below proves by name), so the 09-21 run's three info-level serving facts
+# are unobservable in a release window. What the android release leg proves
+# through an adb forward, this proves through an hdc fport: the serve's own
+# LISTEN socket on 17890, then the auth-lite gate answering a real request
+# through the forward; the screenshot carries the rendered-UI fact.
+await_serve_listen() { # $1 = deadline seconds
+    deadline=$(( $(date +%s) + $1 ))
+    while [ "$(date +%s)" -lt "$deadline" ]; do
+        # state 0A = LISTEN, local port 45E2 = 17890 (the v4 or v6 table)
+        if "$HDC" shell "cat /proc/net/tcp /proc/net/tcp6 2>/dev/null" \
+                | awk '$4 == "0A"' | grep -qi ':45E2'; then
+            return 0
+        fi
+        sleep 3
+    done
+    die "the release build never opened the official serve's LISTEN socket on 17890 within $1s"
+}
+await_serve_listen 150
+FPORT=48047
+"$HDC" fport rm "tcp:$FPORT" >/dev/null 2>&1 || true
+"$HDC" fport "tcp:$FPORT" tcp:17890 >/dev/null \
+    || die "hdc fport could not forward the official serve's origin"
+sleep 1   # the forward settles on its first use — an immediate curl races it (measured)
+probe="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$FPORT/" || true)"
+"$HDC" fport rm "tcp:$FPORT" >/dev/null 2>&1 || true
+[ "$probe" = "401" ] \
+    || die "the official dist seat answered $probe, not the 401 auth-lite gate"
+{
+    echo "# the release boot's served origin, probed through hdc fport"
+    echo "serve: 127.0.0.1:17890 (the official seat's LISTEN socket, /proc/net/tcp* state 0A)"
+    echo "GET / -> $probe   (401 = the auth-lite token gate of the official dist seat)"
+    echo "launcher focus: the official DSH Web UI (plain-launch-release.png)"
+} > "$ART/origin-release.txt"
 sleep 5   # let the app shell paint before the screenshot
 "$HDC" shell hilog -x > "$WINDOW" 2>/dev/null
 snapshot "$ART/plain-launch-release.png"
 
-"$HDC" file recv "$BASE/dsh-official-serve.log" "$ART/plain-launch-release.capture.txt" >/dev/null
-[ -f "$ART/plain-launch-release.capture.txt" ] || die "no release capture file to pull"
-grep 'com.dshmobile.spike/dsh' "$WINDOW" > "$ART/plain-launch-release.dsh.txt" || true
-grep -F "$RECORDS" "$WINDOW" > "$ART/plain-launch-release.records.txt" || true
+grep 'com.dshmobile.host/dsh' "$WINDOW" > "$ART/plain-launch-release.dsh.txt" || true
+# The absence evidence: the window lines carrying any asserted-zero marker.
+grep -F -e 'dsh.runtime.verdict' -e 'dsh.runtime.result' -e 'ALL PASS' \
+        -e 'ALL FAIL' -e '"level":"debug"' -e '"level":"info"' \
+        "$WINDOW" > "$ART/plain-launch-release.records.txt" || true
 
-[ "$(count "$WINDOW" "$RECORDS")" -eq 0 ] \
-    || die "release emitted a $RECORDS record (see .dsh.txt / the window)"
-[ "$(count "$WINDOW" 'dsh.spike.verdict')" -eq 0 ] \
-    || die "release emitted verdict text"
+# The asserted-zero set: machinery text and debug/info levels — never the
+# whole dsh.runtime.log stream (release keeps warn/error).
+[ "$(count "$WINDOW" 'dsh.runtime.verdict')" -eq 0 ] || die "release emitted verdict text"
+[ "$(count "$WINDOW" 'dsh.runtime.result')" -eq 0 ] || die "release emitted result tags"
+[ "$(count "$WINDOW" 'ALL PASS')" -eq 0 ] || die "release emitted ALL PASS"
+[ "$(count "$WINDOW" 'ALL FAIL')" -eq 0 ] || die "release emitted ALL FAIL"
 [ "$(count "$WINDOW" '"level":"debug"')" -eq 0 ] || die "release emitted a debug record"
 [ "$(count "$WINDOW" '"level":"info"')" -eq 0 ] || die "release emitted an info record"
-[ "$(count "$ART/plain-launch-release.capture.txt" "$RECORDS")" -eq 0 ] \
-    || die "release wrote a $RECORDS record into the capture file"
-[ "$(count "$ART/plain-launch-release.dsh.txt" "$RECORDS")" -eq 0 ] \
-    || die "release emitted a record on its own tags"
+[ "$(count "$ART/plain-launch-release.dsh.txt" 'dsh.runtime.verdict')" -eq 0 ] \
+    || die "release emitted verdict machinery on its own tags"
 
 # ---- 2/3: the refusal (rules.md rule 5) ------------------------------------------
 
@@ -197,15 +265,22 @@ await_log "$REFUSAL" "the release build did not refuse an E2E leg" 60
 sleep 3
 "$HDC" shell hilog -x > "$WINDOW" 2>/dev/null
 snapshot "$ART/refusal.png"
-grep 'com.dshmobile.spike/dsh' "$WINDOW" > "$ART/refusal.dsh.txt" || true
-grep -F "$RECORDS" "$WINDOW" > "$ART/refusal.records.txt" || true
+grep 'com.dshmobile.host/dsh' "$WINDOW" > "$ART/refusal.dsh.txt" || true
+grep -F -e 'dsh.runtime.verdict' -e 'dsh.runtime.result' -e 'ALL PASS' \
+        -e 'ALL FAIL' -e '"level":"debug"' -e '"level":"info"' \
+        "$WINDOW" > "$ART/refusal.records.txt" || true
 grep -F "$REFUSAL" "$WINDOW" > "$ART/refusal.txt" || true
 [ -s "$ART/refusal.txt" ] || die "the refusal line was not captured into refusal.txt"
-[ "$(count "$WINDOW" "$RECORDS")" -eq 0 ] \
-    || die "the refusing release build emitted a $RECORDS record"
+# The refusing build must not grow verification machinery either (warn/error
+# records stay legitimate — see the asserted-zero note at 1/3).
+[ "$(count "$WINDOW" 'dsh.runtime.verdict')" -eq 0 ] \
+    || die "the refusing release build emitted verdict machinery"
+[ "$(count "$WINDOW" 'dsh.runtime.result')" -eq 0 ] \
+    || die "the refusing release build emitted result tags"
 
 # ---- 3/3: dsh-harmony-harness (debug) — unchanged --------------------------------
 
+if [ "$SKIP_HARNESS" -eq 0 ]; then
 log "3/3 install dsh-harmony-harness (debug) + the full E2E suite"
 install_hap "$DBG_HAP"
 HARNESS_OUT=/tmp/dsh-harmony-harness-suite
@@ -251,6 +326,11 @@ done
     echo "d9-session-live/, d9-write-live/ and m5-host/ — this run must not change"
     echo "their outcomes."
 } > "$ART/harness-contrast.txt"
+fi
 
-log "release: 0 records / 0 verdict / 0 debug+info; harness: $HARNESS_RECORDS records, suite green"
+if [ "$SKIP_HARNESS" -eq 1 ]; then
+    log "release: 0 records / 0 verdict / 0 debug+info (--skip-harness: the harness contrast is the caller's own leg)"
+else
+    log "release: 0 records / 0 verdict / 0 debug+info; harness: $HARNESS_RECORDS records, suite green"
+fi
 log "artifacts in $ART"
