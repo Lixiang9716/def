@@ -7,7 +7,10 @@ D6 (upstream discipline)
 
 Date: 2026-10-13 · Class: architecture · Task: T-0225
 
-## What landed — layout A, all three legs merged
+## Problem
+Two weeks of tree churn (the #402 spike→dsh rename, #457's shell-js rebuild) left the 09-27 layout-A decision pointing at paths that no longer matched the plan made against the old tree, and the phase-1 CMake layer could only express the target layout as aliases. The mechanical rename had to land without breaking any of the three host builds, the gates, or the byte-mirror discipline:
+
+### What landed — layout A, all three legs merged
 
 | PR | merge commit | scope |
 |----|--------------|-------|
@@ -36,7 +39,7 @@ this note instead. The old note's phase-1 decisions (root CMakeLists +
 `DSH_SKIP_VENDOR=ON`, gates-as-CTest) remain in force — the old note is left
 untouched as a point-in-time record.
 
-## Rulings
+## Decision
 
 1. **The vendor bundle contract (`<base>/vendor`) is carried by the compat
    symlink**, not by rewriting consumers. `runtime/dsh/vendor → ../../external`
@@ -51,7 +54,17 @@ untouched as a point-in-time record.
    derived names. Everything else in phase 2 follows the mechanical matrix;
    these two spellings are policy.
 
-## Three lessons from the mechanical rewrite
+## Alternatives considered
+
+(The section records both the rejected alternatives and the lessons the rewrite paid for — the two are the same list here.)
+
+### Rejected alternatives
+
+- **Rewriting the C side's `<base>/vendor` literals instead of the compat symlink** — rejected as semantic surgery inside a mechanical phase; the bundle contract is two-sided and a probe-style absorption is deferred to the deep-integration phase (recorded in the rulings).
+- **Deferring `docs/→doc/`** — churn with zero build value, but the owner explicitly pulled it into scope (2026-10-12), so it rode PR-3.
+- **A blanket `vendor/`→`external/` sed** — unfixable on double-spelled lines (see lesson 3); per-anchor, quote-anchored substitutions won.
+
+### Lessons from the mechanical rewrite
 
 1. **JS/pathResolve anchors are not shell cwd.** `resolve(HERE, '../vendor')`
    (HERE = `ci/`), `join(HERE, '..', 'vendor', 'npm')`, `join(TREE, 'vendor', …)`
@@ -78,3 +91,10 @@ untouched as a point-in-time record.
    spelling pending a regeneration decision — and every surviving dual-spelled
    line was resolved with prefix/quote-anchored substitutions that keep the
    bundle side byte-identical.
+
+## Consequences
+
+- The canonical paths are `external/`, `src/`, `example/`, `doc/`; `hosts/` and the `runtime/dsh` JS world are unchanged. `runtime/dsh/vendor` survives only as the ensure-dsh.sh compat symlink (the `<base>/vendor` bundle contract), documented and gitignored.
+- The CMake face builds `dsh-core` + `dsh-cli` + `ish-smoke` from one `cmake --preset macos-dev` graph; `src/build.sh` is cwd-independent (`SCRIPT_DIR`/`ROOT` anchored).
+- BuildIshEngine reconfigures its cmake build dir clean-on-mismatch, so a source-tree move can no longer poison the iOS Release leg the way it did the first post-#479 matrix run.
+- Open follow-ups: the deep-integration phase (sync/stage as first-class CMake custom commands, one vendor manifest driving every host's embed lists) and the C-side probe-style absorption of the vendor contract.
