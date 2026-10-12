@@ -163,7 +163,12 @@ stage_nested() { # <inside-dir> <link-name> <target-dir>
     ln -sfn "$target" "$inside/$sub"
 }
 TESTS="$VENDOR/dsh-tests@dsh-v0.1.6-alpha.2"
-[ -d "$TESTS" ] || { echo "parity node_modules: $TESTS not materialized — run vendor/ensure-dsh-tests.sh first" >&2; exit 1; }
+# The corpus is an untracked pinned vendor tree like every other input this
+# layout links — ensure it here rather than failing fast, the same
+# self-materialization the legs already do for the runtime closure (T-0218
+# item 2: the clean-tree sequence carries its own provisioning).
+[ -d "$TESTS" ] || sh "$SPIKE_ROOT/vendor/ensure-dsh-tests.sh" >&2
+[ -d "$TESTS" ] || { echo "parity node_modules: $TESTS still absent — ensure-dsh-tests.sh failed" >&2; exit 1; }
 # chokidar per-consumer majors + per-major readdirp (chokidar 4 → readdirp 4,
 # chokidar 5 → readdirp 5). Both the vendored closure faces (whose lib the
 # specs load through the chain) and the dsh-tests source packages pin their

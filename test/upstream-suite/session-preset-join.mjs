@@ -29,10 +29,11 @@
  * AND the node resolution layout (ci/parity-node-modules.sh).
  */
 import { register } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { resolve as pathResolve, dirname } from 'node:path';
-import { mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { tmpdir } from 'node:os';
 import { AsyncLocalStorage as NodeAls } from 'node:async_hooks';
 
 register('./session-preset-join-hooks.mjs', import.meta.url);
@@ -81,10 +82,12 @@ globalThis.__DSH_LOG_SINK__ = (line) => sinkLines.push(line);
 
 // --- the mobile preset docs, staged patched (the host seed rule) ---
 const { patchPresetSeedFiles } = await import('upstream/preset-mobile-rows.js');
-const stageDirs = [
-  pathResolve(NM, '@deepseek-ai/dsh-agent-presets/presets/mobile'),
-  pathResolve(ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/mobile'),
-];
+// The patched mobile doc stages into a TEMP preset root handed to the boot —
+// never into the vendored agent-presets package. The vendored trees are
+// verbatim upstream (D6), and writing here turned every leg run into a
+// preset-health red ("stages all four built-in preset documents", T-0218).
+const presetRoot = mkdtempSync(pathResolve(tmpdir(), 'dsh-p5-preset-'));
+process.on('exit', () => rmSync(presetRoot, { recursive: true, force: true }));
 {
   const files = {};
   for (const name of ['preset.yml', 'agent.cordis.yml']) {
@@ -95,12 +98,9 @@ const stageDirs = [
     };
   }
   patchPresetSeedFiles(files);
-  for (const dir of stageDirs) {
-    rmSync(dir, { recursive: true, force: true });
-    mkdirSync(dir, { recursive: true });
-    for (const [path, file] of Object.entries(files)) {
-      writeFileSync(pathResolve(dir, path.split('/').pop()), file.bytes);
-    }
+  mkdirSync(pathResolve(presetRoot, 'mobile'), { recursive: true });
+  for (const [path, file] of Object.entries(files)) {
+    writeFileSync(pathResolve(presetRoot, 'mobile', path.split('/').pop()), file.bytes);
   }
 }
 
@@ -134,6 +134,12 @@ const WS = '/p5probe';
 
 const { ctx } = await bootUpstream({
   scenario: 'session.preset-join', agentId: 'p5-agent', sessionId: 's-p5-boot',
+  // The Node face has no staged bundle for the /vendor spelling to map onto:
+  // base the preset plane on the real vendored package (discovery's
+  // node_modules walk answers) and hand the patched mobile doc over as a
+  // temp discovery root (the vendored trees stay pristine, D6).
+  agentPresetsBaseUrl: pathToFileURL(pathResolve(NM, '@deepseek-ai/dsh-agent-presets')).href + '/',
+  agentPresetRoots: [{ path: presetRoot, trust: 'system' }],
   cwd: WS, onEvent: () => {},
   // The preset-join seat's exact flag shape (the harmony seats boot this):
   presetJoin: true,

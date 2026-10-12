@@ -180,6 +180,20 @@ const compositionRows = (doc) => {
  * builtins resolve; preset-relative rows must exist in the seed; package rows
  * need a marker; file:/absolute rows cannot resolve on the staged VFS (none
  * of the pinned docs name one). */
+let _pinned;
+/** The packages the vendored closure pins — ensure-dsh.sh's committed pin
+ * table, the same rows the vendored registry serves. The seed stages
+ * resolution markers for the dsh-face packages only; the npm-face ones
+ * (@deepseek-ai/dsh-tool-web, dsh-tool-present, dsh-plugin-manager, …)
+ * ride the registry, so a composition row naming any pinned package
+ * resolves on the host. The markers-only model read those rows
+ * unresolvable and answered four broken presets where the runtime
+ * measures five healthy (T-0218). */
+const pinnedPackageNames = () => (_pinned ??= (() => {
+  const src = readFileSync(join(REPO, 'runtime/dsh/vendor/ensure-dsh.sh'), 'utf8');
+  return new Set([...src.matchAll(/^(@[\w-]+\/[\w-]+)@/gm)].map((m) => m[1]));
+})());
+
 const rowResolves = (row, presetId, files, markers) => {
   const name = row.name;
   if (name.startsWith('cordis:') || name.startsWith('node:')) return true;
@@ -189,7 +203,7 @@ const rowResolves = (row, presetId, files, markers) => {
   }
   if (name.startsWith('file:') || name.startsWith('/')) return false;
   const pkg = name.split('/').slice(0, name.startsWith('@') ? 2 : 1).join('/');
-  return markers.has(pkg);
+  return markers.has(pkg) || pinnedPackageNames().has(pkg);
 };
 
 /** The roster as the vendored scanRoot + remoteExportList compute it over the

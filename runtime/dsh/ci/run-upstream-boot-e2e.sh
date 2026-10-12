@@ -35,6 +35,12 @@ sh vendor/ensure-dsh.sh
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
 
+# 2.5 the application-tier client bundles are untracked build output: a clean
+#     tree lacks them, and the payload staging below reads the staged tree.
+#     Materialize + verify through the shared ensure (T-0218 item 2: the full
+#     test core sequence must pass on a clean tree).
+"$ROOT/test/e2e/ensure-client-bundles.sh"
+
 # 3. stage the web.plugins bus payload from the vendored client-modules tree
 #    (package.json + lib/client.js; fixed generation stamp, see the script).
 PAYLOAD="$(mktemp /tmp/dsh-web-plugins.XXXXXX)"
