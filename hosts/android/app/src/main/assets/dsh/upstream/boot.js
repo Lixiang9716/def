@@ -246,7 +246,7 @@ const mountSkillPlane = async (ctx, skills) => {
 /** The Agent 预设 data-source mounts — split from mountSpine at the
  * file-size gate; the block's comment carries the WHY of each choice
  * (one Loader, includeUserRoot: false, mounted after agent-loop). */
-const mountPresetPlane = async (ctx) => {
+const mountPresetPlane = async (ctx, agentPresetsBaseUrl, agentPresetRoots) => {
   // Agent 预设 data source, contract parity with the desktop shell: the REAL
   // cordis Loader service and the REAL vendored AgentPresets over the staged
   // presets VFS. Composition order is upstream's own demand: the presets
@@ -260,8 +260,16 @@ const mountPresetPlane = async (ctx) => {
   // the boot agent outside that listener. `includeUserRoot: false` is the
   // honest mobile root set: authoring writes refuse at the fs shim (the
   // staged view is read-only), so there is no user preset root to scan.
-  ctx.baseUrl = AGENT_PRESETS_BASE_URL;
-  await ctx.plugin(Loader, { baseUrl: AGENT_PRESETS_BASE_URL });
+  // `agentPresetsBaseUrl` / `agentPresetRoots` (T-0218 leg 4) re-base the
+  // plane for faces with no staged bundle: the vendored row probe walks
+  // `node_modules` upward from the base with a raw disk stat, which only
+  // answers under the QuickJS bundle mapping — a plain-Node spine booted at
+  // the /vendor spelling reads every package row as unresolvable, and its
+  // mobile preset doc lives in a temp root instead of a vendored tree (the
+  // vendored trees are verbatim upstream, D6).
+  const presetsBaseUrl = agentPresetsBaseUrl ?? AGENT_PRESETS_BASE_URL;
+  ctx.baseUrl = presetsBaseUrl;
+  await ctx.plugin(Loader, { baseUrl: presetsBaseUrl });
   if (ctx.get('loader') === undefined) {
     throw new Error('boot: the cordis Loader failed to mount under "loader"');
   }
@@ -273,6 +281,9 @@ const mountPresetPlane = async (ctx) => {
   await ctx.plugin(AgentPresets, {
     default: AGENT_PRESETS_DEFAULT,
     includeUserRoot: false,
+    // Extra discovery roots (the Node face's temp root): they ADD to the
+    // shipped roster — includeShippedRoot stays at its true default.
+    ...(agentPresetRoots ? { roots: agentPresetRoots } : {}),
   });
 };
 
@@ -340,7 +351,7 @@ const mountSpine = async (ctx, identity) => {
   // Ring 2 sits after the loop it watches (its injects: agentLoop, agents).
   await ctx.plugin(TurnWatchdog, {});
   await mountRecoveryRings(ctx);
-  await mountPresetPlane(ctx);
+  await mountPresetPlane(ctx, identity.agentPresetsBaseUrl, identity.agentPresetRoots);
 };
 /**
  * @param options.scenario - E2E scenario id the caller logs under (used for
@@ -411,6 +422,10 @@ const spineIdentity = (options, agentRoute) => ({
   // presetJoin boots the composition host plane; the join itself is the
   // seat's runtime half, after the presets seed has landed.
   presetJoin: options.presetJoin,
+  // real-directory re-base of the preset plane for faces with no staged
+  // bundle (the Node face; undefined keeps the device /vendor spelling).
+  agentPresetsBaseUrl: options.agentPresetsBaseUrl,
+  agentPresetRoots: options.agentPresetRoots,
 });
 
 export async function bootUpstream(options) {
