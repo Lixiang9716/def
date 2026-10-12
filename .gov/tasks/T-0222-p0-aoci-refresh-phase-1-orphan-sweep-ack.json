@@ -1,0 +1,21 @@
+{
+  "title": "P0 AOCI refresh phase 1: orphan sweep + acknowledge recovery (2026-10-12)",
+  "created": "2026-10-12T09:20:20+00:00",
+  "rules": {
+    "hash": "5fed98aae9738ce8e6003d93fd785d78c60c44c5e11d3f278acdb20a08d968d0",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "6d186be6616493c3d8ae7d24174a4e1634711180ca5b3b760452d3c09d7cdb90"
+    }
+  },
+  "checklist": [
+    "[x] Re-derive machine state after the reset accident: confirm 5ecdba5e applied, volume fingerprints coherent, no pending recovery",
+    "[x] Re-apply scope acknowledge clearing 151 observed-pending evidence items",
+    "[x] Remove all machine-issued orphan candidates reachable through the MCP pipeline (44/47; remaining 3 blocked by upstream aoci #117 identical-twin conflict)",
+    "Land chore(aoci) PR carrying the machine-written index/baseline changes; verify STATE=MERGED",
+    "[x] File upstream issue for remove-entry ledger-completion failure and extend #117 with today's reproduction"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0222"
+}
