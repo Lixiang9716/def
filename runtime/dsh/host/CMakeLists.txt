@@ -11,7 +11,7 @@
 # napi_init.cpp / gateway_smoke.cpp the HarmonyOS NAPI shell's, main_cli.c /
 # ish_smoke.c are executables' mains, SpikeBundle.c an iOS-generated app file.
 #
-# The engine trees under vendor/ are UNTRACKED; the root CMakeLists.txt
+# The engine trees under external/ are UNTRACKED; the root CMakeLists.txt
 # includes cmake/Vendor.cmake (materializing quickjs/wasm3/zstd) BEFORE this
 # directory, so the pins exist by the time these sources resolve.
 set(DSH_VENDOR_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../vendor")
@@ -30,14 +30,14 @@ add_library(dsh-core STATIC
   dsh_runtime_host.c
   dsh_wasm.c
   dsh_socket.c
-  # The quickjs-ng fork (pin: vendor/ensure.sh) — exactly the four TUs every
+  # The quickjs-ng fork (pin: external/ensure.sh) — exactly the four TUs every
   # proven build compiles; quickjs-libc is deliberately excluded (the rt
   # host provides its own glue, runtime/dsh/README.md "Embedding contract").
   "${DSH_QJS_DIR}/dtoa.c"
   "${DSH_QJS_DIR}/libregexp.c"
   "${DSH_QJS_DIR}/libunicode.c"
   "${DSH_QJS_DIR}/quickjs.c"
-  # wasm3 0.9.0 (pin: vendor/ensure-wasm3.sh, chained by ensure.sh) — the
+  # wasm3 0.9.0 (pin: external/ensure-wasm3.sh, chained by ensure.sh) — the
   # full vendored source/ set, the same 11 TUs the iOS project compiles.
   "${DSH_WASM3_DIR}/m3_bind.c"
   "${DSH_WASM3_DIR}/m3_code.c"
@@ -52,7 +52,7 @@ add_library(dsh-core STATIC
   "${DSH_WASM3_DIR}/m3_validate.c"
   # zstd 1.5.7 (BSD-3, single-thread — no ZSTD_MULTITHREAD: one serial
   # runtime thread is the constitution, D2), the node:zlib face of the host
-  # intrinsics; pin: vendor/ensure-zstd.sh. The .c-only subset, identical in
+  # intrinsics; pin: external/ensure-zstd.sh. The .c-only subset, identical in
   # all three per-host builds.
   "${DSH_ZSTD_DIR}/common/debug.c"
   "${DSH_ZSTD_DIR}/common/entropy_common.c"
@@ -84,7 +84,7 @@ add_library(dsh-core STATIC
 # It compiles clean on Apple clang — but ONLY against the vendored iSH engine
 # tree, which cmake/Vendor.cmake deliberately does not materialize (the iSH
 # ensures stay owned by the engine's own build, runtime/dsh/host/ish, whose
-# callers run vendor/ensure-ish.sh themselves). Test-compiled with Apple clang
+# callers run external/ensure-ish.sh themselves). Test-compiled with Apple clang
 # on this configuration: plain, it dies on "kernel/calls.h file not found";
 # with the engine include dir + the three engine configuration defines below
 # it compiles with zero diagnostics. The engine implementation itself stays in
@@ -106,7 +106,7 @@ if(EXISTS "${DSH_ISH_SRC}/kernel/calls.h")
 else()
   message(STATUS
     "dsh-core: dsh_ish.c LEFT OUT — vendored iSH tree absent at "
-    "${DSH_ISH_SRC} (run runtime/dsh/vendor/ensure-ish.sh; the engine's own "
+    "${DSH_ISH_SRC} (run external/ensure-ish.sh; the engine's own "
     "build, runtime/dsh/host/ish, is the contract for this dependency)")
 endif()
 

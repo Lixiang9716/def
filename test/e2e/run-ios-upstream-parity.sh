@@ -65,7 +65,7 @@ fail_deadline() {
 
 # ---- 1-3. vendor, regen the bundle header (the parity scenario embeds), build
 log "1/5 vendor + regenerate the bundle header (embeds scenario/upstream-parity.js)"
-runtime/dsh/vendor/ensure.sh
+external/ensure.sh
 python3 hosts/ios/Tools/gen_bundle_header.py
 
 if [ "$SKIP_BUILD" -eq 0 ]; then

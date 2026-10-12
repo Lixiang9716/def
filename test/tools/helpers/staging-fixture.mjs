@@ -16,7 +16,7 @@
 // gen_bundle_header.py (TREES with a
 // comprehension + `] + [` continuation, ZOD_FILES).
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -206,7 +206,7 @@ function genBundleHeaderPy() {
     '',
     'TREES = [',
     '    (f"vendor/dsh/{pkg}@' + VER + '",',
-    `     DSH / "vendor" / "dsh" / f"{pkg}@${VER}")`,
+    `     DSH / ".." / ".." / "external" / "dsh" / f"{pkg}@${VER}")`,
     '    for pkg in [',
     '        "agent", "brand",',
     '    ]',
@@ -294,9 +294,13 @@ export class StagingFixture {
   }
 
   /** Write a dsh file AND keep the harmony rawfile mirror row in step
-   * (only needed for rows some manifest names). */
+   * (only needed for rows some manifest names). Vendored-closure rows
+   * stage into repo-root external/ (CMake phase-2) — the runtime/dsh/vendor
+   * compat symlink built by buildGreenFixture keeps the old path reading. */
   writeSpike(rel, content) {
-    this.write(join('runtime/dsh', rel), content);
+    this.write(rel.startsWith('vendor/')
+      ? join('external', rel.slice('vendor/'.length))
+      : join('runtime/dsh', rel), content);
     const raw = join('hosts/harmony/entry/src/main/resources/rawfile/dsh', rel);
     if (existsSync(join(this.root, raw))) this.write(raw, content);
   }
@@ -355,9 +359,16 @@ export function buildGreenFixture() {
     fx.write(join('tools', tool), readFileSync(join(REPO, 'tools', tool), 'utf8'));
   }
   for (const [rel, src] of Object.entries(SPIKE_FILES)) fx.writeSpike(rel, src);
+  // The vendored closure lives at repo-root external/ (CMake phase-2);
+  // the runtime/dsh/vendor compat symlink — ensure-dsh.sh's exact shape —
+  // keeps the DSH-rooted graph walk and the vendor-official find spans
+  // reading it, while the TREES sources spell ../../external/... directly.
   for (const [rel, src] of Object.entries(PIN_TREE_FILES)) {
-    fx.write(join('runtime/dsh', rel), src);
+    fx.write(rel.startsWith('vendor/')
+      ? join('external', rel.slice('vendor/'.length))
+      : join('runtime/dsh', rel), src);
   }
+  symlinkSync('../../external', join(fx.dsh, 'vendor'));
   for (const t of WEBCLIENT_TREES) fx.write(join(t.dir, 'index.html'), `<h1>${t.staged}</h1>\n`);
   fx.write('hosts/harmony/entry/src/main/ets/pages/Index.ets', indexEts(derivedBundleRows()));
   fx.write('hosts/harmony/ci/vendor-official.sh', vendorOfficialSh());

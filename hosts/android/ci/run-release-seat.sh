@@ -176,7 +176,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "release.seat",
   "launch": "emulator, NO extras (release boot -> SessionServe), release APK signed with the debug keystore",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "stateSeam": {
     "snapshot": "$OUT/state-snapshot.json",
     "claimedEndpoints": $claimed,

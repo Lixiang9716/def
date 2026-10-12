@@ -28,8 +28,8 @@ MOCK_WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified (network only for
 #    packages missing on disk).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -95,7 +95,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "engineVersion": "0.17.0",
   "quickjsTag": "v0.17.0",
   "quickjsCommit": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
-  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-compaction + dsh-compaction-basic + dsh-token-meter (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-compaction + dsh-compaction-basic + dsh-token-meter (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "kernel": "@deepseek-ai/cordis@4.0.2",
   "scenario": "$SCENARIO_ID",
   "proves": [

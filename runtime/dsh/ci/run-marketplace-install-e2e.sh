@@ -41,9 +41,9 @@ WAIT_DEADLINE_SECONDS=15
 #    parse.sh do the same): the spike host links the iSH engine, ensure.sh
 #    does not materialize it, and a fresh checkout has no build/ binary —
 #    without this line the leg is unreproducible there.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
-sh vendor/ensure-ish.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
+sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh

@@ -224,7 +224,7 @@ const WEBCLIENT_TREES = [
  * green); rules.md rule 5: fail loud, naming the dir (exit 2). */
 function pinRowsOrFail(pin, opts) {
   if (!existsSync(join(DSH, pin))) {
-    fail(`pin tree absent: ${pin} — a stager names it; runtime/dsh/vendor/ensure*.sh materializes the pins`);
+    fail(`pin tree absent: ${pin} — a stager names it; external/ensure*.sh materializes the pins`);
   }
   return dirPinRows(DSH, pin, opts) ?? [];
 }

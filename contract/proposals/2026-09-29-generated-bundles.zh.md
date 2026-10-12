@@ -107,7 +107,7 @@ CI 路径都靠入库的 `project.pbxproj`（`dev-ios.yml:179`；
   `dev-ios.yml:77` 的 DerivedData cache key——pbxproj 退跟踪后，后者须改键
   到 `project.yml` + 源文件。
 - **P3——fresh 的 `gen.sh` 有它的输入。** `gen.sh:3-5` 要求先跑
-  `runtime/dsh/vendor/ensure.sh`（xcodegen 需要磁盘上的 quickjs 源码才能
+  `external/ensure.sh`（xcodegen 需要磁盘上的 quickjs 源码才能
   引用它们）。`dev/ios` 已经在构建前 vendor（`dev-ios.yml:159-163`）；被
   翻转的 gate 的生成 leg 需要同样的顺序。
 - **P4——本地裸脚本路径仍然可用。** `run-ios*.sh` 脚本目前假设入库项目

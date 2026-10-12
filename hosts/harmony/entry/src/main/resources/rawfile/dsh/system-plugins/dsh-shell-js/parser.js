@@ -94,12 +94,14 @@ const lexicalResolve = (fromDir, request) => {
   return segs.join('/');
 };
 
-/** The repo's vendor root — the formal vendored closure (runtime/dsh/vendor/
- * pinned by NPM_PACKAGES in runtime/dsh/vendor/ensure-dsh.sh). In bundle
- * space this is 'vendor/' — the TREES staging root mounts
+/** The repo's vendor root — the formal vendored closure, materialized at
+ * external/ (pinned by NPM_PACKAGES in external/ensure-dsh.sh). The host
+ * contract path stays 'vendor/': the TREES staging root mounts
  * system-plugins/<plugin> BESIDE vendor/npm/…, so two '..' hops from this
- * plugin dir land on it; under Node the same hops land on the real
- * runtime/dsh/vendor directory. A resolution that escapes the root is
+ * plugin dir land on it — and the CLI's bundle base (runtime/dsh)
+ * materializes vendor as a SYMLINK to external (ensure-dsh.sh's
+ * contract-path link), so under Node the same hops hit the same bytes.
+ * One spelling, both spaces. A resolution that escapes the root is
  * refused loud, not silently redirected. */
 const VENDOR_ROOT = lexicalResolve(MODULE_DIR, '../../vendor');
 const VENDOR_PREFIX = `${VENDOR_ROOT}/`;
@@ -108,7 +110,7 @@ const VENDOR_PREFIX = `${VENDOR_ROOT}/`;
  * The vendor map: shelljs 0.10.0 (the applet bodies, pristine behind
  * outboard seams) and its minimatch 10.0.3 glob chain (the matcher for the
  * executor's glob route, §3). Each a pinned `vendor/npm/<name>@<ver>` tree
- * (tarball sha256 pins live in NPM_PACKAGES, runtime/dsh/vendor/
+ * (tarball sha256 pins live in NPM_PACKAGES, external/
  * ensure-dsh.sh). The trees are FLAT (no nested node_modules), so a bare
  * name outside this map is a loud resolution error, never a walk-up hit.
  * The 29-tree bash-parser parser closure left with the 2026-10-11

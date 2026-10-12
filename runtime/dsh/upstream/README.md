@@ -1,7 +1,7 @@
 # runtime/dsh/upstream/ — the system layer for the upstream port (D9)
 
-The upstream DSH runtime packages (`runtime/dsh/vendor/dsh/*@0.1.6-alpha.2`)
-run VERBATIM — never edited, sha256-pinned by `vendor/ensure-dsh.sh`. This
+The upstream DSH runtime packages (`external/dsh/*@0.1.6-alpha.2`)
+run VERBATIM — never edited, sha256-pinned by `external/ensure-dsh.sh`. This
 directory is OUR side of the port: the shims, the boot, and the scripted
 seams that stand in for the platform services Node.js provides on the
 desktop. It mirrors dsh-desktop's role (a thin host that provides the system

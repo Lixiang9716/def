@@ -22,7 +22,7 @@
  *
  * usage: node mock-llm-server.mjs
  */
-import { startMockLlmServer } from '../vendor/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js';
+import { startMockLlmServer } from '../../../external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js';
 
 // DSH_MOCK_SEQUENCE (space-separated) and DSH_MOCK_REPEAT_LAST=1 override the
 // script for drivers that need more successes (the W-INTEG web-boot drive

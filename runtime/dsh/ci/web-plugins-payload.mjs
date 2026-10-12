@@ -8,7 +8,7 @@
  *      (presentation/official-web/client-bundles/npm, the `dsh.client`
  *      roster verified against the committed MANIFEST.sha256) plus the
  *      pinned vendored bootstrap package
- *      (runtime/dsh/vendor/npm/@deepseek-ai/dsh-client-modules — the same
+ *      (external/npm/@deepseek-ai/dsh-client-modules — the same
  *      bundle bytes, sha256-pinned tarball, D6 pin record). This is what a
  *      platform embedder stages: the whole scan-scope file view delivered
  *      over the bus seam.
@@ -35,7 +35,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VENDOR_NPM = join(HERE, '..', 'vendor', 'npm');
+const VENDOR_NPM = join(HERE, '..', '..', '..', 'external', 'npm');
 const BOOTSTRAP_NAME = '@deepseek-ai/dsh-client-modules';
 const BOOTSTRAP_DIR = join(VENDOR_NPM, `${BOOTSTRAP_NAME}@0.1.6-alpha.2`);
 const REPO_ROOT = join(HERE, '..', '..', '..');

@@ -2,7 +2,7 @@
 # Build the M1 rt desktop CLI (macOS/Linux proof run for the core rt).
 # Platforms do NOT use this script — they compile the same sources through
 # their own build systems (Xcode / CMake-NDK / hvigor NAPI), each after
-# running runtime/dsh/vendor/ensure.sh first.
+# running external/ensure.sh first.
 #
 # Two variants, one per logging regime (the same split the platform Release
 # configurations produce, so this CLI is how the strip is verified on the
@@ -12,13 +12,13 @@
 #                         shared host injects globalThis.__DSH_RELEASE__)
 set -e
 cd "$(dirname "$0")/.."
-./vendor/ensure.sh
+../../external/ensure.sh
 # The iSH sub-build below configures host/ish against the vendored engine and
 # fails loud at cmake when the (untracked, pinned) tree is absent. This build
 # embeds the engine, and ensure-ish.sh's own header says to run it before any
 # build that does — a clean tree died right there (T-0218 item 2). Idempotent;
 # network only on first fetch.
-./vendor/ensure-ish.sh
+../../external/ensure-ish.sh
 # The in-process Linux userland (contract v1.3.0 `ishRun`) is the one part of
 # this build with its own build system on purpose: 400k lines of vendored C with
 # hand-written aarch64 assembly, built for macOS and for both iOS SDKs from one
@@ -26,29 +26,29 @@ cd "$(dirname "$0")/.."
 # the app does, which is why the local E2E exercises the engine the app ships.
 ISH_BUILD=build/ish
 if [ ! -f "$ISH_BUILD/libishcore.a" ] || [ ! -f "$ISH_BUILD/libdsh_ish.a" ]; then
-    cmake -S host/ish -B "$ISH_BUILD" -DISH_VENDOR="$PWD/vendor" >/dev/null
+    cmake -S host/ish -B "$ISH_BUILD" -DISH_VENDOR="$PWD/../../external" >/dev/null
     cmake --build "$ISH_BUILD" --target ishcore dsh_ish -j"$(sysctl -n hw.ncpu 2>/dev/null || echo 4)" >/dev/null
 fi
 # -lz is the seam's own dependency: dsh_ish_stage() inflates the pinned guest
 # userland tarball with zlib (iOS ships libz, macOS has it in the SDK). It is
 # not part of the engine's link interface, so it has to be named here.
 ISH_LIBS="-L$ISH_BUILD -ldsh_ish -lishcore -lsqlite3 -lz -lresolv"
-VENDOR=vendor/quickjs-ng/0.17.0
-# Vendored zstd (vendor/ensure-zstd.sh is the pin record): compiled straight
+VENDOR=../../external/quickjs-ng/0.17.0
+# Vendored zstd (../../external/ensure-zstd.sh is the pin record): compiled straight
 # into the shared host — SINGLE-THREADED (no ZSTD_MULTITHREAD: one serial
 # runtime thread is the constitution, D2). The globs track the vendored
 # subset exactly; zstd.h/zstd_errors.h sit at the pin root, the rest of the
 # headers in common/ (hence the two -I flags, the same include set every
 # platform build must pass when it compiles these same host sources).
-ZSTD=vendor/zstd/1.5.7
+ZSTD=../../external/zstd/1.5.7
 ZSTD_SRC="$ZSTD/common/*.c $ZSTD/compress/*.c $ZSTD/decompress/*.c"
-# Vendored wasm3 (vendor/ensure-wasm3.sh is the pin record): the wasm seam's
+# Vendored wasm3 (../../external/ensure-wasm3.sh is the pin record): the wasm seam's
 # interpreter, the same 11 TUs the CMake dsh-core target and the iOS app
 # compile (host/CMakeLists.txt). Compiled into the CLI so contract v1.2.0
 # wasmRun is SERVED here (main_cli.c smoke_wasm_run) — the security.jail leg
 # attacks the import surface on the cheapest host instead of declaring it
 # untestable.
-WASM3=vendor/wasm3/0.9.0/source
+WASM3=../../external/wasm3/0.9.0/source
 WASM3_SRC="$WASM3/m3_bind.c $WASM3/m3_code.c $WASM3/m3_compile.c $WASM3/m3_core.c \
  $WASM3/m3_env.c $WASM3/m3_exec.c $WASM3/m3_function.c $WASM3/m3_info.c \
  $WASM3/m3_module.c $WASM3/m3_parse.c $WASM3/m3_validate.c"

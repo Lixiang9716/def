@@ -38,8 +38,8 @@ MOCK_WAIT_DEADLINE_SECONDS=15
 SEED_HEX="3a6b7d0f1e2c3b4a5968778695a4b3c2d1e0f1a2b3c4d5e6f708192a3b4c5d6e"
 
 # 1. vendored upstream closure: pinned + sha256-verified.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -115,7 +115,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "engineVersion": "0.17.0",
   "quickjsTag": "v0.17.0",
   "quickjsCommit": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
-  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "kernel": "@deepseek-ai/cordis@4.0.2",
   "scenario": "marketplace.ui.flow",
   "proves": [

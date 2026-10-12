@@ -35,7 +35,7 @@ build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...
 外壳（[D9]/[D6]，ARCHITECTURE.md §8）。构建系统把这件事做成了可执行的：
 
 1. **sync** 从规范源重新暂存每个宿主的*已提交副本*（逐字节一致；上游
-   vendored 包由 `runtime/dsh/vendor/ensure-dsh.sh` 固定并 sha256 校验）；
+   vendored 包由 `external/ensure-dsh.sh` 固定并 sha256 校验）；
 2. **compile** 跑平台自己的工具链（Xcode / Gradle-NDK / hvigor NAPI——
    每个宿主经由自己的构建系统编译同一个 C 宿主）；
 3. **test** 跑该平台的日志校验 e2e 腿（断言结构化日志，绝不用截图——

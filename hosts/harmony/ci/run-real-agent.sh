@@ -296,7 +296,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "real.agent.loop (T4/T5)",
   "launch": "dsh_phone emulator, --ps dsh.e2e.leg llm.live-stream, real backend",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "real-agent-loop", "verdict": "verdict-real-agent-loop.json", "pass": true },
     { "manifest": "real-agent-loop", "verdict": "verdict-real-agent-loop.json", "pass": true }

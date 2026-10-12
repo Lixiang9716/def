@@ -4,7 +4,7 @@
  * parity-reference — the NODE REFERENCE LEG of the upstream parity check.
  *
  * The SAME vendored upstream packages the quickjs port runs (0.1.6-alpha.2,
- * sha256-pinned by vendor/ensure-dsh.sh — never edited, D6/D9) are composed
+ * sha256-pinned by ../../external/ensure-dsh.sh — never edited, D6/D9) are composed
  * here under plain Node, the host upstream itself targets: real ESM, real
  * V8, no shims. The spine is the shared subset of the mobile profile boot
  * (runtime/dsh/upstream/boot.js MOBILE_LAYERS): llm first (the vendored

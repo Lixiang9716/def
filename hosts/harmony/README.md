@@ -175,7 +175,7 @@ Layout:
 - `entry/src/main/cpp/` — the NAPI library (`libdruntime.so`): CMake compiles
   `runtime/dsh/host/dsh_runtime_host.c`, `gateway_smoke.cpp`, plus the pinned
   quickjs-ng 0.17.0 sources (`dtoa.c libregexp.c libunicode.c quickjs.c`) through
-  hvigor's externalNativeOptions. CMake runs `runtime/dsh/vendor/ensure.sh`
+  hvigor's externalNativeOptions. CMake runs `external/ensure.sh`
   first, so the vendor tree is always materialized before compiling.
 - `entry/src/main/ets/pages/Index.ets` — materializes the bundled dsh (byte-identical
   rawfile copies of `logger.js`, `gateway.js`, `registry.js`, the three scenarios, the

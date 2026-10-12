@@ -23,8 +23,8 @@ WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified (fflate rides the
 #    same pin table — the office zip engine).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh > /dev/null
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh > /dev/null
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -81,7 +81,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "host": "darwin-cli (Darwin $(uname -srm))",
   "engine": "quickjs-ng",
   "engineVersion": "0.17.0",
-  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, sha256-pinned by external/ensure-dsh.sh)",
   "kernel": "@deepseek-ai/cordis@4.0.2",
   "scenario": "office",
   "proves": [

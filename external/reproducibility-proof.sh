@@ -37,9 +37,9 @@ SCOPE=full
 [ "${1:-}" = "--gate" ] && SCOPE=gate
 
 VENDOR_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$VENDOR_DIR/../../.." && pwd)"
-ENSURE_DSH="runtime/dsh/vendor/ensure-dsh.sh"
-ENSURE_DSH_TESTS="runtime/dsh/vendor/ensure-dsh-tests.sh"
+REPO_ROOT="$(cd "$VENDOR_DIR/.." && pwd)"
+ENSURE_DSH="external/ensure-dsh.sh"
+ENSURE_DSH_TESTS="external/ensure-dsh-tests.sh"
 SCRATCH="$(mktemp -d /tmp/dsh-vend-repro.XXXXXX)"
 trap 'rm -rf "$SCRATCH"' EXIT
 trap 'rm -rf "$SCRATCH"; exit 1' INT TERM
@@ -61,17 +61,17 @@ git clone --depth 1 --quiet "file://$REPO_ROOT" "$SCRATCH/clone" \
 cd "$SCRATCH/clone"
 
 # ---- 2. CI's invocation shapes ---------------------------------------------
-# gov.yml: `runtime/dsh/vendor/ensure.sh` + `runtime/dsh/vendor/ensure-dsh.sh`
+# gov.yml: `external/ensure.sh` + `external/ensure-dsh.sh`
 # from the repo root (direct exec); the dev-* workflows call the same scripts
 # as `sh <relative path>` from the repo root. Both spellings, always repo-root
 # cwd — the exact shape the caller-relative mirror path broke under.
 say "materializing from cold (clone root, CI shapes)"
-sh runtime/dsh/vendor/ensure.sh \
+sh external/ensure.sh \
     || die "ensure.sh failed from a fresh clone"
-runtime/dsh/vendor/ensure-dsh.sh \
+external/ensure-dsh.sh \
     || die "ensure-dsh.sh failed from a fresh clone"
 if [ "$SCOPE" = full ]; then
-    sh runtime/dsh/vendor/ensure-dsh-tests.sh \
+    sh external/ensure-dsh-tests.sh \
         || die "ensure-dsh-tests.sh failed from a fresh clone"
 fi
 
@@ -80,12 +80,12 @@ fi
 # second invocation into "File exists". A script that cannot survive its own
 # re-invocation is not CI-safe.
 say "re-running (idempotency)"
-sh runtime/dsh/vendor/ensure.sh \
+sh external/ensure.sh \
     || die "ensure.sh is not idempotent"
-runtime/dsh/vendor/ensure-dsh.sh >/dev/null \
+external/ensure-dsh.sh >/dev/null \
     || die "ensure-dsh.sh is not idempotent"
 if [ "$SCOPE" = full ]; then
-    sh runtime/dsh/vendor/ensure-dsh-tests.sh >/dev/null \
+    sh external/ensure-dsh-tests.sh >/dev/null \
         || die "ensure-dsh-tests.sh is not idempotent"
 else
     # 3b. the resolution layout from the closure alone (issue #328): the
@@ -102,7 +102,7 @@ else
 fi
 
 # ---- 4. the pin tables describe the tree ------------------------------------
-V="runtime/dsh/vendor"
+V="external"
 
 # 4a. the DSH closure rows of ensure-dsh.sh (`name|ver|sha`).
 DSH_RX='^[a-z][a-z0-9-]*\|[0-9A-Za-z.+-]+\|[0-9a-f]{64}$'

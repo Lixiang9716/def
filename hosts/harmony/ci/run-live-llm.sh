@@ -335,7 +335,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "harmony.llm.live-stream",
   "launch": "dsh_phone emulator, --ps dsh.e2e.leg llm.live-stream, real backend",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "llm-live-stream-device", "verdict": "verdict-llm-live-stream-device.json", "pass": true },
     { "manifest": "llm-live-stream-carrier", "verdict": "verdict-llm-live-stream-carrier.json", "pass": true }

@@ -103,7 +103,7 @@ harmony CLOSURE、iOS ZOD_FILES),三份都与重算的 79 行闭包集合相等�
 ## 5. 复现
 
 ```
-runtime/dsh/vendor/ensure-dsh.sh          # 物化 vendored pins
+external/ensure-dsh.sh          # 物化 vendored pins
 sh hosts/harmony/ci/vendor-official.sh --closure-only   # rawfile 闭包
 node tools/gen-staging-manifests.mjs --out /tmp/gen-out  # 本报告数字
 node tools/check-staging.mjs --block harmony,android,ios # 验证器,绿

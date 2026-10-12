@@ -260,7 +260,7 @@ cat > "$OUT/receipt.json" <<EOF
   "credentialSource": "$CRED_SOURCE",
   "launch": "emulator, --ez dsh.calendarlive true + --es dsh.script.approval approve (Debug, real model turn)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "create-calendar-live", "verdict": "verdict-create-calendar-live.json", "pass": true }
   ],

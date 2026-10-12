@@ -25,7 +25,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VENDOR = resolve(HERE, '../vendor');
+const VENDOR = resolve(HERE, '../../external');
 const TESTS = join(VENDOR, 'dsh-tests@dsh-v0.1.6-alpha.2');
 const INCLUDE_LIB = join(VENDOR, 'npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib');
 
@@ -97,7 +97,7 @@ const seat = (path, expectedFragment) => {
 // bare, and node walks THIS ancestor chain.
 resolveLoose('js-yaml', requireDir('cordis-plugin-include lib', INCLUDE_LIB));
 // tsx ×34 — the specs/transform workers import it; the dsh-tests source
-// packages share one ancestor chain into vendor/node_modules.
+// packages share one ancestor chain into ../../external/node_modules.
 resolveLoose('tsx', requireDir('dsh-tests webworker-runtime src',
   join(TESTS, 'packages/experimental/webworker-runtime/src')));
 // @agentclientprotocol/sdk ×10 — an npm test face resolved from the tests

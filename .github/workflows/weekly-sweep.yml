@@ -48,14 +48,14 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            runtime/dsh/vendor/quickjs-ng
-            runtime/dsh/vendor/zstd
-            runtime/dsh/vendor/wasm3
-            runtime/dsh/vendor/ish
-            runtime/dsh/vendor/dsh
-            runtime/dsh/vendor/npm
-            runtime/dsh/vendor/dsh-tests@dsh-v0.1.6-alpha.2
-          key: weekly-sweep-${{ hashFiles('runtime/dsh/vendor/ensure.sh', 'runtime/dsh/vendor/ensure-ish.sh', 'runtime/dsh/vendor/ensure-dsh.sh', 'runtime/dsh/vendor/ensure-dsh-tests.sh') }}
+            external/quickjs-ng
+            external/zstd
+            external/wasm3
+            external/ish
+            external/dsh
+            external/npm
+            external/dsh-tests@dsh-v0.1.6-alpha.2
+          key: weekly-sweep-${{ hashFiles('external/ensure.sh', 'external/ensure-ish.sh', 'external/ensure-dsh.sh', 'external/ensure-dsh-tests.sh') }}
       - name: Materialize the vendored trees
         # ensure.sh: engine + zstd + wasm3. ensure-ish.sh: the iSH sources the
         # CLI links — NOT covered by ensure.sh (the gap the 2026-09-29 CI run
@@ -63,16 +63,16 @@ jobs:
         # runtime closure the boot serves. ensure-dsh-tests.sh: the upstream
         # test tree + the pinned npm test faces the transpiled specs import.
         run: |
-          runtime/dsh/vendor/ensure.sh
-          runtime/dsh/vendor/ensure-ish.sh
-          runtime/dsh/vendor/ensure-dsh.sh
-          runtime/dsh/vendor/ensure-dsh-tests.sh
+          external/ensure.sh
+          external/ensure-ish.sh
+          external/ensure-dsh.sh
+          external/ensure-dsh-tests.sh
       - name: Materialize the node-side test tooling
         # npm ci: the transpiler's esbuild (+ the test faces' node-side
         # devDeps). transpile.mjs: every upstream spec -> plain ESM under
         # runtime/dsh/upstream-tests/ (gitignored; fresh every run).
         # parity-node-modules.sh: the Node resolution layout the reference
-        # leg resolves bare imports through (vendor/node_modules + the
+        # leg resolves bare imports through (external/node_modules + the
         # runtime/dsh/node_modules link).
         run: |
           npm ci --prefix test/upstream-suite --no-fund --no-audit

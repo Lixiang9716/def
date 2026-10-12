@@ -191,7 +191,7 @@ const setup = () => {
   if (!existsSync(vendorDsh)) {
     throw new Error(
       `provision-modules: the vendored closure is missing (${vendorDsh}) — `
-      + 'run runtime/dsh/vendor/ensure-dsh.sh first');
+      + 'run external/ensure-dsh.sh first');
   }
   mkdirSync(modules, { recursive: true });
 

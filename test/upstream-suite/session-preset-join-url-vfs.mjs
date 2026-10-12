@@ -6,14 +6,14 @@
  * quickjs host serves and the preset health walk resolves row packages
  * against. On a real filesystem those are not absolute Windows paths, so
  * this adapter translates the /vendor/... prefix to the vendored closure
- * (runtime/dsh/vendor/...) in both directions. Every other node:url face
+ * (external/...) in both directions. Every other node:url face
  * passes through.
  */
 import { pathToFileURL as realToFile, fileURLToPath as realToPath } from 'node:url';
 import { resolve as pathResolve, dirname } from 'node:path';
 
 const HERE = dirname(realToPath(import.meta.url));
-const VENDOR = pathResolve(HERE, '../../runtime/dsh/vendor');
+const VENDOR = pathResolve(HERE, '../../external');
 const VENDOR_POSIX = VENDOR.split('\\').join('/');
 
 const toReal = (p) => {

@@ -5,14 +5,14 @@ import { defineConfig } from 'vitest/config'
  *
  * What this proves: every spec upstream ships at the pinned tag
  * (dsh-v0.1.6-alpha.2 — the exact version, and the exact bytes, our runtime
- * vendors) passes with the packages resolved to `runtime/dsh/vendor/`
+ * vendors) passes with the packages resolved to `external/`
  * through the node_modules layout. A green run means: the vendored build we
  * ship satisfies upstream's own unit and integration expectations.
  *
  * Resolution: vite realpaths symlinked imports by default, so a spec at
- * vendor/dsh-tests@<tag>/packages/core/agent-loop/tests/*.spec.ts resolves
+ * external/dsh-tests@<tag>/packages/core/agent-loop/tests/*.spec.ts resolves
  * '@deepseek-ai/dsh-agent-loop' by walking its REAL ancestor chain into
- * vendor/node_modules — no aliases, no copies, the verbatim vendored bytes.
+ * external/node_modules — no aliases, no copies, the verbatim vendored bytes.
  *
  * Segmentation (mirrors upstream's own vitest configs):
  *   - `*.spec.ts` — the deterministic suites (unit + integration). This
@@ -25,7 +25,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     include: [
-      'runtime/dsh/vendor/dsh-tests@*/packages/*/*/tests/**/*.spec.ts',
+      'external/dsh-tests@*/packages/*/*/tests/**/*.spec.ts',
     ],
     exclude: [
       '**/node_modules/**',

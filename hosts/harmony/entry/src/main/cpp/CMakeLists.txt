@@ -10,8 +10,8 @@ cmake_minimum_required(VERSION 3.5.0)
 project(dsh_druntime)
 
 set(DSH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../runtime/dsh)
-set(QJS_DIR ${DSH_ROOT}/vendor/quickjs-ng/0.17.0)
-set(ZSTD_DIR ${DSH_ROOT}/vendor/zstd/1.5.7)
+set(QJS_DIR ${DSH_ROOT}/../../external/quickjs-ng/0.17.0)
+set(ZSTD_DIR ${DSH_ROOT}/../../external/zstd/1.5.7)
 
 # Materialize the pinned, sha256-verified engine sources before compiling.
 # Idempotent: exits 0 in place when the tree is already present; network is
@@ -19,14 +19,14 @@ set(ZSTD_DIR ${DSH_ROOT}/vendor/zstd/1.5.7)
 # (upstream discipline D6) — every build environment re-materializes it.
 execute_process(
   COMMAND sh ensure.sh
-  WORKING_DIRECTORY ${DSH_ROOT}/vendor
+  WORKING_DIRECTORY ${DSH_ROOT}/../../external
   RESULT_VARIABLE DSH_ENSURE_RESULT
   OUTPUT_VARIABLE DSH_ENSURE_OUT
   ERROR_VARIABLE DSH_ENSURE_ERR
 )
 if(NOT DSH_ENSURE_RESULT EQUAL 0)
   message(FATAL_ERROR
-    "runtime/dsh/vendor/ensure.sh failed (exit ${DSH_ENSURE_RESULT}):\n"
+    "external/ensure.sh failed (exit ${DSH_ENSURE_RESULT}):\n"
     "${DSH_ENSURE_OUT}${DSH_ENSURE_ERR}")
 endif()
 message(STATUS "dsh rt: ${DSH_ENSURE_OUT}${DSH_ENSURE_ERR}")
@@ -44,7 +44,7 @@ add_library(druntime SHARED
   ${QJS_DIR}/libregexp.c
   ${QJS_DIR}/libunicode.c
   ${QJS_DIR}/quickjs.c
-  # zstd 1.5.7 — the host node:zlib intrinsics; pinned by vendor/ensure-zstd.sh
+  # zstd 1.5.7 — the host node:zlib intrinsics; pinned by external/ensure-zstd.sh
   ${ZSTD_DIR}/common/debug.c
   ${ZSTD_DIR}/common/entropy_common.c
   ${ZSTD_DIR}/common/error_private.c

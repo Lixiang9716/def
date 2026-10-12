@@ -3,7 +3,7 @@
 # The ONE build tool for this dependency, on every target it has:
 #
 #   macOS (arm64)   cmake -S runtime/dsh/host/ish -B build/ish \
-#                         -DISH_VENDOR=<repo>/runtime/dsh/vendor
+#                         -DISH_VENDOR=<repo>/external
 #                   → libishcore.a libdsh_ish.a + the ish-smoke executable
 #   iOS             cmake … -DCMAKE_TOOLCHAIN_FILE=runtime/dsh/host/ish/ios.cmake \
 #                         -DISH_SDK=iphonesimulator|iphoneos
@@ -25,12 +25,12 @@ project(dsh_ish C ASM)
 
 set(ISH_PIN e1d579480fba88e8f0428e3cf23811bcdd05421f CACHE STRING "vendored iSH-arm64 commit")
 set(ISH_VENDOR "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor" CACHE PATH
-    "runtime/dsh/vendor directory (written by vendor/ensure-ish.sh)")
+    "external directory (written by external/ensure-ish.sh)")
 set(ISH_SRC "${ISH_VENDOR}/ish/${ISH_PIN}")
 
 if(NOT ISH_SRC MATCHES "ish/${ISH_PIN}$" OR NOT EXISTS "${ISH_SRC}/kernel/init.c")
   message(FATAL_ERROR
-    "vendored iSH-arm64 sources not found at ${ISH_SRC} — run runtime/dsh/vendor/ensure-ish.sh first")
+    "vendored iSH-arm64 sources not found at ${ISH_SRC} — run external/ensure-ish.sh first")
 endif()
 
 set(GEN "${CMAKE_CURRENT_BINARY_DIR}/generated")

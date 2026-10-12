@@ -119,7 +119,7 @@ stage_sync() {
             hosts/harmony/ci/vendor-official.sh --closure-only ;;
         core)
             echo "build: sync core (verify the vendored pins)"
-            (cd runtime/dsh && ./vendor/ensure.sh) ;;
+            (cd runtime/dsh && ../../external/ensure.sh) ;;
         *)
             echo "::error::build: sync: unknown platform '$1' (want ios|android|harmony|core)" >&2
             return 1 ;;

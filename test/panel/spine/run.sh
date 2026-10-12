@@ -6,7 +6,7 @@
 #
 # The farm is machine-local (junctions onto the vendored closure, gitignored
 # via runtime/dsh/node_modules) and idempotent to (re)build; a fresh checkout
-# needs the vendored closure materialized first (runtime/dsh/vendor/ensure.sh
+# needs the vendored closure materialized first (external/ensure.sh
 # + ensure-dsh.sh — the same prerequisite the closures gate documents).
 #
 # Shape: the runner and the suite paths are REPO-ROOT-RELATIVE and the cwd is

@@ -31,9 +31,9 @@ PIAI_KEY="mock-key-0001"
 #    (dsh-llm-pi-ai + its dsh-launch-environment link-time dep). The C host
 #    ALSO needs the vendored iSH-AArch64 userland at configure time
 #    (CMakeLists refuses without it) — ensure-ish.sh is idempotent.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
-sh vendor/ensure-ish.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
+sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -58,7 +58,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "host": "$(uname -s | tr '[:upper:]' '[:lower:]')-cli ($(uname -sr) $(uname -m))",
   "engine": "quickjs-ng",
   "engineVersion": "0.17.0",
-  "upstream": "@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @deepseek-ai/dsh-launch-environment@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @deepseek-ai/dsh-launch-environment@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "scenario": "llm.piai-probe",
   "events": $EVENTS,
   "proves": [

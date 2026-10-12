@@ -8,7 +8,7 @@
  * exit status.
  *
  * The engine is iSH-arm64, vendored and sha256-pinned by
- * runtime/dsh/vendor/ensure-ish.sh: a userspace AArch64 emulator with a
+ * external/ensure-ish.sh: a userspace AArch64 emulator with a
  * threaded-code interpreter. Nothing here spawns a process and nothing here
  * creates a second OS: the guest's tasks are emulated, its "shell" is an
  * ELF binary interpreted in this process. The gateway dispatches onto the

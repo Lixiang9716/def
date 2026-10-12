@@ -252,7 +252,7 @@
       "id": "vendoring-repro",
       "command": [
         "sh",
-        "runtime/dsh/vendor/reproducibility-proof.sh",
+        "external/reproducibility-proof.sh",
         "--gate"
       ],
       "description": "fresh-clone proof: the vendor scripts materialize what they promise under CI's invocation shapes (mirror-first; engine tarballs + npm legs download)",
@@ -424,7 +424,7 @@
         "deploy/marketplace/**",
         "presentation/**",
         "runtime/dsh/ci/**",
-        "runtime/dsh/vendor/**",
+        "external/**",
         "runtime/dsh/host/**"
       ],
       "timeoutMs": 120000

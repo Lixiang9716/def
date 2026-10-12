@@ -345,13 +345,13 @@ fetch_dsh() {
     have_pkg "$dir" && stamped "$dir" "$sha" && { echo "vendor: $dir present (pin-stamped)"; return; }
     tgz="deepseek-ai-dsh-$name-$ver.tgz"
     tmp=$(mktemp /tmp/dsh-vendor.XXXXXX)
-    # Tier 1: the TRACKED MIRROR (vendor/dsh-tarballs/ — the pinned bytes,
+    # Tier 1: the TRACKED MIRROR (external/dsh-tarballs/ — the pinned bytes,
     # committed 2026-09-23 after upstream deleted the dir from master and
     # CI runners proved unreachable-flaky against the frozen ref). Cold
     # checkouts need no network at all; the digest check below is unchanged.
     # Relative to the script's OWN directory (it cd'd at the top): $0 is
     # caller-relative, which breaks when invoked as
-    # `runtime/dsh/vendor/ensure-dsh.sh` from the repo root — exactly how
+    # `external/ensure-dsh.sh` from the repo root — exactly how
     # CI calls it (measured: the mirror silently missed and every cold
     # checkout fell to the deleted-on-master URL).
     MIRROR="dsh-tarballs/$tgz"
@@ -375,7 +375,7 @@ fetch_npm() {
     dir="$1"; suffix="$2"; sha="$3"
     have_pkg "npm/$dir" && stamped "npm/$dir" "$sha" && { echo "vendor: npm/$dir present (pin-stamped)"; return; }
     tmp=$(mktemp /tmp/dsh-vendor.XXXXXX)
-    # Tier 1: the TRACKED MIRROR (vendor/dsh-tarballs/, the same record
+    # Tier 1: the TRACKED MIRROR (external/dsh-tarballs/, the same record
     # fetch_dsh reads) — PARTIAL coverage: add-package.sh fetch drops a
     # tarball there only for packages vendored through it (measured
     # 2026-09-29: 14/26 npm rows carry a mirror tarball), so a cold checkout
@@ -460,5 +460,16 @@ done
     echo "vendor: upstream DSH closure INCOMPLETE — see the MISSING/UNSTAMPED rows above; refusing to report ready" >&2
     exit 1
 }
+
+# CLI contract-path link: the desktop CLI's bundle base is runtime/dsh
+# (main_cli.c argv[1]; the ci legs run it with "."), and its loader reads the
+# closure at <base>/vendor/{dsh,npm}/... (dsh_runtime_host.c) — the same
+# layout the platform hosts stage into their bundles. The materialization
+# root moved to <repo>/external; link the contract path at it so the CLI face
+# sees the same bytes (idempotent; a real tree at the path is never touched).
+if [ -L ../runtime/dsh/vendor ]; then
+    rm ../runtime/dsh/vendor
+fi
+[ -e ../runtime/dsh/vendor ] || ln -s ../../external ../runtime/dsh/vendor
 
 echo "vendor: upstream DSH closure ready"

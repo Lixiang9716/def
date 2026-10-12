@@ -81,7 +81,7 @@ def main() -> int:
         if not src.is_dir():
             die(f"missing source tree {src} — run test/e2e/"
                 f"ensure-official-dist.sh + ensure-client-bundles.sh + "
-                f"runtime/dsh/vendor/ensure-dsh.sh before the release build")
+                f"external/ensure-dsh.sh before the release build")
 
     root = resources / "official-web"
     if root.exists():

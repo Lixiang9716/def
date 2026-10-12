@@ -24,8 +24,8 @@ MOCK_KEY="mock-key-0001"
 MOCK_WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh

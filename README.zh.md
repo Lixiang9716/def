@@ -32,7 +32,7 @@ DSH（DeepSeek Harness）生态的移动宿主（Mobile Host）。基于社区 F
 
 上表记录各里程碑以自身证据证明的内容。自决策 [D9](docs/decisions.md) 起，Harness 层本身
 不再是自研重实现：上游 DSH 运行时在 quickjs 上**原样**运行——26 个包由
-`runtime/dsh/vendor/ensure-dsh.sh` pin 并做 sha256 校验（21 个上游 DSH 包
+`external/ensure-dsh.sh` pin 并做 sha256 校验（21 个上游 DSH 包
 @ 0.1.6-alpha.2 + 5 个 pinned npm 依赖），自研代码只留胶水（垫层、适配器、契约 carrier）。
 经 carrier 在 iOS / Android / 鸿蒙上已点亮：官方 client-modules web 启动、官方 App 壳
 （#61 的 58 包 application 层）、真实 `session.list`/日志，以及 composer 写入路径。汇总

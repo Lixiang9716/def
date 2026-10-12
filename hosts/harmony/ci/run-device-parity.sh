@@ -244,7 +244,7 @@ cat > "$PARITY_OUT/receipt.json" <<EOF
   "phase": "upstream.parity",
   "launch": "--ps dsh.e2e.leg upstream.parity (Debug, in-app ParityMockRoute)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "upstream": "@deepseek-ai/dsh-* (vendored verbatim, sha256-pinned; the SAME closure the Node reference ran)",
   "scenario": "upstream.parity",
   "proves": [

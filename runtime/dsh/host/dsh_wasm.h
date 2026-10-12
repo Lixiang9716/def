@@ -22,7 +22,7 @@
  *     is the module's own status code.
  *
  * The interpreter is wasm3, vendored and sha256-pinned by
- * runtime/dsh/vendor/ensure-wasm3.sh. Nothing here spawns a process: iOS
+ * external/ensure-wasm3.sh. Nothing here spawns a process: iOS
  * forbids it and this host refuses it (D2), which is the whole reason the
  * module is interpreted inside the caller's own process. */
 char *dsh_wasm_run(const uint8_t *bytes, size_t len, const char *func,

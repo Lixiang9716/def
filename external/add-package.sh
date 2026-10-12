@@ -17,13 +17,13 @@
 #                            compiles)
 #   verify                   the closure gate subset (closures + bundle-files)
 #
-# The mirror is TRACKED (vendor/dsh-tarballs/, D6's pin record): a package is
+# The mirror is TRACKED (external/dsh-tarballs/, D6's pin record): a package is
 # only landed once its tarball is committed there AND its row is pinned in
 # ensure-dsh.sh — CI materializes from the mirror first, network second.
 set -eu
-ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
-VENDOR=runtime/dsh/vendor
+VENDOR=external
 MIRROR=$VENDOR/dsh-tarballs
 REGISTRY=${DSH_NPM_REGISTRY:-https://registry.npmjs.org}
 
@@ -72,14 +72,14 @@ fetch() {
     SHA=$(sha256_of "$MIRROR/$FLAT.tgz")
     say "sha256 $SHA"
     say "committed tarball: $MIRROR/$FLAT.tgz (git add it)"
-    say "pin row for NPM_PACKAGES (runtime/dsh/vendor/ensure-dsh.sh):"
+    say "pin row for NPM_PACKAGES (external/ensure-dsh.sh):"
     printf '  %s@%s|%s/-/%s-%s.tgz|%s\n' "$FULL" "$VER" "$FULL" "$PKG" "$VER" "$SHA"
-    say "then materialize + stamp-verify: runtime/dsh/vendor/ensure-dsh.sh"
+    say "then materialize + stamp-verify: external/ensure-dsh.sh"
 }
 
 # Which face did ensure materialize? DSH_PACKAGES pins extract to
-# vendor/dsh/<name>@<ver> (the mirror's workspace trees); NPM_PACKAGES pins
-# extract to vendor/npm/<name>@<ver> (registry tarballs). The FACE decides
+# external/dsh/<name>@<ver> (the mirror's workspace trees); NPM_PACKAGES pins
+# extract to external/npm/<name>@<ver> (registry tarballs). The FACE decides
 # which embed lists take rows and what advice is true.
 detect_face() {
     DSH_DIR="$VENDOR/dsh/$PKG@$VER"
@@ -108,13 +108,13 @@ rows() {
         # vendor/dsh dir names follow the monorepo WORKSPACE name (tool-bash,
         # not dsh-tool-bash) — the shape every staged preset package uses.
         say "preset-riding → staged rel is vendor/dsh (the marker seeder walks it), bytes npm:"
-        printf '    ("vendor/dsh/%s@%s",\n     SPIKE / "vendor" / "npm" / "%s" / "%s@%s"),\n' \
+        printf '    ("vendor/dsh/%s@%s",\n     SPIKE / ".." / "external" / "npm" / "%s" / "%s@%s"),\n' \
             "${SHORT#dsh-}" "$VER" "$SCOPE" "$PKG" "$VER"
         say "or imported by boot.js only (no preset row) → stage in place:"
-        printf '    ("vendor/npm/%s@%s",\n     SPIKE / "vendor" / "npm" / "%s" / "%s@%s"),\n' \
+        printf '    ("vendor/npm/%s@%s",\n     SPIKE / ".." / "external" / "npm" / "%s" / "%s@%s"),\n' \
             "$FULL" "$VER" "$SCOPE" "$PKG" "$VER"
     else
-        printf '    ("vendor/npm/%s@%s",\n     SPIKE / "vendor" / "npm" / "%s@%s"),\n' \
+        printf '    ("vendor/npm/%s@%s",\n     SPIKE / ".." / "external" / "npm" / "%s@%s"),\n' \
             "$FULL" "$VER" "$FULL" "$VER"
     fi
 

@@ -159,7 +159,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "create.card",
   "launch": "dsh_phone emulator, --ps dsh.e2e.leg create.card + --ps dsh.script.approval approve (Debug)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "create-card-harmony", "verdict": "verdict-create-card-harmony.json", "pass": true }
   ],

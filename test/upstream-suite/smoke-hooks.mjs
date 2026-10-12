@@ -67,7 +67,7 @@ export async function resolve(specifier, context, nextResolve) {
   if (specifier === 'dsh:util-crypto') {
     return {
       url: pathToFileURL(pathResolve(
-        ROOT, 'runtime/dsh/vendor/dsh/util-crypto@0.1.6-alpha.2/lib/index.js')).href,
+        ROOT, 'external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js')).href,
       shortCircuit: true,
     };
   }

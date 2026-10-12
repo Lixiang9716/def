@@ -60,7 +60,7 @@ fail_deadline() {
 # ---- 0. the spec exists + the Node reference leg (same harness, no device) --
 [ -f "runtime/dsh/upstream-tests/$SPEC" ] || {
   log "transpiled spec missing — materializing (vendor + transpile)"
-  sh runtime/dsh/vendor/ensure-dsh-tests.sh
+  sh external/ensure-dsh-tests.sh
   (cd test/upstream-suite && npm install --no-audit --no-fund >/dev/null 2>&1 && node transpile.mjs >/dev/null)
 }
 [ -f "runtime/dsh/upstream-tests/$SPEC" ] || die "spec not produced by the pipeline: $SPEC"
@@ -73,7 +73,7 @@ log "reference: $REF_SUMMARY"
 
 # ---- 1-3. vendor, regen the bundle header, build, install -------------------
 log "1/5 vendor + regenerate the bundle header (embeds the suite leg + harness)"
-runtime/dsh/vendor/ensure.sh
+external/ensure.sh
 python3 hosts/ios/Tools/gen_bundle_header.py
 
 if [ "$SKIP_BUILD" -eq 0 ]; then

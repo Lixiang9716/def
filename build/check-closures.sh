@@ -55,9 +55,9 @@ if command -v python3 >/dev/null 2>&1; then
     # `gov run`; build/build.sh sync ios does the same) — absent inputs are a
     # misconfiguration and fail loud naming the fix (rule 5), never silently.
     IOS_INPUTS=1
-    for d in runtime/dsh/vendor/quickjs-ng runtime/dsh/vendor/dsh runtime/dsh/vendor/npm; do
+    for d in external/quickjs-ng external/dsh external/npm; do
         [ -d "$d" ] || {
-            echo "::error::closures: ios generation input $d absent — run runtime/dsh/vendor/ensure.sh && runtime/dsh/vendor/ensure-dsh.sh first" >&2
+            echo "::error::closures: ios generation input $d absent — run external/ensure.sh && external/ensure-dsh.sh first" >&2
             IOS_INPUTS=0
         }
     done

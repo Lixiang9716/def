@@ -67,8 +67,8 @@ mkdir -p "$WORKSPACE"
 
 echo "== 1/5 vendor + build =="
 if [ "$SKIP_BUILD" -eq 0 ]; then
-    sh runtime/dsh/vendor/ensure-ish.sh
-    cmake -S runtime/dsh/host/ish -B runtime/dsh/build/ish -DISH_VENDOR="$PWD/runtime/dsh/vendor" >/dev/null
+    sh external/ensure-ish.sh
+    cmake -S runtime/dsh/host/ish -B runtime/dsh/build/ish -DISH_VENDOR="$PWD/external" >/dev/null
     cmake --build runtime/dsh/build/ish --target ishcore dsh_ish ish-smoke \
         -j"$(sysctl -n hw.ncpu 2>/dev/null || echo 4)" >/dev/null
     sh runtime/dsh/host/build.sh >/dev/null
@@ -195,7 +195,7 @@ cat > "$ART/receipt.json" <<EOF
 {
  "host": "macOS $(uname -m) (the desktop CLI, no simulator)",
  "engine": "iSH-arm64 (userspace AArch64 emulator, threaded-code interpreter)",
- "engineVersion": "OpenMinis/ish-arm64 e1d579480fba88e8f0428e3cf23811bcdd05421f, vendored + sha256-pinned by runtime/dsh/vendor/ensure-ish.sh",
+ "engineVersion": "OpenMinis/ish-arm64 e1d579480fba88e8f0428e3cf23811bcdd05421f, vendored + sha256-pinned by external/ensure-ish.sh",
  "guestRoot": "Alpine 3.21.8 aarch64 minirootfs (sha256 $ROOTFS_SHA256)",
  "phase": "contract v1.3.0 \`ishRun\` — a real Linux userland running INSIDE the host process (no child process, no second OS), driven from the JS layer through system-plugins/dsh-shell-ish",
  "launchConfiguration": "(cd runtime/dsh) ./build/dsh-cli . scenario-local/userland-shell.js, with DSH_ISH_ROOTFS set to the extracted guest root and DSH_SPIKE_TMPDIR pinned to the staged workspace",

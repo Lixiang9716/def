@@ -29,7 +29,7 @@ vi.mock('node:buffer', async (importOriginal) => ({
 // carried only the four upstream-shipped presets.
 //
 // The verdict rules are the vendored AgentPresets discovery's
-// (runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2/lib/index.js):
+// (external/dsh/agent-presets@0.1.6-alpha.2/lib/index.js):
 //   - scanRoot: a preset dir under the seeded presets/ root holding
 //     `agent.cordis.yml` (COMPOSITION_FILE), metadata from `preset.yml`,
 //     sorted by `order` ascending then id;
@@ -190,7 +190,7 @@ let _pinned;
  * unresolvable and answered four broken presets where the runtime
  * measures five healthy (T-0218). */
 const pinnedPackageNames = () => (_pinned ??= (() => {
-  const src = readFileSync(join(REPO, 'runtime/dsh/vendor/ensure-dsh.sh'), 'utf8');
+  const src = readFileSync(join(REPO, 'external/ensure-dsh.sh'), 'utf8');
   return new Set([...src.matchAll(/^(@[\w-]+\/[\w-]+)@/gm)].map((m) => m[1]));
 })());
 

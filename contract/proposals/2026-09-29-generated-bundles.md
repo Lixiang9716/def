@@ -119,7 +119,7 @@ Three moves, all reversible; **nothing here is executed by this document**.
   `dev-ios.yml:77` DerivedData cache key, which must rekey onto `project.yml` +
   the sources once the pbxproj stops being tracked.
 - **P3 — a fresh `gen.sh` has its inputs.** `gen.sh:3-5` requires
-  `runtime/dsh/vendor/ensure.sh` first (xcodegen needs the quickjs sources on
+  `external/ensure.sh` first (xcodegen needs the quickjs sources on
   disk to reference them). `dev/ios` already vendors before building
   (`dev-ios.yml:159-163`); the flipped gate's generation leg needs the same
   ordering.

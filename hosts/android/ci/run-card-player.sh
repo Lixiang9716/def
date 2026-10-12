@@ -176,7 +176,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "card.player",
   "launch": "emulator, --ez dsh.cardplayer true + --es dsh.script.approval approve (Debug)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "card-player", "verdict": "verdict-card-player.json", "pass": true }
   ],

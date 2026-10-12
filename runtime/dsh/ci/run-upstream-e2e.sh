@@ -13,7 +13,7 @@
 # the poll reads the driver's MOCK_BASE_URL announce, it never sleeps blind.
 #
 # Idempotent and CI-safe: re-fetches any missing vendored package
-# (runtime/dsh/vendor/ensure-dsh.sh) and rebuilds the host only when needed.
+# (external/ensure-dsh.sh) and rebuilds the host only when needed.
 #
 # usage: run-upstream-e2e.sh   (artifacts: runtime/dsh/artifacts/macos-cli-upstream-session)
 set -eu
@@ -26,8 +26,8 @@ MOCK_WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified (network only for
 #    packages missing on disk).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -90,7 +90,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "engineVersion": "0.17.0",
   "quickjsTag": "v0.17.0",
   "quickjsCommit": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
-  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-llm + dsh-llm-mock-server (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-llm + dsh-llm-mock-server (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "kernel": "@deepseek-ai/cordis@4.0.2",
   "scenario": "upstream.session",
   "proves": [

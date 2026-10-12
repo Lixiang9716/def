@@ -6,7 +6,7 @@ This document organizes what the upstream **deepseek-harness** (DSH) monorepo
 contains, how one agent conversation flows through it, and where dsh-mobile
 plugs into it. Sources: the upstream clone at `tmp/deepseek-harness`
 (tag `dsh-v0.1.7-alpha.2`, merge `00102833d`) and our vendored pin
-`0.1.6-alpha.2` (`runtime/dsh/vendor/`). It complements
+`0.1.6-alpha.2` (`external/`). It complements
 [upstream-capability-mounting.md](upstream-capability-mounting.md) (the sibling
 -project capability patterns and adoption decisions) and
 [`runtime/dsh/upstream/README.md`](../../runtime/dsh/upstream/README.md)
@@ -256,7 +256,7 @@ capabilities).
 ### 3.1 The rule
 
 D9 + D6: product-carrying upstream packages are vendored **verbatim**
-(pinned tarball + sha256, `runtime/dsh/vendor/ensure-dsh.sh`), driven
+(pinned tarball + sha256, `external/ensure-dsh.sh`), driven
 through adapter plugins; in-house code is glue only. Platform differences
 live **below** the upstream contracts — never `hostType` branches above them.
 
