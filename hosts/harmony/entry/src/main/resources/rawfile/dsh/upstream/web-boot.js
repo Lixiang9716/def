@@ -3,7 +3,7 @@
  * upstream/web-boot.js — the WEB BOOT PRODUCER (decision D9, W-INTEG leg).
  *
  * The official web app boots ONLY through the injected rows the upstream
- * `client-modules` node half composes (docs/webserver-contract.md §2.6): the
+ * `client-modules` node half composes (doc/webserver-contract.md §2.6): the
  * `__ModuleLoader__` facade queue, application preloads, the blocking
  * bootstrap batch, and the `__DSH_BOOT__` graph. This adapter lets the
  * VENDORED `ClientModuleRegistry` compose that wire inside the dsh runtime

@@ -19,7 +19,7 @@ from pathlib import Path
 
 
 def tracked_files():
-    out = subprocess.run(["git", "ls-files"], capture_output=True, text=True, check=True).stdout
+    out = subprocess.run(["git", "ls-files"], capture_output=True, text=True, encoding="utf-8", errors="replace", check=True).stdout
     return [n for n in out.splitlines() if n.endswith(".md") and Path(n).exists()]
 
 
