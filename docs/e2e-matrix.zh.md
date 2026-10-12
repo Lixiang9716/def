@@ -6,6 +6,21 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：本矩阵反映 harmony 矩阵腿转正（2026-10-12）：
+> `run-simulator-matrix.sh --platform harmony` 在 hdc 目标在场时运行**真实**
+> 腿——harness 阶梯（`run-host-e2e.sh`：8/8 verdict + 绿路 receipt 落入
+> `simulator-matrix/harness/`）与 release 腿（`release-logging/run.sh
+> --skip-harness` 落入 `simulator-matrix/release/` 并产出 `release-proof.json`：
+> release HAP 裸启动即服务官方 UI——在**套接字层**证明，经 `hdc fport` 探测
+> 17890 上的 LISTEN，`GET / -> 401`；零 drive 机制记录；drive 拒绝点名），
+> 无活目标的机器保留诚实 skip 回执。该腿首轮运行清出四笔积累的钉子漂移，
+> 都是腿死着时没人能看见的：官方面描述子 8/3 → 13/1（timer 对 #395、
+> surface 三件 #424、BYOK 回合的 keychain 对）、binding 表 28/9 → 31/9、
+> spine 名册 +`plugin_create`（count 30 → 31）、以及 release 证明器自己的
+> #402 时代 bundle/标签钉子加上 release 镜像会丢弃的 info 级服务事实
+> （证明由此改为套接字级）。本树校验：114 目录 / 233 verdict / 242 png
+> （1 项已被接受的 owned gap）。下方 render-surface 记录为上一条时效记录。
+
 > **时效性**：本矩阵加入 render-surface 腿（2026-10-09）：
 > `surface.pomodoro` manifest（`test/e2e/scenarios/surface-pomodoro.json`）钉定
 > v1.10.0 回合——打开 → 弧线帧 → 畸形操作拒绝 → 帧泵武装/解除 → 关闭，

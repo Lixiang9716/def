@@ -98,8 +98,14 @@ const proveRefused = async () => {
 const main = async (port) => {
   log.debug('main begin', { port });
   const descriptor = JSON.parse(globalThis.__dshGatewayDescriptor());
-  demand(descriptor.available.length === 8, 'expected 8 available primitives');
-  demand(descriptor.unavailable.length === 3, 'expected 3 unavailable primitives');
+  // The official serving face's descriptor shape (model/OfficialServe.ets
+  // OFFICIAL_DESCRIPTOR): the fs trio + notify + presentApproval + the v2
+  // httpFetch + the timer pair (#395) + the surface trio (#424) + the
+  // keychain pair (the BYOK round) available; presentPicker the one honest
+  // drop. A count change here means the serving face moved — re-pin both
+  // this demand and the harmony-httpfetch-streaming manifest together.
+  demand(descriptor.available.length === 13, 'expected 13 available primitives');
+  demand(descriptor.unavailable.length === 1, 'expected 1 unavailable primitive');
   demand(descriptor.unavailable.includes('httpFetch') === false,
     'httpFetch must be available under the v2 descriptor');
   emit('descriptor.declared', {

@@ -745,21 +745,108 @@ android_platform() {
 
 # ---- Harmony ----------------------------------------------------------------
 
+harmony_m() { echo "hosts/harmony/artifacts/simulator-matrix"; }
+
+# THE HARDCODE the probes name: the CLT seat this machine standardised on
+# (hosts/harmony/README.md documents the toolchain; the CLT's own Emulator
+# binary starts the dsh_phone instance the harness legs install onto).
+HARMONY_HDC="/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools/sdk/default/openharmony/toolchains/hdc"
+
+harmony_harness_leg() {
+    local art; art="$(harmony_m)/harness"
+    mx "harness leg: run-host-e2e.sh (regression trio + binding + the D9 ladder)"
+    hosts/harmony/ci/run-host-e2e.sh "$art" \
+        || { archive_failed_dir harmony harness; record harmony harness FAIL "run-host-e2e.sh exited non-zero — dir moved to /tmp"; return 1; }
+    record harmony harness PASS "8 verdicts green + receipt (boot, bridge-smoke, session, binding, officialweb.mount, httpfetch, session.live-read, composer.write)"
+}
+
+harmony_release_leg() {
+    local art; art="$(harmony_m)/release"
+    mkdir -p "$art"
+    mx "release leg: release-logging/run.sh (release HAP, plain launch, refusal by name)"
+    # --skip-harness: the harness contrast belongs to the harness leg above;
+    # the ART override lands the evidence under simulator-matrix/ without
+    # touching the committed release-logging verification record.
+    DSH_RELEASE_LOGGING_ART="$ROOT/$art" \
+        hosts/harmony/artifacts/release-logging/run.sh --skip-harness \
+        || { archive_failed_dir harmony release; record harmony release FAIL "release-logging run.sh exited non-zero — dir moved to /tmp"; return 1; }
+    local htarget hver
+    htarget="$("$HARMONY_HDC" list targets | head -1 | tr -d '\r')"
+    hver="$("$HARMONY_HDC" shell param get const.product.software.version 2>/dev/null | tr -d '\r\n')"
+    python3 - "$art" "$htarget" "${hver:-unknown}" <<'PY'
+import json, os, sys
+from datetime import datetime
+art, target, hver = sys.argv[1], sys.argv[2], sys.argv[3]
+proof = {
+    "leg": "release",
+    "configuration": "Release (the user-facing distribution build)",
+    "host": f"harmonyos emulator ({target}, HarmonyOS {hver})",
+    "engine": "quickjs-ng",
+    "engineVersion": os.environ.get("DSH_MATRIX_ENGINE_PIN", ""),
+    "tree": os.environ.get("DSH_MATRIX_TREE", ""),
+    "assertions": {
+        "driveMachineryMarkers": 0,
+        "assertedZero": ["dsh.runtime.verdict verdict text", "dsh.runtime.result result tags",
+                          "ALL PASS / ALL FAIL machinery text",
+                          "level:debug records", "level:info records"],
+        "officialUiReached": "plain-launch-release.png — the serve's LISTEN socket on 17890 "
+                             "probed through hdc fport (GET / -> 401, origin-release.txt)",
+        "driveRefusal": "refusal.txt — refusing 'dsh.e2e.leg m2.llm' by name",
+    },
+    "producedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+}
+with open(os.path.join(art, "release-proof.json"), "w") as f:
+    json.dump(proof, f, indent=2); f.write("\n")
+PY
+    [ -f "$art/release-proof.json" ] || mx_die "the release-proof.json writer lied (file absent) — refusing to record"
+    record harmony release PASS "0 drive markers / 0 debug+info; official UI served; refusal by name; proof in $art/release-proof.json"
+}
+
+harmony_capability_skips() { # TARGET
+    local art; art="$(harmony_m)"
+    mkdir -p "$art"
+    python3 - "$art" "$1" <<'PY'
+import json, sys
+from datetime import datetime
+art, target = sys.argv[1], sys.argv[2]
+doc = {
+    "platform": "harmonyos",
+    "target": target,
+    "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+    "probed": [
+        {"driver": "hdc shell uinput + the on-device drives (drive-binding.mjs / drive-official.mjs)",
+         "present": True,
+         "note": "the ladder drives itself through hdc; no external UI driver, no leg skipped"},
+    ],
+    "hardware": [
+        {"capability": c, "status": "no-emulator-hardware",
+         "baseline": "an emulator exposes no camera/BT/NFC radio; when the system "
+                     "capability face lands, its scenarios negotiate `unavailable` "
+                     "through the capability plane (device-plane precedent: the "
+                     "harmony emulator's pasteboard answers honestly unavailable)"}
+        for c in ["camera", "microphone", "bluetooth", "nfc"]
+    ],
+}
+with open(f"{art}/capability-skips.json", "w") as f:
+    json.dump(doc, f, indent=2); f.write("\n")
+PY
+    [ -f "$art/capability-skips.json" ] || mx_die "the capability-skips.json writer lied (file absent) — refusing to record"
+}
+
 harmony_platform() {
-    mx "=== HarmonyOS matrix (honest skip unless a toolchain + target exist) ==="
-    local hdc="/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools/sdk/default/openharmony/toolchains/hdc"
-    local art="hosts/harmony/artifacts/simulator-matrix"
+    mx "=== HarmonyOS matrix (the real legs when a target is up; the honest skip when not) ==="
+    local art; art="$(harmony_m)"
     mkdir -p "$art"
     local deveco=0 targets="unavailable" real_target=no
     [ -d "/Applications/DevEco-Studio.app" ] && deveco=1
-    if [ -x "$hdc" ]; then
+    if [ -x "$HARMONY_HDC" ]; then
         # Join with "; " but STRIP the trailing separator before any
         # comparison: `tr '\n' ';'` yields "[Empty];", which compares
         # unequal to "[Empty]" forever (review finding — the guard then
         # treats an EMPTY list as a target present, or a real target is
         # masked by the deveco=0 short-circuit and the receipt contradicts
         # its own probes field).
-        targets="$("$hdc" list targets 2>&1 | tr -d '\r' | tr '\n' ';')"
+        targets="$("$HARMONY_HDC" list targets 2>&1 | tr -d '\r' | tr '\n' ';')"
         targets="${targets%;}"
         [ -n "$targets" ] || targets="(no output)"
         # The REAL-target question is decoupled from DevEco's presence: any
@@ -770,16 +857,14 @@ harmony_platform() {
             [ "$line" = "[Empty]" ] || { real_target=yes; break; }
         done <<< "$(printf '%s' "$targets" | tr ';' '\n')"
     fi
-    if [ "$real_target" = yes ]; then
-        mx_die "a harmony target IS present ($targets) — wire the real leg (hosts/harmony/ci/run-host-e2e.sh) instead of skipping; this script only skips honestly"
-    fi
-    local reason
-    if [ "$deveco" -eq 1 ]; then
-        reason="no hdc simulator target on this machine (DevEco IS present, but nothing is booted) — the leg stays script-ready (D-g): hosts/harmony/ci/run-host-e2e.sh runs it when a device exists. Never faked: a skip receipt, not a green one."
-    else
-        reason="no DevEco toolchain and no hdc simulator target on this machine — the leg stays script-ready (D-g): hosts/harmony/ci/run-host-e2e.sh runs it when a device exists. Never faked: a skip receipt, not a green one."
-    fi
-    python3 - "$art" "$deveco" "$targets" "$reason" "$(tree_line)" <<'PY'
+    if [ "$real_target" != yes ]; then
+        local reason
+        if [ "$deveco" -eq 1 ]; then
+            reason="no hdc simulator target on this machine (DevEco IS present, but nothing is booted) — the leg stays script-ready (D-g): hosts/harmony/ci/run-host-e2e.sh runs it when a device exists. Never faked: a skip receipt, not a green one."
+        else
+            reason="no DevEco toolchain and no hdc simulator target on this machine — the leg stays script-ready (D-g): hosts/harmony/ci/run-host-e2e.sh runs it when a device exists. Never faked: a skip receipt, not a green one."
+        fi
+        python3 - "$art" "$deveco" "$targets" "$reason" "$(tree_line)" <<'PY'
 import json, sys
 from datetime import datetime
 art, deveco, targets, reason = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
@@ -795,8 +880,26 @@ skip = {
 with open(f"{art}/matrix-skip-receipt.json", "w") as f:
     json.dump(skip, f, indent=2); f.write("\n")
 PY
-    [ -f "$art/matrix-skip-receipt.json" ] || mx_die "the matrix-skip-receipt.json writer lied (file absent) — refusing to record"
-    record harmony platform SKIP "no live hdc target — matrix-skip-receipt.json written (D-g standby)"
+        [ -f "$art/matrix-skip-receipt.json" ] || mx_die "the matrix-skip-receipt.json writer lied (file absent) — refusing to record"
+        record harmony platform SKIP "no live hdc target — matrix-skip-receipt.json written (D-g standby)"
+        return 0
+    fi
+    DSH_MATRIX_ENGINE_PIN=$(engine_pin)
+    export DSH_MATRIX_ENGINE_PIN
+    DSH_MATRIX_TREE=$(tree_line)
+    export DSH_MATRIX_TREE
+    # ORDER IS THE NATIVE TRAP (release-logging/run.sh, surprise ledger
+    # harmony-native-cross-mode): the harness leg's debug build must run on a
+    # tree the release leg has not touched — the release leg CLEANS
+    # entry/build + entry/.cxx before its own build, so it must go LAST or
+    # the harness HAP packs the release .so and its captures come out empty.
+    if [ "${SKIP_HARNESS:-0}" -ne 1 ]; then
+        leg_or_stop harmony harness harmony_harness_leg
+    fi
+    if [ "${SKIP_RELEASE:-0}" -ne 1 ]; then
+        leg_or_stop harmony release harmony_release_leg
+    fi
+    harmony_capability_skips "$("$HARMONY_HDC" list targets | head -1 | tr -d '\r')"
 }
 
 # ---- orchestration ----------------------------------------------------------

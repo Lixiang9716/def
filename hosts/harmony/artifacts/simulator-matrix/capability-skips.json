@@ -1,0 +1,34 @@
+{
+  "platform": "harmonyos",
+  "target": "127.0.0.1:5557",
+  "generatedAt": "2026-10-12T20:02:47+08:00",
+  "probed": [
+    {
+      "driver": "hdc shell uinput + the on-device drives (drive-binding.mjs / drive-official.mjs)",
+      "present": true,
+      "note": "the ladder drives itself through hdc; no external UI driver, no leg skipped"
+    }
+  ],
+  "hardware": [
+    {
+      "capability": "camera",
+      "status": "no-emulator-hardware",
+      "baseline": "an emulator exposes no camera/BT/NFC radio; when the system capability face lands, its scenarios negotiate `unavailable` through the capability plane (device-plane precedent: the harmony emulator's pasteboard answers honestly unavailable)"
+    },
+    {
+      "capability": "microphone",
+      "status": "no-emulator-hardware",
+      "baseline": "an emulator exposes no camera/BT/NFC radio; when the system capability face lands, its scenarios negotiate `unavailable` through the capability plane (device-plane precedent: the harmony emulator's pasteboard answers honestly unavailable)"
+    },
+    {
+      "capability": "bluetooth",
+      "status": "no-emulator-hardware",
+      "baseline": "an emulator exposes no camera/BT/NFC radio; when the system capability face lands, its scenarios negotiate `unavailable` through the capability plane (device-plane precedent: the harmony emulator's pasteboard answers honestly unavailable)"
+    },
+    {
+      "capability": "nfc",
+      "status": "no-emulator-hardware",
+      "baseline": "an emulator exposes no camera/BT/NFC radio; when the system capability face lands, its scenarios negotiate `unavailable` through the capability plane (device-plane precedent: the harmony emulator's pasteboard answers honestly unavailable)"
+    }
+  ]
+}

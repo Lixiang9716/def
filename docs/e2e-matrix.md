@@ -6,6 +6,26 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: this matrix reflects the harmony matrix leg going real
+> (2026-10-12): `run-simulator-matrix.sh --platform harmony` runs the REAL
+> legs when an hdc target is up — the harness ladder (`run-host-e2e.sh`: 8/8
+> verdicts + the green-path receipt into `simulator-matrix/harness/`) and
+> the release leg (`release-logging/run.sh --skip-harness` into
+> `simulator-matrix/release/` with `release-proof.json`: the release HAP's
+> plain launch serves the official UI — proven at the socket level, the
+> serve's LISTEN on 17890 probed through an `hdc fport` with
+> `GET / -> 401`; zero drive-machinery records; the drive refusal by name),
+> with the honest skip receipt kept for machines without a live target. The
+> leg's first runs swept four accumulated pin drifts nothing could see while
+> the leg was dead: the official-face descriptor 8/3 → 13/1 (the timer pair
+> #395, the surface trio #424, the keychain pair of the BYOK round), the
+> binding table 28/9 → 31/9, the spine roster +`plugin_create` (its count
+> 30 → 31), and the release prover's own #402-era bundle/tag pins plus the
+> info-level serving facts a release image drops (the proof went
+> socket-level). Checker on this tree: 114 dirs / 233 verdicts / 242 pngs
+> (1 accepted owned gap). The render-surface note below is the previous
+> currency record.
+
 > **Currency**: this matrix adds the render-surface leg (2026-10-09): the
 > `surface.pomodoro` manifest (`test/e2e/scenarios/surface-pomodoro.json`) pins
 > the v1.10.0 roundtrip — open → arc frame → malformed-op rejection → pump

@@ -1,0 +1,159 @@
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"client.selected","client":"dsh-web-official","source":"launch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"main begin","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-harmony-write-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-harmony-write-0001"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"session/created","sessionId":"s-harmony-write-0001"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"agent/created","id":"main","sessionId":"s-harmony-write-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.plugin-manager","message":"write legs assembled","data":[{"marketplace":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"cordis legs assembled","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"harmony write-live runtime resident (write surface live; awaiting the page)","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"web.boot.applied","rows":6,"source":"runtime (spine + vendored @deepseek-ai/dsh-client-modules)"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"runtime.booted","entries":58,"source":"vendored @deepseek-ai/dsh-client-modules composed in-runtime"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.surface.claimed","endpointCount":39,"streams":["session/follow","workspace/follow","session/control","$events"],"source":"the on-device spine (ctx.sessions/agents/settings)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"index.injected","rows":6,"bytes":31304}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"index.served","path":"/","status":200}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.officialweb.mount","event":"asset.served","path":"/assets/index-8VXBH-f-.js"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.officialweb.mount","event":"plugins.served","path":"/plugins/??@deepseek-ai/dsh-client-modules/client.js&rev=0fd8470886be","bytes":36040}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"upgrade.accepted","path":"/api/remote.mux"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"mux.upgraded","path":"/api/remote.mux"}]}
+dsh.runtime.log: {"level":"info","module":"cordis:tool-subagent","message":"subagent provider \"fork\" not registered yet; the \"subagent_fork\" tool will register when it appears","data":[]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"spine.preset.joined","preset":"mobile","agent":"s-harmony-write-0001","rows":[{"module":"@deepseek-ai/dsh-tool-bash","enabled":true,"condition":"process.platform === 'win32'"},{"module":"@deepseek-ai/dsh-tool-pwsh","enabled":false,"condition":"process.platform !== 'win32'"},{"module":"@deepseek-ai/dsh-tool-present","enabled":true},{"module":"@deepseek-ai/dsh-tool-ralph","enabled":false}],"source":"AgentPresets.mount (the deployment default; the seat presetJoin flag)"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"spine.tools.mounted","tools":["ask_user_question","bash","create_goal","edit","excel_create","excel_read","excel_update","exit_plan_mode","get_goal","interrupt_agent","job_kill","job_list","job_output","list_agents","plugin_create","plugin_manager","ppt_create","ppt_read","present","read","send_message","shell","skill","str_replace_editor","todo_write","update_goal","web_search","word_create","word_read","word_update","write"],"count":31,"source":"ctx.tools.view(agent) — the mobile-joined session toolset (the registry visibility view)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"settings/describe","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest validate","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Service"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Event"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Builtin"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Slots"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Theme"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest synced","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"dynamicCordisRunner/syncInspectManifest","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"credentials/describe","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"session/modelCatalog","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"inventory read","data":[{"runnerMounted":false}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"dynamicCordisRunner/inventory","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"agentPresets/list","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"session.attached","streamId":"485b3003-da99-437b-b29a-af018c326853","stream":"workspace/follow"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"journal.frame.forwarded","direction":"tx","first":true,"source":"REAL follow feeds (snapshot/baseline + live turn frames)"}]}
+dsh.runtime.log: {"level":"warn","module":"cordis:agent-presets","message":"agent \"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5\" was published without joining an agent preset; its tools, prompt sections, and skill catalog resolve against the empty global layer (join through AgentPresets.mount() or composeFrom() in the agent factory setup)","data":[]}
+dsh.runtime.log: {"level":"debug","module":"web-write","message":"session preset joined","data":[{"sessionId":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5","preset":"mobile","agent":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"session/create","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"subagents/list","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"commands/list","answered":"unavailable"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"workspace.picked","chip":true,"composer":true,"bodyText":"探索未至之境 预览版 rt 描述你想要构建的内容, / 调用指令, @ 文件或对话"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"composer.typed","found":"div","editable":true,"value":"Say hello from the composer","text":"Say hello from the composer"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.prompt.observed","sessionId":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5","seq":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/request/built","provider":"mock","model":"mock-1","messages":2,"tools":31,"path":"/chat/completions","method":"POST","agentLoopMarked":true,"stream":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:17890/mock-llm/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"rpc.observed","endpoint":"session/prompt","answered":"forwarded"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:16","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":675}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":16}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":628}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","delta":"Hello"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-start"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","delta":" from"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","delta":" upst"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","delta":"ream"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","finish":"stop","usage":{"inputTokens":3,"outputTokens":19,"totalTokens":22}}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"llm/sse","done":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-end"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"usage"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"finish"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"end"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.turn.settled","sessionId":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5","events":11,"text":"Hello from upstream"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":16}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.follow.frames","frames":1,"shapes":["snapshot:10"],"sessionId":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.reply.rendered","reply":"Hello from upstream","userText":"Say hello from the composer","moduleMode":"live","bodyText":"session-74cb912e-f451-46ef-a86d-b9c0f3b62bb5 重试恢复终端 对话 轨迹 系统提示词 Say hello from the composer 19:32 Hello from upstream 19:32 发消息或创建任务, / 调用指令, @ 文件或对话 1 轮 1 步"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"harmony.composer.live-write","event":"write.live.complete","status":"pass"}]}
+dsh.runtime.verdict: harmony.composer.live-write PASS probe=pass
