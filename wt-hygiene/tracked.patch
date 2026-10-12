@@ -1,0 +1,142 @@
+diff --git a/.github/workflows/dev-android.yml b/.github/workflows/dev-android.yml
+index 94a6afb3..5d0a727c 100644
+--- a/.github/workflows/dev-android.yml
++++ b/.github/workflows/dev-android.yml
+@@ -46,7 +46,14 @@ jobs:
+ 
+       # Same unpacked-cache pattern as dev/harmonyos: tool + dependency state
+       # survives between runs (Gradle caches include the wrapper distribution).
+-      - uses: actions/setup-java@v4
++      #
++      # v5, not v4: v4 prints "setup-java v4 is deprecated and will no longer
++      # receive updates. Please migrate to actions/setup-java@v5" on every
++      # dev/android run. Checked against v5's action.yml before bumping: its
++      # only breaking change is the node runtime, and distribution /
++      # java-version / cache are the same inputs with the same accepted values
++      # (cache: maven|gradle|sbt), so the three below are unchanged.
++      - uses: actions/setup-java@v5
+         with:
+           distribution: temurin
+           java-version: '17'
+@@ -125,6 +132,44 @@ jobs:
+             presentation/official-web/dist
+             presentation/official-web/client-bundles/npm
+           key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'tools/e2e/ensure-official-dist.sh', 'tools/e2e/ensure-client-bundles.sh') }}
++      # The vendored closure is UNTRACKED by design (D6) and the ensure scripts
++      # re-download it on every run — the quickjs-ng sources plus 21 dsh
++      # packages and 5 npm tarballs, paid for by six workflows. Restoring it
++      # turns a fetch into a skip.
++      #
++      # It has to be restored HERE and not nearer the build: the DSH half is
++      # materialized by the step below, and the quickjs-ng half by the Gradle
++      # `ensureSpikeVendor` task INSIDE the APK step
++      # (hosts/android/app/build.gradle.kts), so no later step can pre-empt the
++      # fetch.
++      #
++      # The key is the PIN SCRIPTS THEMSELVES, because they ARE the tracked
++      # provenance record (commit sha + per-tarball sha256 tables): any pin
++      # change changes the key, so a key collision can only mean a pin
++      # collision. Collision is the right strength here and stronger keys are
++      # not available: a present package is skipped WITHOUT being re-hashed
++      # (ensure.sh's have_all and ensure-dsh.sh's have_pkg check file presence
++      # only — read, not assumed), so the key is the integrity boundary, and
++      # there is deliberately NO restore-keys prefix fallback: a fallback would
++      # restore a tree fetched under a DIFFERENT pin set that the scripts would
++      # then accept as present. Without it, a pin change is a cache miss and the
++      # fetch+verify path runs — the reason the pins exist.
++      #
++      # Measured against tracked files before wiring (both tracked: ensure.sh,
++      # ensure-dsh.sh): a glob matching nothing makes hashFiles return the empty
++      # string, which is a constant key and a cache that silently never helps.
++      - name: Cache the vendored quickjs-ng + upstream DSH closure
++        uses: actions/cache@v4
++        with:
++          path: |
++            runtime/spike/vendor/quickjs-ng
++            runtime/spike/vendor/dsh
++            runtime/spike/vendor/npm
++          # A SINGLE-LINE expression on purpose: a folded multi-line scalar can
++          # resolve to a literal string, giving a cache that never hits — this
++          # repo has been bitten by exactly that shape.
++          key: vendor-closure-${{ runner.os }}-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
++
+       - name: Materialize the vendored official web app
+         env:
+           COREPACK_INTEGRITY_KEYS: '0'
+diff --git a/.github/workflows/dev-ios.yml b/.github/workflows/dev-ios.yml
+index 4651c28a..070ba302 100644
+--- a/.github/workflows/dev-ios.yml
++++ b/.github/workflows/dev-ios.yml
+@@ -130,6 +130,39 @@ jobs:
+           ( xcrun simctl boot "$UDID" >/dev/null 2>&1 || true ) &
+           echo "prewarm dispatched"
+ 
++      # Same treatment as the two trees in dev/android: the vendored closure is
++      # UNTRACKED by design (D6) and these scripts fetch it from the network on
++      # every run — the quickjs-ng sources plus 21 dsh packages and 5 npm
++      # tarballs, paid for by six workflows. Restoring it turns a fetch into a
++      # skip.
++      #
++      # The key is the PIN SCRIPTS THEMSELVES, because they ARE the tracked
++      # provenance record (commit sha + per-tarball sha256 tables): any pin
++      # change changes the key, so a key collision can only mean a pin
++      # collision. Collision is the right strength here and stronger keys are
++      # not available: a present package is skipped WITHOUT being re-hashed
++      # (ensure.sh's have_all and ensure-dsh.sh's have_pkg check file presence
++      # only — read, not assumed), so the key is the integrity boundary, and
++      # there is deliberately NO restore-keys prefix fallback: a fallback would
++      # restore a tree fetched under a DIFFERENT pin set that the scripts would
++      # then accept as present. Without it, a pin change is a cache miss and the
++      # fetch+verify path runs — the reason the pins exist.
++      #
++      # Measured against tracked files before wiring (both tracked: ensure.sh,
++      # ensure-dsh.sh): a glob matching nothing makes hashFiles return the empty
++      # string, which is a constant key and a cache that silently never helps.
++      - name: Cache the vendored quickjs-ng + upstream DSH closure
++        uses: actions/cache@v4
++        with:
++          path: |
++            runtime/spike/vendor/quickjs-ng
++            runtime/spike/vendor/dsh
++            runtime/spike/vendor/npm
++          # A SINGLE-LINE expression on purpose: a folded multi-line scalar can
++          # resolve to a literal string, giving a cache that never hits — this
++          # repo has been bitten by exactly that shape.
++          key: vendor-closure-${{ runner.os }}-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
++
+       - name: Vendor quickjs-ng + the pinned upstream DSH closure
+         run: |
+           set -euo pipefail
+@@ -276,16 +309,30 @@ jobs:
+           # into per-scenario annotations, so a red run names the scenario and
+           # the mismatched expectation instead of only reddening the step. It
+           # is written before the checker exits, so a FAILING run ships one too.
++          #
++          # BOTH checkers ALWAYS run, and both exit codes are ACCUMULATED.
++          # Under `set -e` these two invocations were bare: a failing first
++          # checker aborted the step, so the second scenario produced no verdict
++          # and no JUnit XML — a real failure made partially invisible, which is
++          # the class of dishonesty this pipeline was just cleaned of. The
++          # accumulated code is not an absorbed one: nothing here is
++          # continue-on-error, and the step still exits non-zero if either
++          # scenario failed.
++          rc=0
+           node tools/e2e/check.mjs \
+             --manifest tools/e2e/scenarios/m1-spike-boot.json \
+             --log "$ART/logs.txt" \
+             --out "$ART/verdict.json" \
+-            --junit "$ART/verdict.xml"
++            --junit "$ART/verdict.xml" || rc=1
+           node tools/e2e/check.mjs \
+             --manifest tools/e2e/scenarios/m1-carrier-loopback.json \
+             --log "$ART/logs.txt" \
+             --out "$ART2/verdict.json" \
+-            --junit "$ART2/verdict.xml"
++            --junit "$ART2/verdict.xml" || rc=1
++          [ "$rc" = "0" ] || {
++            echo "::error::an m1 scenario verdict FAILED (both checkers ran; see verdict.json + verdict.xml in the uploaded artifacts)"
++            exit 1
++          }
+ 
+       # The M2 gateway-binding E2E is UI-driven — permission alert, Files
+       # picker, approval dialog, notification banner (see

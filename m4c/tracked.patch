@@ -1,0 +1,284 @@
+diff --git a/hosts/android/app/src/main/cpp/dsh_spike_m4.c b/hosts/android/app/src/main/cpp/dsh_spike_m4.c
+index c6d2f123..5bc05ebc 100644
+--- a/hosts/android/app/src/main/cpp/dsh_spike_m4.c
++++ b/hosts/android/app/src/main/cpp/dsh_spike_m4.c
+@@ -113,6 +113,21 @@ static char *m4_join(const char *dir, const char *rel) {
+     return out;
+ }
+ 
++/* Device-side capture file named after the entry module's stem
++ * ("scenario/m4-host-binding.js" -> "spike-capture-m4-host-binding.log",
++ * "scenario/m3-android-install.js" -> "spike-capture-m3-android-install.log")
++ * so the m4 and m3 sessions never overwrite each other's second capture. */
++static char *m4_capture_path(const char *context, const char *entry) {
++    const char *slash = strrchr(entry, '/');
++    const char *base = slash ? slash + 1 : entry;
++    const char *dot = strrchr(base, '.');
++    size_t stem = dot ? (size_t)(dot - base) : strlen(base);
++    if (stem > 48) stem = 48;
++    char name[80];
++    snprintf(name, sizeof(name), "spike-capture-%.*s.log", (int)stem, base);
++    return m4_join(context, name);
++}
++
+ /*
+  * Creates the runtime, wires the frozen bridge, evaluates the entry module,
+  * and pumps once. Returns the handle (nonzero) or 0 on failure (details via
+@@ -144,8 +159,7 @@ jlong Java_com_dshmobile_spike_SpikeRuntime_nativeM4Begin(
+      * fire while eval/pump run, and they resolve their JNIEnv through it. */
+     g_m4_ctx = ctx;
+     char *bundle_root = m4_join(context, "spike");
+-    char *capture_path =
+-            m4_join(context, "spike-capture-m4-host-binding.log");
++    char *capture_path = m4_capture_path(context, entry);
+     FILE *capture = capture_path ? fopen(capture_path, "w") : NULL;
+     dsh_spike_t *spike = NULL;
+     if (!bundle_root || !capture) {
+diff --git a/hosts/android/app/src/main/java/com/dshmobile/spike/CarrierServer.kt b/hosts/android/app/src/main/java/com/dshmobile/spike/CarrierServer.kt
+index 7aea88f8..70efbb71 100644
+--- a/hosts/android/app/src/main/java/com/dshmobile/spike/CarrierServer.kt
++++ b/hosts/android/app/src/main/java/com/dshmobile/spike/CarrierServer.kt
+@@ -23,14 +23,31 @@ import java.util.concurrent.atomic.AtomicBoolean
+ class CarrierServer {
+     companion object {
+         const val WS_PATH = "/ws"
++        const val PKG_PREFIX = "/gateway-e2e/pkg/"
+         private const val WS_MAGIC = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+         private const val TAG = "dsh.spike"
++
++        /** Package file names are plain bundle names — no separators, no
++         * dot-dot (the route resolves them inside a fixed host directory). */
++        private fun pkgNameOk(name: String): Boolean =
++            name.isNotEmpty() && !name.contains("..") &&
++                name.all { it.isLetterOrDigit() || it == '.' || it == '_' || it == '-' }
+     }
+ 
+     var onWSMessage: ((String) -> Unit)? = null
+     var onStaticServed: ((String) -> Unit)? = null
+     var onWSClosed: (() -> Unit)? = null
+ 
++    /** Dynamic package route (m3.android-install): resolves a validated
++     * /gateway-e2e/pkg/<name> request to bytes, or null to 404. The host
++     * owns the bytes (the scenario staged them through the gateway fs). */
++    var onPackageGet: ((String) -> ByteArray?)? = null
++
++    /** Fired before the response head is written — causally before the JS
++     * fetch settles, so carrier-side evidence keeps a deterministic place
++     * in the E2E stream. */
++    var onPackageServed: ((String, Int) -> Unit)? = null
++
+     @Volatile var port: Int = 0
+         private set
+ 
+@@ -158,6 +175,14 @@ class CarrierServer {
+     private fun serveGet(path: String, input: InputStream, out: OutputStream) {
+         if (path == "/gateway-e2e/bytes") return chunked(out, 32, 2, 40)
+         if (path == "/gateway-e2e/slow") return chunked(out, 16, 6, 300)
++        if (path.startsWith(PKG_PREFIX)) {
++            val name = path.removePrefix(PKG_PREFIX)
++            val bytes = if (pkgNameOk(name)) onPackageGet?.invoke(name) else null
++            if (bytes == null) return respond(out, 404, "text/plain", "not found".toByteArray())
++            recordServed(path)
++            onPackageServed?.invoke(path, bytes.size)
++            return respond(out, 200, "application/octet-stream", bytes)
++        }
+         val rel = if (path == "/") "/index.html" else path
+         if (rel.contains("..") || !(rel.endsWith(".html") || rel.endsWith(".js"))) {
+             return respond(out, 404, "text/plain", "not found".toByteArray())
+diff --git a/hosts/android/app/src/main/java/com/dshmobile/spike/MainActivity.kt b/hosts/android/app/src/main/java/com/dshmobile/spike/MainActivity.kt
+index 1aa891b9..a7d299d6 100644
+--- a/hosts/android/app/src/main/java/com/dshmobile/spike/MainActivity.kt
++++ b/hosts/android/app/src/main/java/com/dshmobile/spike/MainActivity.kt
+@@ -9,6 +9,7 @@ import android.view.ViewGroup
+ import android.webkit.WebView
+ import android.webkit.WebViewClient
+ import android.widget.LinearLayout
++import android.widget.ScrollView
+ import android.widget.TextView
+ import java.io.File
+ 
+@@ -21,6 +22,9 @@ import java.io.File
+  * - `--ez dsh.m4 true`: the M4 completion session — the loopback carrier
+  *   serves the embedded Web Client into a real WebView and the full
+  *   nine-primitive gateway binding runs UI-driven (SpikeHostM4).
++ * - `--ez dsh.m3 true`: the M3 on-device install session — the carrier
++ *   serves the fixture package and installFromFetch runs over the real
++ *   gateway httpFetch (SpikeHostM3).
+  * The E2E assertion is the captured log, never the screen — views are human
+  * evidence only.
+  */
+@@ -28,6 +32,7 @@ class MainActivity : Activity() {
+ 
+     private lateinit var verdictView: TextView
+     private var spikeHost: SpikeHostM4? = null
++    private var spikeHostM3: SpikeHostM3? = null
+     private var webView: WebView? = null
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+@@ -42,6 +47,8 @@ class MainActivity : Activity() {
+         }
+         if (intent.getBooleanExtra(EXTRA_M4, false)) {
+             startM4(savedInstanceState)
++        } else if (intent.getBooleanExtra(EXTRA_M3, false)) {
++            startM3()
+         } else {
+             setContentView(verdictView)
+             SpikeRuntime.post {
+@@ -113,6 +120,56 @@ class MainActivity : Activity() {
+ 
+     companion object {
+         const val EXTRA_M4 = "dsh.m4"
++        const val EXTRA_M3 = "dsh.m3"
++    }
++
++    /** M3 on-device install session (SpikeHostM3): the carrier serves the
++     * fixture package the driver scenario staged, and installFromFetch runs
++     * over the real gateway httpFetch. UI stages render below the verdict
++     * (scrollable — every stage stays on screen for the screenshots). */
++    private fun startM3() {
++        val layout = LinearLayout(this).apply {
++            orientation = LinearLayout.VERTICAL
++            setBackgroundColor(Color.BLACK)
++        }
++        layout.addView(
++            verdictView,
++            LinearLayout.LayoutParams(
++                ViewGroup.LayoutParams.MATCH_PARENT,
++                ViewGroup.LayoutParams.WRAP_CONTENT,
++            ),
++        )
++        val stageView = TextView(this).apply {
++            setTextColor(Color.WHITE)
++            textSize = 13f
++            setPadding(64, 32, 64, 64)
++        }
++        layout.addView(
++            stageView,
++            LinearLayout.LayoutParams(
++                ViewGroup.LayoutParams.MATCH_PARENT,
++                ViewGroup.LayoutParams.WRAP_CONTENT,
++            ),
++        )
++        val scroll = ScrollView(this)
++        scroll.addView(layout)
++        setContentView(scroll)
++        // The gateway core reads filesDir/spike at construction: materialize
++        // the bundle FIRST (runtime thread), then construct the host.
++        SpikeRuntime.post {
++            materializeBundle()
++            runOnUiThread {
++                spikeHostM3 = SpikeHostM3.start(
++                    this,
++                    { rendered ->
++                        stageView.append(if (stageView.isEmpty()) "" else "\n")
++                        stageView.append(rendered)
++                    },
++                ) { verdict ->
++                    verdictView.text = verdict
++                }
++            }
++        }
+     }
+ 
+     /** Copies the asset spike bundle to filesDir/spike preserving the layout. */
+diff --git a/hosts/android/ci/run-android-full.sh b/hosts/android/ci/run-android-full.sh
+index 99947aad..776ee127 100755
+--- a/hosts/android/ci/run-android-full.sh
++++ b/hosts/android/ci/run-android-full.sh
+@@ -1,12 +1,14 @@
+ #!/bin/sh
+ # run-android-full.sh — the FULL Android E2E: the three-scenario regression
+-# (run-spike-e2e.sh, untouched) plus the M4 completion session
+-# (`m4.host-binding`: loopback carrier + WebView mount + the real
+-# nine-primitive gateway binding, UI-driven where native). Evidence: the
+-# canonical log stream bounded at the first `dsh.spike.result: ALL` line
+-# (see run-spike-e2e.sh for the streaming-capture discipline), one checker
+-# verdict per manifest, and screenshots at each UI stage (human evidence
+-# only — never a checker input).
++# (run-spike-e2e.sh, untouched), the M4 completion session (`m4.host-binding`:
++# loopback carrier + WebView mount + the real nine-primitive gateway binding,
++# UI-driven where native), and the M3 on-device install session
++# (`m3.android-install`: installFromFetch over the REAL gateway httpFetch
++# with the carrier serving the fixture package). Evidence: the canonical log
++# stream bounded at the first `dsh.spike.result: ALL` line (see
++# run-spike-e2e.sh for the streaming-capture discipline), one checker verdict
++# per manifest, and screenshots at each UI stage (human evidence only — never
++# a checker input).
+ #
+ # Every wait is a polled condition with a deadline (rules.md rule 8); every
+ # exhaustion is loud (rule 5). UI automation follows the same discipline:
+@@ -185,3 +187,74 @@ node tools/e2e/check.mjs --manifest $SCEN/m2-gateway-audit.json \
+ cat "$OUT/dsh-m4-verdict-audit.json"
+ shot 05-final
+ say "phase 2 complete — evidence under $OUT/dsh-m4-*"
++
++# ---- phase 3: the M3 on-device install session --------------------------
++say "phase 3: m3.android-install (installFromFetch over the real httpFetch)"
++
++M3_STREAM=$OUT/dsh-m3-stream.txt
++shot3() { adb exec-out screencap -p > "$OUT/dsh-m3-$1.png" 2>/dev/null || true; }
++
++adb shell am force-stop $PKG >/dev/null 2>&1 || true
++adb logcat -c
++: > "$M3_STREAM"
++# Same line-buffered stream discipline as phase 2: the driver greps markers
++# from the file in real time, so the block-buffered plain redirect would
++# starve it (stdio flushes in 4KB clumps).
++adb logcat -s dsh.spike dsh.spike.result dsh.spike.audit 2>/dev/null \
++    | while IFS= read -r line; do printf '%s\n' "$line" >> "$M3_STREAM"; done &
++streamer3=$!
++cleanup3() {
++    kill "$streamer3" 2>/dev/null || true
++    pkill -f "logcat -s dsh.spike" 2>/dev/null || true
++}
++trap cleanup3 EXIT INT TERM
++
++deadline=$(( $(date +%s) + 60 ))
++until adb shell am start -n $PKG/.MainActivity --ez dsh.m3 true >/dev/null 2>&1; do
++    [ "$(date +%s)" -ge "$deadline" ] && die "am start (m3) kept failing within 60s"
++    sleep 2
++done
++
++saw_receipt=0; saw_notes=0
++deadline=$(( $(date +%s) + 300 ))
++until grep -q "dsh.spike.result: ALL" "$M3_STREAM"; do
++    if [ "$(date +%s)" -ge "$deadline" ]; then
++        tail -80 "$M3_STREAM"
++        die "m3 session did not complete within 300s"
++    fi
++    # Screenshots keyed on the scenario's ui.stage markers; the host screen
++    # APPENDS stages, so a late capture still shows the earlier ones.
++    if [ "$saw_receipt" -eq 0 ] && grep -q '"stage":"receipt"' "$M3_STREAM"; then
++        saw_receipt=1; sleep 0.7; shot3 01-receipt
++    fi
++    if [ "$saw_notes" -eq 0 ] && grep -q '"stage":"notes"' "$M3_STREAM"; then
++        saw_notes=1; sleep 0.7; shot3 02-notes
++    fi
++    sleep 0.3
++done
++sleep 0.3
++trap - EXIT
++cleanup3
++
++sed '/dsh.spike.result: ALL/q' "$M3_STREAM" > "$OUT/dsh-m3-logs.txt"
++grep 'dsh.spike.result' "$OUT/dsh-m3-logs.txt" > "$OUT/dsh-m3-results.txt"
++cat "$OUT/dsh-m3-results.txt"
++grep 'dsh.spike.log:' "$OUT/dsh-m3-logs.txt" > "$OUT/dsh-m3-scenario.jsonl"
++grep 'dsh.gateway.audit:' "$OUT/dsh-m3-logs.txt" > "$OUT/dsh-m3-audit.jsonl" || true
++
++# E2E by logs: the on-device fetch-install manifest against the shared
++# canonical stream (Kotlin carrier events ride the same envelope).
++node tools/e2e/check.mjs --manifest $SCEN/m3-android-install.json \
++    --log "$OUT/dsh-m3-logs.txt" --out "$OUT/dsh-m3-verdict-install.json"
++cat "$OUT/dsh-m3-verdict-install.json"
++
++# Device-side artifacts: the committed receipts (the commit points) and the
++# C runtime's own capture file.
++adb exec-out run-as $PKG cat files/profiles/default/receipts/m3-a001.json \
++    > "$OUT/dsh-m3-receipt-m3-a001.json" 2>/dev/null || true
++adb exec-out run-as $PKG cat files/profiles/default/receipts/m3-a002.json \
++    > "$OUT/dsh-m3-receipt-m3-a002.json" 2>/dev/null || true
++adb exec-out run-as $PKG cat files/spike-capture-m3-android-install.log \
++    > "$OUT/dsh-m3-capture.log" 2>/dev/null || true
++shot3 03-final
++say "phase 3 complete — evidence under $OUT/dsh-m3-*"

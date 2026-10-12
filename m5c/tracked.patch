@@ -1,0 +1,178 @@
+diff --git a/hosts/harmony/entry/src/main/cpp/gateway_smoke.cpp b/hosts/harmony/entry/src/main/cpp/gateway_smoke.cpp
+index c13a7019..84207ba8 100644
+--- a/hosts/harmony/entry/src/main/cpp/gateway_smoke.cpp
++++ b/hosts/harmony/entry/src/main/cpp/gateway_smoke.cpp
+@@ -53,13 +53,15 @@ const char *DSH_SMOKE_DESCRIPTOR =
+ 
+ /* Binding descriptor: the primitives the ArkTS capability layer serves for
+  * real, and the honest v1 unavailable set (picker needs the user-scope fs
+- * surface, keychain the HUKS bridge, httpFetch the streaming body bridge —
+- * all documented v2 paths in the agent note). */
++ * surface, keychain the HUKS bridge — the documented v2 paths in the agent
++ * note). httpFetch is REAL since the M5 completion: @ohos.net.http in the
++ * ArkTS layer streams the body over the gateway event channel. Keep in
++ * sync with BINDING_DESCRIPTOR in HostPhase.ets (the one actually served —
++ * hostStart takes the descriptor from ArkTS). */
+ const char *DSH_BINDING_DESCRIPTOR =
+     "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"notify\","
+-    "\"presentApproval\"],"
+-    "\"unavailable\":[\"presentPicker\",\"keychainGet\",\"keychainSet\","
+-    "\"httpFetch\"]}";
++    "\"presentApproval\",\"httpFetch\"],"
++    "\"unavailable\":[\"presentPicker\",\"keychainGet\",\"keychainSet\"]}";
+ 
+ /* ---- base64 (payloads travel B64 per the bridge contract) ---------------- */
+ 
+@@ -315,15 +317,18 @@ static void smoke_fs_read(dsh_smoke_backend *b, int call_id, const char *args) {
+ static void smoke_serve(dsh_smoke_backend *b, int call_id, const char *name,
+                         const char *args) {
+     if (b->forward_fn != nullptr) {
+-        /* binding mode: the two platform primitives the ArkTS capability
+-         * layer serves for real ride the forward hook (settled later from
+-         * its UI callbacks — never from inside this callback); everything
+-         * else the binding descriptor declares unavailable rejects here. */
+-        if (strcmp(name, "notify") == 0 || strcmp(name, "presentApproval") == 0) {
++        /* binding mode: the platform primitives the ArkTS capability layer
++         * serves for real ride the forward hook (settled later from its UI
++         * or network callbacks — never from inside this callback);
++         * httpFetch.abort is the control-plane abort dispatched with call
++         * id 0 (no promise of its own). Everything else the binding
++         * descriptor declares unavailable rejects here. */
++        if (strcmp(name, "notify") == 0 || strcmp(name, "presentApproval") == 0 ||
++            strcmp(name, "httpFetch") == 0 || strcmp(name, "httpFetch.abort") == 0) {
+             b->forward_fn(b->forward_ud, call_id, name, args);
+             return;
+         }
+-        if (strcmp(name, "httpFetch") == 0 || strcmp(name, "presentPicker") == 0) {
++        if (strcmp(name, "presentPicker") == 0) {
+             return smoke_reject(b, call_id, name, "unavailable",
+                                 "declared unavailable by the host descriptor");
+         }
+diff --git a/hosts/harmony/entry/src/main/cpp/gateway_smoke.h b/hosts/harmony/entry/src/main/cpp/gateway_smoke.h
+index 94eae993..fac8a6d7 100644
+--- a/hosts/harmony/entry/src/main/cpp/gateway_smoke.h
++++ b/hosts/harmony/entry/src/main/cpp/gateway_smoke.h
+@@ -32,9 +32,9 @@ dsh_smoke_backend_t *dsh_smoke_new(const char *fs_root);
+ 
+ /* Binding-mode extension (M5 host-binding phase). The forward hook receives
+  * the platform primitives the ArkTS capability layer serves for real
+- * (notify / presentApproval) and is consulted BEFORE the local table; with
+- * an override descriptor the host also declares presentPicker +
+- * keychainGet/Set + httpFetch honestly unavailable and serves fsScope
++ * (notify / presentApproval / httpFetch / httpFetch.abort) and is consulted
++ * BEFORE the local table; with an override descriptor the host also declares
++ * presentPicker + keychainGet/Set honestly unavailable and serves fsScope
+  * persist/resolve strictly on the app scope (the documented v1: persist =
+  * resolve to the app files scope). Both setters must be called BEFORE
+  * dsh_smoke_attach. The hook fires on the runtime thread inside the JS
+diff --git a/hosts/harmony/entry/src/main/cpp/napi_init.cpp b/hosts/harmony/entry/src/main/cpp/napi_init.cpp
+index e5e287a9..e7d90e2e 100644
+--- a/hosts/harmony/entry/src/main/cpp/napi_init.cpp
++++ b/hosts/harmony/entry/src/main/cpp/napi_init.cpp
+@@ -357,6 +357,7 @@ struct HostPhase {
+     napi_env env = nullptr;
+     PhaseHandlers handlers;
+     char bundle_root[1024] = {0};
++    std::string scenario_name = DSH_SCENARIO_BINDING;
+ };
+ 
+ HostPhase g_phase;
+@@ -440,7 +441,7 @@ int phase_drive(HostPhase *p) {
+     if (!dsh_spike_complete(p->spike)) return 0;
+     if (!p->verdict_logged) {
+         p->verdict_logged = 1;
+-        std::string v = std::string(DSH_SCENARIO_BINDING) +
++        std::string v = p->scenario_name +
+                         (dsh_spike_pass(p->spike) ? " PASS" : " FAIL");
+         v += " engine=" + std::string(DSH_ENGINE_NAME);
+         v += " version=" + std::string(DSH_ENGINE_VERSION);
+@@ -530,12 +531,23 @@ napi_value host_start(napi_env env, napi_callback_info info) {
+ }
+ 
+ napi_value host_eval(napi_env env, napi_callback_info info) {
+-    size_t argc = 2;
+-    napi_value argv[2] = {nullptr, nullptr};
++    size_t argc = 3;
++    napi_value argv[3] = {nullptr, nullptr, nullptr};
+     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+     if (argc < 2 || !phase_expect_active(env)) return nullptr;
+     char entry[256] = {0};
+     if (!phase_str_arg(env, argv[1], entry, sizeof(entry), "entry too long")) return nullptr;
++    /* Scenario name for the verdict line (the binding phase serves more
++     * than one scenario sequentially — m5.host-binding, m3.harmony-install).
++     * Falls back to the M5 binding id when absent. */
++    char scenario[128] = {0};
++    if (argc >= 3 && !phase_str_arg(env, argv[2], scenario, sizeof(scenario),
++                                    "scenario too long")) {
++        return nullptr;
++    }
++    g_phase.scenario_name = scenario[0] != 0
++                                ? std::string(scenario)
++                                : std::string(DSH_SCENARIO_BINDING);
+     (void)argv[0]; /* the phase id — a single phase per process */
+     std::string path = join_path(g_phase.bundle_root, entry);
+     char *source = slurp(path.c_str());
+@@ -557,7 +569,9 @@ napi_value host_event(napi_env env, napi_callback_info info) {
+     napi_value argv[2] = {nullptr, nullptr};
+     napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr);
+     if (argc < 2 || !phase_expect_active(env)) return nullptr;
+-    char json[2048] = {0};
++    /* http.body chunks ride base64 (<=16 KB bytes -> ~22 KB text), so this
++     * buffer carries the largest legal gateway event. */
++    char json[32768] = {0};
+     if (!phase_str_arg(env, argv[1], json, sizeof(json), "event too long")) return nullptr;
+     int rc = dsh_spike_gateway_event(g_phase.spike, json);
+     int status = (rc == 0) ? phase_drive(&g_phase) : -1;
+@@ -595,7 +609,8 @@ napi_value host_settle(napi_env env, napi_callback_info info) {
+     if (argc < 4 || !phase_expect_active(env)) return nullptr;
+     int32_t call_id = 0;
+     bool ok = false;
+-    char json[2048] = {0};
++    /* settle payloads carry the response headers dict — roomy on purpose. */
++    char json[4096] = {0};
+     if (napi_get_value_int32(env, argv[1], &call_id) != napi_ok ||
+         napi_get_value_bool(env, argv[2], &ok) != napi_ok ||
+         !phase_str_arg(env, argv[3], json, sizeof(json), "payload too long")) {
+diff --git a/runtime/spike/host/dsh_spike_host.c b/runtime/spike/host/dsh_spike_host.c
+index 2a4dd586..90d02745 100644
+--- a/runtime/spike/host/dsh_spike_host.c
++++ b/runtime/spike/host/dsh_spike_host.c
+@@ -244,7 +244,28 @@ static JSValue js_gateway_call(JSContext *ctx, JSValueConst this_val,
+ }
+ 
+ /* JS → host abort: no promise of its own — the embedder matches the
+- * in-flight call (by the callId inside args_json) and cancels it. */
++ * in-flight call (by the callId inside args_json) and cancels it. The
++ * frozen shim passes the response's bodyId string ("body:<callId>"); a
++ * bare number is accepted too (the iOS bridge documents the same
++ * tolerance). "body:<n>" through JS_ToInt32 would coerce to 0 and lose
++ * the target, so the string form parses explicitly. */
++static int abort_target(JSContext *ctx, JSValueConst val, int32_t *out) {
++    if (JS_IsString(val)) {
++        const char *text = JS_ToCString(ctx, val);
++        if (!text) return 0;
++        int ok = strncmp(text, "body:", 5) == 0 && text[5] != 0;
++        if (ok) {
++            char *end = NULL;
++            long n = strtol(text + 5, &end, 10);
++            ok = end != NULL && *end == 0 && n > 0 && n <= 0x7fffffffL;
++            if (ok) *out = (int32_t)n;
++        }
++        JS_FreeCString(ctx, text);
++        return ok;
++    }
++    return JS_ToInt32(ctx, out, val) == 0 && *out > 0;
++}
++
+ static JSValue js_gateway_abort(JSContext *ctx, JSValueConst this_val,
+                                 int argc, JSValueConst *argv) {
+     (void)this_val;
+@@ -253,7 +274,7 @@ static JSValue js_gateway_abort(JSContext *ctx, JSValueConst this_val,
+         return JS_ThrowInternalError(ctx, "no gateway dispatch registered");
+     }
+     int32_t target = 0;
+-    if (argc < 1 || JS_ToInt32(ctx, &target, argv[0]) != 0) {
++    if (argc < 1 || !abort_target(ctx, argv[0], &target)) {
+         return JS_ThrowTypeError(ctx, "gateway abort needs a call id");
+     }
+     char args[32];

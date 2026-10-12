@@ -1,0 +1,192 @@
+diff --git a/.github/workflows/dev-harmonyos.yml b/.github/workflows/dev-harmonyos.yml
+index d7675e8b..e3c4efa5 100644
+--- a/.github/workflows/dev-harmonyos.yml
++++ b/.github/workflows/dev-harmonyos.yml
+@@ -50,9 +50,13 @@ jobs:
+     steps:
+       - uses: actions/checkout@v4
+ 
++      # Node here is runner hygiene, not a build input: ohpm and hvigorw run
++      # under the node the CLT ships (bin/ohpm and bin/hvigorw default
++      # DEVECO_NODE_HOME to clt/tool/node and prepend it to PATH; the CLT's own
++      # node is v24). Version 22 matches the other pipelines.
+       - uses: actions/setup-node@v4
+         with:
+-          node-version: '20'
++          node-version: '22'
+ 
+       - name: Cache the unpacked HarmonyOS CLT
+         # Cache hit: the unpacked tree is restored and every install step is
+@@ -97,6 +101,31 @@ jobs:
+             exit 1
+           fi
+ 
++      - name: Cache the vendored quickjs-ng tree
++        # ensure.sh re-fetches the pinned engine tarball on every run
++        # otherwise; restoring the tree turns that into a presence check (the
++        # script is idempotent — files present means exit 0, nothing fetched).
++        #
++        # The key hashes ensure.sh, and that script IS the tracked pin record
++        # (the commit sha + tarball sha256 live in it), so a pin change hashes
++        # differently and the tree is refetched. Deliberately no
++        # restore-keys: a fallback match would restore a PREVIOUS pin's tree,
++        # and ensure.sh decides presence by file existence rather than by
++        # re-hashing, so a stale tree would be accepted rather than rejected.
++        #
++        # The key is also deliberately NOT the closure key the workflows that
++        # run ensure-dsh.sh as well use (vendor-closure-…): a GitHub cache key
++        # is written once and never refreshed, so one shared key would freeze
++        # the entry at the subtree set of whichever workflow saved first — and
++        # this one carries quickjs-ng only.
++        #
++        # Single-line key expression on purpose: a folded multi-line scalar can
++        # resolve to a literal, giving a cache that never hits.
++        uses: actions/cache@v4
++        with:
++          path: runtime/spike/vendor/quickjs-ng
++          key: vendor-quickjs-ng-${{ hashFiles('runtime/spike/vendor/ensure.sh') }}
++
+       - name: Materialize the pinned quickjs-ng vendor tree
+         # Untracked by design (upstream discipline D6); ensure.sh fetches and
+         # sha256-verifies it. The project's CMake also runs it before
+diff --git a/.github/workflows/release-android.yml b/.github/workflows/release-android.yml
+index f75a7885..90ba3fd5 100644
+--- a/.github/workflows/release-android.yml
++++ b/.github/workflows/release-android.yml
+@@ -105,7 +105,12 @@ jobs:
+         if: env.RELEASE_TAG != ''
+         run: sh tools/release/check-tag-version.sh "$RELEASE_TAG"
+ 
+-      - uses: actions/setup-java@v4
++      # v5 keeps every input this workflow uses (distribution / java-version /
++      # cache are all still declared there) and moves the action's own runtime
++      # from node20 to node24; v4 announces its own deprecation in its
++      # action.yml ("setup-java v4 is deprecated and will no longer receive
++      # updates").
++      - uses: actions/setup-java@v5
+         with:
+           distribution: temurin
+           java-version: '17'
+@@ -169,6 +174,34 @@ jobs:
+             presentation/official-web/dist
+             presentation/official-web/client-bundles/npm
+           key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'tools/e2e/ensure-official-dist.sh', 'tools/e2e/ensure-client-bundles.sh') }}
++      - name: Cache the vendored closure (quickjs-ng + the pinned DSH runtime)
++        # The closure is consumed twice over in this job: quickjs-ng by the
++        # Gradle build's own ensureSpikeVendor task (ensure.sh, wired ahead of
++        # the CMake project) and the DSH/npm trees by stage-spine-closure.sh,
++        # which byte-compares the staged assets against them. Both ensure
++        # scripts fetch their pinned tarballs on every run otherwise — 27
++        # sha256-verified downloads whose pins do not change between runs.
++        # Restoring turns that into a presence check: the scripts are
++        # idempotent (files present means exit 0, nothing fetched).
++        #
++        # The key hashes THE TWO SCRIPTS, because those scripts ARE the tracked
++        # pin record (the quickjs-ng commit + tarball sha256 in ensure.sh, the
++        # per-package sha256 table in ensure-dsh.sh); any pin change hashes
++        # differently and refetches. Deliberately no restore-keys: a fallback
++        # match would restore a PREVIOUS pin's tree, and the scripts decide
++        # presence by file existence rather than by re-hashing, so a stale tree
++        # would be accepted rather than rejected.
++        #
++        # Single-line key expression on purpose: a folded multi-line scalar can
++        # resolve to a literal, giving a cache that never hits.
++        uses: actions/cache@v4
++        with:
++          path: |
++            runtime/spike/vendor/quickjs-ng
++            runtime/spike/vendor/dsh
++            runtime/spike/vendor/npm
++          key: vendor-closure-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
++
+       - name: Materialize the vendored web app + DSH closure
+         env:
+           COREPACK_INTEGRITY_KEYS: '0'
+diff --git a/.github/workflows/release-harmony.yml b/.github/workflows/release-harmony.yml
+index bab7ed02..c1e7e1fb 100644
+--- a/.github/workflows/release-harmony.yml
++++ b/.github/workflows/release-harmony.yml
+@@ -106,9 +106,13 @@ jobs:
+         if: env.RELEASE_TAG != ''
+         run: sh tools/release/check-tag-version.sh "$RELEASE_TAG"
+ 
++      # Node here is runner hygiene, not a build input: ohpm and hvigorw run
++      # under the node the CLT ships (bin/ohpm and bin/hvigorw default
++      # DEVECO_NODE_HOME to clt/tool/node and prepend it to PATH; the CLT's own
++      # node is v24). Version 22 matches the other pipelines.
+       - uses: actions/setup-node@v4
+         with:
+-          node-version: '20'
++          node-version: '22'
+ 
+       - name: Cache the unpacked HarmonyOS CLT
+         id: clt-cache
+@@ -136,6 +140,31 @@ jobs:
+           unzip -q /tmp/clt.zip -d "$GITHUB_WORKSPACE/clt"
+           chmod -R u+w "$GITHUB_WORKSPACE/clt"
+ 
++      - name: Cache the vendored quickjs-ng tree
++        # ensure.sh re-fetches the pinned engine tarball on every run
++        # otherwise; restoring the tree turns that into a presence check (the
++        # script is idempotent — files present means exit 0, nothing fetched).
++        #
++        # The key hashes ensure.sh, and that script IS the tracked pin record
++        # (the commit sha + tarball sha256 live in it), so a pin change hashes
++        # differently and the tree is refetched. Deliberately no
++        # restore-keys: a fallback match would restore a PREVIOUS pin's tree,
++        # and ensure.sh decides presence by file existence rather than by
++        # re-hashing, so a stale tree would be accepted rather than rejected.
++        #
++        # The key is also deliberately NOT the closure key the workflows that
++        # run ensure-dsh.sh as well use (vendor-closure-…): a GitHub cache key
++        # is written once and never refreshed, so one shared key would freeze
++        # the entry at the subtree set of whichever workflow saved first — and
++        # this one carries quickjs-ng only.
++        #
++        # Single-line key expression on purpose: a folded multi-line scalar can
++        # resolve to a literal, giving a cache that never hits.
++        uses: actions/cache@v4
++        with:
++          path: runtime/spike/vendor/quickjs-ng
++          key: vendor-quickjs-ng-${{ hashFiles('runtime/spike/vendor/ensure.sh') }}
++
+       - name: Vendor quickjs-ng
+         run: sh runtime/spike/vendor/ensure.sh
+ 
+diff --git a/.github/workflows/release-ios.yml b/.github/workflows/release-ios.yml
+index 363f57b1..5bee5b38 100644
+--- a/.github/workflows/release-ios.yml
++++ b/.github/workflows/release-ios.yml
+@@ -110,6 +110,32 @@ jobs:
+         with:
+           node-version: '22'
+ 
++      - name: Cache the vendored closure (quickjs-ng + the pinned DSH runtime)
++        # Both ensure scripts fetch their pinned tarballs on every run
++        # otherwise — 27 sha256-verified downloads whose pins do not change
++        # between runs. Restoring the three trees turns that into a presence
++        # check: the scripts are idempotent (files present means exit 0,
++        # nothing fetched), so a cache hit restores what the same scripts
++        # already materialized from the same pin record on an earlier run.
++        #
++        # The key hashes THE TWO SCRIPTS, because those scripts ARE the tracked
++        # pin record (the quickjs-ng commit + tarball sha256 in ensure.sh, the
++        # per-package sha256 table in ensure-dsh.sh); any pin change hashes
++        # differently and refetches. Deliberately no restore-keys: a fallback
++        # match would restore a PREVIOUS pin's tree, and the scripts decide
++        # presence by file existence rather than by re-hashing, so a stale tree
++        # would be accepted rather than rejected.
++        #
++        # Single-line key expression on purpose: a folded multi-line scalar can
++        # resolve to a literal, giving a cache that never hits.
++        uses: actions/cache@v4
++        with:
++          path: |
++            runtime/spike/vendor/quickjs-ng
++            runtime/spike/vendor/dsh
++            runtime/spike/vendor/npm
++          key: vendor-closure-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
++
+       - name: Vendor quickjs-ng + the pinned upstream DSH closure
+         # Both trees are untracked by design (upstream discipline D6);
+         # gen_bundle_header.py pins the alpha.2 dsh closure at build time.

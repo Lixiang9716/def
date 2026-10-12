@@ -1,0 +1,305 @@
+name: release/ios
+# The iOS PACKAGE stage of the release pipeline: build the user-facing iOS
+# build and attach it to the release (docs/release.md is the user guide).
+#
+# One workflow per host, so the Actions list names the stage a run belongs to —
+# release/ios, release/android, release/harmony — the way dev/ios, dev/android
+# and dev/harmonyos already do. The stage that PREPARES the release (the
+# version stream) is release/version.
+#
+# DEFAULT DISPATCH — the USER-FACING build. A distribution build is what a user
+# gets: no E2E machinery, no per-event log stream, warn/error only (AGENTS.md
+# constraint 5 / rules.md rule L4):
+#   dsh-ios — unsigned Release device .app, packaged as a real .ipa (sign
+#             locally to install) + a Release simulator .app; the official Web
+#             Client is EMBEDDED
+#
+# `include_harness: true` additionally builds the HARNESS artifact — the E2E
+# verification vehicle (debug configuration, full structured logging, the
+# verification drives run). It exists for hand-testing on physical devices; the
+# dev/ios pipeline already builds and runs the debug harness on every push, so
+# this is opt-in:
+#   dsh-ios-harness — unsigned Debug device .app + Debug simulator .app
+#
+# One job, BOTH configurations inside it: the expensive vendoring and
+# materialization steps are shared, and the macOS runner (billed at a premium)
+# is not paid for twice. Build commands mirror dev/ios (they are the proven
+# recipes); every build step runs under `set -o pipefail` so a piped tail can
+# never mask a red xcodebuild exit code.
+#
+# TWO TRIGGERS, one build path:
+#
+#   push: tags v*       — a release. The user-facing package builds and is
+#                         ATTACHED as an asset of that tag's GitHub Release
+#                         (created here if the tag has none), so a tag is a
+#                         downloadable build set and not just a diff.
+#   workflow_dispatch   — manual packaging, when a human asks for a run that is
+#                         not tied to a release. Artifacts land on the run.
+#
+# A release run never builds the harness package: it is a verification vehicle
+# (above), and the `inputs` context is empty outside a dispatch, so the harness
+# steps are guarded explicitly rather than by that accident.
+
+on:
+  # THE RELEASE TRIGGER IS THE TAG PUSH (D12). Pushing `vX.Y.Z` is what builds
+  # and publishes this host's package — deliberately NOT the `release:
+  # published` event, because that event is produced by release-please, and
+  # cutting a release should not depend on the bot completing. It is also not
+  # both triggers: this workflow CREATES the Release when the tag has none, and
+  # listening to `release: published` would then fire a second build of the
+  # same tag.
+  #
+  # `git push origin vX.Y.Z` fires this. A tag created through the Releases UI
+  # is not a `git push`, so it is not relied on — push the tag.
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      include_harness:
+        description: >-
+          Also build the E2E harness package (debug configuration, full logs,
+          verification drives). Off by default — the dev/ios pipeline covers
+          the debug harness on every push.
+        type: boolean
+        default: false
+      release_tag:
+        description: >-
+          Attach the built package to this existing release tag (e.g. v0.0.1),
+          REPLACING that tag's asset in place — the recovery path for a release
+          whose asset was built wrong, without deleting and re-publishing the
+          release. Leave empty for a plain manual run, whose package stays on
+          the workflow run only.
+        type: string
+        required: false
+        default: ''
+  # `release: published` is deliberately NOT a trigger: this workflow CREATEs
+  # the Release when a tag has none, so listening to that event would fire a
+  # second build of the same tag. The tag push is the one trigger.
+
+# `gh release upload` writes the asset onto the published release.
+permissions:
+  contents: write
+
+# Queued, never cancelled. Three hosts build one tag and each ends in
+# `gh release upload --clobber`; cancelling mid-upload would leave whichever
+# finished last, and a re-dispatch for the same tag must not race the run it is
+# repairing. A queued run is cheap; a half-uploaded release is not.
+concurrency:
+  group: release-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ios-package:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      # Empty on a plain dispatch (the package stays on the run); the release
+      # tag otherwise — the event's own tag, or the one a dispatch asked for.
+      RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify the tag agrees with every version file
+        # The tag is the human's decision (D12); this is what keeps that from
+        # becoming a mislabelled build. Skipped on a plain dispatch with no
+        # release_tag, where nothing is attached to anything.
+        if: env.RELEASE_TAG != ''
+        run: sh tools/release/check-tag-version.sh "$RELEASE_TAG"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache the vendored closure (quickjs-ng + the pinned DSH runtime)
+        # Both ensure scripts fetch their pinned tarballs on every run
+        # otherwise — 27 sha256-verified downloads whose pins do not change
+        # between runs. Restoring the three trees turns that into a presence
+        # check: the scripts are idempotent (files present means exit 0,
+        # nothing fetched), so a cache hit restores what the same scripts
+        # already materialized from the same pin record on an earlier run.
+        #
+        # The key hashes THE TWO SCRIPTS, because those scripts ARE the tracked
+        # pin record (the quickjs-ng commit + tarball sha256 in ensure.sh, the
+        # per-package sha256 table in ensure-dsh.sh); any pin change hashes
+        # differently and refetches. Deliberately no restore-keys: a fallback
+        # match would restore a PREVIOUS pin's tree, and the scripts decide
+        # presence by file existence rather than by re-hashing, so a stale tree
+        # would be accepted rather than rejected.
+        #
+        # Single-line key expression on purpose: a folded multi-line scalar can
+        # resolve to a literal, giving a cache that never hits.
+        uses: actions/cache@v4
+        with:
+          path: |
+            runtime/spike/vendor/quickjs-ng
+            runtime/spike/vendor/dsh
+            runtime/spike/vendor/npm
+          key: vendor-closure-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
+
+      - name: Vendor quickjs-ng + the pinned upstream DSH closure
+        # Both trees are untracked by design (upstream discipline D6);
+        # gen_bundle_header.py pins the alpha.2 dsh closure at build time.
+        run: |
+          set -euo pipefail
+          sh runtime/spike/vendor/ensure.sh
+          sh runtime/spike/vendor/ensure-dsh.sh
+
+      - name: Locate the pnpm store
+        # Resolved, never guessed: `pnpm store path` prints it, and a guessed
+        # path would silently cache nothing.
+        id: pnpm-store
+        run: |
+          set -euo pipefail
+          corepack enable
+          echo "path=$(corepack pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the pnpm store
+        # The upstream build's `pnpm install --frozen-lockfile` pulls the whole
+        # monorepo's dependency graph on every run, and it is a large part of
+        # why this step costs minutes. The STORE is the thing that is safe to
+        # cache: it is content-addressed and carries no path assumptions,
+        # unlike node_modules or a build output whose symlinks point at paths
+        # that only exist on the machine that made them (pnpm#6374, #10081).
+        # Restoring it lets install resolve locally while the build still
+        # PRODUCES AND VERIFIES the tree — so nothing here depends on a cached
+        # artifact being byte-reproducible.
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/build-client-bundles.sh') }}
+
+      - name: Cache the materialized official web tree
+        # The most expensive single item in this repository's CI: the upstream
+        # monorepo build behind `official-web/dist` + `client-bundles/npm`
+        # measured 334-465 s on ubuntu and 602-779 s on macOS before it was
+        # cached. Both ensure-*.sh scripts are idempotent — tree present and
+        # MANIFEST-verified means exit 0 — so restoring the cache turns that
+        # build into a verify. The key is the provenance set that decides the
+        # bytes (both MANIFESTs, both build recipes, the roster, and the two
+        # verifiers); any pin or recipe change changes the key and the tree is
+        # rebuilt. Never a silent stale tree: the verifiers check it either way.
+        uses: actions/cache@v4
+        with:
+          path: |
+            presentation/official-web/dist
+            presentation/official-web/client-bundles/npm
+          key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'tools/e2e/ensure-official-dist.sh', 'tools/e2e/ensure-client-bundles.sh') }}
+      - name: Materialize the official Web Client the release build embeds
+        # The RELEASE configuration EMBEDS the official dist + client bundles
+        # as app resources (Tools/stage_official_web.py, run from the
+        # StageOfficialWeb build phase) so a plain launch reaches the official
+        # UI with nothing staged from outside. Same reproducible rebuild the
+        # release/android workflow runs.
+        env:
+          COREPACK_INTEGRITY_KEYS: '0'
+          NODE_OPTIONS: '--max-old-space-size=3072'
+        run: |
+          set -euo pipefail
+          corepack enable
+          tools/e2e/ensure-official-dist.sh
+          tools/e2e/ensure-client-bundles.sh
+
+      - name: Build the release .app (device + simulator, unsigned)
+        run: |
+          set -o pipefail
+          cd hosts/ios
+          xcodebuild build \
+            -project DSHSpike.xcodeproj \
+            -scheme DSHSpike \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath /tmp/dsh-rel-device-dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            | tail -20
+          xcodebuild build \
+            -project DSHSpike.xcodeproj \
+            -scheme DSHSpike \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/dsh-rel-sim-dd \
+            | tail -20
+          test -f /tmp/dsh-rel-device-dd/Build/Products/Release-iphoneos/DSHSpike.app/official-web/dist/index.html \
+            || { echo "::error::the release .app embeds no official dist"; exit 1; }
+          # The device build is packaged as a real `.ipa`: a zip whose root
+          # holds Payload/<App>.app. That layout is what AltStore, Sideloadly
+          # and `xcrun devicectl` expect, and it is the only thing the `.ipa`
+          # extension can honestly mean — handing out a zip rooted at
+          # `Release-iphoneos/…` under that name would be a name no iOS tool
+          # agrees with. It is UNSIGNED (CI holds no Apple certificates):
+          # the signer replaces the profile and re-seals it.
+          rm -rf /tmp/dsh-ipa && mkdir -p /tmp/dsh-ipa/Payload
+          cp -R /tmp/dsh-rel-device-dd/Build/Products/Release-iphoneos/DSHSpike.app \
+            /tmp/dsh-ipa/Payload/
+          ( cd /tmp/dsh-ipa && zip -qry /tmp/dsh-ios.ipa Payload )
+          unzip -l /tmp/dsh-ios.ipa | grep -q 'Payload/DSHSpike.app/' \
+            || { echo "::error::the .ipa does not carry Payload/DSHSpike.app"; exit 1; }
+          cd /tmp/dsh-rel-sim-dd/Build/Products
+          zip -qry /tmp/dsh-ios-simulator.zip Release-iphonesimulator/DSHSpike.app
+
+      - name: Upload dsh-ios
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-ios
+          path: |
+            /tmp/dsh-ios.ipa
+            /tmp/dsh-ios-simulator.zip
+          if-no-files-found: error
+
+      - name: Attach dsh-ios to the release
+        # One asset per host: the `.ipa`. The simulator build is a
+        # development convenience, not something a release page offers — it
+        # ships on the run's `dsh-ios` artifact only (see the upload above).
+        # A release asset's NAME is the uploaded file's basename, and
+        # `gh release upload`'s `file#text` form sets only the display LABEL,
+        # which a download ignores — so the `.ipa` is built under the name it
+        # ships with, in the build step above.
+        if: env.RELEASE_TAG != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # The tag may exist with no Release object yet — pushing the tag is
+          # the trigger now, so "publish the Release" is this step's job. Three
+          # hosts run concurrently against one tag, so a lost create race is
+          # tolerated rather than reported as a failure.
+          if ! gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag \
+              --title "$RELEASE_TAG" --generate-notes \
+              || gh release view "$RELEASE_TAG" > /dev/null 2>&1
+          fi
+          gh release upload "$RELEASE_TAG" /tmp/dsh-ios.ipa --clobber
+
+      - name: Build the harness .app (debug, device + simulator, unsigned)
+        if: github.event_name == 'workflow_dispatch' && inputs.include_harness
+        run: |
+          set -o pipefail
+          cd hosts/ios
+          xcodebuild build \
+            -project DSHSpike.xcodeproj \
+            -scheme DSHSpike \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath /tmp/dsh-harness-device-dd \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            | tail -20
+          xcodebuild build \
+            -project DSHSpike.xcodeproj \
+            -scheme DSHSpike \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/dsh-harness-sim-dd \
+            | tail -20
+          cd /tmp/dsh-harness-device-dd/Build/Products
+          zip -qry /tmp/DSHSpike-harness-device-unsigned.zip Debug-iphoneos/DSHSpike.app
+          cd /tmp/dsh-harness-sim-dd/Build/Products
+          zip -qry /tmp/DSHSpike-harness-simulator.zip Debug-iphonesimulator/DSHSpike.app
+
+      - name: Upload dsh-ios-harness
+        if: github.event_name == 'workflow_dispatch' && inputs.include_harness
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-ios-harness
+          path: |
+            /tmp/DSHSpike-harness-device-unsigned.zip
+            /tmp/DSHSpike-harness-simulator.zip
+          if-no-files-found: error

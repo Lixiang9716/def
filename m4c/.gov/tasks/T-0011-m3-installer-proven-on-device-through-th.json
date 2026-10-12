@@ -1,0 +1,23 @@
+{
+  "title": "M3 installer proven on-device through the Android carrier (m3.android-install)",
+  "created": "2026-09-20T05:48:35+00:00",
+  "rules": {
+    "hash": "cd0ebdaa68ca35a22236429581f20b5026f164a7fe2f37c57afee459b2ed5bac",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "2043e43fa8e71454d7ff848e50f7bc52e8c1ff5c2b519262d143219c7370aff0"
+    }
+  },
+  "checklist": [
+    "Embed the M3 canonical modules byte-identically into assets/spike (install-fetch, receipt-journal, config-layer, fixtures/dsh-badge*)",
+    "Author the thin android-specific driver scenario scenario/m3-android-install.js (canonical logic only: installFromFetch + real gateway httpFetch + negotiation + replay + notes roundtrip + config layer)",
+    "Wire the carrier fixture route + SpikeHostM3 host + MainActivity --ez dsh.m3 mode",
+    "Manifest tools/e2e/scenarios/m3-android-install.json one-to-one + run-android-full.sh phase 3",
+    "Green on emulator: m3.android-install verdict + >=2 screenshots + receipt artifacts",
+    "Regression: three-scenario suite + m4.host-binding still green",
+    "Import-closure cmp byte-identity + agent note + task exited + gov run green + PR open"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0011"
+}

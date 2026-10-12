@@ -1,0 +1,271 @@
+name: release/android
+# The Android PACKAGE stage of the release pipeline: build the user-facing
+# Android build and attach it to the release (docs/release.md is the user
+# guide).
+#
+# One workflow per host, so the Actions list names the stage a run belongs to —
+# release/ios, release/android, release/harmony — the way dev/ios, dev/android
+# and dev/harmonyos already do. The stage that PREPARES the release (the
+# version stream) is release/version.
+#
+# DEFAULT DISPATCH — the USER-FACING build. A distribution build is what a user
+# gets: no E2E machinery, no per-event log stream, warn/error only (AGENTS.md
+# constraint 5 / rules.md rule L4):
+#   dsh-android — unsigned Release APK (sign to install), official web app
+#                 packed in assets
+#
+# `include_harness: true` additionally builds the HARNESS artifact — the E2E
+# verification vehicle (debug configuration, full structured logging, the
+# verification drives run). It exists for hand-testing on physical devices; the
+# dev/android pipeline already builds and runs the debug harness on every push,
+# so this is opt-in:
+#   dsh-android-harness — debug APK (debug-keystore signed; installs directly)
+#
+# One job, BOTH configurations inside it: the expensive materialization steps
+# are shared. Build commands mirror dev/android (they are the proven recipes);
+# every build step runs under `set -euo pipefail` so a piped tail or a stale
+# output file can never mask a red gradle exit code.
+#
+# TWO TRIGGERS, one build path:
+#
+#   push: tags v*       — a release. The user-facing package builds and is
+#                         ATTACHED as an asset of that tag's GitHub Release
+#                         (created here if the tag has none), so a tag is a
+#                         downloadable build set and not just a diff.
+#   workflow_dispatch   — manual packaging, when a human asks for a run that is
+#                         not tied to a release. Artifacts land on the run.
+#
+# A release run never builds the harness package: it is a verification vehicle
+# (above), and the `inputs` context is empty outside a dispatch, so the harness
+# steps are guarded explicitly rather than by that accident.
+
+on:
+  # THE RELEASE TRIGGER IS THE TAG PUSH (D12). Pushing `vX.Y.Z` is what builds
+  # and publishes this host's package — deliberately NOT the `release:
+  # published` event, because that event is produced by release-please, and
+  # cutting a release should not depend on the bot completing. It is also not
+  # both triggers: this workflow CREATES the Release when the tag has none, and
+  # listening to `release: published` would then fire a second build of the
+  # same tag.
+  #
+  # `git push origin vX.Y.Z` fires this. A tag created through the Releases UI
+  # is not a `git push`, so it is not relied on — push the tag.
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      include_harness:
+        description: >-
+          Also build the E2E harness package (debug configuration, full logs,
+          verification drives). Off by default — the dev/android pipeline
+          covers the debug harness on every push.
+        type: boolean
+        default: false
+      release_tag:
+        description: >-
+          Attach the built package to this existing release tag (e.g. v0.0.1),
+          REPLACING that tag's asset in place — the recovery path for a release
+          whose asset was built wrong, without deleting and re-publishing the
+          release. Leave empty for a plain manual run, whose package stays on
+          the workflow run only.
+        type: string
+        required: false
+        default: ''
+  # `release: published` is deliberately NOT a trigger: this workflow CREATEs
+  # the Release when a tag has none, so listening to that event would fire a
+  # second build of the same tag. The tag push is the one trigger.
+
+# `gh release upload` writes the asset onto the published release.
+permissions:
+  contents: write
+
+# Queued, never cancelled. Three hosts build one tag and each ends in
+# `gh release upload --clobber`; cancelling mid-upload would leave whichever
+# finished last, and a re-dispatch for the same tag must not race the run it is
+# repairing. A queued run is cheap; a half-uploaded release is not.
+concurrency:
+  group: release-android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # Empty on a plain dispatch (the package stays on the run); the release
+      # tag otherwise — the event's own tag, or the one a dispatch asked for.
+      RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify the tag agrees with every version file
+        # The tag is the human's decision (D12); this is what keeps that from
+        # becoming a mislabelled build. Skipped on a plain dispatch with no
+        # release_tag, where nothing is attached to anything.
+        if: env.RELEASE_TAG != ''
+        run: sh tools/release/check-tag-version.sh "$RELEASE_TAG"
+
+      # v5 keeps every input this workflow uses (distribution / java-version /
+      # cache are all still declared there) and moves the action's own runtime
+      # from node20 to node24; v4 announces its own deprecation in its
+      # action.yml ("setup-java v4 is deprecated and will no longer receive
+      # updates").
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Install the pinned NDK and CMake
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;27.0.12077973" "cmake;3.22.1" > /dev/null
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The APK packs the vendored official web app (reproducible, manifest-
+      # verified); the Gradle build fails loud without them. Same swap belt
+      # as dev/android: the upstream monorepo builds die SIGKILLed under RAM
+      # pressure on hosted runners.
+      - name: Add swap for the upstream builds
+        run: |
+          sudo fallocate -l 6G /mnt/swapfile
+          sudo chmod 600 /mnt/swapfile
+          sudo mkswap /mnt/swapfile
+          sudo swapon /mnt/swapfile
+
+      - name: Locate the pnpm store
+        # Resolved, never guessed: `pnpm store path` prints it, and a guessed
+        # path would silently cache nothing.
+        id: pnpm-store
+        run: |
+          set -euo pipefail
+          corepack enable
+          echo "path=$(corepack pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the pnpm store
+        # The upstream build's `pnpm install --frozen-lockfile` pulls the whole
+        # monorepo's dependency graph on every run, and it is a large part of
+        # why this step costs minutes. The STORE is the thing that is safe to
+        # cache: it is content-addressed and carries no path assumptions,
+        # unlike node_modules or a build output whose symlinks point at paths
+        # that only exist on the machine that made them (pnpm#6374, #10081).
+        # Restoring it lets install resolve locally while the build still
+        # PRODUCES AND VERIFIES the tree — so nothing here depends on a cached
+        # artifact being byte-reproducible.
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/build-client-bundles.sh') }}
+
+      - name: Cache the materialized official web tree
+        # The most expensive single item in this repository's CI: the upstream
+        # monorepo build behind `official-web/dist` + `client-bundles/npm`
+        # measured 334-465 s on ubuntu and 602-779 s on macOS before it was
+        # cached. Both ensure-*.sh scripts are idempotent — tree present and
+        # MANIFEST-verified means exit 0 — so restoring the cache turns that
+        # build into a verify. The key is the provenance set that decides the
+        # bytes (both MANIFESTs, both build recipes, the roster, and the two
+        # verifiers); any pin or recipe change changes the key and the tree is
+        # rebuilt. Never a silent stale tree: the verifiers check it either way.
+        uses: actions/cache@v4
+        with:
+          path: |
+            presentation/official-web/dist
+            presentation/official-web/client-bundles/npm
+          key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'tools/e2e/ensure-official-dist.sh', 'tools/e2e/ensure-client-bundles.sh') }}
+      - name: Cache the vendored closure (quickjs-ng + the pinned DSH runtime)
+        # The closure is consumed twice over in this job: quickjs-ng by the
+        # Gradle build's own ensureSpikeVendor task (ensure.sh, wired ahead of
+        # the CMake project) and the DSH/npm trees by stage-spine-closure.sh,
+        # which byte-compares the staged assets against them. Both ensure
+        # scripts fetch their pinned tarballs on every run otherwise — 27
+        # sha256-verified downloads whose pins do not change between runs.
+        # Restoring turns that into a presence check: the scripts are
+        # idempotent (files present means exit 0, nothing fetched).
+        #
+        # The key hashes THE TWO SCRIPTS, because those scripts ARE the tracked
+        # pin record (the quickjs-ng commit + tarball sha256 in ensure.sh, the
+        # per-package sha256 table in ensure-dsh.sh); any pin change hashes
+        # differently and refetches. Deliberately no restore-keys: a fallback
+        # match would restore a PREVIOUS pin's tree, and the scripts decide
+        # presence by file existence rather than by re-hashing, so a stale tree
+        # would be accepted rather than rejected.
+        #
+        # Single-line key expression on purpose: a folded multi-line scalar can
+        # resolve to a literal, giving a cache that never hits.
+        uses: actions/cache@v4
+        with:
+          path: |
+            runtime/spike/vendor/quickjs-ng
+            runtime/spike/vendor/dsh
+            runtime/spike/vendor/npm
+          key: vendor-closure-${{ hashFiles('runtime/spike/vendor/ensure.sh', 'runtime/spike/vendor/ensure-dsh.sh') }}
+
+      - name: Materialize the vendored web app + DSH closure
+        env:
+          COREPACK_INTEGRITY_KEYS: '0'
+          NODE_OPTIONS: '--max-old-space-size=3072'
+        run: |
+          set -euo pipefail
+          corepack enable
+          runtime/spike/vendor/ensure-dsh.sh > /dev/null
+          tools/e2e/ensure-official-dist.sh
+          tools/e2e/ensure-client-bundles.sh
+
+      - name: Build the release APK (unsigned; the defines live in app/build.gradle.kts)
+        working-directory: hosts/android
+        run: |
+          set -euo pipefail
+          ./gradlew assembleRelease --no-daemon
+          test -f app/build/outputs/apk/release/app-release-unsigned.apk || {
+            echo "::error::release APK not produced"; exit 1
+          }
+          unzip -l app/build/outputs/apk/release/app-release-unsigned.apk \
+            | grep -q 'assets/official-web/dist/index.html' || {
+            echo "::error::the release APK embeds no official dist"; exit 1
+          }
+
+      - name: Upload dsh-android
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-android
+          path: hosts/android/app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+
+      - name: Attach dsh-android to the release
+        if: env.RELEASE_TAG != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cp hosts/android/app/build/outputs/apk/release/app-release-unsigned.apk \
+            /tmp/dsh-android.apk
+          # The tag may exist with no Release object yet — pushing the tag is
+          # the trigger now, so "publish the Release" is this step's job. Three
+          # hosts run concurrently against one tag, so a lost create race is
+          # tolerated rather than reported as a failure.
+          if ! gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --verify-tag \
+              --title "$RELEASE_TAG" --generate-notes \
+              || gh release view "$RELEASE_TAG" > /dev/null 2>&1
+          fi
+          gh release upload "$RELEASE_TAG" /tmp/dsh-android.apk --clobber
+
+      - name: Build the harness APK (debug — debug-keystore signed, installs directly)
+        if: github.event_name == 'workflow_dispatch' && inputs.include_harness
+        working-directory: hosts/android
+        run: |
+          set -euo pipefail
+          ./gradlew assembleDebug --no-daemon
+          test -f app/build/outputs/apk/debug/app-debug.apk || {
+            echo "::error::harness APK not produced"; exit 1
+          }
+
+      - name: Upload dsh-android-harness
+        if: github.event_name == 'workflow_dispatch' && inputs.include_harness
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-android-harness
+          path: hosts/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

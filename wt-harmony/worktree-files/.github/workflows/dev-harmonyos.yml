@@ -1,0 +1,166 @@
+name: dev/harmonyos
+# End-to-end HarmonyOS pipeline: builds the M1 spike HAP in hosts/harmony
+# (quickjs-ng + dsh_spike_host.c via NAPI/CMake). The emulator E2E lands with
+# the M5 host (docs/ARCHITECTURE.md §10); assertions stay log-based.
+#
+# Follows the official command-line build flow
+# (developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-command-line-building-app):
+#   DEVECO_SDK_HOME=<clt>/sdk; ohpm install --all; hvigorw assembleHap
+#
+# Runs on ubuntu (HarmonyOS CLT 26.0.0+ ships a Linux build — 10x cheaper
+# than macOS runners). The CLT download URL is a signed Huawei CDN link:
+# set it as the repository variable HOS_CLT_LINUX_URL
+# (Settings → Secrets and variables → Actions → Variables).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "hosts/harmony/**"
+      - "contract/**"
+      - "runtime/**"
+      - "system-plugins/**"
+      - "presentation/**"
+      - ".github/workflows/dev-harmonyos.yml"
+  pull_request:
+    paths:
+      - "hosts/harmony/**"
+      - "contract/**"
+      - "runtime/**"
+      - "system-plugins/**"
+      - "presentation/**"
+      - ".github/workflows/dev-harmonyos.yml"
+
+# Superseded runs cancel here: a newer push's verdict is the branch's state, and
+# an interleaved stale run answering late reads as a flake. The release
+# pipelines deliberately do NOT cancel (see theirs) — and note this block is
+# new: without it, two pushes in quick succession each kept a macOS runner and
+# two ubuntu runners running to completion.
+concurrency:
+  group: dev-harmonyos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  harmonyos-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DEVECO_SDK_HOME: ${{ github.workspace }}/clt/command-line-tools/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node here is runner hygiene, not a build input: ohpm and hvigorw run
+      # under the node the CLT ships (bin/ohpm and bin/hvigorw default
+      # DEVECO_NODE_HOME to clt/tool/node and prepend it to PATH; the CLT's own
+      # node is v24). Version 22 matches the other pipelines.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache the unpacked HarmonyOS CLT
+        # Cache hit: the unpacked tree is restored and every install step is
+        # skipped. Cache miss: download (with retries + integrity check) once;
+        # actions/cache saves the unpacked tree when the job succeeds.
+        # Bump the version suffix in the key when the CLT link changes.
+        id: clt-cache
+        uses: actions/cache@v4
+        with:
+          path: clt
+          key: hos-clt-linux-unpacked-26.0.0.821
+
+      - name: Install HarmonyOS CLT (Linux, cache miss only)
+        if: steps.clt-cache.outputs.cache-hit != 'true'
+        run: |
+          URL="${{ vars.HOS_CLT_LINUX_URL }}"
+          if [ -z "$URL" ]; then
+            echo "::warning::Repository variable HOS_CLT_LINUX_URL is not set — skipping CLT install; build steps will be skipped (set it to the signed Linux CLT zip link from the Huawei download page)"
+            exit 0
+          fi
+          for attempt in 1 2 3; do
+            echo "download attempt $attempt..."
+            curl -sS -L --retry 3 --retry-delay 5 -o /tmp/clt.zip "$URL" || true
+            unzip -tq /tmp/clt.zip > /dev/null 2>&1 && break
+            sleep 5
+          done
+          unzip -tq /tmp/clt.zip > /dev/null || { echo "::error::CLT zip corrupt/missing after retries"; exit 1; }
+          unzip -q /tmp/clt.zip -d "$GITHUB_WORKSPACE/clt"
+          chmod -R u+w "$GITHUB_WORKSPACE/clt"
+
+      - name: Verify the CLT toolchain
+        run: |
+          test -x "$GITHUB_WORKSPACE/clt/command-line-tools/bin/hvigorw" || { echo "::error::hvigorw missing from restored/installed CLT"; exit 1; }
+          "$GITHUB_WORKSPACE/clt/command-line-tools/bin/hvigorw" --version
+
+      - name: Detect the hvigor project
+        run: |
+          if [ -f "hosts/harmony/build-profile.json5" ]; then
+            echo "PROJECT_PRESENT=true" >> "$GITHUB_ENV"
+          else
+            echo "::error::No HarmonyOS project in hosts/harmony — expected the M1 spike HAP"
+            exit 1
+          fi
+
+      - name: Cache the vendored quickjs-ng tree
+        # ensure.sh re-fetches the pinned engine tarball on every run
+        # otherwise; restoring the tree turns that into a presence check (the
+        # script is idempotent — files present means exit 0, nothing fetched).
+        #
+        # The key hashes ensure.sh, and that script IS the tracked pin record
+        # (the commit sha + tarball sha256 live in it), so a pin change hashes
+        # differently and the tree is refetched. Deliberately no
+        # restore-keys: a fallback match would restore a PREVIOUS pin's tree,
+        # and ensure.sh decides presence by file existence rather than by
+        # re-hashing, so a stale tree would be accepted rather than rejected.
+        #
+        # The key is also deliberately NOT the closure key the workflows that
+        # run ensure-dsh.sh as well use (vendor-closure-…): a GitHub cache key
+        # is written once and never refreshed, so one shared key would freeze
+        # the entry at the subtree set of whichever workflow saved first — and
+        # this one carries quickjs-ng only.
+        #
+        # Single-line key expression on purpose: a folded multi-line scalar can
+        # resolve to a literal, giving a cache that never hits.
+        uses: actions/cache@v4
+        with:
+          path: runtime/spike/vendor/quickjs-ng
+          key: vendor-quickjs-ng-${{ hashFiles('runtime/spike/vendor/ensure.sh') }}
+
+      - name: Materialize the pinned quickjs-ng vendor tree
+        # Untracked by design (upstream discipline D6); ensure.sh fetches and
+        # sha256-verifies it. The project's CMake also runs it before
+        # compiling — this step makes a network failure fail loud and early.
+        if: env.PROJECT_PRESENT == 'true'
+        run: sh runtime/spike/vendor/ensure.sh
+
+      - name: Install dependencies (ohpm)
+        if: env.PROJECT_PRESENT == 'true'
+        working-directory: hosts/harmony
+        run: |
+          "$GITHUB_WORKSPACE/clt/command-line-tools/bin/ohpm" install --all
+
+      - name: Build HAP (debug, unsigned)
+        if: env.PROJECT_PRESENT == 'true'
+        working-directory: hosts/harmony
+        run: |
+          "$GITHUB_WORKSPACE/clt/command-line-tools/bin/hvigorw" assembleHap \
+            --mode module -p product=default -p buildMode=debug --no-daemon
+          test -f entry/build/default/outputs/default/entry-default-unsigned.hap \
+            || { echo "::error::HAP not produced"; exit 1; }
+          echo "HAP=$(pwd)/entry/build/default/outputs/default/entry-default-unsigned.hap" >> "$GITHUB_ENV"
+
+      - name: Upload the HAP artifact
+        if: env.PROJECT_PRESENT == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-spike-hap
+          path: hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap
+
+      # M5 will add:
+      #   signing (build-profile.json5 signingConfigs; release needs Huawei-
+      #   issued certs — debug-only HAPs are enough for the E2E emulator flow)
+      #   Emulator boot via the CLT Emulator tool (Linux, 26.0.0+) and
+      #   hdc-driven E2E: install hap, aa start, uitest drives the flows.
+      #   Assertions are log-based: unique scenario-id per scenario, one
+      #   structured hilog entry per expected event, one-to-one
+      #   expected<->logged matching. CI captures no screenshots.

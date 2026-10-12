@@ -1,0 +1,18 @@
+// dsh:logging-exempt (seam shim — nothing to log through)
+/**
+ * `node:module` — spike SEAM for the vendored @deepseek-ai/dsh-llm closure
+ * (quickjs-ng has no node: module support and this file satisfies the bare
+ * specifier the loader would otherwise resolve to a bundle-root path that
+ * cannot exist). The vendored package uses it exactly once, at module scope:
+ * `createRequire(import.meta.url)("../package.json")` to read its own version
+ * for the app-attribution User-Agent. The spike answers that one shape and
+ * fails loud on anything else. Vendored code stays verbatim; the seam lives
+ * here, outside the pinned trees (see vendor/ensure-llm.sh).
+ */
+const PINNED_VERSION = '0.1.6-alpha.2';
+export const createRequire = () => (id) => {
+  if (id === '../package.json') {
+    return { name: '@deepseek-ai/dsh-llm', version: PINNED_VERSION };
+  }
+  throw new Error(`node:module seam: unsupported require(${JSON.stringify(id)})`);
+};

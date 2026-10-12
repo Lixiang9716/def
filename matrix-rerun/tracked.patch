@@ -1,0 +1,19 @@
+diff --git a/.gov/tasks/T-0219-the-release-grade-matrix-re-run-on-post-.json b/.gov/tasks/T-0219-the-release-grade-matrix-re-run-on-post-.json
+index a272e097..18b5a29a 100644
+--- a/.gov/tasks/T-0219-the-release-grade-matrix-re-run-on-post-.json
++++ b/.gov/tasks/T-0219-the-release-grade-matrix-re-run-on-post-.json
+@@ -15,7 +15,12 @@
+     "[x] refreshed receipts under hosts/{ios,android,harmony}/artifacts/simulator-matrix/ dated today with PASS records",
+     "[x] scoped gov run green on the outgoing diff; PR opened and the gates check green"
+   ],
+-  "status": "open",
++  "status": "voided",
+   "receipt": null,
+-  "id": "T-0219"
++  "id": "T-0219",
++  "void": {
++    "ts": "2026-10-11T18:11:56+00:00",
++    "by": "lixiang@192.168.21.11",
++    "reason": "card's work landed as PR #466 (squash 2114315f0a29572fefaa9ba816dc94650c7dc465, gates+ci-verdict green; items 1/2/4/5 ticked). Item 3 (harmony platform leg) is permanently unsatisfiable on this machine: no DevEco toolchain and no hdc simulator target (probed in the skip receipt: DevEco-Studio.app present=false, hdc list targets empty) \u2014 recorded honestly as a skip receipt, not a green one (hosts/harmony/artifacts/simulator-matrix/matrix-skip-receipt.json 2026-10-12T01:28:34+08:00; PR body: 'a skip receipt, not a green one'). Checklist can never complete as written here, so close() refuses on rule 9; the leg stays script-ready per D-g (hosts/harmony/ci/run-host-e2e.sh) when a device exists"
++  }
+ }
