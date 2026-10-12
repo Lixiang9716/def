@@ -28,10 +28,17 @@
  * treated as understood rather than as an excuse — a divergence outside it
  * still stops the build.
  *
- * usage: verify-manifest.mjs --tree <dir> --reference <sha256-file> --work <path>
+ * usage: verify-manifest.mjs --tree <dir> --reference <sha256-file> [--work <path>] [--strict]
  *   exit 0 = no divergence, or every divergence is the environment-bound class
  *   exit 1 = a divergence outside the class, or a tree/record mismatch
  *   exit 2 = usage
+ *
+ * --strict drops the work-path bound class: every recorded file must exist and
+ * digest-match, unrecorded extras are not the check's business (`shasum -a 256
+ * -c` parity, in process). The ensure scripts verify a tree's OWN record with
+ * it — exact, not bounded — and do so through node on purpose: an external
+ * `shasum` resolves through the inherited PATH and died with `spawnSync
+ * shasum ENOENT` under a stripped environment (T-0218).
  *
  * tools/ dev script (out of the logging gate's scope; console IS the product).
  */
@@ -40,16 +47,17 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
 const usage = () => {
-  console.error('usage: verify-manifest.mjs --tree <dir> --reference <sha256-file> --work <path>');
+  console.error('usage: verify-manifest.mjs --tree <dir> --reference <sha256-file> [--work <path>] [--strict]');
   process.exit(2);
 };
 
 const args = {};
 for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === '--strict') { args.strict = true; continue; }
   if (!['--tree', '--reference', '--work'].includes(process.argv[i]) || !process.argv[i + 1]) usage();
   args[process.argv[i].slice(2)] = resolve(process.argv[++i]);
 }
-if (!args.tree || !args.reference || !args.work) usage();
+if (!args.tree || !args.reference || (!args.strict && !args.work)) usage();
 
 /** A `shasum -a 256` record: `<64 hex>  <path>` lines, paths relative to the
  *  tree and prefixed `./`. Unparsable lines abort — a record this tool cannot
@@ -85,6 +93,31 @@ const walk = (dir, base = dir, out = []) => {
   return out;
 };
 
+const name = (list, limit = 4) => (list.length <= limit
+  ? list.join(', ')
+  : `${list.slice(0, limit).join(', ')} … (+${list.length - limit} more)`);
+
+if (args.strict) {
+  const record = readRecord(args.reference);
+  const bad = [];
+  let checked = 0;
+  for (const [file, expected] of record) {
+    checked++;
+    let actual = '';
+    try {
+      actual = createHash('sha256').update(readFileSync(join(args.tree, file))).digest('hex');
+    } catch { /* missing or unreadable is the named failure below */ }
+    if (actual !== expected) bad.push(file);
+  }
+  if (bad.length > 0) {
+    console.error(`client-bundles: FAIL ${bad.length}/${checked} recorded files mismatch `
+      + `${args.reference}: ${name(bad)}`);
+    process.exit(1);
+  }
+  console.log(`client-bundles: PASS strict — ${checked} recorded files match ${args.reference}`);
+  process.exit(0);
+}
+
 const reference = readRecord(args.reference);
 const files = walk(args.tree);
 const onDisk = new Set(files);
@@ -110,10 +143,6 @@ for (const file of files) {
   if (digest === reference.get(file)) continue;
   (bytes.includes(args.work) || bytes.includes(workSegment) ? pathBound : unexplained).push(file);
 }
-
-const name = (list, limit = 4) => (list.length <= limit
-  ? list.join(', ')
-  : `${list.slice(0, limit).join(', ')} … (+${list.length - limit} more)`);
 
 const fail = [];
 if (missing.length > 0) fail.push(`missing from the tree: ${name(missing)}`);
