@@ -29,10 +29,10 @@
  *
  * usage: node web-plugins-payload.mjs <out.json> [--bootstrap-only]
  */
+import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execFileSync } from 'node:child_process';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const VENDOR_NPM = join(HERE, '..', 'vendor', 'npm');
@@ -56,6 +56,38 @@ if (!out) {
   console.error('usage: node web-plugins-payload.mjs <out.json> [--bootstrap-only]');
   process.exit(2);
 }
+
+/** `shasum -a 256 --check`, in process: verify every `<64 hex> SP|* ./path`
+ *  line of the record against the tree at BUNDLES_NPM. Same semantics as the
+ *  external tool's check mode — recorded files must exist and digest-match,
+ *  unrecorded extras are not this check's business — plus the rule-5
+ *  loudness: an unparsable record line names the record, failures name the
+ *  files. In-process on purpose: an external `shasum` resolves through the
+ *  inherited PATH, and a stripped environment died right here with
+ *  `spawnSync shasum ENOENT` (T-0218). */
+const verifyManifestRecord = (record) => {
+  const bad = [];
+  let checked = 0;
+  for (const raw of readFileSync(record, 'utf8').split('\n')) {
+    // A core.autocrlf checkout hands the record over with CRLF endings; the
+    // digests are the payload, the terminator is not (same strip as
+    // verify-manifest.mjs).
+    const line = raw.replace(/\r$/, '');
+    if (line.trim() === '') continue;
+    const m = /^([0-9a-f]{64}) [ *]\.\/(.+)$/.exec(line);
+    if (!m) throw new Error(`web-plugins-payload: unparsable record line in ${record}: ${line.slice(0, 60)}`);
+    checked++;
+    let digest = '';
+    try {
+      digest = createHash('sha256').update(readFileSync(join(BUNDLES_NPM, m[2]))).digest('hex');
+    } catch { /* a missing or unreadable file is the named failure below */ }
+    if (digest !== m[1]) bad.push(m[2]);
+  }
+  if (bad.length > 0) {
+    throw new Error(`web-plugins-payload: ${bad.length}/${checked} recorded files fail ${record} verification: `
+      + (bad.length <= 8 ? bad.join(', ') : `${bad.slice(0, 8).join(', ')} … (+${bad.length - 8} more)`));
+  }
+};
 
 /** One delivery plugin row: the scan-scoped file view, base64. */
 const pluginRow = (name, dir, files) => {
@@ -85,11 +117,16 @@ if (bootstrapOnly) {
   // Verify the staged application-tier tree against the record that travels
   // with it — the one THIS environment's build wrote (or a cache carried
   // here) — then read the roster record. The committed MANIFEST.sha256 is the
-  // REFERENCE build's record: `test/e2e/ensure-client-bundles.sh` compares
-  // against it and bounds the divergence the embedded work path causes, and it
-  // runs before this on every path. Fail loud on drift (rules 5/6).
+  // REFERENCE build's record: `test/e2e/ensure-client-bundles.sh` (which the
+  // web-boot legs run before staging) materializes the tree, verifies it, and
+  // bounds the reference divergence the embedded work path causes. Fail loud
+  // on drift (rules 5/6).
+  if (!existsSync(BUNDLES_NPM)) {
+    throw new Error(`web-plugins-payload: staged application-tier tree missing (${BUNDLES_NPM}) — `
+      + 'run test/e2e/ensure-client-bundles.sh first');
+  }
   const record = existsSync(BUNDLES_COMPUTED) ? BUNDLES_COMPUTED : BUNDLES_MANIFEST;
-  execFileSync('shasum', ['--check', record], { cwd: BUNDLES_NPM, stdio: 'pipe' });
+  verifyManifestRecord(record);
   const roster = JSON.parse(readFileSync(BUNDLES_ROSTER, 'utf8'));
   plugins = [];
   for (const entry of [...roster.entries].sort((a, b) => (

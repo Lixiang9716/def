@@ -42,9 +42,12 @@ FORCE=0
 [ "${1:-}" = "--force" ] && FORCE=1
 
 # Verify against a named record. See ensure-official-dist.sh why(): name the
-# offending files rather than reporting an anonymous mismatch.
-verifies() { (cd "$NPM" && shasum -a 256 -c "$1" >/dev/null 2>&1); }
-why() { (cd "$NPM" && shasum -a 256 -c "$1" 2>&1 | grep -v ": OK$" || true); }
+# offending files rather than reporting an anonymous mismatch. The strict
+# check runs in process (verify-manifest.mjs --strict, node:crypto) on
+# purpose: an external `shasum` resolves through the inherited PATH and died
+# with `spawnSync shasum ENOENT` under a stripped environment (T-0218).
+verifies() { node "$DIR/verify-manifest.mjs" --tree "$NPM" --reference "$1" --strict >/dev/null 2>&1; }
+why() { node "$DIR/verify-manifest.mjs" --tree "$NPM" --reference "$1" --strict 2>&1 || true; }
 
 # Compare the tree against the committed reference and bound the divergence.
 # Called for a tree this environment built or carried here from a cache: it

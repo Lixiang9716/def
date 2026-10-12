@@ -13,6 +13,12 @@
 set -e
 cd "$(dirname "$0")/.."
 ./vendor/ensure.sh
+# The iSH sub-build below configures host/ish against the vendored engine and
+# fails loud at cmake when the (untracked, pinned) tree is absent. This build
+# embeds the engine, and ensure-ish.sh's own header says to run it before any
+# build that does — a clean tree died right there (T-0218 item 2). Idempotent;
+# network only on first fetch.
+./vendor/ensure-ish.sh
 # The in-process Linux userland (contract v1.3.0 `ishRun`) is the one part of
 # this build with its own build system on purpose: 400k lines of vendored C with
 # hand-written aarch64 assembly, built for macOS and for both iOS SDKs from one

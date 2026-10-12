@@ -1,3 +1,4 @@
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"main begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"launch env phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[{}]}
@@ -7,10 +8,7 @@ dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"echo.wasm"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.ish","message":"guest root from the host declaration","data":[{"rootfs":"","offered":false}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.ish","message":"no Linux guest staged by this host; the ish tool is not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
@@ -32,10 +30,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"echo.wasm"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.ydjDxl"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.a4HTK4"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"session/created","sessionId":"s-office-0001"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"agent/created","id":"main","sessionId":"s-office-0001"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"offered phase begin","data":[{}]}
@@ -47,14 +42,8 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_create","data":[{"path":"docs/demo.docx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":false}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"echo","bytes":77}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"wc.wasm"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip built","data":[{"entries":8,"bytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"docs/demo.docx"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"wc.wasm"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"docs/demo.docx","sizeBytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
@@ -66,16 +55,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_read","data":[{"path":"docs/demo.docx","format":"markdown"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"wc","bytes":353}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"grep.wasm"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"grep.wasm"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"docs/demo.docx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.wasm","message":"starter program written","data":[{"name":"grep","bytes":467}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":4328}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"docs/demo.docx","sizeBytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":3244}]}
