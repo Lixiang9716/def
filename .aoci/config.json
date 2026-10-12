@@ -132,6 +132,17 @@
         "created_by": "aoci-init",
         "order": 106,
         "enabled": true
+      },
+      {
+        "rule_id": "harmony-entry-build-exclude",
+        "action": "exclude",
+        "pattern": "hosts/harmony/entry/build/**",
+        "pattern_kind": "glob",
+        "reason": "hvigor build intermediates are git-ignored generated output — byte copies of the committed rawfile assets (KaTeX fonts, source maps); never source, must not enter observe fingerprints or the index",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 0,
+        "enabled": true
       }
     ]
   },
