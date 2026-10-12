@@ -14,7 +14,7 @@ build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...
 | --- | --- |
 | `build/build.sh android` | 从规范 runtime 暂存 android 闭包 → `gradlew assembleDebug` → `run-dsh-e2e.sh`（日志校验） |
 | `build/build.sh android harmony` | 两个平台同样流程——任意平台组合 |
-| `build/build.sh compile core` | 只跑工具链腿——`runtime/dsh/host/build.sh`（不重新暂存闭包、不跑 e2e 腿） |
+| `build/build.sh compile core` | 只跑工具链腿——`src/build.sh`（不重新暂存闭包、不跑 e2e 腿） |
 | `build/build.sh test ios` | 只跑 e2e 腿（构建须已新鲜） |
 | `build/build.sh check` | 只跑 `closures` 门禁——不需要任何工具链 |
 | `build/build.sh sync harmony` | 从 `runtime/dsh` 重新暂存 harmony 的已提交闭包 |
@@ -25,7 +25,7 @@ build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...
 - 缺工具链会**响亮失败**，点名缺失的工具与获取方式——绝不静默跳过。
   `--list` 列出平台与其工具链需求。
 - `core` 是规范 runtime 自己的验证载体：C 宿主 CLI
-  （`runtime/dsh/host/build.sh`）加 CLI 证明腿——平台嵌入的同一闭包，
+  （`src/build.sh`）加 CLI 证明腿——平台嵌入的同一闭包，
   在最便宜的宿主上先证明。
 
 ## 为什么是这个形状（DSH 方法）
@@ -85,7 +85,7 @@ ctest --preset macos-dev                                # 门禁（dsh-gate-clos
 范围由构造决定（phase 1——加层不动路径）：
 
 - **CMake 只编译 C 核心**：`dsh-core` 静态库，源文件来自
-  `runtime/dsh/host` 加固定的引擎——与 android、harmony 的
+  `src` 加固定的引擎——与 android、harmony 的
   `cpp/CMakeLists.txt` 编译的是同一组文件。配置期先物化 vendored pin
   （`include(Vendor)` 跑 ensure 脚本，响亮失败；`DSH_SKIP_VENDOR=ON`
   可跳过但会点名风险）。
@@ -163,7 +163,7 @@ tools/test/run-simulator-matrix.sh --platform android --skip-release
 | ios | `xcodebuild … -scheme DSHHost`（`dev/ios`，macos-15） | `test/e2e/run-ios.sh`（同一作业） |
 | android | `./gradlew assembleDebug`（`dev/android`） | `hosts/android/ci/run-dsh-e2e.sh`（同一作业） |
 | harmony | `hvigorw assembleHap`（`dev/harmonyos`） | `hosts/harmony/ci/run-host-e2e.sh`（同一作业） |
-| core | `runtime/dsh/host/build.sh`（macOS 本地；CLI 腿各自的 runner） | `runtime/dsh/ci/run-*-e2e.sh` |
+| core | `src/build.sh`（macOS 本地；CLI 腿各自的 runner） | `runtime/dsh/ci/run-*-e2e.sh` |
 
 [D9]: decisions.md
 [D6]: decisions.md

@@ -41,7 +41,7 @@ if [ ! -x build/dsh-cli ]; then
         sh ../../external/ensure-ish.sh
     fi
     echo "quickjs-boot-parse: build/dsh-cli missing — building (host/build.sh)"
-    sh host/build.sh
+    sh ../../src/build.sh
 fi
 
 # 2. The stub scenario: imports the two split roots under the real loader.

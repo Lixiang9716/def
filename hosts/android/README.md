@@ -44,7 +44,7 @@ final — human evidence only), `receipt.json`.
 
 ## Regression status: gateway bridge + first session green on emulator
 
-The app embeds the shared dsh host (`runtime/dsh/host/dsh_runtime_host.c`) with its REAL
+The app embeds the shared dsh host (`src/dsh_runtime_host.c`) with its REAL
 gateway dispatch bridge (no canned responses — the canned single-call slot is gone) and runs ALL
 THREE scenarios in one launch, judged by the shared checker:
 
@@ -66,7 +66,7 @@ Evidence (one run, final code state): `artifacts/m4-host/` — `logs.txt` (logca
 ## How it works
 
 - `app/src/main/cpp/dsh_runtime_smoke.c` — the Android smoke backend, sibling of
-  `runtime/dsh/host/main_cli.c`'s: calls are only QUEUED inside the dispatch callback (which
+  `example/main_cli.c`'s: calls are only QUEUED inside the dispatch callback (which
   fires synchronously on the runtime thread) and settled in the post-pump drain pass — the
   deferred later-tick settlement the scenario proves. `fsRead`/`fsWrite` run base64 payloads
   against `filesDir/smoke-fs` (scope `app`, escape-checked, parent dirs created on write); the

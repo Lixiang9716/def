@@ -111,7 +111,7 @@ as an unterminated string"）。扫描器本身未改 —— 本条记录的是�
 普通（非 scenario）入口打印 `dsh: FAIL (complete=0 pass=0)`，跟着
 `dsh: error: ` 冒号后面什么都没有 —— 看起来像崩溃丢了报文。既不是
 崩溃也没有丢报文：机理是 `main_cli.c` 在任何非零退出时打印
-`dsh_spike_error()`（[runtime/dsh/host/main_cli.c](../runtime/dsh/host/main_cli.c):1305-1308），
+`dsh_spike_error()`（[example/main_cli.c](../example/main_cli.c):1305-1308），
 而错误缓冲只在运行时真的记录了错误时才被写入 ——
 `dsh_spike_host.c:3561` 返回 `s->err`，从未设置时就是空字符串
 （`dsh_spike_host.h:31` 注明新结构体不带错误文本）。普通入口跑完就退出、

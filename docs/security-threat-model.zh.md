@@ -36,7 +36,7 @@ C 不可利用)、侧信道。
 **现有防线**:每个原语在宿主边界校验参数,以冻结的契约 §3 词汇作答——
 `invalid`(畸形)、`denied`(宿主从未授予的 scope)、`unavailable`(本
 宿主不服务的原语)——fail loud,绝不默认放行;拒绝是结构化的,不是崩溃
-([runtime/dsh/host/main_cli.c](../runtime/dsh/host/main_cli.c) 冒烟
+([example/main_cli.c](../example/main_cli.c) 冒烟
 后端的逐原语校验)。
 
 **本腿怎么攻**:[security.gateway-fuzz](../runtime/dsh/ci/run-security-gateway-fuzz.sh)
@@ -127,7 +127,7 @@ JS 侧不存在原生 FFI 面——一切能力穿越都是 gateway 调用,因�
 `wasmRun`),它唯一的宿主回调是被导入的 `dsh.emit(ptr, len)`;导入其他
 任何东西的模块无可链接之物,越出模块内存的 emit 在宿主侧边界检查处陷阱,
 解释器级失败(坏解析、缺导出、栈耗尽)一律是结构化 `io` 拒绝
-([dsh_wasm.c](../runtime/dsh/host/dsh_wasm.c))。CLI 经由与 iOS 应用
+([dsh_wasm.c](../src/dsh_wasm.c))。CLI 经由与 iOS 应用
 同源的可移植 spine 服务该面,jail 因此在最便宜的宿主上可被攻击。
 
 **本腿怎么攻**:[security.jail](../runtime/dsh/ci/run-security-jail.sh)

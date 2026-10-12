@@ -40,7 +40,7 @@ sh ../../external/ensure-dsh.sh > /dev/null
 echo "[preheat] vendored iSH-AArch64 userland (the C host's configure demand)" >&2
 sh ../../external/ensure-ish.sh > /dev/null
 echo "[preheat] host binary (built only when missing)" >&2
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # ---- the four legs ---------------------------------------------------------
 FAILED=0

@@ -36,7 +36,7 @@ sh ../../external/ensure-dsh.sh
 sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. run the scenario and verify one-to-one against the manifest.
 ./build/dsh-cli . scenario/llm-piai-probe.js --http \

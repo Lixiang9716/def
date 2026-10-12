@@ -4,7 +4,7 @@
 # (upstream discipline D6): every build environment re-materializes them from
 # the pins, and each ensure script verifies what lands on disk against a
 # sha256 before writing the pin stamp. The root CMakeLists.txt includes this
-# module BEFORE add_subdirectory(runtime/dsh/host) for exactly that reason —
+# module BEFORE add_subdirectory(src) for exactly that reason —
 # the core's source list references files only the ensure scripts guarantee.
 #
 # One entry point per concern (the scripts chain internally, same as the
@@ -17,7 +17,7 @@
 #                                         CI/dev expect the pins present
 # The iSH ensures (ensure-ish.sh / ensure-ish-rootfs.sh) are deliberately NOT
 # run here: the in-process Linux userland is built by its own CMake project
-# (runtime/dsh/host/ish), whose callers run external/ensure-ish.sh themselves
+# (src/ish), whose callers run external/ensure-ish.sh themselves
 # (host/build.sh, the iOS app build pre-phase).
 
 option(DSH_SKIP_VENDOR

@@ -31,7 +31,7 @@ TARGET="https://api.anthropic.com"
 # 1. vendored upstream closure + host build (idempotent).
 sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 mkdir -p "$ART_DIR"
 rm -f "$ART_DIR"/verdict*.json
 

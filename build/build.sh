@@ -159,10 +159,10 @@ stage_compile() {
             core_toolchain
             if [ "$RELEASE" = "1" ]; then
                 echo "build: compile core (C host CLI, debug + release flavors)"
-                (cd runtime/dsh && ./host/build.sh && ./host/build.sh --release)
+                sh "$ROOT/src/build.sh" && sh "$ROOT/src/build.sh" --release
             else
                 echo "build: compile core (C host CLI, debug flavor)"
-                (cd runtime/dsh && ./host/build.sh)
+                sh "$ROOT/src/build.sh"
             fi ;;
         *)
             echo "::error::build: compile: unknown platform '$1' (want ios|android|harmony|core)" >&2

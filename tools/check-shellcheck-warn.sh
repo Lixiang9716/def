@@ -17,7 +17,7 @@
 # cannot go stale the way a hand-copied manifest does — every tracked .sh
 # under build/, tools/, hosts/{android,harmony,ios}/, test/{e2e,tools,panel}/,
 # packages/release/, deploy/marketplace/, presentation/, runtime/dsh/{ci,vendor}/,
-# plus runtime/dsh/host/build.sh — minus checked-in artifact fixtures
+# plus src/build.sh — minus checked-in artifact fixtures
 # (**/artifacts/**: run outputs and guest-root profiles, never entry points).
 # On the day this gate landed, the rule covered every script #289 swept with
 # findings (33/33), every script the #289 PR touched (29/29), and every
@@ -61,7 +61,7 @@ if [ "$#" -gt 0 ]; then
     SCRIPTS="$*"
 else
     SCRIPTS="$(git ls-files '*.sh' \
-        | grep -E '^(build/|tools/|hosts/(android|harmony|ios)/|test/(e2e|tools|panel)/|packages/release/|deploy/marketplace/|presentation/|runtime/dsh/(ci|vendor)/|runtime/dsh/host/build\.sh$)' \
+        | grep -E '^(build/|tools/|hosts/(android|harmony|ios)/|test/(e2e|tools|panel)/|packages/release/|deploy/marketplace/|presentation/|runtime/dsh/(ci|vendor)/|src/build\.sh$)' \
         | grep -v '/artifacts/' || true)"
 fi
 if [ -z "$SCRIPTS" ]; then

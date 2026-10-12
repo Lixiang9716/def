@@ -15,7 +15,7 @@ build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...
 | --- | --- |
 | `build/build.sh android` | stage the android closure from the canonical runtime → `gradlew assembleDebug` → `run-dsh-e2e.sh` (log-verified) |
 | `build/build.sh android harmony` | the same, for both platforms — any mix of platforms |
-| `build/build.sh compile core` | the toolchain leg only — `runtime/dsh/host/build.sh` (no closure re-stage, no e2e legs) |
+| `build/build.sh compile core` | the toolchain leg only — `src/build.sh` (no closure re-stage, no e2e legs) |
 | `build/build.sh test ios` | the e2e leg only (build must already be fresh) |
 | `build/build.sh check` | the `closures` gate only — no toolchains needed |
 | `build/build.sh sync harmony` | re-stage the committed harmony closure from `runtime/dsh` |
@@ -26,7 +26,7 @@ build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...
 - A missing toolchain **fails loud**, naming the tool and how to get it — never
   a silent skip. `--list` shows the platforms and their toolchain needs.
 - `core` is the canonical runtime's own vehicle: the C host CLI
-  (`runtime/dsh/host/build.sh`) plus the CLI proof legs — the same closure
+  (`src/build.sh`) plus the CLI proof legs — the same closure
   the platforms embed, proven on the cheapest host.
 
 ## Why this shape (the DSH method)
@@ -90,7 +90,7 @@ ctest --preset macos-dev                                # the gates (dsh-gate-cl
 Scope by construction (phase 1 — add-the-layer, move-no-paths):
 
 - **CMake compiles only the C core**: the `dsh-core` static library, built
-  from `runtime/dsh/host` plus the pinned engines — the same file set the
+  from `src` plus the pinned engines — the same file set the
   android and harmony `cpp/CMakeLists.txt` compile. Configure materializes
   the vendored pins first (`include(Vendor)` runs the ensure scripts, fail
   loud; `DSH_SKIP_VENDOR=ON` skips with a named warning).
@@ -177,7 +177,7 @@ workflow — the mapping, and where each leg runs:
 | ios | `xcodebuild … -scheme DSHHost` (`dev/ios`, macos-15) | `test/e2e/run-ios.sh` (same job) |
 | android | `./gradlew assembleDebug` (`dev/android`) | `hosts/android/ci/run-dsh-e2e.sh` (same job) |
 | harmony | `hvigorw assembleHap` (`dev/harmonyos`) | `hosts/harmony/ci/run-host-e2e.sh` (same job) |
-| core | `runtime/dsh/host/build.sh` (macOS local; the CLI legs' own runners) | `runtime/dsh/ci/run-*-e2e.sh` |
+| core | `src/build.sh` (macOS local; the CLI legs' own runners) | `runtime/dsh/ci/run-*-e2e.sh` |
 
 [D9]: docs/decisions.md
 [D6]: docs/decisions.md

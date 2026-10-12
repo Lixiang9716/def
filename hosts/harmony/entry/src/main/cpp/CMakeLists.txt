@@ -3,7 +3,7 @@
 # Compiles the platform-neutral rt host plus the pinned quickjs-ng
 # sources through hvigor's externalNativeOptions (clang / OHOS NDK), exactly
 # the compile set the desktop proof run uses
-# (runtime/dsh/host/build.sh): dtoa.c libregexp.c libunicode.c quickjs.c.
+# (src/build.sh): dtoa.c libregexp.c libunicode.c quickjs.c.
 # quickjs-libc is deliberately excluded — the rt host provides its own
 # minimal glue (runtime/dsh/README.md, "Embedding contract").
 cmake_minimum_required(VERSION 3.5.0)
@@ -84,7 +84,7 @@ target_include_directories(druntime PRIVATE
 # ZSTD_DISABLE_ASM (zstd's own switch) keeps every arch on the C fast loop.
 target_compile_definitions(druntime PRIVATE ZSTD_DISABLE_ASM=1)
 
-# Mirror the desktop proof-build flags (runtime/dsh/host/build.sh):
+# Mirror the desktop proof-build flags (src/build.sh):
 # C11, -O1, _GNU_SOURCE. Warnings from the upstream engine sources are not
 # this repo's to fix (D6) — silence only the noisy generic ones.
 set_target_properties(druntime PROPERTIES

@@ -24,7 +24,7 @@ WAIT_DEADLINE_SECONDS=15
 # 1. vendored upstream closure + the CLI host binary when missing.
 sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh > /dev/null
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 2. loopback mock LLM (the boot requires a route; no agent turn runs).
 LLM_LOG="$(mktemp /tmp/dsh-mock-llm-plugin-forms.XXXXXX)"

@@ -46,7 +46,7 @@ sh ../../external/ensure-dsh.sh
 sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. loopback file hosting FIRST (the generator needs its base URL), then the
 #    catalog: honest index + packages from system-plugins, then the tamper

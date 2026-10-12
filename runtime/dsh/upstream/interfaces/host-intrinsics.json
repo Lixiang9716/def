@@ -2,7 +2,7 @@
  "manifest": "host-intrinsics",
  "version": 1,
  "constitution": "runtime/dsh/upstream/INTERFACES.md",
- "extracted": "wave-7 opener, 2026-09-27, from runtime/dsh/host/dsh_runtime_host.c (JS_NewCFunction registrations in dsh_bind_globals, plus the JS_NewCFunctionData loader-internal and the __DSH_RELEASE__ flag) — signatures and semantics from the C comments and bodies",
+ "extracted": "wave-7 opener, 2026-09-27, from src/dsh_runtime_host.c (JS_NewCFunction registrations in dsh_bind_globals, plus the JS_NewCFunctionData loader-internal and the __DSH_RELEASE__ flag) — signatures and semantics from the C comments and bodies",
  "threadRule": "All intrinsics run on the ONE serial runtime thread (ARCHITECTURE §6 / D2). The subprocess and sqlite seams own OS resources but never a second JS thread: subprocess bytes cross as base64 chunks the JS shim pumps over the ordinary timer seam; sqlite rows cross as plain objects.",
  "intrinsics": [
   {"name": "__DSH_LOG_SINK__", "signature": "(jsonLine: string) -> undefined", "since": "pre-wave (M2 era)", "semantics": "The unified-log sink: the host emits the canonical `dsh.runtime.log: <jsonLine>` E2E line through the embedder's log sink. The ONLY logging exit; the harness also posts structured failure/debug rows through it (DSH_R3E_DEBUG=1)."},

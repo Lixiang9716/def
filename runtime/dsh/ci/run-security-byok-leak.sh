@@ -31,7 +31,7 @@ sh ../../external/ensure-dsh.sh
 sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. the mock LLM server: one scripted success, then the scripted 401.
 MOCK_LOG="$(mktemp /tmp/dsh-mock-llm-byok.XXXXXX)"

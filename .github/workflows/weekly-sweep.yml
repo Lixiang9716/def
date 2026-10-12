@@ -82,7 +82,7 @@ jobs:
         # host/build.sh compiles the iSH static libs (cmake) then the CLI
         # (cc); the quickjs-boot-parse job's 15-minute budget on the same
         # runner image is the measured ceiling for the cold build.
-        run: sh runtime/dsh/host/build.sh
+        run: sh src/build.sh
       - name: Run the full upstream-suite sweep
         # --paral 4: the sweep script's own default, kept explicit. The step
         # is continue-on-error ON PURPOSE (see the header): red findings are
