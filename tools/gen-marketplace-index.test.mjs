@@ -14,10 +14,20 @@
  * fail-loud makes. Also pins the shape the resolver's display face reads
  * (each summary is exactly {en, zh}).
  *
- * Offline and hermetic: reads the repo's own files, writes nothing.
+ * Offline. The green legs read the repo's own files and write nothing. A
+ * guard that only ever sees satisfying input is a vacuous script (rules.md
+ * rule 6), so the fail-loud describe below hands the REAL generator a
+ * fixture plugin tree (under the OS tmpdir, via --system-plugins) whose
+ * manifest id has no row — the 2026-10-08 shape — and proves the publish
+ * aborts exit 1 naming the plugin; the row-linked twin proves the same
+ * fixture publishes clean, so the red is caused by exactly the missing
+ * row and nothing else. deploy/marketplace/summaries.json is only ever
+ * READ.
  */
-import { describe, expect, it } from 'vitest';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { describe, expect, it, afterAll } from 'vitest';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const REPO = join(import.meta.dirname, '..');
@@ -51,5 +61,71 @@ describe('marketplace catalog summaries cover every system plugin', () => {
     for (const [name, row] of Object.entries(summaries)) {
       expect(Object.keys(row).sort(), name).toEqual(['en', 'zh']);
     }
+  });
+});
+
+describe('the fail-loud leg: a plugin without its summaries row aborts the publish (rule 6)', () => {
+  // The green legs above only prove the invariant holds on TODAY's tree —
+  // the red proof they gesture at (the original note and commit message:
+  // "with the row stashed the suite goes red") was a one-off manual run
+  // CI cannot reproduce. These legs make that run permanent: the generator
+  // itself, real CLI, must reject the exact gap the green legs name. The
+  // counterexample is a fixture plugin whose manifest id has no row in the
+  // real summaries file — the row is absent by construction, the data file
+  // itself is never touched (idiom: gen-staging-manifests.test.mjs's
+  // "structural drift fails loud" describe).
+  const summaries = readJson(SUMMARIES);
+  const GEN = join(import.meta.dirname, 'gen-marketplace-index.mjs');
+  const THROWAWAY_SEED = Buffer.alloc(32).toString('base64'); // never a real credential
+  const fixtures = [];
+
+  /** One tmp root: a system-plugins tree with a single VALID plugin (the
+   * manifest clears validateManifest, so the run reaches the summaries
+   * check, not an earlier guard) whose id's row presence is decided by
+   * the caller's id choice. */
+  const fixtureTree = (id) => {
+    const root = mkdtempSync(join(tmpdir(), 'dsh-marketplace-guard-'));
+    fixtures.push(root);
+    const dir = join(root, 'system-plugins', id);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, 'manifest.json'), `${JSON.stringify({
+      schemaVersion: 1, id, version: '0.0.1', type: 'service', entry: 'index.js',
+      capabilities: { required: [], optional: [] },
+    }, null, 2)}\n`);
+    writeFileSync(join(dir, 'index.js'), 'export default {};\n');
+    return { root, plugins: join(root, 'system-plugins'), out: join(root, 'dist') };
+  };
+  afterAll(() => {
+    for (const root of fixtures) rmSync(root, { recursive: true, force: true });
+  });
+
+  const runGenerator = ({ plugins, out }) => spawnSync(process.execPath, [
+    GEN, '--base-url', 'https://marketplace.invalid',
+    '--system-plugins', plugins, '--out', out, '--key-seed', THROWAWAY_SEED,
+  ], { encoding: 'utf8' });
+
+  it('a rowless plugin aborts the publish (exit 1) naming the plugin, writing nothing', () => {
+    const id = 'dsh-redleg-no-summary-row';
+    expect(summaries[id], 'fixture precondition: the id must have no row in the real file')
+      .toBeUndefined();
+    const fx = fixtureTree(id);
+    const r = runGenerator(fx);
+    expect(r.status, r.stderr).toBe(1);
+    expect(r.stderr).toContain('gen-marketplace-index: deploy/marketplace/summaries.json'
+      + ` has no {en,zh} summary for ${id}`);
+    expect(existsSync(join(fx.out, 'index.json')), 'a failed run must not publish').toBe(false);
+  });
+
+  it('the same fixture with a row-linked id publishes clean — the red fails on exactly the missing row', () => {
+    const id = 'dsh-shell-ish'; // a real summaries row exists (the green legs cover it)
+    expect(summaries[id], 'fixture precondition: the id must have a row in the real file')
+      .toBeDefined();
+    const fx = fixtureTree(id);
+    const r = runGenerator(fx);
+    expect(r.status, r.stderr).toBe(0);
+    const index = JSON.parse(readFileSync(join(fx.out, 'index.json'), 'utf8'));
+    expect(index.entries).toHaveLength(1);
+    expect(index.entries[0].id).toBe(id);
+    expect(index.entries[0].summary).toEqual(summaries[id]);
   });
 });
