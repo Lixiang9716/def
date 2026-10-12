@@ -237,10 +237,12 @@ describe('mountPiAiProviders — the userEndpoint gate (the named exception)', (
         models: [{ id: 'piai-mock-1' }],
       },
     };
-    // Loopback passes the gate; the vendored plugin import is the next
-    // failure (unmapped under vitest), which proves the gate itself passed.
+    // Loopback passes the gate; the next failure is the proof. Since the
+    // pi-ai package was vendored (#467) the import resolves, so the load
+    // stage is what throws (the bare {} ctx has no cordis plugin face) —
+    // either failure class proves the gate itself passed.
     await expect(mountPiAiProviders({}, providers))
-      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find|ctx\.plugin is not a function/);
   });
 
 });
@@ -267,8 +269,10 @@ describe('mountPiAiProviders gate — the unprovable shapes', () => {
         models: [{ id: 'claude-sonnet-4-5' }],
       },
     };
+    // The declaration satisfies the gate; the load-stage failure (the bare
+    // {} ctx, post-vendoring) is what proves the gate itself passed.
     await expect(mountPiAiProviders({}, providers))
-      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find|ctx\.plugin is not a function/);
   });
 });
 
