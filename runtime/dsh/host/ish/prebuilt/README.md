@@ -1,7 +1,7 @@
 # prebuilt/libvdso.so.elf
 
 The guest aarch64 vdso, built ONCE from the pinned vendored iSH sources
-(`runtime/dsh/vendor/ensure-ish.sh`'s commit + tarball sha256; source
+(`external/ensure-ish.sh`'s commit + tarball sha256; source
 `vendor/ish/vdso/arm64/vdso.c`) with an lld-equipped clang
 (`-target aarch64-linux-gnu -fuse-ld=lld -nostdlib -shared`).
 

@@ -26,9 +26,9 @@ WRONG_KEY="byok-wrong-probe-5d81c3e7a9f04b62"
 MOCK_WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
-sh vendor/ensure-ish.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
+sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh

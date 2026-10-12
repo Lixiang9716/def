@@ -173,7 +173,7 @@ const LAYERS = {
   'canonical-js': {
     under: ['runtime/dsh/'],
     ext: ['.js', '.mjs'],
-    skip: ['runtime/dsh/vendor/', 'runtime/dsh/transport-tokens.mjs'],
+    skip: ['external/', 'runtime/dsh/transport-tokens.mjs'],
     why: 'the canonical closure (imports the table; mirrors are byte-copies)',
   },
   'canonical-manifest': {

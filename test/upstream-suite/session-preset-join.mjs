@@ -61,7 +61,7 @@ const als = new NodeAls();
 globalThis.__asyncContextGet = () => als.getStore();
 globalThis.__asyncContextSet = (v) => als.enterWith(v);
 
-const NM = pathResolve(ROOT, 'runtime/dsh/vendor/node_modules');
+const NM = pathResolve(ROOT, 'external/node_modules');
 globalThis.__dshBundleRequire = (base, rel) => {
   let baseFile;
   if (typeof base === 'string' && base.startsWith('file:')) {

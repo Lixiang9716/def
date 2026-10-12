@@ -24,7 +24,7 @@ import { existsSync, readFileSync, readdirSync, symlinkSync, rmSync, mkdirSync, 
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const VENDOR_NPM = 'runtime/dsh/vendor/npm';
+const VENDOR_NPM = 'external/npm';
 const BUNDLES_NPM = 'presentation/official-web/client-bundles/npm/@deepseek-ai';
 const BOOTSTRAP_NAME = '@deepseek-ai/dsh-client-modules';
 
@@ -213,7 +213,7 @@ const mountClientModules = (ctx, plugins, vendored) => {
  * /plugins route adopts revs from, bundles the staged {id, file} list.
  */
 export const composeBootWire = async ({ repoRoot, stageDir }) => {
-  demandTree(repoRoot, VENDOR_NPM, 'runtime/dsh/vendor/ensure-dsh.sh');
+  demandTree(repoRoot, VENDOR_NPM, 'external/ensure-dsh.sh');
   mkdirSync(stageDir, { recursive: true });
   buildResolutionScope(stageDir, repoRoot);
   const entry = writeStageEntry(stageDir);

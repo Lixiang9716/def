@@ -3,7 +3,8 @@
 # tools/gen-staging-emit.mjs (row order = block order: the emitted C arrays
 # and the Swift-linked dsh_runtime_res_<suffix> accessors consume it).
 # `<suffix>=<rel>` stages runtime/dsh/<rel>; `repo:` stages a repo-root file
-# at the same bundle path. A new row is a hand decision (the suffix is a
+# at the same bundle path; the relocated vendored closure stages from the
+# repo-root external/ tree spelled `../../external/...` (CMake phase-2). A new row is a hand decision (the suffix is a
 # Swift/C link name no derivation can mint); graph coverage of everything a
 # row omits stays with check-staging's ios surface (blocking, earlier in the
 # DAG).
@@ -14,7 +15,7 @@ receipt_journal_js=receipt-journal.js
 profile_m3_patch_json=profiles/install-full-cycle/cordis.patch.json
 web_index_html=web/index.html
 web_page_js=web/carrier-page.js
-pkg_crypto_js=vendor/dsh/util-crypto@0.1.6-alpha.2/lib/index.js
+pkg_crypto_js=../../external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js
 plugin_fs_manifest=repo:system-plugins/dsh-fs/manifest.json
 plugin_fs_js=repo:system-plugins/dsh-fs/index.js
 plugin_subprocess_manifest=repo:system-plugins/dsh-subprocess-quickjs/manifest.json
@@ -36,18 +37,18 @@ webclient_mini_main_js=repo:presentation/web-client-mini/web/main.js
 upstream_web_boot_js=upstream/web-boot.js
 upstream_web_shims_js=upstream/web-shims.js
 upstream_web_search_keyless_js=upstream/web-search-keyless.js
-npm_cordis_js=vendor/npm/cordis@4.0.2/lib/index.js
-npm_cosmokit_js=vendor/npm/cosmokit@1.8.3/lib/index.js
-npm_schemastery_mjs=vendor/npm/schemastery@3.18.2/lib/index.mjs
-npm_client_modules_index_js=vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/index.js
-npm_client_modules_client_js=vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/client.js
-npm_anonymous_user_id_js=vendor/npm/@deepseek-ai/dsh-anonymous-user-id@0.1.6-alpha.2/lib/index.js
+npm_cordis_js=../../external/npm/cordis@4.0.2/lib/index.js
+npm_cosmokit_js=../../external/npm/cosmokit@1.8.3/lib/index.js
+npm_schemastery_mjs=../../external/npm/schemastery@3.18.2/lib/index.mjs
+npm_client_modules_index_js=../../external/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/index.js
+npm_client_modules_client_js=../../external/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/client.js
+npm_anonymous_user_id_js=../../external/npm/@deepseek-ai/dsh-anonymous-user-id@0.1.6-alpha.2/lib/index.js
 presets_mobile_preset_yml=presets-mobile/mobile/preset.yml
 presets_mobile_agent_cordis_yml=presets-mobile/mobile/agent.cordis.yml
-npm_agent_presets_index_js=vendor/dsh/agent-presets@0.1.6-alpha.2/lib/index.js
-npm_plugin_loader_js=vendor/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib/index.js
-npm_plugin_include_js=vendor/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.js
-npm_js_yaml_mjs=vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs
+npm_agent_presets_index_js=../../external/dsh/agent-presets@0.1.6-alpha.2/lib/index.js
+npm_plugin_loader_js=../../external/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib/index.js
+npm_plugin_include_js=../../external/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.js
+npm_js_yaml_mjs=../../external/npm/js-yaml@4.1.0/dist/js-yaml.mjs
 upstream_boot_js=upstream/boot.js
 upstream_wire_logger_js=upstream/wire-logger.js
 upstream_llm_route_js=upstream/llm-route.js

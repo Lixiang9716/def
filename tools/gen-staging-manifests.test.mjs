@@ -275,7 +275,7 @@ describe('gen-staging-manifests artifacts and usage (exit 2)', () => {
 });
 
 describe('gen-staging-manifests against the real repo (materialized pins)', () => {
-  // The vendored pins are materialized by runtime/dsh/vendor/ensure*.sh
+  // The vendored pins are materialized by external/ensure*.sh
   // (CI does the same before the gate DAG). What holds on ANY prepared
   // checkout: the tool runs to a verdict (never a crash), three host
   // reports parse, and the manifest-parsing legs all execute.

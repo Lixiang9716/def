@@ -30,8 +30,8 @@ WRONG_KEY="byok-wrong-key-0000"
 
 # 1. vendored upstream closure: pinned + sha256-verified (network only for
 #    packages missing on disk).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -78,7 +78,7 @@ const receipt = {
   host: `${process.platform}-cli (${process.platform} ${process.arch})`,
   engine: 'quickjs-ng',
   engineVersion: '0.17.0',
-  upstream: '@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @earendil-works/pi-ai@0.85.1 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)',
+  upstream: '@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 + @earendil-works/pi-ai@0.85.1 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)',
   scenario: 'byok.anthropic-wire',
   events,
   proves: [

@@ -35,12 +35,12 @@ MODE=stage
 [ "${1:-}" = "--check" ] && MODE=check
 [ $# -eq 0 ] || [ "$MODE" = "check" ] || die "unknown argument '$1' (only --check)"
 
-[ -d "$DSH/vendor/dsh/session@$VER/lib" ] ||
-    die "runtime vendor closure missing — run runtime/dsh/vendor/ensure-dsh.sh"
+[ -d "$DSH/../../external/dsh/session@$VER/lib" ] ||
+    die "runtime vendor closure missing — run external/ensure-dsh.sh"
 
 # Verify-phase variables, defined before the staging guard so --check mode
 # (staging skipped) still has them.
-ZOD_SRC=$DSH/vendor/npm/zod@4.4.3
+ZOD_SRC=$DSH/../../external/npm/zod@4.4.3
 ZOD_DST=$ASSETS/vendor/npm/zod@4.4.3
 
 # The dsh-shell-js parser closure's staged faces (the formal vendor round,
@@ -92,7 +92,7 @@ for pkg in agent agent-loop brand llm sandbox scope session \
            skill skill-filesystem tool-skill \
            subagent chunked-list; do
     say "staging vendor/dsh/$pkg@$VER"
-    stage_pkg "$DSH/vendor/dsh/$pkg@$VER" "$ASSETS/vendor/dsh/$pkg@$VER"
+    stage_pkg "$DSH/../../external/dsh/$pkg@$VER" "$ASSETS/vendor/dsh/$pkg@$VER"
 done
 
 # The MOBILE PRESET'S SHELL SURFACE — the iOS embedder's npm-face block
@@ -111,9 +111,9 @@ done
 stage_npm_face_at_dsh_path() {
     pkg=$1
     say "staging vendor/dsh/$pkg@$VER (npm-face bytes at the dsh rel path)"
-    src="$DSH/vendor/npm/@deepseek-ai/dsh-$pkg@$VER"
+    src="$DSH/../../external/npm/@deepseek-ai/dsh-$pkg@$VER"
     dst="$ASSETS/vendor/dsh/$pkg@$VER"
-    [ -d "$src" ] || die "the dsh-$pkg npm pin is absent — runtime/dsh/vendor/ensure-dsh.sh materializes it"
+    [ -d "$src" ] || die "the dsh-$pkg npm pin is absent — external/ensure-dsh.sh materializes it"
     mkdir -p "$dst"
     for f in LICENSE package.json; do
         [ -f "$src/$f" ] && cp "$src/$f" "$dst/$f"
@@ -140,17 +140,17 @@ stage_npm_face_at_dsh_path tool-web
 # the dsh-web seam: the npm face's dir name (dsh-web@) IS the canonical rel
 # name — a direct stage (the helper would mint the web@ mismatch-name)
 mkdir -p "$ASSETS/vendor/dsh/dsh-web@0.1.6-alpha.2/lib"
-cp "$DSH/vendor/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/package.json" "$ASSETS/vendor/dsh/dsh-web@0.1.6-alpha.2/package.json"
-cp "$DSH/vendor/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/lib/index.js" "$ASSETS/vendor/dsh/dsh-web@0.1.6-alpha.2/lib/index.js"
+cp "$DSH/../../external/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/package.json" "$ASSETS/vendor/dsh/dsh-web@0.1.6-alpha.2/package.json"
+cp "$DSH/../../external/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/lib/index.js" "$ASSETS/vendor/dsh/dsh-web@0.1.6-alpha.2/lib/index.js"
 mkdir -p "$ASSETS/vendor/npm/turndown@7.2.4/lib" \
          "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/lib" \
          "$ASSETS/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib"
-cp "$DSH/vendor/npm/turndown@7.2.4/lib/turndown.es.js" "$ASSETS/vendor/npm/turndown@7.2.4/lib/turndown.es.js"
-(cd "$DSH/vendor/npm/@mixmark-io/domino@2.2.0" && find lib -type f) | while IFS= read -r rel; do
+cp "$DSH/../../external/npm/turndown@7.2.4/lib/turndown.es.js" "$ASSETS/vendor/npm/turndown@7.2.4/lib/turndown.es.js"
+(cd "$DSH/../../external/npm/@mixmark-io/domino@2.2.0" && find lib -type f) | while IFS= read -r rel; do
     mkdir -p "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/$(dirname "$rel")"
-    cp "$DSH/vendor/npm/@mixmark-io/domino@2.2.0/$rel" "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/$rel"
+    cp "$DSH/../../external/npm/@mixmark-io/domino@2.2.0/$rel" "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/$rel"
 done
-cp "$DSH/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" \
+cp "$DSH/../../external/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" \
    "$ASSETS/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js"
 
 # The npm `diff` bridge target (upstream/shims/npm-bridges.js re-exports its
@@ -165,22 +165,22 @@ cp "$DSH/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.c
 # v2web drive 2026-09-26: "no vendored dsh package serves it").
 say "staging presets-closure npm packages"
 mkdir -p "$ASSETS/vendor/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib"
-cp "$DSH/vendor/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib/index.js" \
+cp "$DSH/../../external/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib/index.js" \
    "$ASSETS/vendor/npm/@deepseek-ai/cordis-plugin-loader@1.0.3/lib/index.js"
 mkdir -p "$ASSETS/vendor/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib"
-cp "$DSH/vendor/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.js" \
+cp "$DSH/../../external/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.js" \
    "$ASSETS/vendor/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.js"
 mkdir -p "$ASSETS/vendor/npm/js-yaml@4.1.0/dist"
-cp "$DSH/vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs" \
+cp "$DSH/../../external/npm/js-yaml@4.1.0/dist/js-yaml.mjs" \
    "$ASSETS/vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs"
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
 for pkg in dsh-anonymous-user-id dsh-goal dsh-file-reference dsh-file-reference-local dsh-llm-retry dsh-session-query dsh-session-title dsh-session-format-catalog dsh-compaction-image-offload; do
     say "staging vendor/npm/@deepseek-ai/$pkg@$VER (lib)"
-    (cd "$DSH/vendor/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
+    (cd "$DSH/../../external/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
         while IFS= read -r rel; do
             mkdir -p "$ASSETS/vendor/npm/@deepseek-ai/$pkg@$VER/$(dirname "$rel")"
-            cp "$DSH/vendor/npm/@deepseek-ai/$pkg@$VER/$rel" \
+            cp "$DSH/../../external/npm/@deepseek-ai/$pkg@$VER/$rel" \
                "$ASSETS/vendor/npm/@deepseek-ai/$pkg@$VER/$rel"
         done
 done
@@ -189,28 +189,28 @@ done
 # fflate ESM face behind bare 'fflate' for the dsh-office plugin.
 say "staging vendor/npm/fflate@0.8.2 (esm)"
 mkdir -p "$ASSETS/vendor/npm/fflate@0.8.2/esm"
-(cd "$DSH/vendor/npm/fflate@0.8.2/esm" && find . -type f ! -name '*.d.ts') |
+(cd "$DSH/../../external/npm/fflate@0.8.2/esm" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/fflate@0.8.2/esm/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/fflate@0.8.2/esm/$rel" "$ASSETS/vendor/npm/fflate@0.8.2/esm/$rel"
+        cp "$DSH/../../external/npm/fflate@0.8.2/esm/$rel" "$ASSETS/vendor/npm/fflate@0.8.2/esm/$rel"
     done
 
 say "staging vendor/npm/diff@9.0.0 (libesm)"
 mkdir -p "$ASSETS/vendor/npm/diff@9.0.0/libesm"
-(cd "$DSH/vendor/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
+(cd "$DSH/../../external/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/diff@9.0.0/libesm/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/diff@9.0.0/libesm/$rel" "$ASSETS/vendor/npm/diff@9.0.0/libesm/$rel"
+        cp "$DSH/../../external/npm/diff@9.0.0/libesm/$rel" "$ASSETS/vendor/npm/diff@9.0.0/libesm/$rel"
     done
 
 # The SKILL row's npm face: upstream/shims/npm-bridges.js re-exports the
 # yaml browser/ ESM tree behind the bare specifier skill-filesystem imports
 # (the package's "node" face is CJS, which the loader cannot serve).
 say "staging vendor/npm/yaml@2.9.0 (browser ESM face)"
-(cd "$DSH/vendor/npm/yaml@2.9.0/browser" && find . -type f ! -name '*.d.ts') |
+(cd "$DSH/../../external/npm/yaml@2.9.0/browser" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/yaml@2.9.0/browser/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/yaml@2.9.0/browser/$rel" "$ASSETS/vendor/npm/yaml@2.9.0/browser/$rel"
+        cp "$DSH/../../external/npm/yaml@2.9.0/browser/$rel" "$ASSETS/vendor/npm/yaml@2.9.0/browser/$rel"
     done
 
 # The sharp face's vendored engines (the D-c row, 2026-09-29): the adapter
@@ -219,36 +219,36 @@ say "staging vendor/npm/yaml@2.9.0 (browser ESM face)"
 # jpeg-js's codec, and the fflate CJS face its zlib calls ride.
 say "staging vendor/npm/pngjs@5.0.0 (lib pixel stages)"
 mkdir -p "$ASSETS/vendor/npm/pngjs@5.0.0/lib"
-(cd "$DSH/vendor/npm/pngjs@5.0.0/lib" && find . -type f -name '*.js') |
+(cd "$DSH/../../external/npm/pngjs@5.0.0/lib" && find . -type f -name '*.js') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/pngjs@5.0.0/lib/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/pngjs@5.0.0/lib/$rel" "$ASSETS/vendor/npm/pngjs@5.0.0/lib/$rel"
+        cp "$DSH/../../external/npm/pngjs@5.0.0/lib/$rel" "$ASSETS/vendor/npm/pngjs@5.0.0/lib/$rel"
     done
 say "staging vendor/npm/jpeg-js@0.4.4 (codec)"
 mkdir -p "$ASSETS/vendor/npm/jpeg-js@0.4.4/lib"
-cp "$DSH/vendor/npm/jpeg-js@0.4.4/index.js" "$ASSETS/vendor/npm/jpeg-js@0.4.4/index.js"
-(cd "$DSH/vendor/npm/jpeg-js@0.4.4/lib" && find . -type f -name '*.js') |
+cp "$DSH/../../external/npm/jpeg-js@0.4.4/index.js" "$ASSETS/vendor/npm/jpeg-js@0.4.4/index.js"
+(cd "$DSH/../../external/npm/jpeg-js@0.4.4/lib" && find . -type f -name '*.js') |
     while IFS= read -r rel; do
-        cp "$DSH/vendor/npm/jpeg-js@0.4.4/lib/$rel" "$ASSETS/vendor/npm/jpeg-js@0.4.4/lib/$rel"
+        cp "$DSH/../../external/npm/jpeg-js@0.4.4/lib/$rel" "$ASSETS/vendor/npm/jpeg-js@0.4.4/lib/$rel"
     done
 say "staging vendor/npm/fflate@0.8.2 (lib CJS face)"
 mkdir -p "$ASSETS/vendor/npm/fflate@0.8.2/lib"
-cp "$DSH/vendor/npm/fflate@0.8.2/lib/index.cjs" "$ASSETS/vendor/npm/fflate@0.8.2/lib/index.cjs"
+cp "$DSH/../../external/npm/fflate@0.8.2/lib/index.cjs" "$ASSETS/vendor/npm/fflate@0.8.2/lib/index.cjs"
 
 # The crypto shims' npm face (2026-09-29): shims/crypto.js statically
 # imports @noble/hashes/{sha2,hmac,legacy}.js and the host's STATIC bare
 # map resolves @noble/hashes/<sub> into this pin — the whole .js set rides
 # (the anti-drift rule; the in-app parity leg died on exactly this gap).
 say "staging vendor/npm/@noble/hashes@2.3.0 (js)"
-if [ ! -d "$DSH/vendor/npm/@noble/hashes@2.3.0" ]; then
-    echo "::error::stage-spine-closure: the @noble/hashes pin is absent — runtime/dsh/vendor/ensure.sh materializes it" >&2
+if [ ! -d "$DSH/../../external/npm/@noble/hashes@2.3.0" ]; then
+    echo "::error::stage-spine-closure: the @noble/hashes pin is absent — external/ensure.sh materializes it" >&2
     exit 1
 fi
 mkdir -p "$ASSETS/vendor/npm/@noble/hashes@2.3.0"
-(cd "$DSH/vendor/npm/@noble/hashes@2.3.0" && find . -type f -name '*.js') |
+(cd "$DSH/../../external/npm/@noble/hashes@2.3.0" && find . -type f -name '*.js') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/@noble/hashes@2.3.0/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/@noble/hashes@2.3.0/$rel" "$ASSETS/vendor/npm/@noble/hashes@2.3.0/$rel"
+        cp "$DSH/../../external/npm/@noble/hashes@2.3.0/$rel" "$ASSETS/vendor/npm/@noble/hashes@2.3.0/$rel"
     done
 
 # The pi-ai bridge target (2026-09-29): the providers barrel's
@@ -256,22 +256,22 @@ mkdir -p "$ASSETS/vendor/npm/@noble/hashes@2.3.0"
 # their files — the whole pin rides (the parity m4 mount died on exactly
 # this gap: bridge rows present, bytes absent in-app).
 say "staging vendor/npm/@earendil-works/pi-ai@0.85.1 (js+json)"
-if [ ! -d "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1" ]; then
-    echo "::error::stage-spine-closure: the pi-ai pin is absent — runtime/dsh/vendor/ensure.sh materializes it" >&2
+if [ ! -d "$DSH/../../external/npm/@earendil-works/pi-ai@0.85.1" ]; then
+    echo "::error::stage-spine-closure: the pi-ai pin is absent — external/ensure.sh materializes it" >&2
     exit 1
 fi
 mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1"
-(cd "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1" && find . -type f \( -name '*.js' -o -name '*.json' \) ! -name '.*') |
+(cd "$DSH/../../external/npm/@earendil-works/pi-ai@0.85.1" && find . -type f \( -name '*.js' -o -name '*.json' \) ! -name '.*') |
     while IFS= read -r rel; do
         mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/$(dirname "$rel")"
-        cp "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1/$rel" "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/$rel"
+        cp "$DSH/../../external/npm/@earendil-works/pi-ai@0.85.1/$rel" "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/$rel"
     done
 # The providers barrel's data/.manifest.json cannot ride the APK (aapt drops
 # hidden files, same as the HAP packer — the harmony twin of this fix,
 # 2026-09-30): its bytes ride under the NON-hidden alias the
 # npm-bridges-pi-ai.js seam falls back to.
 mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data"
-cp "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.json" \
+cp "$DSH/../../external/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.json" \
     "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/manifest.json"
 
 
@@ -281,18 +281,18 @@ cp "$DSH/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.j
 say "staging the dsh-shell-js parser closure (shelljs + minimatch chain — the hand-written parser retired bash-parser)"
 for dir_face in $SHELLJS_FACE_DIRS; do
     pkg=${dir_face%%/*}; face=${dir_face#*/}
-    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+    (cd "$DSH/../../external/npm/$pkg" && find "$face" -type f -name '*.js') |
         while IFS= read -r rel; do
             mkdir -p "$ASSETS/vendor/npm/$pkg/$(dirname "$rel")"
-            cp "$DSH/vendor/npm/$pkg/$rel" "$ASSETS/vendor/npm/$pkg/$rel"
+            cp "$DSH/../../external/npm/$pkg/$rel" "$ASSETS/vendor/npm/$pkg/$rel"
         done
 done
 for f in $SHELLJS_SINGLE_FILES; do
     mkdir -p "$ASSETS/vendor/npm/$(dirname "$f")"
-    cp "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f"
+    cp "$DSH/../../external/npm/$f" "$ASSETS/vendor/npm/$f"
 done
 for p in $SHELLJS_PKGS; do
-    cp "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json"
+    cp "$DSH/../../external/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json"
 done
 
 # The pinned zod's runtime closure (the iOS embedder's ZOD_FILES list).
@@ -344,7 +344,7 @@ cmp -s "$DSH/manifest.json" "$ASSETS/manifest.json" || cp "$DSH/manifest.json" "
 # shell seat; the three older plugins are committed in assets directly and
 # refreshed here too — byte-identical to runtime/dsh, the single source).
 # The TEST closure: every additional vendored package the upstream suites
-# import (same tag; materialized by vendor/ensure-dsh-tests.sh). Untracked
+# import (same tag; materialized by external/ensure-dsh-tests.sh). Untracked
 # in assets by the same accepted pattern as the Gradle-materialized staged
 # files — the check mode judges tracked files only.
 for pkg_dir in "$DSH"/vendor/dsh/*@0.1.6-alpha.2; do
@@ -468,11 +468,11 @@ for pkg in agent agent-loop brand llm sandbox scope session \
            tool-str-replace-editor tool-todo \
            skill skill-filesystem tool-skill \
            subagent chunked-list; do
-    (cd "$DSH/vendor/dsh/$pkg@$VER" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
+    (cd "$DSH/../../external/dsh/$pkg@$VER" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
     while IFS= read -r rel; do
-        [ -f "$DSH/vendor/dsh/$pkg@$VER/$rel" ] || continue
+        [ -f "$DSH/../../external/dsh/$pkg@$VER/$rel" ] || continue
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/dsh/$pkg@$VER/$rel"; then note_skip; continue; fi
-        cmp -s "$DSH/vendor/dsh/$pkg@$VER/$rel" "$ASSETS/vendor/dsh/$pkg@$VER/$rel" ||
+        cmp -s "$DSH/../../external/dsh/$pkg@$VER/$rel" "$ASSETS/vendor/dsh/$pkg@$VER/$rel" ||
             note_drift "vendor/dsh/$pkg@$VER/$rel"
     done
 done
@@ -482,11 +482,11 @@ done
 # per package the same way.
 verify_npm_face_at_dsh_path() {
     pkg=$1
-    (cd "$DSH/vendor/npm/@deepseek-ai/dsh-$pkg@$VER" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
+    (cd "$DSH/../../external/npm/@deepseek-ai/dsh-$pkg@$VER" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
     while IFS= read -r rel; do
-        [ -f "$DSH/vendor/npm/@deepseek-ai/dsh-$pkg@$VER/$rel" ] || continue
+        [ -f "$DSH/../../external/npm/@deepseek-ai/dsh-$pkg@$VER/$rel" ] || continue
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/dsh/$pkg@$VER/$rel"; then note_skip; continue; fi
-        cmp -s "$DSH/vendor/npm/@deepseek-ai/dsh-$pkg@$VER/$rel" "$ASSETS/vendor/dsh/$pkg@$VER/$rel" ||
+        cmp -s "$DSH/../../external/npm/@deepseek-ai/dsh-$pkg@$VER/$rel" "$ASSETS/vendor/dsh/$pkg@$VER/$rel" ||
             note_drift "vendor/dsh/$pkg@$VER/$rel"
     done
 }
@@ -503,21 +503,21 @@ verify_npm_face_at_dsh_path tool-web
 # chain the tool's static graph links): byte-identity against their pins.
 for f in package.json lib/index.js; do
     if [ "$MODE" = "check" ] && ! is_tracked "vendor/dsh/dsh-web@$VER/$f"; then note_skip; continue; fi
-    cmp -s "$DSH/vendor/npm/@deepseek-ai/dsh-web@$VER/$f" "$ASSETS/vendor/dsh/dsh-web@$VER/$f" ||
+    cmp -s "$DSH/../../external/npm/@deepseek-ai/dsh-web@$VER/$f" "$ASSETS/vendor/dsh/dsh-web@$VER/$f" ||
         note_drift "vendor/dsh/dsh-web@$VER/$f"
 done
 if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/turndown@7.2.4/lib/turndown.es.js"; then note_skip
-else cmp -s "$DSH/vendor/npm/turndown@7.2.4/lib/turndown.es.js" "$ASSETS/vendor/npm/turndown@7.2.4/lib/turndown.es.js" ||
+else cmp -s "$DSH/../../external/npm/turndown@7.2.4/lib/turndown.es.js" "$ASSETS/vendor/npm/turndown@7.2.4/lib/turndown.es.js" ||
     note_drift "vendor/npm/turndown@7.2.4/lib/turndown.es.js"
 fi
-(cd "$DSH/vendor/npm/@mixmark-io/domino@2.2.0" && find lib -type f) |
+(cd "$DSH/../../external/npm/@mixmark-io/domino@2.2.0" && find lib -type f) |
     while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/@mixmark-io/domino@2.2.0/$rel"; then note_skip; continue; fi
-        cmp -s "$DSH/vendor/npm/@mixmark-io/domino@2.2.0/$rel" "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/$rel" ||
+        cmp -s "$DSH/../../external/npm/@mixmark-io/domino@2.2.0/$rel" "$ASSETS/vendor/npm/@mixmark-io/domino@2.2.0/$rel" ||
             note_drift "vendor/npm/@mixmark-io/domino@2.2.0/$rel"
     done
 if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js"; then note_skip
-else cmp -s "$DSH/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" \
+else cmp -s "$DSH/../../external/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" \
         "$ASSETS/vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js" ||
     note_drift "vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js"
 fi
@@ -527,7 +527,7 @@ fi
 # the closures gate is blind to.
 for dir_face in $SHELLJS_FACE_DIRS; do
     pkg=${dir_face%%/*}; face=${dir_face#*/}
-    (cd "$DSH/vendor/npm/$pkg" && find "$face" -type f -name '*.js') |
+    (cd "$DSH/../../external/npm/$pkg" && find "$face" -type f -name '*.js') |
         while IFS= read -r rel; do
             path="vendor/npm/$pkg/$rel"
             if [ "$MODE" = "check" ] && ! is_tracked "$path"; then note_skip; continue; fi
@@ -536,33 +536,33 @@ for dir_face in $SHELLJS_FACE_DIRS; do
 done
 for f in $SHELLJS_SINGLE_FILES; do
     if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$f"; then note_skip
-    else cmp -s "$DSH/vendor/npm/$f" "$ASSETS/vendor/npm/$f" ||
+    else cmp -s "$DSH/../../external/npm/$f" "$ASSETS/vendor/npm/$f" ||
         note_drift "vendor/npm/$f"
     fi
 done
 for p in $SHELLJS_PKGS; do
     if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/$p/package.json"; then note_skip
-    else cmp -s "$DSH/vendor/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json" ||
+    else cmp -s "$DSH/../../external/npm/$p/package.json" "$ASSETS/vendor/npm/$p/package.json" ||
         note_drift "vendor/npm/$p/package.json"
     fi
 done
 
-(cd "$DSH/vendor/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
+(cd "$DSH/../../external/npm/diff@9.0.0/libesm" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/diff@9.0.0/libesm/$rel"; then note_skip; continue; fi
-        cmp -s "$DSH/vendor/npm/diff@9.0.0/libesm/$rel" "$ASSETS/vendor/npm/diff@9.0.0/libesm/$rel" ||
+        cmp -s "$DSH/../../external/npm/diff@9.0.0/libesm/$rel" "$ASSETS/vendor/npm/diff@9.0.0/libesm/$rel" ||
             note_drift "npm/diff@9.0.0/libesm/$rel"
     done
-(cd "$DSH/vendor/npm/yaml@2.9.0/browser" && find . -type f ! -name '*.d.ts') |
+(cd "$DSH/../../external/npm/yaml@2.9.0/browser" && find . -type f ! -name '*.d.ts') |
     while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/yaml@2.9.0/browser/$rel"; then note_skip; continue; fi
-        cmp -s "$DSH/vendor/npm/yaml@2.9.0/browser/$rel" "$ASSETS/vendor/npm/yaml@2.9.0/browser/$rel" ||
+        cmp -s "$DSH/../../external/npm/yaml@2.9.0/browser/$rel" "$ASSETS/vendor/npm/yaml@2.9.0/browser/$rel" ||
             note_drift "npm/yaml@2.9.0/browser/$rel"
     done
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
 for pkg in dsh-anonymous-user-id dsh-goal dsh-file-reference dsh-file-reference-local dsh-llm-retry dsh-session-query dsh-session-title dsh-session-format-catalog dsh-compaction-image-offload; do
-    (cd "$DSH/vendor/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
+    (cd "$DSH/../../external/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
         while IFS= read -r rel; do
             path="vendor/npm/@deepseek-ai/$pkg@$VER/$rel"
             if [ "$MODE" = "check" ] && ! is_tracked "$path"; then note_skip; continue; fi

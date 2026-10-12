@@ -167,7 +167,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "session-persist.restart",
   "launch": "emulator, --ez dsh.persistrestart true x2 (create leg, am force-stop, resume leg on the same container)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "android-session-persist-restart", "verdict": "verdict-android-session-persist-restart.json", "pass": true }
   ],

@@ -29,7 +29,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 SPIKE = REPO / "runtime" / "dsh"
-VENDOR = SPIKE / "vendor" / "dsh"
+VENDOR = SPIKE / ".." / ".." / "external" / "dsh"
 PRESETS_PKG = "agent-presets"
 OUT = SPIKE / "scenario" / "agent-presets-probe-seed.js"
 VFS_BASE = f"/vendor/dsh/{PRESETS_PKG}@"

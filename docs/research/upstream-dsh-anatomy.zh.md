@@ -5,7 +5,7 @@
 本文整理上游 **deepseek-harness**（DSH）monorepo 包含什么、一次 agent
 对话如何在其中流转、以及 dsh-mobile 在哪里接入。资料来源：`tmp/deepseek-harness`
 处的上游克隆（tag `dsh-v0.1.7-alpha.2`，merge `00102833d`）与我们的
-供应商化 pin `0.1.6-alpha.2`（`runtime/dsh/vendor/`）。本文是
+供应商化 pin `0.1.6-alpha.2`（`external/`）。本文是
 [upstream-capability-mounting.md](upstream-capability-mounting.zh.md)
 （姊妹项目的 capability 模式与采纳决策）与
 [`runtime/dsh/upstream/README.md`](../../runtime/dsh/upstream/README.md)
@@ -237,7 +237,7 @@ llm-adapter 的 provider seam 触达 OS**；组合靠把 provider 挂到 context
 ### 3.1 规则
 
 D9 + D6：承载产品的上游包**逐字**供应商化（钉住 tarball + sha256，
-`runtime/dsh/vendor/ensure-dsh.sh`），经适配器插件驱动；自研代码只做
+`external/ensure-dsh.sh`），经适配器插件驱动；自研代码只做
 胶水。平台差异活在**上游契约之下**——绝不在其上做 `hostType` 分支。
 
 ### 3.2 供应商化闭包

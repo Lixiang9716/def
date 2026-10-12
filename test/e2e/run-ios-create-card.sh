@@ -189,8 +189,8 @@ if [ "$SKIP_BUILD" = "1" ]; then
 else
   command -v xcodegen >/dev/null 2>&1 || die "xcodegen not on PATH (needed by hosts/ios/gen.sh) — brew install xcodegen"
   log "2/7 materializing the vendored runtime + generating the project"
-  sh runtime/dsh/vendor/ensure.sh || die "runtime/dsh/vendor/ensure.sh failed (quickjs-ng/wasm3/zstd)"
-  sh runtime/dsh/vendor/ensure-dsh.sh || die "runtime/dsh/vendor/ensure-dsh.sh failed (upstream dsh + npm closure)"
+  sh external/ensure.sh || die "external/ensure.sh failed (quickjs-ng/wasm3/zstd)"
+  sh external/ensure-dsh.sh || die "external/ensure-dsh.sh failed (upstream dsh + npm closure)"
   sh hosts/ios/gen.sh || die "hosts/ios/gen.sh failed (bundle header + guest rootfs + xcodegen)"
   log "2/7 building DSHHost (Debug)"
   if ! xcodebuild build -project hosts/ios/DSHHost.xcodeproj -scheme DSHHost \

@@ -130,7 +130,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "create.card",
   "launch": "emulator, --ez dsh.createcard true + --es dsh.script.approval approve (Debug)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "create-card", "verdict": "verdict-create-card.json", "pass": true }
   ],

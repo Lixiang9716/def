@@ -27,8 +27,8 @@ MOCK_WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure: pinned + sha256-verified (includes the
 #    session-persistence family this leg vendors).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -129,7 +129,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
 {
   "host": "$(uname -s | tr '[:upper:]' '[:lower:]')-cli ($(uname -sr) $(uname -m))",
   "engine": "quickjs-ng",
-  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "scenario": "session.persistence",
   "proves": [
     "the gated boot row (options.sessionPersistence, default off) mounts the vendored JSONL backend under the sessionPersistence service key before the agent loop",

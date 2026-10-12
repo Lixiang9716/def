@@ -29,8 +29,8 @@ ART_DIR="$ROOT/runtime/dsh/artifacts/macos-cli-llm-piai-live"
 TARGET="https://api.anthropic.com"
 
 # 1. vendored upstream closure + host build (idempotent).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 [ -x build/dsh-cli ] || sh host/build.sh
 mkdir -p "$ART_DIR"
 rm -f "$ART_DIR"/verdict*.json
@@ -129,7 +129,7 @@ const receipt = {
   host: `${process.platform}-cli (${process.platform} ${process.arch})`,
   engine: 'quickjs-ng',
   engineVersion: '0.17.0',
-  upstream: '@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)',
+  upstream: '@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)',
   scenario: 'llm.piai-live',
   plane,
   events: Number(process.env.PIAI_EVENTS),

@@ -5,8 +5,8 @@
 # without xcodegen. The pre-build phase re-runs Tools/gen_bundle_header.py
 # whenever a runtime/dsh JS input changes, keeping the embedded bundle
 # byte-identical to the checkout. quickjs-ng sources come from
-# runtime/dsh/vendor/quickjs-ng/0.17.0 — materialize them first with
-# runtime/dsh/vendor/ensure.sh.
+# external/quickjs-ng/0.17.0 — materialize them first with
+# external/ensure.sh.
 name: DSHHost
 options:
   bundleIdPrefix: org.dsh
@@ -19,13 +19,13 @@ settings:
     SWIFT_VERSION: "5.0"
     HEADER_SEARCH_PATHS:
       - "$(SRCROOT)/../../runtime/dsh/host"
-      - "$(SRCROOT)/../../runtime/dsh/vendor/quickjs-ng/0.17.0"
+      - "$(SRCROOT)/../../external/quickjs-ng/0.17.0"
       # The wasm3 interpreter's own headers (dsh_wasm.c includes them by
       # quoted name from a different directory than the vendored sources).
-      - "$(SRCROOT)/../../runtime/dsh/vendor/wasm3/0.9.0/source"
+      - "$(SRCROOT)/../../external/wasm3/0.9.0/source"
       # zstd headers (dsh_runtime_host.c intrinsics include them)
-      - "$(SRCROOT)/../../runtime/dsh/vendor/zstd/1.5.7"
-      - "$(SRCROOT)/../../runtime/dsh/vendor/zstd/1.5.7/common"
+      - "$(SRCROOT)/../../external/zstd/1.5.7"
+      - "$(SRCROOT)/../../external/zstd/1.5.7/common"
       - "$(SRCROOT)/App/Generated"
     # zstd's x86_64 fast loop lives in huf_decompress_amd64.S, which the pin
     # does not carry: an x86_64 slice (Intel-Mac simulator) would hit undefined
@@ -50,53 +50,53 @@ targets:
       # unconditionally, so leaving it out is a link error, not a
       # negotiation (the gateway still decides what gets SERVED).
       - path: ../../runtime/dsh/host/dsh_socket.c
-      - path: ../../runtime/dsh/vendor/quickjs-ng/0.17.0/dtoa.c
-      - path: ../../runtime/dsh/vendor/quickjs-ng/0.17.0/libregexp.c
-      - path: ../../runtime/dsh/vendor/quickjs-ng/0.17.0/libunicode.c
-      - path: ../../runtime/dsh/vendor/quickjs-ng/0.17.0/quickjs.c
+      - path: ../../external/quickjs-ng/0.17.0/dtoa.c
+      - path: ../../external/quickjs-ng/0.17.0/libregexp.c
+      - path: ../../external/quickjs-ng/0.17.0/libunicode.c
+      - path: ../../external/quickjs-ng/0.17.0/quickjs.c
       # The WebAssembly interpreter (contract v1.2.0 `wasmRun`): vendored +
-      # sha256-pinned by runtime/dsh/vendor/ensure-wasm3.sh, compiled from
+      # sha256-pinned by external/ensure-wasm3.sh, compiled from
       # the same vendor tree the quickjs sources come from. Only the core is
       # linked; the WASI backends stay out (the app's boundary is our own
       # imported functions, not WASI's descriptor table).
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_core.c
+      - path: ../../external/wasm3/0.9.0/source/m3_core.c
       # zstd 1.5.7 (BSD-3, single-thread) — the node:zlib zstd face, pinned by
-      # runtime/dsh/vendor/ensure-zstd.sh
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/debug.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/entropy_common.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/error_private.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/fse_decompress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/pool.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/threading.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/xxhash.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/common/zstd_common.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/fse_compress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/hist.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/huf_compress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_compress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_compress_literals.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_compress_sequences.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_compress_superblock.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_double_fast.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_fast.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_lazy.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_ldm.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_opt.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/compress/zstd_preSplit.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/decompress/huf_decompress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/decompress/zstd_ddict.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/decompress/zstd_decompress.c
-      - path: ../../runtime/dsh/vendor/zstd/1.5.7/decompress/zstd_decompress_block.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_env.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_parse.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_compile.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_code.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_module.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_function.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_bind.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_info.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_exec.c
-      - path: ../../runtime/dsh/vendor/wasm3/0.9.0/source/m3_validate.c
+      # external/ensure-zstd.sh
+      - path: ../../external/zstd/1.5.7/common/debug.c
+      - path: ../../external/zstd/1.5.7/common/entropy_common.c
+      - path: ../../external/zstd/1.5.7/common/error_private.c
+      - path: ../../external/zstd/1.5.7/common/fse_decompress.c
+      - path: ../../external/zstd/1.5.7/common/pool.c
+      - path: ../../external/zstd/1.5.7/common/threading.c
+      - path: ../../external/zstd/1.5.7/common/xxhash.c
+      - path: ../../external/zstd/1.5.7/common/zstd_common.c
+      - path: ../../external/zstd/1.5.7/compress/fse_compress.c
+      - path: ../../external/zstd/1.5.7/compress/hist.c
+      - path: ../../external/zstd/1.5.7/compress/huf_compress.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_compress.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_compress_literals.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_compress_sequences.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_compress_superblock.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_double_fast.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_fast.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_lazy.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_ldm.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_opt.c
+      - path: ../../external/zstd/1.5.7/compress/zstd_preSplit.c
+      - path: ../../external/zstd/1.5.7/decompress/huf_decompress.c
+      - path: ../../external/zstd/1.5.7/decompress/zstd_ddict.c
+      - path: ../../external/zstd/1.5.7/decompress/zstd_decompress.c
+      - path: ../../external/zstd/1.5.7/decompress/zstd_decompress_block.c
+      - path: ../../external/wasm3/0.9.0/source/m3_env.c
+      - path: ../../external/wasm3/0.9.0/source/m3_parse.c
+      - path: ../../external/wasm3/0.9.0/source/m3_compile.c
+      - path: ../../external/wasm3/0.9.0/source/m3_code.c
+      - path: ../../external/wasm3/0.9.0/source/m3_module.c
+      - path: ../../external/wasm3/0.9.0/source/m3_function.c
+      - path: ../../external/wasm3/0.9.0/source/m3_bind.c
+      - path: ../../external/wasm3/0.9.0/source/m3_info.c
+      - path: ../../external/wasm3/0.9.0/source/m3_exec.c
+      - path: ../../external/wasm3/0.9.0/source/m3_validate.c
       - path: ../../runtime/dsh/host/dsh_wasm.c
     preBuildScripts:
       - name: GenerateSpikeBundle
@@ -123,7 +123,7 @@ targets:
           - ../../runtime/dsh/web/carrier-page.js
           - ../../runtime/dsh/llm.js
           - ../../runtime/dsh/scenario/llm-live-stream.js
-          - ../../runtime/dsh/vendor/dsh/util-crypto@0.1.6-alpha.2/lib/index.js
+          - ../../external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js
           - ../../system-plugins/dsh-fs/manifest.json
           - ../../system-plugins/dsh-fs/index.js
           - ../../system-plugins/dsh-subprocess-quickjs/manifest.json
@@ -148,9 +148,9 @@ targets:
       - name: FetchIshRootfs
         basedOnDependencyAnalysis: false
         script: |
-          "$SRCROOT/../../runtime/dsh/vendor/ensure-ish-rootfs.sh" "$SRCROOT/App/Generated"
+          "$SRCROOT/../../external/ensure-ish-rootfs.sh" "$SRCROOT/App/Generated"
         inputFiles:
-          - ../../runtime/dsh/vendor/ensure-ish-rootfs.sh
+          - ../../external/ensure-ish-rootfs.sh
         outputFiles:
           - App/Generated/ish-rootfs.tar.gz
       # The in-process Linux guest (contract v1.3.0 `ishRun`): the vendored
@@ -176,7 +176,7 @@ targets:
             echo "error: cmake not found — install CMake (brew install cmake)"; exit 1; }
           set -e
           REPO="$SRCROOT/../.."
-          "$REPO/runtime/dsh/vendor/ensure-ish.sh"
+          "$REPO/external/ensure-ish.sh"
           # The guest vdso is a GUEST aarch64 elf, so it is identical on every
           # platform: a HOST configure builds it once and the iOS build reuses
           # it. The zero-byte placeholder a cross-compile would write is not an

@@ -163,16 +163,16 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            runtime/dsh/vendor/quickjs-ng
-            runtime/dsh/vendor/dsh
-            runtime/dsh/vendor/npm
-          key: vendor-${{ runner.os }}-${{ hashFiles('runtime/dsh/vendor/ensure.sh', 'runtime/dsh/vendor/ensure-dsh.sh') }}
+            external/quickjs-ng
+            external/dsh
+            external/npm
+          key: vendor-${{ runner.os }}-${{ hashFiles('external/ensure.sh', 'external/ensure-dsh.sh') }}
 
       - name: Vendor quickjs-ng + the pinned upstream DSH closure
         run: |
           set -euo pipefail
-          runtime/dsh/vendor/ensure.sh
-          runtime/dsh/vendor/ensure-dsh.sh
+          external/ensure.sh
+          external/ensure-dsh.sh
 
       # The upstream parity differential on the macOS CLI: the reference leg
       # under plain Node + the port leg inside quickjs, each against its OWN

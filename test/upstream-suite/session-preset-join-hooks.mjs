@@ -20,7 +20,7 @@
  *   3. dsh:util-crypto (the legacy virtual specifier)
  *   4. node:* — shims for OUR layer, REAL for vendored code (but node:url,
  *      which needs the /vendor/-aware adapter), REAL for the driver
- *   5. bare packages — runtime/dsh/vendor/node_modules (subpath-aware)
+ *   5. bare packages — external/node_modules (subpath-aware)
  * plus a load hook that evaluates vendored esbuild-CJS faces against the
  * bridge scope's globalThis.exports/module (the host loader's CJS eval
  * semantics; without it the turndown-plugin-gfm bridge reads an empty face).
@@ -32,7 +32,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = pathResolve(HERE, '../..');
 const SPIKE = pathResolve(ROOT, 'runtime/dsh');
-const NM = pathResolve(SPIKE, 'vendor/node_modules');
+const NM = pathResolve(SPIKE, '../../external/node_modules');
 const SHIMS = pathResolve(SPIKE, 'upstream/shims');
 const REG_DIR = pathResolve(HERE, '.runtime-modules');
 
@@ -128,7 +128,10 @@ const resolveNodeBuiltin = (specifier, parent, context, nextResolve) => {
   const inRegistry = parent.startsWith(regPrefix);
   const inRuntime = parent.includes('/runtime/dsh/');
   if (!inRegistry && !inRuntime) return nextResolve(specifier, context);
-  const inVendor = parent.includes('/runtime/dsh/vendor/');
+  // Vendored bytes spell two ways: the repo-root external/ tree, and the
+  // runtime/dsh/vendor compat symlink external/ensure-dsh.sh lays down for
+  // the bundle-layout contract (the C host reads <base>/vendor/).
+  const inVendor = parent.includes('/external/') || parent.includes('/runtime/dsh/vendor/');
   if (inVendor && specifier !== 'node:url') return nextResolve(specifier, context);
   if (inVendor) {
     return { url: pathToFileURL(pathResolve(HERE, 'session-preset-join-url-vfs.mjs')).href, shortCircuit: true };
@@ -159,7 +162,7 @@ export async function resolve(specifier, context, nextResolve) {
   // 3. the legacy dsh: virtual specifier
   if (specifier.startsWith('dsh:')) {
     if (specifier === 'dsh:util-crypto') {
-      const hit = pathResolve(SPIKE, 'vendor/dsh/util-crypto@0.1.6-alpha.2/lib/index.js');
+      const hit = pathResolve(SPIKE, '../../external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js');
       if (existsSync(hit)) {
         return { url: pathToFileURL(hit).href, shortCircuit: true };
       }
@@ -178,7 +181,7 @@ export async function resolve(specifier, context, nextResolve) {
     && specifier.endsWith('gateway.js')) {
     return { url: pathToFileURL(pathResolve(HERE, 'session-preset-join-gateway-node.mjs')).href, shortCircuit: true };
   }
-  // 6. bare packages -> vendor/node_modules (subpath-aware)
+  // 6. bare packages -> ../../external/node_modules (subpath-aware)
   if (!/^(node:|\.|\/|file:|data:)/.test(specifier)) {
     const hit = resolveBare(specifier);
     if (hit !== undefined) return { url: pathToFileURL(hit).href, shortCircuit: true };
@@ -191,8 +194,8 @@ export async function resolve(specifier, context, nextResolve) {
 // the host loader's CJS eval semantics. Prepending the two bindings makes
 // the free `exports` identifier write the object the bridge then reads.
 export async function load(url, context, nextLoad) {
-  const marker = '/runtime/dsh/vendor/';
-  if (url.includes(marker) && url.endsWith('.cjs.js')) {
+  const vendored = url.includes('/external/') || url.includes('/runtime/dsh/vendor/');
+  if (vendored && url.endsWith('.cjs.js')) {
     const file = fileURLToPath(url);
     let source = readFileSync(file, 'utf8');
     if (/\b(exports|module)\b/.test(source.slice(0, 400))) {

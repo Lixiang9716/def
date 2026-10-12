@@ -45,16 +45,16 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            runtime/dsh/vendor/quickjs-ng
-            runtime/dsh/vendor/dsh
-            runtime/dsh/vendor/npm
-          key: vendor-gov-${{ hashFiles('runtime/dsh/vendor/ensure.sh', 'runtime/dsh/vendor/ensure-dsh.sh') }}
+            external/quickjs-ng
+            external/dsh
+            external/npm
+          key: vendor-gov-${{ hashFiles('external/ensure.sh', 'external/ensure-dsh.sh') }}
       - name: Materialize the vendored closure
         # Idempotent with the cache above; without it the closures gate (and
         # its iOS regen leg) fail loud on absent sources instead of verifying.
         run: |
-          runtime/dsh/vendor/ensure.sh
-          runtime/dsh/vendor/ensure-dsh.sh
+          external/ensure.sh
+          external/ensure-dsh.sh
       - name: Materialize the harmony dsh closure
         # The bundle-files gate (#57) walks hosts/harmony's rawfile/dsh ON
         # DISK — its documented contract is "the vendor script materializes it
@@ -146,14 +146,14 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            runtime/dsh/vendor/quickjs-ng
-            runtime/dsh/vendor/zstd
-            runtime/dsh/vendor/wasm3
-            runtime/dsh/vendor/ish
-          key: qjs-boot-arm64-${{ hashFiles('runtime/dsh/vendor/ensure.sh', 'runtime/dsh/vendor/ensure-ish.sh') }}
+            external/quickjs-ng
+            external/zstd
+            external/wasm3
+            external/ish
+          key: qjs-boot-arm64-${{ hashFiles('external/ensure.sh', 'external/ensure-ish.sh') }}
       - name: Materialize the engine + ish trees
         run: |
-          runtime/dsh/vendor/ensure.sh
-          runtime/dsh/vendor/ensure-ish.sh
+          external/ensure.sh
+          external/ensure-ish.sh
       - name: Run the quickjs-boot-parse gate
         run: gov run --gate quickjs-boot-parse

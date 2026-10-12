@@ -38,7 +38,7 @@ The build system expresses exactly that:
 
 1. **sync** re-stages each host's *committed copy* of the canonical closure
    (byte-identical; the vendored upstream is pinned and sha256-verified by
-   `runtime/dsh/vendor/ensure-dsh.sh`);
+   `external/ensure-dsh.sh`);
 2. **compile** runs the platform's own toolchain (Xcode / Gradle-NDK / hvigor
    NAPI — each host compiles the same C host through its own build system);
 3. **test** runs the platform's log-verified e2e legs (assertions on

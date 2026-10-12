@@ -45,7 +45,7 @@ export async function resolve(specifier, context, nextResolve) {
     // The absolute /vendor/... roots the quickjs host serves (the vendored
     // npm trees some shims re-export from) — the same bytes, from the tree.
     if (specifier.startsWith('/vendor/')) {
-      return { url: toFileURL(join(TREE, 'vendor', specifier.slice('/vendor/'.length))), shortCircuit: true };
+      return { url: toFileURL(join(TREE, '..', 'external', specifier.slice('/vendor/'.length))), shortCircuit: true };
     }
   }
   // The `dsh:` virtual modules the quickjs host injects (gateway.js links

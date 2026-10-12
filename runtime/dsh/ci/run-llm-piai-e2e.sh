@@ -35,10 +35,10 @@ mkdir -p "$ROLLUP"
 
 # ---- prerequisites (environment/pre-heat first; named, fail fast) ---------
 echo "[preheat] vendored upstream closure (ensure + ensure-dsh)" >&2
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh > /dev/null
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh > /dev/null
 echo "[preheat] vendored iSH-AArch64 userland (the C host's configure demand)" >&2
-sh vendor/ensure-ish.sh > /dev/null
+sh ../../external/ensure-ish.sh > /dev/null
 echo "[preheat] host binary (built only when missing)" >&2
 [ -x build/dsh-cli ] || sh host/build.sh
 

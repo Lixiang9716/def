@@ -29,8 +29,8 @@ ART_DIR="$ROOT/runtime/dsh/artifacts/macos-cli-settings-surfaces"
 # 1. vendored upstream closure: pinned + sha256-verified (incl. the
 #    @deepseek-ai/dsh-client-modules package and the agent-presets closure
 #    the settings plane mounts).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh
@@ -73,7 +73,7 @@ cat > "$ART_DIR/receipt.json" <<EOF
   "engineVersion": "0.17.0",
   "quickjsTag": "v0.17.0",
   "quickjsCommit": "6d46d07d04041b40f4f49eaa7fdebe44c314c699",
-  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-client-modules + dsh-agent-presets (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh) + the W-SHELL application tier (presentation/official-web/client-bundles)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 incl. dsh-client-modules + dsh-agent-presets (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh) + the W-SHELL application tier (presentation/official-web/client-bundles)",
   "kernel": "@deepseek-ai/cordis@4.0.2",
   "scenario": "settings.surfaces",
   "proves": [

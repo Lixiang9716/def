@@ -162,7 +162,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "card.player",
   "launch": "dsh_phone emulator, --ps dsh.e2e.leg card.player (Debug)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "card-player-harmony", "verdict": "verdict-card-player-harmony.json", "pass": true }
   ],

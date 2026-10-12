@@ -1,7 +1,7 @@
 /* dsh_ish_verify.h — integrity at every mount (internal to the dsh_ish seam).
  *
  * The guest rootfs tarball is sha256-pinned at FETCH time
- * (runtime/dsh/vendor/ensure-ish-rootfs.sh) and the tree it becomes is
+ * (external/ensure-ish-rootfs.sh) and the tree it becomes is
  * sealed at STAGING time; this module re-verifies the staged bytes at EVERY
  * boot, so a tampered or partially-written tree refuses the boot instead of
  * becoming the guest root. The pattern (and the argument for it) is adoption

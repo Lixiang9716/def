@@ -25,7 +25,7 @@ val execBash: String = when {
 // POSIX spelling for the bash argument: a Windows absolutePath carries
 // backslashes that bash consumes as escapes (`D:workspacedsh-mobile…`);
 // forward slashes reach the shell intact on every host.
-val ensureSpikeScript = layout.projectDirectory.file("../../../runtime/dsh/vendor/ensure.sh")
+val ensureSpikeScript = layout.projectDirectory.file("../../../external/ensure.sh")
 val ensureDshVendor = tasks.register<Exec>("ensureDshVendor") {
     commandLine(execBash, ensureSpikeScript.asFile.absolutePath.replace('\\', '/'))
 }
@@ -44,7 +44,7 @@ val ensureDshVendor = tasks.register<Exec>("ensureDshVendor") {
 val officialDistDir = rootProject.file("../../presentation/official-web/dist")
 val clientBundlesDir = rootProject.file("../../presentation/official-web/client-bundles")
 val vendoredBootstrap = rootProject.file(
-    "../../runtime/dsh/vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2",
+    "../../external/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2",
 )
 val dshAssets = layout.buildDirectory.dir("generated/dsh-assets")
 

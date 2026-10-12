@@ -14,7 +14,7 @@ import yaml from 'js-yaml';
 // gen-presets-seed.py are the same rule four times).
 //
 // The verdict rule is the vendored AgentPresets discovery's
-// (runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2/lib/index.js):
+// (external/dsh/agent-presets@0.1.6-alpha.2/lib/index.js):
 //   - a row with a truthy `disabled` is not part of the composition — a
 //     `!!js` expression arrives as an OBJECT there, so it is always truthy
 //     and skips the row; these docs are pre-mapped `!!js` → `!!str` so every

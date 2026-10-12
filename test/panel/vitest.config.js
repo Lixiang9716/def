@@ -111,7 +111,7 @@ export default defineConfig({
         // The loader's dsh-root-relative spelling ('/vendor/npm/…' in
         // node-zlib.js and friends) — '/' IS the dsh root on device.
         find: /^\/vendor\//,
-        replacement: fileURLToPath(new URL('../../runtime/dsh/vendor/', import.meta.url)),
+        replacement: fileURLToPath(new URL('../../external/', import.meta.url)),
       },
       {
         // The loader's OTHER dsh-root-relative spelling ('/upstream/…' —

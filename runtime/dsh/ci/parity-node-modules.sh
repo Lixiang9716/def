@@ -6,10 +6,10 @@
 #
 # Node resolves package specifiers from the REAL path of the importing file
 # (symlinks are realpath'd by default), so a node_modules beside the driver
-# never satisfies imports made from inside vendor/dsh/*/. The layout that
+# never satisfies imports made from inside ../../external/dsh/*/. The layout that
 # works is one on the real ancestor chain shared by every vendored package:
-# runtime/dsh/vendor/node_modules/ — reachable from vendor/dsh/<pkg>/lib
-# and vendor/npm/<pkg>/lib alike.
+# external/node_modules/ — reachable from ../../external/dsh/<pkg>/lib
+# and ../../external/npm/<pkg>/lib alike.
 #
 # One deliberate substitute: @deepseek-ai/dsh-session-persistence is served
 # under quickjs by the errors-only linkage shim
@@ -25,7 +25,7 @@
 # get every test face linked.
 set -eu
 SPIKE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VENDOR="$SPIKE_ROOT/vendor"
+VENDOR="$SPIKE_ROOT/../../external"
 NM="$VENDOR/node_modules"
 SCOPE="$NM/@deepseek-ai"
 
@@ -64,7 +64,7 @@ if [ -d "$VENDOR/dsh" ]; then
         ln -sfn "$dir" "$link"
     done
 else
-    echo "parity node_modules: vendor/dsh absent (tests-only materialization) — the closure face is not linked; run ensure-dsh.sh for the parity spine" >&2
+    echo "parity node_modules: ../../external/dsh absent (tests-only materialization) — the closure face is not linked; run ensure-dsh.sh for the parity spine" >&2
 fi
 
 # The vendored npm dependencies (cordis and friends), same treatment. Each of
@@ -167,7 +167,7 @@ TESTS="$VENDOR/dsh-tests@dsh-v0.1.6-alpha.2"
 # layout links — ensure it here rather than failing fast, the same
 # self-materialization the legs already do for the runtime closure (T-0218
 # item 2: the clean-tree sequence carries its own provisioning).
-[ -d "$TESTS" ] || sh "$SPIKE_ROOT/vendor/ensure-dsh-tests.sh" >&2
+[ -d "$TESTS" ] || sh "$SPIKE_ROOT/../../external/ensure-dsh-tests.sh" >&2
 [ -d "$TESTS" ] || { echo "parity node_modules: $TESTS still absent — ensure-dsh-tests.sh failed" >&2; exit 1; }
 # chokidar per-consumer majors + per-major readdirp (chokidar 4 → readdirp 4,
 # chokidar 5 → readdirp 5). Both the vendored closure faces (whose lib the
@@ -178,23 +178,23 @@ stage_nested "$TESTS/packages/settings/settings-file/node_modules" chokidar "$VE
 stage_nested "$TESTS/packages/credentials/credentials-local/node_modules" chokidar "$VENDOR/npm/chokidar@4.0.3"
 stage_nested "$TESTS/packages/skill/skill-filesystem/node_modules" chokidar "$VENDOR/npm/chokidar@5.0.0"
 stage_nested "$TESTS/packages/experimental/webworker-runtime/node_modules" chokidar "$VENDOR/npm/chokidar@5.0.0"
-# The three seats whose CONSUMER lives in vendor/dsh/ exist only when
+# The three seats whose CONSUMER lives in ../../external/dsh/ exist only when
 # ensure-dsh.sh ran; a tests-only materialization has no closure face to
 # stage into — named, not silently skipped, and no dangling claim (#328).
 if [ -d "$VENDOR/dsh/dsh-settings-file@0.1.6-alpha.2" ]; then
     stage_nested "$VENDOR/dsh/dsh-settings-file@0.1.6-alpha.2/node_modules" chokidar "$VENDOR/npm/chokidar@4.0.3"
 else
-    echo "parity node_modules: vendor/dsh/dsh-settings-file@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
+    echo "parity node_modules: ../../external/dsh/dsh-settings-file@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
 fi
 if [ -d "$VENDOR/dsh/dsh-credentials-local@0.1.6-alpha.2" ]; then
     stage_nested "$VENDOR/dsh/dsh-credentials-local@0.1.6-alpha.2/node_modules" chokidar "$VENDOR/npm/chokidar@4.0.3"
 else
-    echo "parity node_modules: vendor/dsh/dsh-credentials-local@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
+    echo "parity node_modules: ../../external/dsh/dsh-credentials-local@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
 fi
 if [ -d "$VENDOR/dsh/skill-filesystem@0.1.6-alpha.2" ]; then
     stage_nested "$VENDOR/dsh/skill-filesystem@0.1.6-alpha.2/node_modules" chokidar "$VENDOR/npm/chokidar@5.0.0"
 else
-    echo "parity node_modules: vendor/dsh/skill-filesystem@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
+    echo "parity node_modules: ../../external/dsh/skill-filesystem@0.1.6-alpha.2 absent — its chokidar seat is not staged" >&2
 fi
 stage_nested "$VENDOR/npm/chokidar@4.0.3/node_modules" readdirp "$VENDOR/npm/readdirp@4.1.2"
 stage_nested "$VENDOR/npm/chokidar@5.0.0/node_modules" readdirp "$VENDOR/npm/readdirp@5.0.0"
@@ -228,6 +228,6 @@ fi  # --parity-only guard around the test-face staging
 
 # The driver itself lives at runtime/dsh/ci/ — OUTSIDE the vendor tree —
 # so its own specifier resolution needs one more link on ITS ancestor chain.
-ln -sfn vendor/node_modules "$SPIKE_ROOT/node_modules"
+ln -sfn ../../external/node_modules "$SPIKE_ROOT/node_modules"
 
 echo "parity node_modules layout ready: $NM (+ $SPIKE_ROOT/node_modules link)"

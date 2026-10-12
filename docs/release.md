@@ -270,7 +270,7 @@ drive (`officialweb.mount`) can serve it.
 # 1. materialize the three untracked trees locally (manifest-verified)
 test/e2e/ensure-official-dist.sh
 test/e2e/ensure-client-bundles.sh
-runtime/dsh/vendor/ensure-dsh.sh
+external/ensure-dsh.sh
 
 # 2. stage them into the app container
 #    simulator:

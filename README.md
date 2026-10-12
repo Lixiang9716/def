@@ -33,7 +33,7 @@ A **mobile host** for the DSH (DeepSeek Harness) ecosystem. Built on the communi
 The table above records what each milestone proved on its own evidence. Since decision
 [D9](docs/decisions.md), the Harness layer itself is no longer an in-house reimplementation:
 the upstream DSH runtime runs **verbatim** on quickjs — 26 packages pinned and sha256-verified
-by `runtime/dsh/vendor/ensure-dsh.sh` (21 upstream DSH packages at 0.1.6-alpha.2 + 5 pinned
+by `external/ensure-dsh.sh` (21 upstream DSH packages at 0.1.6-alpha.2 + 5 pinned
 npm deps), with in-house code reduced to glue (shims, adapters, the contract carrier). Live
 through the carrier on iOS / Android / HarmonyOS: the official client-modules web boot, the
 official app shell (the 58-package application tier, #61), real `session.list`/journal, and

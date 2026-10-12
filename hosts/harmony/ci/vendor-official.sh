@@ -9,7 +9,7 @@
 # ensure scripts — the tracked provenance record):
 #   test/e2e/ensure-official-dist.sh  → presentation/official-web/dist
 #   test/e2e/ensure-client-bundles.sh → presentation/official-web/client-bundles/npm
-#   runtime/dsh/vendor/ensure-dsh.sh → runtime/dsh/vendor/npm (the pinned
+#   external/ensure-dsh.sh → external/npm (the pinned
 #     @deepseek-ai/dsh-client-modules wins for the bootstrap package, the
 #     same precedence test/e2e/run-ios-official-web-mount.sh applies on iOS)
 #
@@ -78,7 +78,7 @@ if [ "$MODE" = "suite" ]; then
         cp "$CORPUS/$f" "$RAW/upstream-tests/$f"
         echo "upstream-tests/$f" >> "$RAW/upstream-tests/__files.txt"
     done
-    for pkg_dir in runtime/dsh/vendor/dsh/*@0.1.6-alpha.2; do
+    for pkg_dir in external/dsh/*@0.1.6-alpha.2; do
         pkg="$(basename "$pkg_dir")"
         [ -d "$pkg_dir/lib" ] || continue
         mkdir -p "$RAW/vendor/dsh/$pkg"
@@ -98,7 +98,7 @@ if [ "$MODE" = "suite" ]; then
         cp "$pkg_dir/package.json" "$RAW/vendor/dsh/$pkg/package.json" 2>/dev/null || true
     done
     # package.json rows for freshly staged packages (the loader may read them)
-    for pkg_dir in runtime/dsh/vendor/dsh/*@0.1.6-alpha.2; do
+    for pkg_dir in external/dsh/*@0.1.6-alpha.2; do
         pkg="$(basename "$pkg_dir")"
         if [ -f "$RAW/vendor/dsh/$pkg/package.json" ] && ! grep -q "^vendor/dsh/$pkg/package.json$" "$RAW/upstream-tests/__files.txt"; then
             echo "vendor/dsh/$pkg/package.json" >> "$RAW/upstream-tests/__files.txt"
@@ -135,7 +135,7 @@ if [ "$MODE" = "suite" ]; then
             done
     done
     mkdir -p "$RAW/vendor/npm/fflate@0.8.2/lib"
-    cp runtime/dsh/vendor/npm/fflate@0.8.2/lib/index.cjs "$RAW/vendor/npm/fflate@0.8.2/lib/index.cjs"
+    cp external/npm/fflate@0.8.2/lib/index.cjs "$RAW/vendor/npm/fflate@0.8.2/lib/index.cjs"
     echo "vendor/npm/fflate@0.8.2/lib/index.cjs" >> "$RAW/upstream-tests/__files.txt"
     echo "vendor-official: suite extras staged ($(wc -l < "$RAW/upstream-tests/__files.txt" | tr -d ' ') files listed)"
     exit 0
@@ -144,8 +144,8 @@ fi
 if [ "$MODE" != "full" ]; then
     # The closure's vendor sources are the local materialized pin trees —
     # untracked by design (D6), so name the remedy when they are absent.
-    [ -d runtime/dsh/vendor/dsh ] || {
-        echo "::error::vendor-official: runtime/dsh/vendor/dsh missing — run runtime/dsh/vendor/ensure-dsh.sh first" >&2
+    [ -d external/dsh ] || {
+        echo "::error::vendor-official: external/dsh missing — run external/ensure-dsh.sh first" >&2
         exit 1
     }
 fi
@@ -153,11 +153,11 @@ if [ "$MODE" = "full" ]; then
     echo "vendor-official: ensuring the source trees"
     test/e2e/ensure-official-dist.sh
     test/e2e/ensure-client-bundles.sh
-    runtime/dsh/vendor/ensure-dsh.sh > /dev/null
+    external/ensure-dsh.sh > /dev/null
 fi
 
 PIN=dsh-client-modules@0.1.6-alpha.2
-VENDORED="runtime/dsh/vendor/npm/@deepseek-ai/$PIN"
+VENDORED="external/npm/@deepseek-ai/$PIN"
 [ -f "$VENDORED/lib/client.js" ] || {
     echo "::error::vendored bootstrap package missing ($VENDORED)" >&2
     exit 1
@@ -713,10 +713,10 @@ fi
 stage_npm_face_at_dsh_path() {
     face=$1
     echo "vendor-official: staging vendor/dsh/$face@0.1.6-alpha.2 (npm-face bytes at the dsh rel path)"
-    src="runtime/dsh/vendor/npm/@deepseek-ai/dsh-$face@0.1.6-alpha.2"
+    src="external/npm/@deepseek-ai/dsh-$face@0.1.6-alpha.2"
     dst="$RAW/vendor/dsh/$face@0.1.6-alpha.2"
     [ -d "$src" ] || {
-        echo "::error::vendor-official: the dsh-$face npm pin is absent — runtime/dsh/vendor/ensure-dsh.sh materializes it" >&2
+        echo "::error::vendor-official: the dsh-$face npm pin is absent — external/ensure-dsh.sh materializes it" >&2
         exit 1
     }
     mkdir -p "$dst/lib"
@@ -763,9 +763,9 @@ if [ "$MODE" != "check" ]; then
     stage_npm_face_at_dsh_path subprocess
     stage_npm_face_at_dsh_path http-proxy
     mkdir -p "$RAW/vendor/dsh/dsh-web@0.1.6-alpha.2/lib"
-    cp "runtime/dsh/vendor/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/package.json" \
+    cp "external/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/package.json" \
        "$RAW/vendor/dsh/dsh-web@0.1.6-alpha.2/package.json"
-    cp "runtime/dsh/vendor/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/lib/index.js" \
+    cp "external/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/lib/index.js" \
        "$RAW/vendor/dsh/dsh-web@0.1.6-alpha.2/lib/index.js"
     # The MOBILE preset (the deployment default AGENT_PRESETS_DEFAULT joins;
     # T-0048's tail item): our outboard composition doc staged INTO the
@@ -799,7 +799,7 @@ NOBLE_DIR="vendor/npm/@noble/hashes@2.3.0"
 # ensure, the spine ensure didn't materialize them, and 217 BUNDLE_FILES
 # rows went red on CI while the local full-mode sync looked green).
 if [ "$MODE" != "check" ] && [ ! -d "runtime/dsh/$NOBLE_DIR" ]; then
-    echo "::error::vendor-official: $NOBLE_DIR absent — runtime/dsh/vendor/ensure.sh materializes the pin" >&2
+    echo "::error::vendor-official: $NOBLE_DIR absent — external/ensure.sh materializes the pin" >&2
     exit 1
 fi
 if [ "$MODE" != "check" ]; then
@@ -815,7 +815,7 @@ fi
 # (js+json). BUNDLE_FILES rows in Index.ets must mirror this tree.
 PIAI_DIR="vendor/npm/@earendil-works/pi-ai@0.85.1"
 if [ "$MODE" != "check" ] && [ ! -d "runtime/dsh/$PIAI_DIR" ]; then
-    echo "::error::vendor-official: $PIAI_DIR absent — runtime/dsh/vendor/ensure.sh materializes the pin" >&2
+    echo "::error::vendor-official: $PIAI_DIR absent — external/ensure.sh materializes the pin" >&2
     exit 1
 fi
 if [ "$MODE" != "check" ]; then
@@ -942,7 +942,7 @@ done
 # The WEB faces' block twin (the stage block above): the same tracked-check
 # rule — an untracked staged file SKIPs, a drifted tracked one fails the gate.
 for face in tool-web plugin-manager jobs-local shell shell-env subprocess http-proxy; do
-    src="runtime/dsh/vendor/npm/@deepseek-ai/dsh-$face@0.1.6-alpha.2"
+    src="external/npm/@deepseek-ai/dsh-$face@0.1.6-alpha.2"
     (cd "$src" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
     while IFS= read -r f; do
         [ -f "$src/$f" ] || continue
@@ -960,7 +960,7 @@ for f in package.json lib/index.js; do
         echo skip >> "$SKIPS_FILE"
         continue
     fi
-    cmp -s "runtime/dsh/vendor/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/$f" "$RAW/$rel" ||
+    cmp -s "external/npm/@deepseek-ai/dsh-web@0.1.6-alpha.2/$f" "$RAW/$rel" ||
         echo "$rel" >> "$DRIFT"
 done
 # The MOBILE preset doc's block twin (the stage block above): the same

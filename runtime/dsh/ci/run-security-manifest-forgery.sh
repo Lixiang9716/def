@@ -34,9 +34,9 @@ SEED_1="a7b0c9d1e3f24506718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8"
 WAIT_DEADLINE_SECONDS=15
 
 # 1. vendored upstream closure + the wasm3/iSH materialization the host needs.
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
-sh vendor/ensure-ish.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
+sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh host/build.sh

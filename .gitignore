@@ -83,7 +83,7 @@
 #   hosts/android/ci/stage-spine-closure.sh — byte-identity-verified copy
 # #63 and is frozen as-is):
 # (created by runtime/dsh/ci/parity-node-modules.sh; the vendor tree itself is untracked)
-# + sha256-verified by runtime/dsh/vendor/ensure.sh and ensure-dsh.sh;
+# + sha256-verified by external/ensure.sh and ensure-dsh.sh;
 # Android / 鸿蒙（预留）
 # D9 W-HARMONY official-web mount assets, copied VERBATIM into the app
 # D9 W-HARMONY3: the pinned zod classic closure inside the harmony rawfile
@@ -127,21 +127,21 @@
 # one lands under docs/, so without this line it is permanent `git status`
 # parse (`export { _instanceof as instanceof }` — a tree-sitter-javascript
 # path, so the committed record above is satisfiable only where that path
-# pinned + sha256-verified by runtime/dsh/vendor/ensure-zstd.sh, compiled
+# pinned + sha256-verified by external/ensure-zstd.sh, compiled
 # rawfile by hosts/harmony/ci/vendor-official.sh (dist + staged client
 # reason as officialweb/ above: the content gates never judge vendored
 # record.
 # record. Untracked for the usual two reasons — a 3.8 MB binary in git, and the
 # reproducible materializer; the web-boot closure below stayed tracked at
 # restore is verified against: the upstream build embeds its absolute work
-# runtime/dsh/vendor/ensure-dsh.sh, copied + cmp-verified by
-# runtime/dsh/vendor/ensure-ish-rootfs.sh, which is the tracked provenance
+# external/ensure-dsh.sh, copied + cmp-verified by
+# external/ensure-ish-rootfs.sh, which is the tracked provenance
 # same reason as the engines above: upstream's real-world C cannot survive an
-# sha256-verified by runtime/dsh/vendor/ensure-wasm3.sh, untracked for the
+# sha256-verified by external/ensure-wasm3.sh, untracked for the
 # spine closure. VERBATIM upstream bytes (sha256-pinned by
 # staging, untracked for the same reason)
 # straight into the shared C host, untracked so the syntax-class checker never
-# terms — pinned + sha256-verified by runtime/dsh/vendor/ensure-ish.sh, kept
+# terms — pinned + sha256-verified by external/ensure-ish.sh, kept
 # test-closure pass materializes them beside the stripped spine dirs)
 # the SKILL row (the agent-flow E2E's vendored skill family — same D9 spine
 # the directory's MANIFEST.sha256 + ROSTER.json + PROVENANCE.md, and
@@ -263,13 +263,14 @@ runtime/dsh/logs-upstream.txt
 runtime/dsh/logs-llm-piai-probe.txt
 runtime/dsh/node_modules
 runtime/dsh/upstream-tests/
-runtime/dsh/vendor/dsh-tests@*/
-runtime/dsh/vendor/dsh/
-runtime/dsh/vendor/ish/
-runtime/dsh/vendor/npm/
-runtime/dsh/vendor/quickjs-ng/
-runtime/dsh/vendor/wasm3/
-runtime/dsh/vendor/zstd/
+runtime/dsh/vendor
+external/dsh-tests@*/
+external/dsh/
+external/ish/
+external/npm/
+external/quickjs-ng/
+external/wasm3/
+external/zstd/
 tmp/
 
 # the top-level CMake build dirs (the presets write build/cmake-<preset>/;

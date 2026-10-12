@@ -156,8 +156,8 @@ fi
 # ---- 2. materialize the vendored closure (quickjs sources for gen.sh, the --
 # ---- dsh packages, the official dist + client bundles for staging) ---------
 log "2/6 materializing vendor + official dist + client bundles"
-runtime/dsh/vendor/ensure.sh
-runtime/dsh/vendor/ensure-dsh.sh >/dev/null
+external/ensure.sh
+external/ensure-dsh.sh >/dev/null
 test/e2e/ensure-official-dist.sh
 test/e2e/ensure-client-bundles.sh
 
@@ -222,7 +222,7 @@ cp -R presentation/official-web/client-bundles/npm/@deepseek-ai/. \
 # The pinned vendored tarball wins for the bootstrap package (D6 pin record;
 # its lib/client.js is byte-identical to the workspace build — PROVENANCE).
 rm -rf "$APP_DATA/Documents/web-plugins/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2"
-cp -R "runtime/dsh/vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2" \
+cp -R "external/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2" \
   "$APP_DATA/Documents/web-plugins/npm/@deepseek-ai/"
 
 # ---- 5. launch (-dsh-mode card-player) + the marker-driven drive -----------

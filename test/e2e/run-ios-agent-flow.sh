@@ -72,8 +72,8 @@ fail_deadline() {
 # ---- 1-3. vendor, regen the bundle header (the agent-flow scenario and the
 # skill closure embed), build, install
 log "1/5 vendor + regenerate the bundle header (embeds scenario/agent-flow.js + the skill closure)"
-runtime/dsh/vendor/ensure.sh
-runtime/dsh/vendor/ensure-dsh.sh
+external/ensure.sh
+external/ensure-dsh.sh
 python3 hosts/ios/Tools/gen_bundle_header.py
 
 if [ "$SKIP_BUILD" -eq 0 ]; then

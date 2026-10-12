@@ -223,7 +223,7 @@ vendored 官方 dist,官方 web 驱动(`officialweb.mount`)才能把它服务出
 # 1. 本地物化三棵未跟踪目录树(均按 MANIFEST 校验)
 test/e2e/ensure-official-dist.sh
 test/e2e/ensure-client-bundles.sh
-runtime/dsh/vendor/ensure-dsh.sh
+external/ensure-dsh.sh
 
 # 2. 暂存进应用容器
 #    模拟器:

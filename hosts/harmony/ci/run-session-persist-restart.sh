@@ -196,7 +196,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "session-persist.restart",
   "launch": "$HTARGET emulator, --ps dsh.e2e.leg session-persist.restart x2 (create leg, aa force-stop, resume leg on the same sandbox)",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "harmony-session-persist-restart", "verdict": "verdict-harmony-session-persist-restart.json", "pass": true }
   ],

@@ -1,6 +1,6 @@
 # Vendor.cmake — configure-time pin materialization for the CMake layer.
 #
-# The vendored trees under runtime/dsh/vendor/ are UNTRACKED by design
+# The vendored trees under external/ are UNTRACKED by design
 # (upstream discipline D6): every build environment re-materializes them from
 # the pins, and each ensure script verifies what lands on disk against a
 # sha256 before writing the pin stamp. The root CMakeLists.txt includes this
@@ -9,15 +9,15 @@
 #
 # One entry point per concern (the scripts chain internally, same as the
 # harmony cpp/CMakeLists runs only ensure.sh):
-#   runtime/dsh/vendor/ensure.sh      — the engines: quickjs-ng fork + wasm3
+#   external/ensure.sh      — the engines: quickjs-ng fork + wasm3
 #                                         + zstd (delegates to ensure-wasm3.sh
 #                                         and ensure-zstd.sh itself)
-#   runtime/dsh/vendor/ensure-dsh.sh  — the pinned upstream DSH JS closure;
+#   external/ensure-dsh.sh  — the pinned upstream DSH JS closure;
 #                                         not needed to compile dsh-core, but
 #                                         CI/dev expect the pins present
 # The iSH ensures (ensure-ish.sh / ensure-ish-rootfs.sh) are deliberately NOT
 # run here: the in-process Linux userland is built by its own CMake project
-# (runtime/dsh/host/ish), whose callers run vendor/ensure-ish.sh themselves
+# (runtime/dsh/host/ish), whose callers run external/ensure-ish.sh themselves
 # (host/build.sh, the iOS app build pre-phase).
 
 option(DSH_SKIP_VENDOR
@@ -26,7 +26,7 @@ option(DSH_SKIP_VENDOR
 if(DSH_SKIP_VENDOR)
   message(STATUS
     "dsh vendor: DSH_SKIP_VENDOR=ON — SKIPPING pin materialization. If "
-    "runtime/dsh/vendor is stale or absent the dsh-core build fails on "
+    "external is stale or absent the dsh-core build fails on "
     "missing engine sources; nothing in this module re-verifies the pins.")
   return()
 endif()
@@ -58,8 +58,8 @@ endfunction()
 # cd to their own directory internally; the WORKING_DIRECTORY only pins the
 # contract for readers.
 foreach(DSH_VENDOR_SCRIPT
-    runtime/dsh/vendor/ensure.sh
-    runtime/dsh/vendor/ensure-dsh.sh)
+    external/ensure.sh
+    external/ensure-dsh.sh)
   execute_process(
     COMMAND sh "${DSH_VENDOR_SCRIPT}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"

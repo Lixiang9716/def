@@ -122,7 +122,7 @@ round-trip that holds is set-level and attribution-level. The residue:
 ## 5. Reproducing
 
 ```
-runtime/dsh/vendor/ensure-dsh.sh          # materialize the vendored pins
+external/ensure-dsh.sh          # materialize the vendored pins
 sh hosts/harmony/ci/vendor-official.sh --closure-only   # rawfile closure
 node tools/gen-staging-manifests.mjs --out /tmp/gen-out  # this report's numbers
 node tools/check-staging.mjs --block harmony,android,ios # the verifier, green

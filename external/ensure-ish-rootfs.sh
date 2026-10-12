@@ -12,14 +12,14 @@
 # UNTRACKED, the pin lives HERE (URL + sha256), and what lands on disk is the
 # upstream artifact byte for byte.
 #
-#   sh runtime/dsh/vendor/ensure-ish-rootfs.sh [DEST_DIR]
+#   sh external/ensure-ish-rootfs.sh [DEST_DIR]
 #
 # Default destination is the app's resource staging directory; the iOS build
 # phase copies it into the bundle. Idempotent, and the checksum is verified on
 # every run (a corrupted cache must not silently become a guest root).
 set -e
 
-DEST="${1:-$(cd "$(dirname "$0")/../../.." && pwd)/hosts/ios/App/Generated}"
+DEST="${1:-$(cd "$(dirname "$0")/.." && pwd)/hosts/ios/App/Generated}"
 FILE="ish-rootfs.tar.gz"
 
 # Alpine 3.21.8 aarch64 minirootfs — the same image the desktop e2e fetches

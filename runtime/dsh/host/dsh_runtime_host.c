@@ -6,7 +6,7 @@
  *     the host emits the canonical "dsh.runtime.log: {...}" E2E line;
  *   - Web-API seams the vendored upstream package needs: crypto (getRandom-
  *     Values via the platform RNG) and btoa;
- *   - the zstd seam over the vendored C library (vendor/ensure-zstd.sh pin):
+ *   - the zstd seam over the vendored C library (external/ensure-zstd.sh pin):
  *     __zstdCompressB64 / __zstdDecompressB64 carry the node:zlib shim's
  *     payload face (base64 in, base64 out, "zstd: " errors);
  *   - the REAL gateway bridge per contract/ v1.0.0: __dshGatewayCall hands
@@ -63,7 +63,7 @@
 
 static const char *DSH_GATEWAY_VERSION = "gateway@1";
 /* The pinned upstream runtime version this build maps bare specifiers to
- * (runtime/dsh/vendor/ensure-dsh.sh is the single source of the pin). */
+ * (external/ensure-dsh.sh is the single source of the pin). */
 static const char *DSH_UPSTREAM_VERSION = "0.1.6-alpha.2";
 /* Legacy rt specifier (m1 rt boot): kept working on the alpha.2 pin. */
 static const char *DSH_PKG_CRYPTO = "dsh:util-crypto";

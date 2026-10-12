@@ -86,7 +86,7 @@ export ROOT SPIKE LOGDIR FRAGS
 # The specs must exist: vendor the pinned dsh-tests tree + transpile when
 # the tree is empty (the same materialization run-ios-upstream-suite.sh does).
 [ -f "$SPIKE/upstream-tests/core__agent-loop__tests__loop.spec.mjs" ] || {
-    sh "$SPIKE/vendor/ensure-dsh-tests.sh"
+    sh "$SPIKE/../../external/ensure-dsh-tests.sh"
     (cd "$ROOT/test/upstream-suite" && npm install --no-audit --no-fund >/dev/null 2>&1 \
         && node transpile.mjs >/dev/null)
 }

@@ -48,9 +48,9 @@ done
 #    product links: adding test-face links to the reference leg alone would
 #    manufacture divergences against the port leg (the raw vitest face and
 #    the sweep's node leg run without the flag).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
-sh vendor/ensure-ish.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
+sh ../../external/ensure-ish.sh
 sh ci/parity-node-modules.sh --parity-only
 
 # 2. the mock LLM server (node-side) with the parity script: success,

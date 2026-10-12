@@ -162,13 +162,13 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            runtime/dsh/vendor/quickjs-ng
-            runtime/dsh/vendor/dsh
-            runtime/dsh/vendor/npm
-          key: vendor-${{ runner.os }}-${{ hashFiles('runtime/dsh/vendor/ensure.sh', 'runtime/dsh/vendor/ensure-dsh.sh') }}
+            external/quickjs-ng
+            external/dsh
+            external/npm
+          key: vendor-${{ runner.os }}-${{ hashFiles('external/ensure.sh', 'external/ensure-dsh.sh') }}
 
       - name: Vendor quickjs-ng
-        run: sh runtime/dsh/vendor/ensure.sh
+        run: sh external/ensure.sh
 
       - name: Install dependencies (ohpm) and build the release HAP (unsigned)
         working-directory: hosts/harmony

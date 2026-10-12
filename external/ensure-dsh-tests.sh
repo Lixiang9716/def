@@ -157,7 +157,7 @@ ensure_npm_registry() {
         @*/*) scope=${full%%/*}; pkg=${full#"$scope"/} ;;
         *)    scope=;      pkg=$full ;;
     esac
-    # The TRACKED MIRROR first (vendor/dsh-tarballs/, the same layout
+    # The TRACKED MIRROR first (external/dsh-tarballs/, the same layout
     # add-package.sh fetch writes): CI materializes offline; the registry is
     # the fallback. The mirror's flat name is scope-pkg-ver with @ and /
     # stripped.

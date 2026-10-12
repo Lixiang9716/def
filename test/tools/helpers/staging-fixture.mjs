@@ -206,7 +206,7 @@ function genBundleHeaderPy() {
     '',
     'TREES = [',
     '    (f"vendor/dsh/{pkg}@' + VER + '",',
-    `     DSH / "vendor" / "dsh" / f"{pkg}@${VER}")`,
+    `     DSH / ".." / "external" / "dsh" / f"{pkg}@${VER}")`,
     '    for pkg in [',
     '        "agent", "brand",',
     '    ]',

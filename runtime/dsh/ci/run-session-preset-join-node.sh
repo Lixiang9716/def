@@ -25,22 +25,22 @@ ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$ROOT/runtime/dsh"
 
 # 1. vendored upstream closure: pinned + sha256-verified, then the node
-#    resolution layout (vendor/node_modules under the packages' real npm
+#    resolution layout (external/node_modules under the packages' real npm
 #    names — the same layout the parity reference leg and the raw
 #    upstream-suite vitest face resolve through). The layout is fully
 #    script-owned (its own header: a vendor re-fetch wipes it), so one
 #    clean rebuild recovers a stale tree (e.g. an MSYS `ln` that copied
 #    instead of linked and left the packages nested one level down).
-sh vendor/ensure.sh > /dev/null
-sh vendor/ensure-dsh.sh
+sh ../../external/ensure.sh > /dev/null
+sh ../../external/ensure-dsh.sh
 if ! sh ci/parity-node-modules.sh >/dev/null 2>&1; then
     echo "session-preset-join: the node_modules layout failed to link — rebuilding it clean" >&2
     # The WHOLE layout is the script's own output (its header: a vendor
-    # re-fetch wipes it) — every node_modules dir under vendor/, top-level
+    # re-fetch wipes it) — every node_modules dir under external/, top-level
     # and per-consumer seats alike. A stale tree can carry copied dirs
     # where the links go (an MSYS `ln` that copied instead of linked), and
     # only a clean rebuild recovers it.
-    find "$ROOT/runtime/dsh/vendor" -type d -name node_modules -exec rm -rf {} + 2>/dev/null || true
+    find "$ROOT/external" -type d -name node_modules -exec rm -rf {} + 2>/dev/null || true
     sh ci/parity-node-modules.sh
 fi
 

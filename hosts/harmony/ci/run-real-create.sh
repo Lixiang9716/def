@@ -286,7 +286,7 @@ cat > "$OUT/receipt.json" <<EOF
   "phase": "real.create (CREATE-mode demo)",
   "launch": "dsh_phone emulator, --ps dsh.e2e.leg llm.live-stream, real backend",
   "tree": "$TREE_LINE",
-  "engine": "$(sed -n 's/^PIN=//p' runtime/dsh/vendor/ensure.sh)",
+  "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
     { "manifest": "real-create (demo)", "verdict": "capture.txt", "pass": true }
     { "manifest": "real-create (demo)", "verdict": "capture.txt", "pass": true }
