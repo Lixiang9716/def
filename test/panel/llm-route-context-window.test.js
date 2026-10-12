@@ -237,10 +237,17 @@ describe('mountPiAiProviders — the userEndpoint gate (the named exception)', (
         models: [{ id: 'piai-mock-1' }],
       },
     };
-    // Loopback passes the gate; the vendored plugin import is the next
-    // failure (unmapped under vitest), which proves the gate itself passed.
-    await expect(mountPiAiProviders({}, providers))
-      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+    // Loopback passes the gate; the failure comes after it. WHICH failure is
+    // environment-dependent — the vendored plugin import is unmapped on a
+    // bare checkout (/dsh-llm-pi-ai|Failed to resolve|Cannot find/) while a
+    // box that has materialized the closure resolves it and dies at the {}
+    // ctx stub (ctx.plugin is not a function). What this face pins is the
+    // gate's absence: the rejection never carries the userEndpoint demand.
+    const err = await mountPiAiProviders({}, providers).then(
+      () => { throw new Error('mountPiAiProviders resolved — the gate was expected to reject'); },
+      (e) => e,
+    );
+    expect(String(err?.message ?? err)).not.toMatch(/userEndpoint: true/);
   });
 
 });
@@ -267,8 +274,14 @@ describe('mountPiAiProviders gate — the unprovable shapes', () => {
         models: [{ id: 'claude-sonnet-4-5' }],
       },
     };
-    await expect(mountPiAiProviders({}, providers))
-      .rejects.toThrow(/dsh-llm-pi-ai|Failed to resolve|Cannot find/);
+    // Same environment split as the loopback face above: the gate passed,
+    // and the later failure's flavor moves with the vendored closure's
+    // presence — the pinned fact is the userEndpoint demand's absence.
+    const err = await mountPiAiProviders({}, providers).then(
+      () => { throw new Error('mountPiAiProviders resolved — the gate was expected to reject'); },
+      (e) => e,
+    );
+    expect(String(err?.message ?? err)).not.toMatch(/userEndpoint: true/);
   });
 });
 
