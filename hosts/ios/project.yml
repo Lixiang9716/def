@@ -184,12 +184,24 @@ targets:
           # signal delivered to a guest task (kernel/vdso.c's fail path), and
           # ISH_VDSO_ELF_DIR refuses it.
           VDSO="$REPO/runtime/dsh/build/ish/vdso"
+          # A build dir configured before a source-tree move (the phase-2
+          # host→src rename is the live example) makes cmake refuse to switch
+          # source in place. One clean re-configure recovers it — the same
+          # idiom ci/parity-node-modules.sh uses for the node_modules layout.
+          reconfigure_ish() { # $1 = build dir, $2 = extra cmake args...
+            local build_dir="$1"; shift
+            cmake -S "$REPO/src/ish" -B "$build_dir" "$@" || {
+              echo "ish build dir stale (source tree moved?) — reconfiguring clean: $build_dir"
+              rm -rf "$build_dir"
+              cmake -S "$REPO/src/ish" -B "$build_dir" "$@"
+            }
+          }
           if [ ! -s "$VDSO/libvdso.so.elf" ]; then
-            cmake -S "$REPO/src/ish" -B "$REPO/runtime/dsh/build/ish"
+            reconfigure_ish "$REPO/runtime/dsh/build/ish"
             cmake --build "$REPO/runtime/dsh/build/ish" --target ish-vdso
           fi
           BUILD="$REPO/runtime/dsh/build/ish-ios-$SDK_NAME"
-          cmake -S "$REPO/src/ish" -B "$BUILD" \
+          reconfigure_ish "$BUILD" \
             -DISH_SDK="$SDK_NAME" \
             -DCMAKE_SYSTEM_NAME=iOS \
             -DCMAKE_OSX_SYSROOT="$SDK_NAME" \
