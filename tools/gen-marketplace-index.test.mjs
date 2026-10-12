@@ -36,6 +36,41 @@ const SUMMARIES = join(REPO, 'deploy', 'marketplace', 'summaries.json');
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
+// The fail-loud leg's scaffolding lives at module scope: the code-size gate
+// caps a function at 50 lines, and the red-leg describe reads cleaner with
+// its fixtures beside the other module constants (idiom:
+// gen-staging-manifests.test.mjs's "structural drift fails loud" block).
+const RED_SUMMARIES = readJson(SUMMARIES);
+const GEN = join(import.meta.dirname, 'gen-marketplace-index.mjs');
+const THROWAWAY_SEED = Buffer.alloc(32).toString('base64'); // never a real credential
+const fixtures = [];
+
+/** One tmp root: a system-plugins tree with a single VALID plugin (the
+ * manifest clears validateManifest, so the run reaches the summaries
+ * check, not an earlier guard) whose id's row presence is decided by
+ * the caller's id choice. */
+const fixtureTree = (id) => {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-marketplace-guard-'));
+  fixtures.push(root);
+  const dir = join(root, 'system-plugins', id);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, 'manifest.json'), `${JSON.stringify({
+    schemaVersion: 1, id, version: '0.0.1', type: 'service', entry: 'index.js',
+    capabilities: { required: [], optional: [] },
+  }, null, 2)}\n`);
+  writeFileSync(join(dir, 'index.js'), 'export default {};\n');
+  return { root, plugins: join(root, 'system-plugins'), out: join(root, 'dist') };
+};
+
+const runGenerator = ({ plugins, out }) => spawnSync(process.execPath, [
+  GEN, '--base-url', 'https://marketplace.invalid',
+  '--system-plugins', plugins, '--out', out, '--key-seed', THROWAWAY_SEED,
+], { encoding: 'utf8' });
+
+afterAll(() => {
+  for (const root of fixtures) rmSync(root, { recursive: true, force: true });
+});
+
 describe('marketplace catalog summaries cover every system plugin', () => {
   const summaries = readJson(SUMMARIES);
   const pluginDirs = readdirSync(PLUGINS).filter((name) =>
@@ -72,41 +107,10 @@ describe('the fail-loud leg: a plugin without its summaries row aborts the publi
   // itself, real CLI, must reject the exact gap the green legs name. The
   // counterexample is a fixture plugin whose manifest id has no row in the
   // real summaries file — the row is absent by construction, the data file
-  // itself is never touched (idiom: gen-staging-manifests.test.mjs's
-  // "structural drift fails loud" describe).
-  const summaries = readJson(SUMMARIES);
-  const GEN = join(import.meta.dirname, 'gen-marketplace-index.mjs');
-  const THROWAWAY_SEED = Buffer.alloc(32).toString('base64'); // never a real credential
-  const fixtures = [];
-
-  /** One tmp root: a system-plugins tree with a single VALID plugin (the
-   * manifest clears validateManifest, so the run reaches the summaries
-   * check, not an earlier guard) whose id's row presence is decided by
-   * the caller's id choice. */
-  const fixtureTree = (id) => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-marketplace-guard-'));
-    fixtures.push(root);
-    const dir = join(root, 'system-plugins', id);
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, 'manifest.json'), `${JSON.stringify({
-      schemaVersion: 1, id, version: '0.0.1', type: 'service', entry: 'index.js',
-      capabilities: { required: [], optional: [] },
-    }, null, 2)}\n`);
-    writeFileSync(join(dir, 'index.js'), 'export default {};\n');
-    return { root, plugins: join(root, 'system-plugins'), out: join(root, 'dist') };
-  };
-  afterAll(() => {
-    for (const root of fixtures) rmSync(root, { recursive: true, force: true });
-  });
-
-  const runGenerator = ({ plugins, out }) => spawnSync(process.execPath, [
-    GEN, '--base-url', 'https://marketplace.invalid',
-    '--system-plugins', plugins, '--out', out, '--key-seed', THROWAWAY_SEED,
-  ], { encoding: 'utf8' });
-
+  // itself is never touched (scaffolding at module scope, above).
   it('a rowless plugin aborts the publish (exit 1) naming the plugin, writing nothing', () => {
     const id = 'dsh-redleg-no-summary-row';
-    expect(summaries[id], 'fixture precondition: the id must have no row in the real file')
+    expect(RED_SUMMARIES[id], 'fixture precondition: the id must have no row in the real file')
       .toBeUndefined();
     const fx = fixtureTree(id);
     const r = runGenerator(fx);
@@ -118,7 +122,7 @@ describe('the fail-loud leg: a plugin without its summaries row aborts the publi
 
   it('the same fixture with a row-linked id publishes clean — the red fails on exactly the missing row', () => {
     const id = 'dsh-shell-ish'; // a real summaries row exists (the green legs cover it)
-    expect(summaries[id], 'fixture precondition: the id must have a row in the real file')
+    expect(RED_SUMMARIES[id], 'fixture precondition: the id must have a row in the real file')
       .toBeDefined();
     const fx = fixtureTree(id);
     const r = runGenerator(fx);
@@ -126,6 +130,6 @@ describe('the fail-loud leg: a plugin without its summaries row aborts the publi
     const index = JSON.parse(readFileSync(join(fx.out, 'index.json'), 'utf8'));
     expect(index.entries).toHaveLength(1);
     expect(index.entries[0].id).toBe(id);
-    expect(index.entries[0].summary).toEqual(summaries[id]);
+    expect(index.entries[0].summary).toEqual(RED_SUMMARIES[id]);
   });
 });
