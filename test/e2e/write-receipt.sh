@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # test/e2e/write-receipt.sh — the SHARED evidence-receipt writer (acceptance-
-# bar clause 3, docs/e2e-matrix.md): every evidence dir carries receipt.json,
+# bar clause 3, doc/e2e-matrix.md): every evidence dir carries receipt.json,
 # machine-authored, reachable ONLY from a real green run — a receipt can never
 # exist without the run that produced it (never synthesized).
 #

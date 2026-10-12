@@ -33,7 +33,7 @@ deliberate direct landings, never a default.
 
 <!-- rules.md rule 7: a PR never lands one language of a pair alone. After BOTH sides of a human-facing doc pair moved: gov verify pairing --write <repo-relative stem> — never hand-edit the .i18n.yaml record. -->
 
-- [ ] No human-facing doc changed, or pairing re-confirmed: `gov verify pairing --write docs/<stem>`
+- [ ] No human-facing doc changed, or pairing re-confirmed: `gov verify pairing --write doc/<stem>`
 
 ## Checklist
 

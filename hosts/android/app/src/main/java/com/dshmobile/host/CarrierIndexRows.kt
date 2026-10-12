@@ -68,7 +68,7 @@ div[role="dialog"][aria-modal="true"][aria-labelledby] nav button{flex:none;heig
     }
 
     /** One upstream row shape → the carrier's typed injection row. An
-     * unknown row kind is contract drift (docs/webserver-contract.md §1.5
+     * unknown row kind is contract drift (doc/webserver-contract.md §1.5
      * names the kinds) and aborts with the offending name (rules.md rule
      * 5); a known kind with a missing field maps to null. */
     fun injectionRow(row: JSONObject): CarrierIndexInjection? = when (row.optString("kind")) {

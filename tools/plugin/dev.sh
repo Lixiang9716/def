@@ -1,7 +1,7 @@
 #!/bin/bash
 # tools/plugin/dev.sh — the mobile twin of the upstream tutorial's
 # `pnpm dsh web --patch ./scratch-plugin/cordis.yml` loop
-# (docs/plugin-dev.md): compile a TypeScript (or pass through a JavaScript)
+# (doc/plugin-dev.md): compile a TypeScript (or pass through a JavaScript)
 # plugin source ON THE DEV MACHINE (the device never compiles — the
 # one-to-one mapping of "create the plugin file" onto mobile), write the
 # workspace tree + ENABLE its registry row inside the iOS simulator's app

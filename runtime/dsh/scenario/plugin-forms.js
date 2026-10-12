@@ -1,6 +1,6 @@
 /**
  * Scenario `plugin.forms` — the upstream develop guide's one-to-one proof
- * on the mobile host (docs/plugin-dev.md), deterministic and model-free.
+ * on the mobile host (doc/plugin-dev.md), deterministic and model-free.
  * Plugin SOURCES live in plugin-forms-sources.js; this file is the driver.
  *
  * Phases (every expected event = one structured log line, in the order the

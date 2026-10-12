@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// The `/api` prefix route and the `/api/remote.mux` upgrade — the RPC
-/// transport of docs/webserver-contract.md §2.3/§2.4 with the Phase-B
+/// transport of doc/webserver-contract.md §2.3/§2.4 with the Phase-B
 /// bridging of §3.5. The carrier parses the frozen `client-request`
 /// envelope, forwards CLAIMED endpoints onto the runtime over the bus seam,
 /// and answers every UNCLAIMED endpoint with a structured unavailable

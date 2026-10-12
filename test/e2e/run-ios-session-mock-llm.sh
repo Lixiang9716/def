@@ -10,7 +10,7 @@
 #   - session-mock-llm.json         (the JS scenario's 22 events)
 #   - webclient-mount.json (carrier-side mount/connection/projection)
 # Screenshots are saved artifacts (screens/) — the verdict is logs only
-# (docs/ARCHITECTURE.md, "E2E verification").
+# (doc/ARCHITECTURE.md, "E2E verification").
 #
 # usage: run-ios-session-mock-llm.sh [--udid U] [--art-dir D] [--skip-build] [--client mini|default]
 #
@@ -163,7 +163,7 @@ fi
 log "ALL CHECKERS PASS"
 
 # ---- receipt (reachable ONLY on a real green run) ---------------------------
-# Acceptance-bar clause 3 (docs/e2e-matrix.md) — via the SHARED writer.
+# Acceptance-bar clause 3 (doc/e2e-matrix.md) — via the SHARED writer.
 RECEIPT_STEMS="session-mock-llm webclient-mount"
 [ "$CLIENT" = "mini" ] && RECEIPT_STEMS="$RECEIPT_STEMS ui-client-swap"
 # Compact flips the CARRIER manifest to compact-mount.json — the receipt must name

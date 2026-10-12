@@ -43,7 +43,7 @@ MISSING=""
 if [ "$MISSING" != "" ]; then
     fail "missing deploy secrets:$MISSING
   add them under Settings → Secrets and variables → Actions (see
-  docs/github-owner-actions.md, 'Marketplace publish secrets'). Nothing was
+  doc/github-owner-actions.md, 'Marketplace publish secrets'). Nothing was
   deployed; until they exist, run the publish workflow with dry-run: true."
 fi
 

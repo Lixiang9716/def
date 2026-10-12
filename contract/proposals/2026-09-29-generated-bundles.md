@@ -179,7 +179,7 @@ section), the 09-22 note's rejected "have CI run `gen.sh`" alternative
 (`2026-09-22-the-ios-release-staging-phase-moves-into.md:62-65`), and D17's
 committed-copies alternative for the iOS leg. On acceptance, a decision row goes
 in through `gov decision add` (the number is the registry's to assign — the
-pain-point brief's "D9" label is this run's shorthand, and `docs/decisions.md`'s
+pain-point brief's "D9" label is this run's shorthand, and `doc/decisions.md`'s
 D9 is a different decision: upstream verbatim ports). Until then, nothing here
 is in force: the committed bytes stay, the gate stays byte-compare.
 

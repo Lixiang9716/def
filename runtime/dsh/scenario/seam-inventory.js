@@ -4,7 +4,7 @@
  * mobile spine (every product flag on, composition plane included), then
  * report which cordis services actually resolve and which plugin runtimes
  * the registry holds. The gap against the upstream catalog is classified in
- * docs/plugin-dev.md — mounted / host-gateway equivalent / mobile wall /
+ * doc/plugin-dev.md — mounted / host-gateway equivalent / mobile wall /
  * desktop-only.
  *
  * Deterministic; no model. Artifacts:

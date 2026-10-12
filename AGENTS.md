@@ -7,7 +7,7 @@
 A mobile host for the DSH (DeepSeek Harness) ecosystem: QuickJS single-threaded coroutine runtime
 carrying the Harness core, iOS capabilities wrapped as privileged layer / capability gateway /
 system implementation plugins, and the UI as a pluggable Web Client. Full design in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+[doc/ARCHITECTURE.md](doc/ARCHITECTURE.md).
 
 ## Non-negotiable constraints
 
@@ -51,7 +51,7 @@ this machine lands at `~/.local/bin/gov`. Govrail requires Python ≥3.10.
 
 ## Where things live
 
-See the repository layout in [docs/ARCHITECTURE.md §9](docs/ARCHITECTURE.md#9-repository-layout)
+See the repository layout in [doc/ARCHITECTURE.md §9](doc/ARCHITECTURE.md#9-repository-layout)
 and the milestone table in [README.md](README.md). The contract-freeze scope lives in `contract/`.
 The build entry is **`build/build.sh`** — `build|compile|test|check|sync` ×
 `ios|android|harmony|core|all` (build = sync + compile + test); see
@@ -64,7 +64,7 @@ gated by `closures` — if it is red, run `build/build.sh sync <platform>`.
 refused. The owner retains an admin bypass — reserved for deliberate direct landings, not a
 default. Default flow for every change: branch → commit → push → `gh pr create` → wait for the
 `gates` check → merge (squash). Do not push straight to main. Commits and squash-merge PR
-titles follow Angular Conventional Commits (`type(scope): subject` — feat/fix/docs/style/
+titles follow Angular Conventional Commits (`type(scope): subject` — feat/fix/doc/style/
 refactor/perf/test/build/ci/chore/revert; enforced by the `commit-format` gate).
 
 ## File issues proactively (standing duty)

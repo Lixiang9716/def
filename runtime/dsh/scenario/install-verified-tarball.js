@@ -1,6 +1,6 @@
 /**
  * M3 install-pipeline scenario `install.verified-tarball` — proves "Install = data
- * operation" (docs/ARCHITECTURE.md §5) end to end on the frozen gateway fs
+ * operation" (doc/ARCHITECTURE.md §5) end to end on the frozen gateway fs
  * primitives, 100% platform-neutral (CLI + carrier hosts alike):
  *
  *   build the dsh-notes package tgz in JS (fixtures/, deterministic ustar)

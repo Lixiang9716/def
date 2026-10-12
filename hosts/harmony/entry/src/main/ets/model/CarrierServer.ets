@@ -3,7 +3,7 @@
 // discipline; hilog markers here are progress evidence, not log events)
 /**
  * CarrierServer — the loopback carrier implementing the `ctx.webServer`
- * contract subset (docs/webserver-contract.md §1, §3) on @ohos.net.socket:
+ * contract subset (doc/webserver-contract.md §1, §3) on @ohos.net.socket:
  * a route table with exact + prefix named routes, one fallback seat,
  * exact-path-only upgrade dispatch with per-path WS seats, and request-body
  * reading for the /api RPC bridge. Transport only: the wire is reduced to

@@ -1,6 +1,6 @@
 /* dsh_ish_verify.c — re-verify the staged Alpine userland at every guest boot.
  *
- * See dsh_ish_verify.h for the seam-level contract and docs/research/
+ * See dsh_ish_verify.h for the seam-level contract and doc/research/
  * upstream-capability-mounting.md (adoption decision #2) for where the
  * requirement comes from: a digest checked once at fetch/staging time leaves
  * every later boot trusting whatever the container now holds, and a partially

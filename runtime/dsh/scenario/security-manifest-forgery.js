@@ -1,7 +1,7 @@
 // dsh:logging-exempt (dev script: the log stream is the product)
 /**
  * Scenario `security.manifest-forgery` — the install pipeline under a
- * forgery ladder (threat model: docs/security-threat-model.md, surface
+ * forgery ladder (threat model: doc/security-threat-model.md, surface
  * "marketplace supply chain"). The §7.1 SIGNED-CATALOG ladder (bad
  * signature / unknown key / hostile mirror / publisher metadata error)
  * already lives in the `marketplace.install` leg — this leg attacks the

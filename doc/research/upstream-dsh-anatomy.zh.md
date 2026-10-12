@@ -282,7 +282,7 @@ provider 适配器（`llm-deepseek`/`llm-pi-ai`——由网关传输层替代）
 | `subprocess` Service | `subprocess-local`（OS 进程） | `system-plugins/dsh-subprocess-quickjs` —— 进程内协程执行器 | 无（纯运行时） |
 | `ui`（通知/审批/选择器） | Electron 对话框 | `system-plugins/dsh-ui` | `notify`、`presentApproval`、`presentPicker` |
 | `shell` 执行器家族 | `bash-sandbox`/`pwsh-sandbox` | `system-plugins/dsh-shell-wasm`（wasm 程序）、`system-plugins/dsh-shell-ish`（Alpine 用户态） | `wasmRun` / `ishRun` + fs 原语 |
-| `webServer` + 客户端层 | Node webserver + 浏览器 | 载体环回（HTTP+WS）+ 组合官方 client modules 的 `web-boot.js` | 载体 seam（docs/webserver-contract.md） |
+| `webServer` + 客户端层 | Node webserver + 浏览器 | 载体环回（HTTP+WS）+ 组合官方 client modules 的 `web-boot.js` | 载体 seam（doc/webserver-contract.md） |
 
 契约 v1.3.0 总计：**16 个原语**（v1.0 冻结的 9 个 + v1.1 的 5 个 fs 操作 +
 v1.2 的 `wasmRun` + v1.3 的 `ishRun`），带结构化 `GatewayError` 拒绝与
@@ -313,7 +313,7 @@ web-plugin VFS 上，把组合好的 wire 加 `/api` 与 mux journal 面交给�
 （+ android/harmony 变体）、`session-live-read` / `composer-live-write`
 （带真实数据的官方 app）、`llm-live-stream`（`httpFetch` 上的真实流）、
 `userland-shell-local`（`ishRun`）。按 `scenario-id` 一对一期望 ↔ 日志匹配
-（docs/ARCHITECTURE.md §3）。
+（doc/ARCHITECTURE.md §3）。
 
 ## 4. 漂移观察 — 我们的 pin（0.1.6-alpha.2）对上游 0.1.7-alpha.2
 
@@ -348,5 +348,5 @@ registry-fallback 插件管理器）。流程层面再补三条：
 | 工具执行 | 上游 `packages/core/tools`、`docs/tool-execution-pipeline.md` |
 | LLM 契约 | 上游 `packages/llm/llm/src/types.ts`（`StreamChunk`、`GenerateOptions`） |
 | 客户端线 | 上游 `docs/api-gateway.md`、`packages/api/session-controller` |
-| 我们的移植 | `runtime/dsh/upstream/README.md`、`runtime/dsh/upstream/boot.js`、`docs/ARCHITECTURE.md` §3–§5、§10 D9 |
+| 我们的移植 | `runtime/dsh/upstream/README.md`、`runtime/dsh/upstream/boot.js`、`doc/ARCHITECTURE.md` §3–§5、§10 D9 |
 | 我们采纳的能力模式 | [upstream-capability-mounting.md](upstream-capability-mounting.zh.md) |

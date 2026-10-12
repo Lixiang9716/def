@@ -70,7 +70,7 @@ passed:
 - **Merge queue — think before toggling, do not adopt casually**: with
   required status checks on, GitHub will suggest a merge queue so that
   "green at head" cannot silently become "red at merge". The honest context:
-  `docs/decisions.md` **D13** records a rejection of `merge_group`/merge
+  `doc/decisions.md` **D13** records a rejection of `merge_group`/merge
   queue — but that rejection was scoped to a different problem (working
   around the release PR's check provenance: "it changes the merge model of
   the whole repository to work around one PR's provenance"). It does not

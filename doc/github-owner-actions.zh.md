@@ -58,7 +58,7 @@
   选择器里还列不出来,就手动输入名字——选择器只列出至少跑过一次的检查。
 - **Merge queue——先想清楚再动,别顺手开**:required checks 打开后,
   GitHub 会顺势建议开 merge queue,让"head 上绿"不至于悄悄变成"合并后红"。
-  诚实的背景:`docs/decisions.md` 的 **D13** 记录过一次对
+  诚实的背景:`doc/decisions.md` 的 **D13** 记录过一次对
   `merge_group`/merge queue 的否决——但那次否决限定在另一个问题上(绕开
   release PR 的 check 来源问题:"it changes the merge model of the whole
   repository to work around one PR's provenance")。它不会自动外延,但

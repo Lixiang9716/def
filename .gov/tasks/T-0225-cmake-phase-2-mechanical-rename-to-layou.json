@@ -2,7 +2,7 @@
   "title": "CMake phase-2: mechanical rename to layout A (vendor-external, host-src+example, docs-doc)",
   "created": "2026-10-12T14:10:42+00:00",
   "rules": {
-    "hash": "2af000854806c8b32fc26fef7a045221f8e592ee8756b1462fee7eab289a920e",
+    "hash": "3fcceb7895f2d5193d482da9c614cd9cb06cff8bdbefb4e4b89f1497ebd0075d",
     "files": {
       ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
       "gates.json": "6d186be6616493c3d8ae7d24174a4e1634711180ca5b3b760452d3c09d7cdb90"
@@ -11,7 +11,7 @@
   "checklist": [
     "[x] PR-1: runtime/dsh/vendor moves to external/ \u2014 tracked git mv + untracked trees physically moved, all load-bearing refs rewritten (workflows/gates/hosts/test/tools/CMake/ignores), verification DAG green, merged",
     "[x] PR-2: runtime/dsh/host moves to src/ with main_cli.c+ish_smoke.c in example/ as CMake executables \u2014 build.sh cwd contract re-pinned, all callers updated, macos-dev preset builds full graph, merged",
-    "PR-3: docs/ moves to doc/ \u2014 4 tooling files + gates.json paths + absolute prose refs rewritten, pairing re-covered, merged",
+    "[x] PR-3: docs/ moves to doc/ \u2014 4 tooling files + gates.json paths + absolute prose refs rewritten, pairing re-covered, merged",
     "program closeout: full three-host matrix re-run on final state, Agent Note superseding the 2026-09-27 CMake note, aoci_maintain once, memory + surprises updated"
   ],
   "status": "open",
@@ -31,6 +31,13 @@
       "from": "3dd20b33a106d0486f0702656b74dd89c32b5b7fbd32c830ca1c43c5b707e0d3",
       "to": "2af000854806c8b32fc26fef7a045221f8e592ee8756b1462fee7eab289a920e",
       "reason": "plane re-baselined by T-0225 PR-2 (gates.json shellcheck-warn/perf-budget src/** pins + case-logging-l4 fixture path re-pinned to src/); the card briefs are unchanged and still describe pending work"
+    },
+    {
+      "ts": "2026-10-12T19:26:11+00:00",
+      "by": "lixiang@192.168.21.11",
+      "from": "2af000854806c8b32fc26fef7a045221f8e592ee8756b1462fee7eab289a920e",
+      "to": "3fcceb7895f2d5193d482da9c614cd9cb06cff8bdbefb4e4b89f1497ebd0075d",
+      "reason": "plane re-baselined by T-0225 PR-3 (gates.json pairing/verify-decisions paths to doc/**, .gov/decisions.json for doc/decisions.md); the card briefs are unchanged and still describe pending work"
     }
   ]
 }

@@ -61,5 +61,5 @@ The built `index.html` carries NO boot state: `window.__DSH_BOOT__` and
 carrier (upstream: the webserver `renderIndex` pipeline). Serving these
 files as-is yields the upstream boot-failure page by design —
 `apps/web` is explicitly "not a standalone application". See
-`docs/webserver-contract.md` for the contract the Phase-B carrier must
+`doc/webserver-contract.md` for the contract the Phase-B carrier must
 implement.

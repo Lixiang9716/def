@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// The fallback seat for the official upstream dist — the frontend-static
-/// behavior of docs/webserver-contract.md §2.1 with the Phase-B adaptations
+/// behavior of doc/webserver-contract.md §2.1 with the Phase-B adaptations
 /// of §3.4/§3.6: GET/HEAD only (405 otherwise), traversal → 403, fixed MIME
 /// table (+ fonts/png), empty 404s, the auth-lite token→cookie exchange
 /// gating index responses only, and the index render pipeline (§1.5):

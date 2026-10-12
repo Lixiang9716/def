@@ -2,7 +2,7 @@ package com.dshmobile.host
 
 /**
  * One parsed HTTP request handed to route handlers — transport facts only
- * (the carrier carries no harness concepts, docs/webserver-contract.md §1).
+ * (the carrier carries no harness concepts, doc/webserver-contract.md §1).
  * The receiving handler owns the FULL response lifecycle for its connection.
  * Kotlin sibling of hosts/ios CarrierRequest.swift.
  */
@@ -23,7 +23,7 @@ class CarrierRequest(
     fun header(name: String): String? = headers[name.lowercase()]
 
     /** Value of the carrier session cookie when the request carries it (the
-     * auth-lite posture of docs/webserver-contract.md §3.4). */
+     * auth-lite posture of doc/webserver-contract.md §3.4). */
     val sessionCookie: String?
         get() {
             val raw = headers["cookie"] ?: return null
@@ -81,7 +81,7 @@ sealed class CarrierUpgradePlan {
 }
 
 /** One structured index-injection row (upstream `IndexInjection`,
- * docs/webserver-contract.md §1.5). Values are pre-rendered wire text:
+ * doc/webserver-contract.md §1.5). Values are pre-rendered wire text:
  * `global` values carry their JSON encoding from the producer. */
 class CarrierIndexInjection private constructor(private val kind: Kind) {
 

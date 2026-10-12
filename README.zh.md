@@ -8,10 +8,10 @@ DSH（DeepSeek Harness）生态的移动宿主（Mobile Host）。基于社区 F
 
 ## 文档
 
-- [整体架构方案](docs/ARCHITECTURE.md) —— 分层设计、关键技术决策、里程碑
-- [时序图](docs/sequence-diagrams.zh.md) —— 全流程端到端：启动、网关调用、LLM 流式、安装、模拟用户land、验证机制本身
+- [整体架构方案](doc/ARCHITECTURE.md) —— 分层设计、关键技术决策、里程碑
+- [时序图](doc/sequence-diagrams.zh.md) —— 全流程端到端：启动、网关调用、LLM 流式、安装、模拟用户land、验证机制本身
 - [构建](BUILD.md) —— 唯一构建门面:平台可选、编译+测试、closures 门禁
-- [发布包](docs/release.md) —— 标签触发的版本化发布与三个宿主 App 的打包
+- [发布包](doc/release.md) —— 标签触发的版本化发布与三个宿主 App 的打包
 
 ## 里程碑
 
@@ -30,13 +30,13 @@ DSH（DeepSeek Harness）生态的移动宿主（Mobile Host）。基于社区 F
 
 ### 上游移植（D9）
 
-上表记录各里程碑以自身证据证明的内容。自决策 [D9](docs/decisions.md) 起，Harness 层本身
+上表记录各里程碑以自身证据证明的内容。自决策 [D9](doc/decisions.md) 起，Harness 层本身
 不再是自研重实现：上游 DSH 运行时在 quickjs 上**原样**运行——26 个包由
 `external/ensure-dsh.sh` pin 并做 sha256 校验（21 个上游 DSH 包
 @ 0.1.6-alpha.2 + 5 个 pinned npm 依赖），自研代码只留胶水（垫层、适配器、契约 carrier）。
 经 carrier 在 iOS / Android / 鸿蒙上已点亮：官方 client-modules web 启动、官方 App 壳
 （#61 的 58 包 application 层）、真实 `session.list`/日志，以及 composer 写入路径。汇总
-数字与逐目录清单见 [docs/e2e-matrix.md](docs/e2e-matrix.md)——93 个证据目录、211 条绿色
+数字与逐目录清单见 [doc/e2e-matrix.md](doc/e2e-matrix.md)——93 个证据目录、211 条绿色
 verdict——位于 `hosts/{ios,android,harmony}/artifacts/`（`b1-official-web`、
 `session-live-read`、`composer-live-write`、`android-upstream`、`android-session-live`、
 `d9-official-web`、`d9-session-live`、`d9-write-live`）。

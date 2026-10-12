@@ -452,7 +452,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | --- | --- | --- | --- |
 | MISSING_DELIVERABLE | hosts/ios/artifacts/b4-write-live/receipt.json | iOS b4 工作流（#65） | run-ios-live-write.sh --art-dir hosts/ios/artifacts/b4-write-live 绿色运行 ＋ 该 runner 的 receipt 步骤 |
 
-（检查器读的是英文侧 `docs/e2e-matrix.md` 中的同一张表——配对规则里英文
+（检查器读的是英文侧 `doc/e2e-matrix.md` 中的同一张表——配对规则里英文
 是源；本表为读者保留等价的中文渲染。）
 
 ### 为什么剩余一项不在本分支闭合（如实说明）
@@ -460,7 +460,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 它需要一份 `receipt.json`，而它只能由其主机工作流下一次运行产出。
 （三个 android receipt 行与三个 harmony receipt 行均已于 2026-10-05 闭合：android 由一次真实的完整
 `run-android-full.sh` 本地 Windows 宿主模拟器运行闭合；harmony 在 Windows 侧工具链就位后（CLT 26.0.0.851
-＋ HarmonyOS 7.0.0(26.0.0) 镜像，见 docs/windows-test-plan.md）由完整
+＋ HarmonyOS 7.0.0(26.0.0) 镜像，见 doc/windows-test-plan.md）由完整
 `run-host-e2e.sh` 套件在该模拟器上绿色跑通、三个 d9 目录各自以真实运行刷新并携带 receipt。
 第八项——Android 相机审计的自相矛盾 verdict——已由 v0.0.2 发布回归闭合，
 2026-09-30；见下方闭合小节。）

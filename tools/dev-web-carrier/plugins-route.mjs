@@ -2,7 +2,7 @@
 /**
  * plugins-route.mjs — the `/plugins` prefix route, the Node port of the
  * Android carrier's CarrierPlugins.kt (the client-modules bundle surface
- * of docs/webserver-contract.md §2.5). Serves the revisioned
+ * of doc/webserver-contract.md §2.5). Serves the revisioned
  * single-resource combo `/plugins/??<id>/client.js&rev=<rev>`, the
  * aggregate combine form, and the `.map` identity maps; revs are the
  * COMPOSED GRAPH's (the runtime's `web.boot` rows — applyRuntimeRevs

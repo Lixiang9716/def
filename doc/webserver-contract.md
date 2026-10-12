@@ -462,4 +462,4 @@ boot-failure screen — fail loud, by design.
 - Current dsh carriers: `hosts/ios/App/Source/CarrierServer.swift`,
   `hosts/android/app/src/main/java/com/dshmobile/dsh/CarrierServer.kt`,
   `hosts/harmony/entry/src/main/ets/model/CarrierServer.ets`.
-- E2E manifest conventions: `test/e2e/README.md`, `docs/e2e-matrix.md`.
+- E2E manifest conventions: `test/e2e/README.md`, `doc/e2e-matrix.md`.

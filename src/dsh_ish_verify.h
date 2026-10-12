@@ -5,7 +5,7 @@
  * sealed at STAGING time; this module re-verifies the staged bytes at EVERY
  * boot, so a tampered or partially-written tree refuses the boot instead of
  * becoming the guest root. The pattern (and the argument for it) is adoption
- * decision #2 of docs/research/upstream-capability-mounting.md — the
+ * decision #2 of doc/research/upstream-capability-mounting.md — the
  * rish-app finding that a digest checked once at install leaves every later
  * mount trusting whatever the container now holds.
  *

@@ -8,7 +8,7 @@
 #
 # Staged per the iOS embedder's lists (hosts/ios/Tools/gen_bundle_header.py):
 #   - the 14 vendored spine packages: LICENSE + package.json + lib/**
-#     (only docs/bin/.d.ts pruning differs — the same lean rule the
+#     (only doc/bin/.d.ts pruning differs — the same lean rule the
 #     web-boot closure already follows in assets)
 #   - the pinned zod's runtime closure (classic build's relative import
 #     graph walked at the pin): index.js + v4/classic + v4/core + v4/locales

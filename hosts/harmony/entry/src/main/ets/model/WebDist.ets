@@ -1,7 +1,7 @@
 // dsh:logging-exempt (fallback seat: evidence rides the phase sink)
 /**
  * WebDist — the fallback seat for the OFFICIAL upstream dist, the
- * frontend-static behavior of docs/webserver-contract.md §2.1 with the
+ * frontend-static behavior of doc/webserver-contract.md §2.1 with the
  * Phase-B adaptations of §3.4/§3.6: GET/HEAD only (405 otherwise), traversal
  * → 403, fixed MIME table (+ fonts/png), empty 404s, the auth-lite
  * token→cookie exchange gating index responses only, and the index render
@@ -241,7 +241,7 @@ export class WebDist {
     }
     // A KNOWN kind with a missing field keeps the page's tolerance of absent
     // optional rows (upstream emits theme/preview rows the page is fine
-    // without). An UNKNOWN kind is contract drift (docs/webserver-contract.md
+    // without). An UNKNOWN kind is contract drift (doc/webserver-contract.md
     // §1.5 names the row kinds) — fail loud with the offending name
     // (rules.md rule 5), never a silent skip.
     if (row.kind !== 'global' && row.kind !== 'script' && row.kind !== 'script-src' &&

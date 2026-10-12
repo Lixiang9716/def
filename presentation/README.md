@@ -23,14 +23,14 @@ Web Client from plugin configuration and hardcodes no UI:
   [tools/e2e/ensure-client-bundles.sh](../tools/e2e/ensure-client-bundles.sh)).
   MOUNTED on all three hosts: the carrier-side `ctx.webServer`
   implementation the dist requires — specified in
-  `docs/webserver-contract.md`, landed as the Phase-B carrier — serves it
+  `doc/webserver-contract.md`, landed as the Phase-B carrier — serves it
   (route table + upgrade seats + the fallback seat's injection-rendered
   dist index, `/plugins` bundles, the `POST /api` envelope bridge, the
   `WS /api/remote.mux` journal), so a plain release launch reaches the
   official UI with nothing staged from outside. Evidence:
   `officialweb.mount` 14/14 (iOS), `android.officialweb.mount`
   14/14 (Android), `harmony.officialweb.mount` 17/17 (HarmonyOS) in
-  [docs/e2e-matrix.md](../docs/e2e-matrix.md).
+  [doc/e2e-matrix.md](../doc/e2e-matrix.md).
 
 - `web-client-v2/` — v2 (2026-09-25): the SELF-HOSTED full client
   (`dsh-web-client-v2`), our own UI in the clarklevis deep-ocean glass
@@ -50,7 +50,7 @@ Web Client from plugin configuration and hardcodes no UI:
   (D6). Iteration loop: `node tools/dev-web-carrier/dev-carrier.mjs
   --client next` (fixture dev-echo turn, desktop speed). Evidence:
   `v2web.mount` on iOS and `android.v2web.mount` 19/19 on Android
-  ([docs/e2e-matrix.md](../docs/e2e-matrix.md)).
+  ([doc/e2e-matrix.md](../doc/e2e-matrix.md)).
 
 - `web-client-compact/` — the CREATION-MODE plugin (2026-09-26): a third
   self-hosted client (`dsh-web-client-compact`) whose page IS the product —
@@ -61,7 +61,7 @@ Web Client from plugin configuration and hardcodes no UI:
   a pod. Selected by `-dsh-web-client dsh-web-client-compact` on iOS and
   `--ez dsh.compact true` on Android (both ride the hosts' session-mock-llm
   drive). Evidence: `compact.mount` 16/16 on iOS, `android.compact.mount` 7/7
-  on Android ([docs/e2e-matrix.md](../docs/e2e-matrix.md)).
+  on Android ([doc/e2e-matrix.md](../doc/e2e-matrix.md)).
 
 Which Web Client is active is host configuration (`-dsh-web-client <id>`
 launch argument on the iOS dsh; default `dsh-web-client`) — the device

@@ -3,7 +3,7 @@ import Foundation
 import Network
 
 /// One loopback HTTP + WebSocket endpoint implementing the `ctx.webServer`
-/// contract subset (docs/webserver-contract.md §1, §3): a route table with
+/// contract subset (doc/webserver-contract.md §1, §3): a route table with
 /// exact + prefix named routes, one fallback seat, exact-path-only upgrade
 /// dispatch with multiple concurrent WS seats, request-body reading, and the
 /// legacy M1–M3 static/`/ws` wiring preserved on top. Transport only: the

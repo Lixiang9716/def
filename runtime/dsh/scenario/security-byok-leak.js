@@ -1,7 +1,7 @@
 // dsh:logging-exempt (dev script: the log stream is the product)
 /**
  * Scenario `security.byok-leak` — the BYOK credential's leak surface,
- * attacked (threat model: docs/security-threat-model.md, surface "BYOK
+ * attacked (threat model: doc/security-threat-model.md, surface "BYOK
  * credential flow"). A CANARY credential — a value that must never appear
  * outside the keychain and the wire — is driven through every runtime face
  * a key touches:

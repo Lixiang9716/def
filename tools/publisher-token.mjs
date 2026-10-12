@@ -1,7 +1,7 @@
 // tools/publisher-token.mjs — the MOCK v1 publisher-token validator.
 //
 // Groundwork for the marketplace's v1 publisher API (design doc:
-// docs/marketplace-publisher-auth.md §3/§7): validates the short-lived,
+// doc/marketplace-publisher-auth.md §3/§7): validates the short-lived,
 // PAT-shaped bearer envelope `dshpub-v1.<claims-b64url>.<sig-b64url>`.
 // PURE and OFFLINE by construction — claims parsing and rule judgment only;
 // signature verification is an injected callback (hmacVerifier supplies a

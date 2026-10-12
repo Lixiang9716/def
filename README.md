@@ -8,10 +8,10 @@ A **mobile host** for the DSH (DeepSeek Harness) ecosystem. Built on the communi
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) — layered design, key technical decisions, milestones
-- [Sequence diagrams](docs/sequence-diagrams.md) — every flow end to end: boot, gateway calls, LLM streaming, install, the emulated userland, verification itself
+- [Architecture](doc/ARCHITECTURE.md) — layered design, key technical decisions, milestones
+- [Sequence diagrams](doc/sequence-diagrams.md) — every flow end to end: boot, gateway calls, LLM streaming, install, the emulated userland, verification itself
 - [Build](BUILD.md) — one build facade: platform-selectable, compile + test, the closures gate
-- [Release packages](docs/release.md) — tag-triggered versioned releases and packaging for the three host apps
+- [Release packages](doc/release.md) — tag-triggered versioned releases and packaging for the three host apps
 
 ## Milestones
 
@@ -31,14 +31,14 @@ A **mobile host** for the DSH (DeepSeek Harness) ecosystem. Built on the communi
 ### Upstream port (D9)
 
 The table above records what each milestone proved on its own evidence. Since decision
-[D9](docs/decisions.md), the Harness layer itself is no longer an in-house reimplementation:
+[D9](doc/decisions.md), the Harness layer itself is no longer an in-house reimplementation:
 the upstream DSH runtime runs **verbatim** on quickjs — 26 packages pinned and sha256-verified
 by `external/ensure-dsh.sh` (21 upstream DSH packages at 0.1.6-alpha.2 + 5 pinned
 npm deps), with in-house code reduced to glue (shims, adapters, the contract carrier). Live
 through the carrier on iOS / Android / HarmonyOS: the official client-modules web boot, the
 official app shell (the 58-package application tier, #61), real `session.list`/journal, and
 the composer write path. The consolidated numbers and per-dir inventory:
-[docs/e2e-matrix.md](docs/e2e-matrix.md) — 93 evidence dirs, 211 green verdicts — under
+[doc/e2e-matrix.md](doc/e2e-matrix.md) — 93 evidence dirs, 211 green verdicts — under
 `hosts/{ios,android,harmony}/artifacts/` (`b1-official-web`, `session-live-read`,
 `composer-live-write`, `android-upstream`, `android-session-live`, `d9-official-web`,
 `d9-session-live`, `d9-write-live`).

@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-security-byok-leak.sh — the CLI proof run for the
-# adversarial leg `security.byok-leak` (docs/security-threat-model.md,
+# adversarial leg `security.byok-leak` (doc/security-threat-model.md,
 # surface "BYOK credential flow"): a canary credential is driven through
 # the keychain save, the relaunch route resolution, one REAL turn over the
 # gateway httpFetch transport, and the 401 auth-failure face — then the
@@ -100,7 +100,7 @@ echo "   audit: canary + wrong-key probe absent from the raw log"
 cat > "$ART_DIR/receipt.json" <<EOF
 {
  "host": "macOS $(uname -s | tr '[:upper:]' '[:lower:]')-cli ($(uname -sr) $(uname -m))",
- "phase": "security adversarial leg 4/4 — the BYOK credential's leak surface under a canary audit (docs/security-threat-model.md)",
+ "phase": "security adversarial leg 4/4 — the BYOK credential's leak surface under a canary audit (doc/security-threat-model.md)",
  "launchConfiguration": "./build/dsh-cli . scenario/security-byok-leak.js --http --env DSH_BYOK_CANARY=<canary, not reproduced here>",
  "scenarios": [
   {

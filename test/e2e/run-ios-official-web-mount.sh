@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # test/e2e/run-ios-official-web-mount.sh — Phase-B "official web mounts" E2E driver, now
 # with the runtime LIVE (W-INTEG leg; officialweb.mount,
-# docs/webserver-contract.md §4).
+# doc/webserver-contract.md §4).
 #
 # Builds DSHHost, stages the vendored official upstream dist into the app
 # container (Documents/official-web/dist) plus the web-boot plugin files

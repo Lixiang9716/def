@@ -5,7 +5,7 @@
  * desktop browser, without an emulator.
  *
  * It is the Node port of the mobile carrier surface
- * (docs/webserver-contract.md §2, siblings CarrierWebDist/CarrierPlugins/
+ * (doc/webserver-contract.md §2, siblings CarrierWebDist/CarrierPlugins/
  * CarrierBootConfig on Android-iOS-Harmony): the fallback seat serves the
  * dist with the index render pipeline (injection rows + `<base href="/">`
  * + the `__DSH_BOOT_READY__` tail) behind auth-lite, `/plugins` serves the
@@ -205,7 +205,7 @@ const main = async () => {
 };
 
 /** The route table: /plugins prefix → /api prefix → auth-lite → fallback
- * seat (exact→prefix→fallback, docs/webserver-contract.md §1.2). */
+ * seat (exact→prefix→fallback, doc/webserver-contract.md §1.2). */
 const serveHttp = (req, res, env) => {
   const url = new URL(req.url, 'http://127.0.0.1');
   const respond = (status, mime, body, headers = {}) => {

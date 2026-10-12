@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # gate: e2e-matrix
 # The gate wires `sh test/e2e/matrix.sh --accept-known-gaps`, whose whole job
-# is to stay green while every finding is an OWNED row of docs/e2e-matrix.md.
+# is to stay green while every finding is an OWNED row of doc/e2e-matrix.md.
 # A gate that only ever accepts is vacuous, so this case drives the real CLI
 # over a fixture tree and requires it to REJECT in three directions: an
 # unregistered finding, a register row whose finding is gone (the register
@@ -16,8 +16,8 @@ trap 'rm -rf "$TMP"' EXIT
 
 ROOT="$TMP/tree"
 EV="$ROOT/hosts/x/artifacts/run1"
-REG="$ROOT/docs/e2e-matrix.md"
-mkdir -p "$EV" "$ROOT/test/e2e/scenarios" "$ROOT/docs"
+REG="$ROOT/doc/e2e-matrix.md"
+mkdir -p "$EV" "$ROOT/test/e2e/scenarios" "$ROOT/doc"
 
 # One evidence unit that is well-formed in every respect except its verdict:
 # a FAIL verdict is a finding, and the manifest is present so the finding is
