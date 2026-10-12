@@ -5,7 +5,7 @@
 # the NATIVE UI the scenario blocks on (permission alert, Files picker,
 # approval dialog, notification banner) via idb, then verifies the captured
 # log against all four scenario manifests. Screenshots are saved artifacts
-# (art/screens/) — the verdict is logs only (docs/ARCHITECTURE.md, "E2E
+# (art/screens/) — the verdict is logs only (doc/ARCHITECTURE.md, "E2E
 # verification"). CI runners cannot drive UI; they run the m1 checkers only,
 # so the full m2 E2E happens HERE, locally.
 #
@@ -529,7 +529,7 @@ fi
 log "ALL CHECKERS PASS"
 
 # ---- 7. receipt (reachable ONLY on a real green run) -----------------------
-# Acceptance-bar clause 3 (docs/e2e-matrix.md): every evidence dir carries
+# Acceptance-bar clause 3 (doc/e2e-matrix.md): every evidence dir carries
 # receipt.json. The SHARED writer (write-receipt.sh) is machine-authored
 # HERE, after the summary loop above died on any failing checker, so a
 # receipt can never exist without this real green run (never synthesized).

@@ -1,6 +1,6 @@
 // dsh:logging-exempt (web page: all E2E evidence flows through carrier/runtime logs)
 /**
- * mux.js — the page half of WS /api/remote.mux (docs/webserver-contract.md
+ * mux.js — the page half of WS /api/remote.mux (doc/webserver-contract.md
  * §2.4). One multiplexed socket: the page opens streams ({type:'open',
  * streamId, endpoint, payload}, cancel with {type:'cancel', streamId}) and
  * the host answers {type:'item'|'error'|'end', streamId, ...} frames. The

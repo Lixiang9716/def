@@ -136,9 +136,9 @@ __pycache__/
 # close-and-unlink form is a classic lockfile race — gov/decision.py:_locked
 # keeps the path stable so a second writer cannot slip into a fresh inode).
 # The sibling .gov/tasks/.new.lock above is ignored for the same reason; this
-# one lands under docs/, so without this line it is permanent `git status`
+# one lands under doc/, so without this line it is permanent `git status`
 # noise in an otherwise clean tree.
-docs/.decision.lock
+doc/.decision.lock
 runtime/dsh/logs-upstream.txt
 runtime/dsh/logs-upstream-boot.txt
 runtime/dsh/logs-settings-surfaces.txt

@@ -1,6 +1,6 @@
 // dsh:logging-exempt (web page: all E2E evidence flows through carrier/runtime logs)
 /**
- * api.js — the POST /api envelope bridge (docs/webserver-contract.md §2.3).
+ * api.js — the POST /api envelope bridge (doc/webserver-contract.md §2.3).
  * One frozen request shape {type:'client-request', rpcId, method, payload};
  * the 200 body is {type:'server-response', rpcId, result:{ok,value}|{ok,
  * error:{code,message,details}}}. Auth rides the token cookie the host sets

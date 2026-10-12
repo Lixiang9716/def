@@ -2,7 +2,7 @@
 """doc-crosslinks gate: every bilingual doc pair must link to its counterpart.
 
 A pair is <stem>.md + <stem>.zh.md where both sides are git-tracked and the
-English side is in scope (README.md at the root, docs/**/*.md) — matching the
+English side is in scope (README.md at the root, doc/**/*.md) — matching the
 pairing gate's scope.
 
 Rule: each side must contain a markdown link whose target resolves to the
@@ -24,7 +24,7 @@ def tracked_files():
 
 
 def in_scope(name):
-    return name == "README.md" or name.startswith("docs/")
+    return name == "README.md" or name.startswith("doc/")
 
 
 def links_to(text, counterpart):

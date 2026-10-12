@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Cross-host E2E evidence inventory — regenerates the committed-artifacts
- * matrix (docs/e2e-matrix.md) from the working tree: every directory carrying
+ * matrix (doc/e2e-matrix.md) from the working tree: every directory carrying
  * verdict*.json is an evidence unit; each is checked for the acceptance bar's
  * deliverables (logs.txt + scenario.jsonl + receipt.json + verdicts), PNG
  * integrity (magic bytes — screenshots are debugging artifacts, never checker
@@ -18,7 +18,7 @@
  *                       same change; (c) a register grown past
  *                       KNOWN_GAP_BUDGET — the backlog shrinks by default.
  *
- * The register is machine-read from the known-gaps table of docs/e2e-matrix.md:
+ * The register is machine-read from the known-gaps table of doc/e2e-matrix.md:
  * the human honest list IS the register — never a second copy to drift — and an
  * unreadable one is itself a finding (rule 5: fail loud, never silently skip).
  * Manifest-revision drift (an older evidence dir checked against a since-grown
@@ -53,7 +53,7 @@ const DELIVERABLES = ['logs.txt', 'scenario.jsonl', 'receipt.json'];
 const SKIP_DIRS = new Set(['.git', 'node_modules']);
 const VERDICT_RE = /^verdict(?:-.+)?\.json$/;
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const REGISTER_DOC = 'docs/e2e-matrix.md';
+const REGISTER_DOC = 'doc/e2e-matrix.md';
 /** The register size at which this checker first became gate-able: the seven
  *  host receipts awaiting their owning work stream's re-run plus the two
  *  quota-blocked harmony llm.live-stream verdicts. Accepting a NEW gap means raising

@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-seam-inventory-e2e.sh — the CLI proof run for the
-# capability-seams comparison (docs/plugin-dev.md): boots the
+# capability-seams comparison (doc/plugin-dev.md): boots the
 # production-equivalent mobile spine (every product flag + the composition
 # plane), walks the cordis registry, and probes every upstream-catalog
 # service name through the resolver. The present/absent split is the

@@ -68,7 +68,7 @@ interpreter booting a real kernel per program run (~40 s). Its lessons:
   composition with activation auditing), `config-editor`, account/job Remote
   controllers, duplex `RemoteStream`s, registry-fallback plugin manager all
   landed after `0.1.6-alpha.2`. A vendored refresh needs its own planned
-  change; watch `docs/decisions.md` for it.
+  change; watch `doc/decisions.md` for it.
 - **No hostType upstream either**: platform differences are provider swaps and
   client `platform` declarations; the wire never carries Host objects.
 

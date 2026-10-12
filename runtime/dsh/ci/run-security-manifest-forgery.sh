@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-security-manifest-forgery.sh — the CLI proof run for
-# the adversarial leg `security.manifest-forgery` (docs/security-threat-
+# the adversarial leg `security.manifest-forgery` (doc/security-threat-
 # model.md, surface "marketplace supply chain"): a five-rung pipeline
 # forgery ladder (capability escalation past a stale trust record and past
 # fully recomputed trust, entry replacement, an id swap, an old package
@@ -123,14 +123,14 @@ if [ "$ROLLBACK_OUTCOME" != "installed" ] && [ "$ROLLBACK_OUTCOME" != "rejected"
     exit 1
 fi
 if [ "$ROLLBACK_OUTCOME" = "installed" ]; then
-    FINDING="HIGH FINDING (recorded, not hidden): the stale-but-valid catalog REPLAYED into an install — dsh-echo@0.9.0 landed through the resolver (the pinned key's own old signature verifies; the catalog carries no freshness anchor). See docs/security-threat-model.md, surface 'marketplace supply chain (freshness)'."
+    FINDING="HIGH FINDING (recorded, not hidden): the stale-but-valid catalog REPLAYED into an install — dsh-echo@0.9.0 landed through the resolver (the pinned key's own old signature verifies; the catalog carries no freshness anchor). See doc/security-threat-model.md, surface 'marketplace supply chain (freshness)'."
 else
     FINDING="the replayed catalog was rejected by the client — a freshness guard is in force."
 fi
 cat > "$ART_DIR/receipt.json" <<EOF
 {
  "host": "macOS $(uname -m) (the desktop CLI, no simulator)",
- "phase": "security adversarial leg 2/4 — the install pipeline under a manifest forgery ladder + a stale-catalog replay (docs/security-threat-model.md)",
+ "phase": "security adversarial leg 2/4 — the install pipeline under a manifest forgery ladder + a stale-catalog replay (doc/security-threat-model.md)",
  "launchConfiguration": "./build/dsh-cli . scenario/security-manifest-forgery.js --http --env DSH_MARKET_URL=<loopback, ephemeral>",
  "scenarios": [
   {

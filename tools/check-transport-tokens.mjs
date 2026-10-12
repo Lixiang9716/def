@@ -38,7 +38,7 @@
  *   - artifacts/ (any path segment) — committed E2E evidence captures; the
  *     bytes record what past runs emitted, renaming them would forge
  *     history.
- *   - .agents/notes/, .gov/tasks/, .gov/surprises.jsonl, docs/e2e-matrix.md
+ *   - .agents/notes/, .gov/tasks/, .gov/surprises.jsonl, doc/e2e-matrix.md
  *     (+ .zh.md) — historical governance assets; the 2026-10 rename
  *     decision (owner ruling) keeps old spellings in them: decision
  *     addresses are not renumbered.
@@ -83,7 +83,7 @@ const EXCLUDE = [
   (p) => p.startsWith('node_modules/'),
   (p) => p.startsWith('hosts/ios/App/Generated/'),
   (p) => p.startsWith('test/e2e/fixtures/'),
-  (p) => p.startsWith('docs/e2e-matrix.md') || p === 'docs/e2e-matrix.zh.md',
+  (p) => p.startsWith('doc/e2e-matrix.md') || p === 'doc/e2e-matrix.zh.md',
   (p) => (p.split('/').pop() || '').startsWith('aoci'),
 ];
 

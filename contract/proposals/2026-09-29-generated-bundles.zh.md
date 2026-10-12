@@ -158,7 +158,7 @@ regen-and-diff 机制存在要检验的性质，而且自那以后每次 gate �
 （`2026-09-22-the-ios-release-staging-phase-moves-into.md:62-65`）、以及
 D17 的入库副本替代方案的 iOS leg。接受后，通过 `gov decision add` 落一条
 decision row（编号由登记册分配——痛点简报的 "D9" 是本轮运行的简称，
-`docs/decisions.md` 的 D9 是另一个决策：上游 verbatim 移植）。在此之前，
+`doc/decisions.md` 的 D9 是另一个决策：上游 verbatim 移植）。在此之前，
 本文什么都不生效：入库字节保留，gate 保持逐字节比较。
 
 ## 证据基础

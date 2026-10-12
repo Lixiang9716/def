@@ -55,7 +55,7 @@ React Native 代理应用，本地执行工具，内嵌全系统 x86-64 解释�
 - **我们的钉版落后于 preset 浪潮**：`agent-preset-registry`（带激活审计的
   按会话组合）、`config-editor`、account/job Remote 控制器、双工
   `RemoteStream`、带回退的插件管理器都在 `0.1.6-alpha.2` 之后落地。
-  vendored 刷新需要一次有计划的变更；关注 `docs/decisions.md`。
+  vendored 刷新需要一次有计划的变更；关注 `doc/decisions.md`。
 - **上游同样没有 hostType**：平台差异是提供者互换与客户端 `platform`
   声明；线上协议永不携带 Host 对象。
 

@@ -1,7 +1,7 @@
 import Foundation
 
 /// One parsed HTTP request handed to route handlers — transport facts only
-/// (the carrier carries no harness concepts, docs/webserver-contract.md §1).
+/// (the carrier carries no harness concepts, doc/webserver-contract.md §1).
 /// The receiving handler owns the FULL response lifecycle for its connection.
 struct CarrierRequest {
     let method: String
@@ -22,7 +22,7 @@ struct CarrierRequest {
     func header(_ name: String) -> String? { headers[name.lowercased()] }
 
     /// Value of the carrier session cookie when the request carries it (the
-    /// auth-lite posture of docs/webserver-contract.md §3.4).
+    /// auth-lite posture of doc/webserver-contract.md §3.4).
     var sessionCookie: String? {
         guard let raw = headers["cookie"] else { return nil }
         for pair in raw.split(separator: ";") {
@@ -62,7 +62,7 @@ enum CarrierUpgradePlan {
 }
 
 /// One structured index-injection row (upstream `IndexInjection`,
-/// docs/webserver-contract.md §1.5). Values are pre-rendered wire text:
+/// doc/webserver-contract.md §1.5). Values are pre-rendered wire text:
 /// `global` values carry their JSON encoding from the producer.
 struct CarrierIndexInjection {
     enum Placement: String {

@@ -96,13 +96,13 @@ fi
 [ -f "$HAP" ] || die "no HAP at $HAP (build first or set DSH_SKIP_BUILD=1)"
 
 # NOTE: the unsigned debug HAP installs on the emulator directly; a REAL
-# device needs the signed build (docs/troubleshooting.md — the ~/.ohos
+# device needs the signed build (doc/troubleshooting.md — the ~/.ohos
 # signing material). An install that keeps failing lands in the die below
 # with the remedy named.
 deadline=$(( $(date +%s) + 180 ))
 until hdc install -r "$HAP" >/dev/null 2>&1; do
     if [ "$(date +%s)" -ge "$deadline" ]; then
-        die "hdc install kept failing within 180s (real device? signing: docs/troubleshooting.md)"
+        die "hdc install kept failing within 180s (real device? signing: doc/troubleshooting.md)"
     fi
     sleep 3
 done

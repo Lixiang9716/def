@@ -130,7 +130,7 @@ else
 fi
 
 # ---- receipt (reachable ONLY on a real green run) ---------------------------
-# Acceptance-bar clause 3 (docs/e2e-matrix.md) — via the SHARED writer.
+# Acceptance-bar clause 3 (doc/e2e-matrix.md) — via the SHARED writer.
 sh test/e2e/write-receipt.sh "$ART" "$UDID" "test/e2e/run-ios-live-session.sh" \
   "W-SESS session-live: the FULL upstream agent spine boots on-device, claims /api/session.list + the mux session/journal streams, and answers the official web app with real data — one scripted-llm turn before the page loads and one streamed live into the attached page, one-to-one against the session-live-read manifest" \
   "-dsh-mode session-live; vendored official dist + web-boot plugin files staged" \

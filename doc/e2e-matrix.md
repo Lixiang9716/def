@@ -535,7 +535,7 @@ produce. (The three Android receipt rows closed 2026-10-05 — a real full
 `run-android-full.sh` run on a local Windows-host emulator. The THREE HARMONY
 receipt rows also closed 2026-10-05: after the Windows-side toolchain landed
 (CLT 26.0.0.851 + the HarmonyOS 7.0.0(26.0.0) image, see
-docs/windows-test-plan.md), the full `run-host-e2e.sh` suite ran GREEN on
+doc/windows-test-plan.md), the full `run-host-e2e.sh` suite ran GREEN on
 that emulator and each d9 dir was refreshed by its own real run, receipt
 included. The camera-audit verdict gap was closed by the v0.0.2 release
 regression, 2026-09-30.) Writing the remaining receipt from this branch

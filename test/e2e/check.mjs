@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * E2E verdict by logs — one-to-one expected<->logged match, per the
- * "E2E verification" contract in docs/ARCHITECTURE.md: for the manifest's
+ * "E2E verification" contract in doc/ARCHITECTURE.md: for the manifest's
  * scenario, the captured log must contain exactly one structured entry per
  * expected event, in declaration order, nothing missing, nothing extra.
  * The failure report IS the diagnosis: it lists the first mismatched index

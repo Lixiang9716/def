@@ -1,7 +1,7 @@
 // dsh:logging-exempt (transport wiring: evidence rides the phase sink)
 /**
  * CarrierRoutes — the legacy M5 wiring expressed on the Phase-B route table
- * (docs/webserver-contract.md §3.2 "migrate the existing wiring"): the static
+ * (doc/webserver-contract.md §3.2 "migrate the existing wiring"): the static
  * fallback seat over the materialized Web Client directory and the `/ws`
  * exact upgrade. Behavior is byte-compatible with the pre-Phase-B carrier —
  * the harmony.capability-binding manifest is frozen and stays green unchanged.

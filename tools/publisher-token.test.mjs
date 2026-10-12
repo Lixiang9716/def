@@ -1,7 +1,7 @@
 // dsh:logging-exempt (test file: assertions ARE the product)
 /**
  * publisher-token.test.mjs — the mock v1 publisher-token validator's own
- * net (tools/publisher-token.mjs, design doc: docs/marketplace-publisher-auth.md).
+ * net (tools/publisher-token.mjs, design doc: doc/marketplace-publisher-auth.md).
  *
  * Falsify-then-restore: this suite was written and run FIRST against a
  * deliberately rule-less stub (always `{ ok: true }`) — it went RED — and

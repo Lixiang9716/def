@@ -222,7 +222,7 @@ hosts/harmony/ci/run-device-parity.sh [artifacts-dir]
 # receipt.json faces). `hdc list targets` selects the device; DSH_HDC_TARGET
 # pins one on a multi-device farm. The unsigned debug HAP installs on the
 # emulator as-is; a REAL device needs the signed build
-# (docs/troubleshooting.md).
+# (doc/troubleshooting.md).
 ```
 
 Manual flow, step by step:

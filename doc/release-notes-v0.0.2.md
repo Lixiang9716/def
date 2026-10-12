@@ -76,7 +76,7 @@ English | [简体中文](release-notes-v0.0.2.zh.md)
 - #241 — nine developer-experience pain points: the `quickjs-boot-parse`
   gate, the `check-staging` import-graph cross-checker, `build.sh` list
   validation at parse time, shared logcat capture, `sim-preflight` on all
-  twelve iOS runners, the sweep retry, `docs/troubleshooting.md`, and the
+  twelve iOS runners, the sweep retry, `doc/troubleshooting.md`, and the
   generated-bundles D9 amendment draft.
 - #244 — the `staging-check` gate closes its governance debts: a rule-6
   rejection case (a planted `upstream/boot.js` gap exits 1) and the missing

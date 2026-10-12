@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 /// The legacy M1–M3 carrier wiring, expressed on the Phase-B route table
-/// (docs/webserver-contract.md §3.2 "migrate the existing wiring"): the
+/// (doc/webserver-contract.md §3.2 "migrate the existing wiring"): the
 /// static fallback seat over the staged web root, the `/ws` exact upgrade,
 /// and the `/gateway-e2e` prefix streams. Behavior is byte-compatible with
 /// the pre-Phase-B server — the m1/m2/m3 manifests are frozen and stay green

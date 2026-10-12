@@ -115,7 +115,7 @@ host's embed lists — is the next phase, not this one.
 dsh-mobile/
 ├── build/        ┐
 ├── test/         │ the periphery ring — build, test, docs, packages:
-├── docs/         │ project-adjacent surfaces, not the product
+├── doc/         │ project-adjacent surfaces, not the product
 ├── packages/     ┘
 ├── tools/          govrail checker scripts (governance tooling)
 ├── contract/     ┐
@@ -165,7 +165,7 @@ Node-testable surface we own (vitest + v8 provider, per-surface
 include/exclude with the boundaries named) and prints one aggregate table;
 `--check` enforces the warn-tier floors the `coverage-floor` gate watches.
 Full contract — measured baseline, the honest not-counted list, how to add
-a surface: [docs/test-coverage.md](docs/test-coverage.md).
+a surface: [doc/test-coverage.md](doc/test-coverage.md).
 
 ## CI mapping
 
@@ -179,6 +179,6 @@ workflow — the mapping, and where each leg runs:
 | harmony | `hvigorw assembleHap` (`dev/harmonyos`) | `hosts/harmony/ci/run-host-e2e.sh` (same job) |
 | core | `src/build.sh` (macOS local; the CLI legs' own runners) | `runtime/dsh/ci/run-*-e2e.sh` |
 
-[D9]: docs/decisions.md
-[D6]: docs/decisions.md
-[D17]: docs/decisions.md
+[D9]: doc/decisions.md
+[D6]: doc/decisions.md
+[D17]: doc/decisions.md

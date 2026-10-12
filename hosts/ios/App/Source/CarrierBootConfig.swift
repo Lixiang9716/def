@@ -1,6 +1,6 @@
 import Foundation
 
-/// The index-injection values for the official page (docs/webserver-contract.md
+/// The index-injection values for the official page (doc/webserver-contract.md
 /// §2.6): the `__ModuleLoader__` bootstrap facade, the `__DSH_BOOT__` entry
 /// graph, and the `__DSH_CONNECTION_RECOVERY__` timing. Defaults are
 /// carrier-generated from the staged plugin set — the same JSON shapes

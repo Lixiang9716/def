@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-security-gateway-fuzz.sh — the CLI proof run for the
-# adversarial leg `security.gateway-fuzz` (docs/security-threat-model.md,
+# adversarial leg `security.gateway-fuzz` (doc/security-threat-model.md,
 # surface "gateway validation"): a 21-case malformed-primitive battery fired
 # through the RAW __dshGatewayCall seam — wrong types, missing fields, scope
 # escapes, overlong values, negative/missing bounds, unknown primitive names,
@@ -78,7 +78,7 @@ echo "   audits: denied=$N_DENIED (fixed reason codes, no raw request values)"
 cat > "$ART/receipt.json" <<EOF
 {
  "host": "macOS $(uname -m) (the desktop CLI, no simulator)",
- "phase": "security adversarial leg 1/4 — the gateway validation face under a malformed-primitive battery (docs/security-threat-model.md)",
+ "phase": "security adversarial leg 1/4 — the gateway validation face under a malformed-primitive battery (doc/security-threat-model.md)",
  "launchConfiguration": "./build/dsh-cli . scenario/security-gateway-fuzz.js --http",
  "scenarios": [
   {

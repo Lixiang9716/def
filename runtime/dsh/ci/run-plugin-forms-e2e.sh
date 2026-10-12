@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-plugin-forms-e2e.sh — the CLI proof run for the
-# upstream plugin tutorial's one-to-one promise (docs/plugin-dev.md): all
+# upstream plugin tutorial's one-to-one promise (doc/plugin-dev.md): all
 # three plugin forms (object / function / Service class) mount LIVE through
 # the workspace chain, `inject` orders the load, `ctx.effect` cleanups run
 # on unload, an edited source reloads under the epoch cache-buster, and the

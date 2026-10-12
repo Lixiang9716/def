@@ -1,6 +1,6 @@
 #!/bin/sh
 # runtime/dsh/ci/run-security-jail.sh — the CLI proof run for the
-# adversarial leg `security.jail` (docs/security-threat-model.md, surfaces
+# adversarial leg `security.jail` (doc/security-threat-model.md, surfaces
 # "QuickJS sandbox / wasm jail" and "the socket seam's loopback boundary"):
 #
 #   1. the WASM jail — crafted modules run IN-PROCESS by the vendored wasm3
@@ -70,7 +70,7 @@ echo "   audits: host-not-loopback=$N_HOST scope-not-loopback=$N_SCOPE (fixed re
 cat > "$ART/receipt.json" <<EOF
 {
  "host": "macOS $(uname -m) (the desktop CLI, no simulator)",
- "phase": "security adversarial leg 3/4 — the wasm jail's import surface + the socket loopback boundary (docs/security-threat-model.md); the CLI now SERVES contract v1.2.0 wasmRun through the portable spine (dsh_wasm.c + wasm3, the iOS code path)",
+ "phase": "security adversarial leg 3/4 — the wasm jail's import surface + the socket loopback boundary (doc/security-threat-model.md); the CLI now SERVES contract v1.2.0 wasmRun through the portable spine (dsh_wasm.c + wasm3, the iOS code path)",
  "launchConfiguration": "./build/dsh-cli . scenario/security-jail.js",
  "scenarios": [
   {

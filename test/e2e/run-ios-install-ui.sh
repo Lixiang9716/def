@@ -15,7 +15,7 @@
 #   - install-from-http.json (the JS scenario's 45 events)
 #   - install-carrier-evidence.json (carrier-side config/route/slot/mount evidence)
 # Screenshots are saved artifacts (screens/) — the verdict is logs only
-# (docs/ARCHITECTURE.md, "E2E verification").
+# (doc/ARCHITECTURE.md, "E2E verification").
 #
 # usage: run-ios-install-ui.sh [--udid U] [--art-dir D] [--skip-build]
 #
@@ -155,7 +155,7 @@ fi
 log "ALL CHECKERS PASS"
 
 # ---- 6. receipt (reachable ONLY on a real green run) ------------------------
-# The acceptance-bar clause run-ios.sh already serves (docs/e2e-matrix.md):
+# The acceptance-bar clause run-ios.sh already serves (doc/e2e-matrix.md):
 # every evidence dir carries receipt.json, machine-authored HERE — after the
 # summary loop above died on any failing checker — so a receipt can never
 # exist without this real green run (never synthesized). This runner predates

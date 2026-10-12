@@ -167,7 +167,7 @@ push (the pre-push hook re-runs the scoped DAG automatically).
 - `gov surprise list` — counts per signature; the "have I seen this
   before?" lookup before recording.
 - `gov decision next/add/verify` — the D-number registry behind
-  docs/decisions.md: `next` finds the free number, `add` lands a row
+  doc/decisions.md: `next` finds the free number, `add` lands a row
   atomically and validated, `verify` guards the table structure. A
   decision row lands through `add`, never hand-edited into the table.
 - `gov parse` — per-file structure facts (function spans, line counts,

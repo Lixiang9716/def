@@ -1,7 +1,7 @@
 // dsh:logging-exempt (dev script: the log stream is the product)
 /**
  * Scenario `security.gateway-fuzz` — the malformed-primitive battery against
- * the gateway's VALIDATION face (threat model: docs/security-threat-model.md,
+ * the gateway's VALIDATION face (threat model: doc/security-threat-model.md,
  * surface "gateway validation"). The typed shim (gateway.js) is bypassed on
  * purpose: the attacks go through the RAW `__dshGatewayCall` seam exactly the
  * way a hostile or compromised module would — wrong types, missing fields,

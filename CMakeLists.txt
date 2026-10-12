@@ -14,7 +14,7 @@
 #   src/      → the C spine (moved from src; the compat symlink
 #               runtime/dsh/vendor → ../external still carries bundle-space paths)
 #   example/  → the desktop executables' mains (moved out of src/)
-#   test/     → test/ + the gov gates     doc/      → docs/
+#   test/     → test/ + the gov gates     doc/      → doc (phase 3 move)
 cmake_minimum_required(VERSION 3.21)
 project(dsh-mobile LANGUAGES C)
 

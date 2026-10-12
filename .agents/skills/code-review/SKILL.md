@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Use when reviewing a pull request in this repository; orients the reviewer to what code alone cannot show — decisions, guardrail proof, and pairing honesty — graded item by item against docs/review-rubric.md when the project maintains one.
+description: Use when reviewing a pull request in this repository; orients the reviewer to what code alone cannot show — decisions, guardrail proof, and pairing honesty — graded item by item against doc/review-rubric.md when the project maintains one.
 ---
 
 # Code review
@@ -23,7 +23,7 @@ A short review with one substantiated blocker beats a list of nits. Machines alr
 
 ## Grade against the rubric
 
-If the project maintains `docs/review-rubric.md`, grade **only the items the diff touches**, each with observed evidence (file and line). The rubric is the closed set of judgment axes; anything outside it is either a nit (grouped at the end, non-blocking) or a new criterion being invented — propose it as a rubric item instead of repeating it ad hoc.
+If the project maintains `doc/review-rubric.md`, grade **only the items the diff touches**, each with observed evidence (file and line). The rubric is the closed set of judgment axes; anything outside it is either a nit (grouped at the end, non-blocking) or a new criterion being invented — propose it as a rubric item instead of repeating it ad hoc.
 
 Without a rubric, review what only a reviewer can check:
 

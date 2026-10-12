@@ -56,7 +56,7 @@
 
 - #241 — 九个开发者体验痛点:`quickjs-boot-parse` 门、`check-staging` 导入图
   交叉校验器、`build.sh` 解析期清单校验、共享 logcat 采集、十二个 iOS runner 全接
-  `sim-preflight`、sweep 重试、`docs/troubleshooting.md`,以及 generated-bundles
+  `sim-preflight`、sweep 重试、`doc/troubleshooting.md`,以及 generated-bundles
   D9 修正草案。
 - #244 — `staging-check` 门补齐治理欠账:rule-6 反证用例(植入的
   `upstream/boot.js` 缺口 exit 1)与缺失的 `needs: ["self-test"]` 串行边。

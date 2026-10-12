@@ -2,7 +2,7 @@
 /**
  * Scenario `security.jail` — the WASM jail's import surface and the loopback
  * socket boundary, attacked through the RAW gateway seam (threat model:
- * docs/security-threat-model.md, surfaces "QuickJS sandbox / wasm jail" and
+ * doc/security-threat-model.md, surfaces "QuickJS sandbox / wasm jail" and
  * "the socket seam's loopback boundary").
  *
  * The wasm face: a module runs interpreted IN-PROCESS (dsh_wasm.c + wasm3 —
