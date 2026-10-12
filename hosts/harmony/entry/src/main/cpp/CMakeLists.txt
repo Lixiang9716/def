@@ -3,13 +3,14 @@
 # Compiles the platform-neutral rt host plus the pinned quickjs-ng
 # sources through hvigor's externalNativeOptions (clang / OHOS NDK), exactly
 # the compile set the desktop proof run uses
-# (runtime/dsh/host/build.sh): dtoa.c libregexp.c libunicode.c quickjs.c.
+# (src/build.sh): dtoa.c libregexp.c libunicode.c quickjs.c.
 # quickjs-libc is deliberately excluded — the rt host provides its own
 # minimal glue (runtime/dsh/README.md, "Embedding contract").
 cmake_minimum_required(VERSION 3.5.0)
 project(dsh_druntime)
 
 set(DSH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../runtime/dsh)
+set(DSH_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../src)
 set(QJS_DIR ${DSH_ROOT}/../../external/quickjs-ng/0.17.0)
 set(ZSTD_DIR ${DSH_ROOT}/../../external/zstd/1.5.7)
 
@@ -34,12 +35,12 @@ message(STATUS "dsh rt: ${DSH_ENSURE_OUT}${DSH_ENSURE_ERR}")
 add_library(druntime SHARED
   napi_init.cpp
   gateway_smoke.cpp
-  ${DSH_ROOT}/host/dsh_runtime_host.c
+  ${DSH_SRC_DIR}/dsh_runtime_host.c
   # dsh_socket.c — the loopback socket seam's pump table (contract v1.8.0):
   # dsh_runtime_host.c references dsh_socket_poll/close_all unconditionally,
   # so leaving it out is a link error, not a negotiation (the gateway still
   # decides what gets SERVED).
-  ${DSH_ROOT}/host/dsh_socket.c
+  ${DSH_SRC_DIR}/dsh_socket.c
   ${QJS_DIR}/dtoa.c
   ${QJS_DIR}/libregexp.c
   ${QJS_DIR}/libunicode.c
@@ -73,7 +74,7 @@ add_library(druntime SHARED
 )
 
 target_include_directories(druntime PRIVATE
-  ${DSH_ROOT}/host
+  ${DSH_SRC_DIR}
   ${QJS_DIR}
   ${ZSTD_DIR}
   ${ZSTD_DIR}/common
@@ -84,7 +85,7 @@ target_include_directories(druntime PRIVATE
 # ZSTD_DISABLE_ASM (zstd's own switch) keeps every arch on the C fast loop.
 target_compile_definitions(druntime PRIVATE ZSTD_DISABLE_ASM=1)
 
-# Mirror the desktop proof-build flags (runtime/dsh/host/build.sh):
+# Mirror the desktop proof-build flags (src/build.sh):
 # C11, -O1, _GNU_SOURCE. Warnings from the upstream engine sources are not
 # this repo's to fix (D6) — silence only the noisy generic ones.
 set_target_properties(druntime PROPERTIES
@@ -122,7 +123,7 @@ target_compile_options(druntime PRIVATE
 
 # The OHOS musl declares getentropy in <unistd.h> (glibc/macOS: <stdlib.h>);
 # force-include it for the platform-neutral host instead of editing upstream.
-set_source_files_properties(${DSH_ROOT}/host/dsh_runtime_host.c PROPERTIES
+set_source_files_properties(${DSH_SRC_DIR}/dsh_runtime_host.c PROPERTIES
   COMPILE_OPTIONS "-include;unistd.h"
 )
 

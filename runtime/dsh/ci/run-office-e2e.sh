@@ -27,7 +27,7 @@ sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh > /dev/null
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. loopback mock LLM (the boot requires a route; no agent turn runs),
 #    condition-polled (rule 8) for its announce.

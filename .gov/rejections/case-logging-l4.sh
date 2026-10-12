@@ -17,7 +17,7 @@ trap 'rm -rf "$TMP"' EXIT
 
 fixture() { # $1 = dir, $2 = operative-branch (yes/no), $3 = plumbing (yes/no)
   local dir="$1" branch="$2" plumbing="$3"
-  mkdir -p "$dir/runtime/logger" "$dir/runtime/dsh/host" \
+  mkdir -p "$dir/runtime/logger" "$dir/runtime/dsh" "$dir/src" \
            "$dir/hosts/ios/DSHSpike.xcodeproj" "$dir/hosts/android/app" \
            "$dir/hosts/harmony/entry"
   cd "$dir"
@@ -57,12 +57,12 @@ JS
     echo 'externalNativeBuild { cmake { cFlags += "-DDSH_RELEASE=1" } }' \
       > hosts/android/app/build.gradle.kts
     echo '"DSH_RELEASE": true' > hosts/harmony/entry/build-profile.json5
-    echo '-DDSH_RELEASE=1' > runtime/dsh/host/build.sh
+    echo '-DDSH_RELEASE=1' > src/build.sh
   else
     : > hosts/ios/project.yml
     : > hosts/android/app/build.gradle.kts
     : > hosts/harmony/entry/build-profile.json5
-    : > runtime/dsh/host/build.sh
+    : > src/build.sh
   fi
   git add -A
   git -c user.email=t@t -c user.name=t commit -qm fixture

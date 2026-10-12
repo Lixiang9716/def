@@ -1,6 +1,6 @@
 /* dsh_ish.c — boot the emulated Linux userland and run one program in it.
  *
- * See dsh_ish.h for the seam and runtime/dsh/host/ish/CMakeLists.txt for how
+ * See dsh_ish.h for the seam and src/ish/CMakeLists.txt for how
  * the engine is built. The three moves this file makes are the fork's own (its
  * agent shell in app/ISHShellExecutor.m and its JSON-RPC runner in
  * app/DebugServer.c): boot the kernel once, and per command create a child of

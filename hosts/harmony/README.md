@@ -41,7 +41,7 @@ ONE launch on the emulator now proves the host end to end in two phases:
    banner leg needs a real device.
 
 - `entry/src/main/cpp/gateway_smoke.cpp|h` — the platform twin of the desktop CLI
-  smoke backend (`runtime/dsh/host/main_cli.c`): it answers the dispatched calls of
+  smoke backend (`example/main_cli.c`): it answers the dispatched calls of
   the gateway scenarios — fsRead/fsWrite/fsScope over the app files dir exposed as
   scope `"app"` (`filesDir/dsh-fs`, passed by ArkTS as the `fsRoot` argument,
   mkdir -p parity on write), keychain honestly `unavailable` (declared so in the
@@ -173,7 +173,7 @@ Layout:
   (hvigor 6.x, modelVersion 5.0.0, `compatibleSdkVersion: "26.0.0"`).
 - `AppScope/` — app identity (`com.dshmobile.host`).
 - `entry/src/main/cpp/` — the NAPI library (`libdruntime.so`): CMake compiles
-  `runtime/dsh/host/dsh_runtime_host.c`, `gateway_smoke.cpp`, plus the pinned
+  `src/dsh_runtime_host.c`, `gateway_smoke.cpp`, plus the pinned
   quickjs-ng 0.17.0 sources (`dtoa.c libregexp.c libunicode.c quickjs.c`) through
   hvigor's externalNativeOptions. CMake runs `external/ensure.sh`
   first, so the vendor tree is always materialized before compiling.

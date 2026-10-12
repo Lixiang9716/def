@@ -17,7 +17,7 @@ WAIT_DEADLINE_SECONDS=15
 
 sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh > /dev/null
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 LLM_LOG="$(mktemp /tmp/dsh-mock-llm-seams.XXXXXX)"
 node ci/mock-llm-server.mjs > "$LLM_LOG" 2>&1 &

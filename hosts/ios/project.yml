@@ -18,7 +18,7 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     HEADER_SEARCH_PATHS:
-      - "$(SRCROOT)/../../runtime/dsh/host"
+      - "$(SRCROOT)/../../src"
       - "$(SRCROOT)/../../external/quickjs-ng/0.17.0"
       # The wasm3 interpreter's own headers (dsh_wasm.c includes them by
       # quoted name from a different directory than the vendored sources).
@@ -44,12 +44,12 @@ targets:
     platform: iOS
     sources:
       - path: App
-      - path: ../../runtime/dsh/host/dsh_runtime_host.c
+      - path: ../../src/dsh_runtime_host.c
       # dsh_socket.c — the loopback socket seam's pump table (contract
       # v1.8.0): dsh_runtime_host.c references dsh_socket_poll/close_all
       # unconditionally, so leaving it out is a link error, not a
       # negotiation (the gateway still decides what gets SERVED).
-      - path: ../../runtime/dsh/host/dsh_socket.c
+      - path: ../../src/dsh_socket.c
       - path: ../../external/quickjs-ng/0.17.0/dtoa.c
       - path: ../../external/quickjs-ng/0.17.0/libregexp.c
       - path: ../../external/quickjs-ng/0.17.0/libunicode.c
@@ -97,7 +97,7 @@ targets:
       - path: ../../external/wasm3/0.9.0/source/m3_info.c
       - path: ../../external/wasm3/0.9.0/source/m3_exec.c
       - path: ../../external/wasm3/0.9.0/source/m3_validate.c
-      - path: ../../runtime/dsh/host/dsh_wasm.c
+      - path: ../../src/dsh_wasm.c
     preBuildScripts:
       - name: GenerateSpikeBundle
         script: |
@@ -185,11 +185,11 @@ targets:
           # ISH_VDSO_ELF_DIR refuses it.
           VDSO="$REPO/runtime/dsh/build/ish/vdso"
           if [ ! -s "$VDSO/libvdso.so.elf" ]; then
-            cmake -S "$REPO/runtime/dsh/host/ish" -B "$REPO/runtime/dsh/build/ish"
+            cmake -S "$REPO/src/ish" -B "$REPO/runtime/dsh/build/ish"
             cmake --build "$REPO/runtime/dsh/build/ish" --target ish-vdso
           fi
           BUILD="$REPO/runtime/dsh/build/ish-ios-$SDK_NAME"
-          cmake -S "$REPO/runtime/dsh/host/ish" -B "$BUILD" \
+          cmake -S "$REPO/src/ish" -B "$BUILD" \
             -DISH_SDK="$SDK_NAME" \
             -DCMAKE_SYSTEM_NAME=iOS \
             -DCMAKE_OSX_SYSROOT="$SDK_NAME" \

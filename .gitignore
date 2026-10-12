@@ -187,6 +187,9 @@
 .gov/history/
 .gov/tasks/.new.lock
 /runtime/dsh/build/
+# src/build.sh writes its CLI outputs beside the runtime face (runtime/dsh/build/);
+# this covers any in-place configure of src/ itself (cmake -S src -B src/build).
+/src/build/
 __pycache__/
 dist/
 # the lynx-client's built ReactLynx bundle IS the product payload (manifest

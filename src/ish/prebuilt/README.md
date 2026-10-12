@@ -13,7 +13,7 @@ vdso is a GUEST artifact, identical on every platform, so one pinned build
 serves every host (the same shape as the pinned rootfs tarball).
 
 Pin: sha256 fecafc2e93f23624cb2e8dc3dc57b1254d4c8bc115013d23985985ee936ae0b9
-Regenerate: `cmake -S runtime/dsh/host/ish -B runtime/dsh/build/ish &&
+Regenerate: `cmake -S src/ish -B runtime/dsh/build/ish &&
 cmake --build runtime/dsh/build/ish --target ish-vdso` on a machine with
 Homebrew LLVM, then copy `runtime/dsh/build/ish/vdso/libvdso.so.elf`
 here and update this pin.

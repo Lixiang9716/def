@@ -46,7 +46,7 @@ and side channels.
 boundary and answers the frozen contract §3 vocabulary — `invalid`
 (malformed), `denied` (a scope the host never granted), `unavailable` (a
 primitive this host does not serve) — fail loud, never a default; a
-rejection is structured, not a crash ([runtime/dsh/host/main_cli.c](../runtime/dsh/host/main_cli.c),
+rejection is structured, not a crash ([example/main_cli.c](../example/main_cli.c),
 the smoke backend's per-primitive validation).
 
 **This leg's attack**: [security.gateway-fuzz](../runtime/dsh/ci/run-security-gateway-fuzz.sh)
@@ -165,7 +165,7 @@ imported `dsh.emit(ptr, len)`; a module importing anything else has
 nothing to link to, an emit outside the module's memory traps in the
 host-side bounds check, and every interpreter-level failure (bad parse,
 missing export, stack exhaustion) is a structured `io` rejection —
-[dsh_wasm.c](../runtime/dsh/host/dsh_wasm.c). Served on the CLI through
+[dsh_wasm.c](../src/dsh_wasm.c). Served on the CLI through
 the same portable spine the iOS app compiles, so the jail is attackable on
 the cheapest host.
 

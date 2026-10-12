@@ -34,7 +34,7 @@ sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. run the scenario and verify one-to-one against the manifest.
 mkdir -p "$ART_DIR"

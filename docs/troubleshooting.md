@@ -134,7 +134,7 @@ followed by `dsh: error: ` with NOTHING after the colon — which reads
 like a crash that lost its message. It is not a crash and nothing was
 lost: the mechanism is that `main_cli.c` prints `dsh_spike_error()` on any
 nonzero exit
-([runtime/dsh/host/main_cli.c](../runtime/dsh/host/main_cli.c):1305-1308),
+([example/main_cli.c](../example/main_cli.c):1305-1308),
 while the error buffer is only written when the runtime records a real
 error — `dsh_spike_host.c:3561` returns `s->err`, an empty string when
 never set (`dsh_spike_host.h:31` notes a fresh struct carries no error

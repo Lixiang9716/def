@@ -39,7 +39,7 @@ mkdir -p "$ART"
 
 echo "== 1/2 build =="
 if [ "$SKIP_BUILD" -eq 0 ]; then
-    sh runtime/dsh/host/build.sh >/dev/null
+    sh src/build.sh >/dev/null
 fi
 
 echo "== 2/2 JS gate: scenario → gateway → host seam =="

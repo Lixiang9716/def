@@ -2,7 +2,7 @@
  * android_compat.h — force-included by every C translation unit in this
  * build (see CMakeLists.txt -include). bionic hides arc4random_buf from the
  * headers below API 28, but the rt minSdk is 26, and
- * runtime/dsh/host/dsh_runtime_host.c's __ANDROID__ branch calls it. This
+ * src/dsh_runtime_host.c's __ANDROID__ branch calls it. This
  * header restores the declaration; the definition lives in android_compat.c
  * and links into this .so only (never collides with bionic on API >= 28).
  *

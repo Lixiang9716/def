@@ -5,7 +5,7 @@
 #
 # Two gates, deliberately layered, because "it failed" is not a diagnosis:
 #
-#   1. the C gate — runtime/dsh/build/ish/ish-smoke boots the guest and runs
+#   1. the C gate — runtime/dsh/build/ish-smoke/ish-smoke boots the guest and runs
 #      commands straight through the seam (no JS, no simulator);
 #   2. the JS gate — the desktop CLI runs scenario-local/userland-shell.js (a
 #      checkout-local scenario, deliberately outside the device-staged
@@ -68,10 +68,26 @@ mkdir -p "$WORKSPACE"
 echo "== 1/5 vendor + build =="
 if [ "$SKIP_BUILD" -eq 0 ]; then
     sh external/ensure-ish.sh
-    cmake -S runtime/dsh/host/ish -B runtime/dsh/build/ish -DISH_VENDOR="$PWD/external" >/dev/null
-    cmake --build runtime/dsh/build/ish --target ishcore dsh_ish ish-smoke \
+    # OWN binary dir for the smoke face: runtime/dsh/build/ish is the ENGINE
+    # configure's dir (src/build.sh: cmake -S src/ish there, and
+    # src/ish/CMakeLists.txt's ISH_VDSO_ELF_DIR guidance names it) — a second
+    # -S into the same dir dies on CMake's cached-source mismatch. If the
+    # cache records a different source than this configure (a moved tree, a
+    # re-pointed face), wipe and re-configure rather than die: the dir is a
+    # scratch build cache, never referenced by path.
+    ISH_SMOKE_BUILD=runtime/dsh/build/ish-smoke
+    # || true: a virgin dir has no cache — sed exits 1 on the missing file and
+    # the substitution's status would kill this set -e script right here
+    # (measured live: silent exit 1 after the vendor line).
+    CACHE_SRC=$(sed -n 's/^CMAKE_HOME_DIRECTORY:INTERNAL=//p' \
+        "$ISH_SMOKE_BUILD/CMakeCache.txt" 2>/dev/null || true)
+    if [ -n "$CACHE_SRC" ] && [ "$CACHE_SRC" != "$PWD/example" ]; then
+        rm -rf "$ISH_SMOKE_BUILD"
+    fi
+    cmake -S example -B "$ISH_SMOKE_BUILD" -DISH_SMOKE=1 -DISH_VENDOR="$PWD/external" >/dev/null
+    cmake --build "$ISH_SMOKE_BUILD" --target ishcore dsh_ish ish-smoke \
         -j"$(sysctl -n hw.ncpu 2>/dev/null || echo 4)" >/dev/null
-    sh runtime/dsh/host/build.sh >/dev/null
+    sh src/build.sh >/dev/null
 fi
 
 echo "== 2/5 guest root =="
@@ -118,7 +134,7 @@ if [ "$ROOTFS_OVERRIDE" -eq 0 ]; then
     echo "$ROOTFS_SHA256  $TARBALL" | shasum -a 256 -c - >/dev/null
     STAGED="$ART/guest-root"
     rm -rf "$STAGED"
-    runtime/dsh/build/ish/ish-smoke --stage "$TARBALL" "$STAGED" > "$ART/stage.jsonl"
+    runtime/dsh/build/ish-smoke/ish-smoke --stage "$TARBALL" "$STAGED" > "$ART/stage.jsonl"
     grep -q "dsh_ish_stage: .* links" "$ART/stage.jsonl"
     [ -x "$STAGED/bin/busybox" ] || { echo "   FAIL: the staged tree has no executable busybox" >&2; exit 1; }
     [ -L "$STAGED/usr/bin/top" ] || { echo "   FAIL: the staged tree lost its symlinks" >&2; exit 1; }
@@ -137,7 +153,7 @@ if [ "$ROOTFS_OVERRIDE" -eq 0 ]; then
     TAMPER="$ART/verify-tamper.jsonl"
     cp -p "$STAGED/bin/busybox" "$ART/busybox.pristine"
     printf 'x' >> "$STAGED/bin/busybox"
-    if runtime/dsh/build/ish/ish-smoke --rootfs "$STAGED" -c 'true' > "$TAMPER" 2>&1; then
+    if runtime/dsh/build/ish-smoke/ish-smoke --rootfs "$STAGED" -c 'true' > "$TAMPER" 2>&1; then
         echo "   FAIL: the guest booted a tampered userland" >&2; exit 1
     fi
     grep -q 'dsh_ish_verify: verdict=refused' "$TAMPER" \
@@ -152,7 +168,7 @@ fi
 
 echo "== 3/5 C gate: the seam itself =="
 DSH_ISH_GATE="$ART/c-smoke.jsonl"
-runtime/dsh/build/ish/ish-smoke --rootfs "$ROOTFS" --workspace "$WORKSPACE" \
+runtime/dsh/build/ish-smoke/ish-smoke --rootfs "$ROOTFS" --workspace "$WORKSPACE" \
     --workdir /mnt/workspace --timeout 30000 \
     -c 'uname -m' -c 'printf "c-gate\n" > c-gate.txt; cat c-gate.txt' > "$DSH_ISH_GATE"
 grep -q '"exitCode":0' "$DSH_ISH_GATE"

@@ -312,7 +312,7 @@ projection protocol — do not build on it.
 ## Desktop proof run
 
 ```sh
-runtime/dsh/host/build.sh
+src/build.sh
 cd runtime/dsh && ./build/dsh-cli . scenario/boot-verification.js > logs.txt
 node test/e2e/check.mjs --manifest test/e2e/scenarios/boot-verification.json --log runtime/dsh/logs.txt
 ./build/dsh-cli . scenario/gateway-bridge-smoke.js > logs-m2.txt

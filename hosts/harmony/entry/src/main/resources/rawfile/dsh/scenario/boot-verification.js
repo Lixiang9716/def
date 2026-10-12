@@ -5,7 +5,7 @@
  * The verdict is a one-to-one expected<->logged match on these lines only;
  * screenshots are local-debugging extras, never the assertion.
  *
- * Proves, on any platform that embeds runtime/dsh/host: the ESM loader
+ * Proves, on any platform that embeds src: the ESM loader
  * resolving a vendored upstream pure-logic package (D6: pinned, unmodified),
  * the host-provided Web-API seams (crypto.getRandomValues, btoa), and
  * gateway negotiation (gateway@1). The M1 canned gateway-call blocks are

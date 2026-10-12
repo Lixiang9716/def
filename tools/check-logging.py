@@ -70,7 +70,7 @@ PLUMBING = (
     ("iOS", "hosts/ios/project.yml", "DSH_RELEASE"),
     ("Android", "hosts/android/app/build.gradle.kts", "DSH_RELEASE"),
     ("HarmonyOS", "hosts/harmony/entry/build-profile.json5", "DSH_RELEASE"),
-    ("macOS CLI", "runtime/dsh/host/build.sh", "DSH_RELEASE"),
+    ("macOS CLI", "src/build.sh", "DSH_RELEASE"),
 )
 
 

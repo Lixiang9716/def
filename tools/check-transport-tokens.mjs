@@ -141,7 +141,7 @@ const forbiddenHits = (files) => {
  * the token map below. */
 const LAYERS = {
   'c-host-glue': {
-    under: ['runtime/dsh/host/', 'hosts/android/app/src/main/cpp/', 'hosts/harmony/entry/src/main/cpp/'],
+    under: ['src/', 'hosts/android/app/src/main/cpp/', 'hosts/harmony/entry/src/main/cpp/'],
     ext: ['.c', '.h', '.cpp', '.ts'],
     why: 'the shared C sink + the JNI/NAPI glue that emit to logcat/hilog',
   },

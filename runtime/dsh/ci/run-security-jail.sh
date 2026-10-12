@@ -43,7 +43,7 @@ mkdir -p "$ART"
 
 echo "== 1/2 build =="
 if [ "$SKIP_BUILD" -eq 0 ]; then
-    sh host/build.sh >/dev/null
+    sh ../../src/build.sh >/dev/null
 fi
 
 echo "== 2/2 JS gate: the jail battery =="

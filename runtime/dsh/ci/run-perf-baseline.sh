@@ -40,7 +40,7 @@ sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh
 
 # 2. build the spike host when the binary is missing.
-[ -x build/dsh-cli ] || sh host/build.sh
+[ -x build/dsh-cli ] || sh ../../src/build.sh
 
 # 3. byte facts (shell-side, receipt-only): the generated iOS bundle and the
 #    market tgz this runner authors. The bundle generator needs the same

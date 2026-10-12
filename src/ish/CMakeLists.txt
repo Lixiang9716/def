@@ -2,12 +2,12 @@
 #
 # The ONE build tool for this dependency, on every target it has:
 #
-#   macOS (arm64)   cmake -S runtime/dsh/host/ish -B build/ish \
+#   macOS (arm64)   cmake -S src/ish -B build/ish \
 #                         -DISH_VENDOR=<repo>/external
 #                   → libishcore.a libdsh_ish.a + the ish-smoke executable
-#   iOS             cmake … -DCMAKE_TOOLCHAIN_FILE=runtime/dsh/host/ish/ios.cmake \
+#   iOS             cmake … -DCMAKE_TOOLCHAIN_FILE=src/ish/ios.cmake \
 #                         -DISH_SDK=iphonesimulator|iphoneos
-#                   → the same two static libraries, linked by DSHSpike.xcodeproj
+#                   → the same two static libraries, linked by DSHHost.xcodeproj
 #
 # Upstream ships a meson build for this tree. We do not use it: meson is not on
 # the CI images and the iOS app target would need a meson+ninja pre-phase beside
@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 3.20)
 project(dsh_ish C ASM)
 
 set(ISH_PIN e1d579480fba88e8f0428e3cf23811bcdd05421f CACHE STRING "vendored iSH-arm64 commit")
-set(ISH_VENDOR "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor" CACHE PATH
+set(ISH_VENDOR "${CMAKE_CURRENT_SOURCE_DIR}/../../external" CACHE PATH
     "external directory (written by external/ensure-ish.sh)")
 set(ISH_SRC "${ISH_VENDOR}/ish/${ISH_PIN}")
 
@@ -46,7 +46,7 @@ file(MAKE_DIRECTORY "${GEN}")
 add_compile_definitions(GUEST_ARM64=1 ENGINE_ASBESTOS=1 LOG_HANDLER_DPRINTF=1)
 # -Wtautological-constant-in-range-compare is clang-only (upstream's meson
 # build assumes clang); gcc errors out on it, and this CMake project also
-# carries the Linux build (host/build.sh's "macOS/Linux proof run"), so the
+# carries the Linux build (src/build.sh's "macOS/Linux proof run"), so the
 # flag rides only where the compiler knows it. The value-range sibling covers
 # the vendored kernel sources' 31-bit compares (calls.c:1061) on newer Apple
 # clang, which renamed the diagnostic; -Wno-unused-result covers inotify.c's
@@ -149,7 +149,7 @@ if(ISH_VDSO_ELF_DIR)
   if(NOT EXISTS "${ISH_VDSO_ELF}" OR IS_DIRECTORY "${ISH_VDSO_ELF}")
     message(FATAL_ERROR
       "ISH_VDSO_ELF_DIR=${ISH_VDSO_ELF_DIR} holds no libvdso.so.elf — build the "
-      "guest vdso once with a HOST configure (cmake -S runtime/dsh/host/ish -B "
+      "guest vdso once with a HOST configure (cmake -S src/ish -B "
       "runtime/dsh/build/ish) and point this at its vdso/ directory")
   endif()
   file(SIZE "${ISH_VDSO_ELF}" ISH_VDSO_ELF_SIZE)
@@ -178,7 +178,7 @@ elseif(ISH_VDSO_FOUND)
 else()
   # No lld-equipped clang here (stock macOS, CI runners). The vdso is a GUEST
   # aarch64 artifact — identical on every host — so one pinned build serves
-  # every machine: the tracked prebuilt (host/ish/prebuilt/, whose README
+  # every machine: the tracked prebuilt (src/ish/prebuilt/, whose README
   # carries the sha256 pin and the regenerate recipe). The upstream fallback
   # is a ZEROED placeholder the kernel aborts on (comment above); never write
   # it when a real elf is one commit away — this is what lets the iOS build's
@@ -189,7 +189,7 @@ else()
     if(NOT ISH_VDSO_PREBUILT_SHA STREQUAL
        "fecafc2e93f23624cb2e8dc3dc57b1254d4c8bc115013d23985985ee936ae0b9")
       message(FATAL_ERROR
-        "host/ish/prebuilt/libvdso.so.elf sha256 ${ISH_VDSO_PREBUILT_SHA} does "
+        "src/ish/prebuilt/libvdso.so.elf sha256 ${ISH_VDSO_PREBUILT_SHA} does "
         "not match the pin in prebuilt/README.md — regenerate per that README "
         "or repin it deliberately")
     endif()
@@ -201,7 +201,7 @@ else()
   else()
     message(FATAL_ERROR
       "no clang with an aarch64-linux-gnu target (ISH_VDSO_CLANG) and no "
-      "tracked prebuilt (host/ish/prebuilt/libvdso.so.elf) — install LLVM "
+      "tracked prebuilt (src/ish/prebuilt/libvdso.so.elf) — install LLVM "
       "(brew install llvm) or restore the prebuilt")
   endif()
 endif()
@@ -353,12 +353,7 @@ target_link_libraries(dsh_ish PUBLIC ${Z_LIB})
 find_library(RESOLV_LIB resolv REQUIRED)
 target_link_libraries(dsh_ish PUBLIC ${RESOLV_LIB})
 
-# ------------------------------------------------------------------- the smoke
-# A C-level gate for the seam, runnable without a JS runtime or a simulator:
-# it boots the guest and runs the commands given on the command line, printing
-# one JSON object per command. tools/e2e/run-ish-local.sh drives it first and the
-# JS scenario second, so a failure says which layer broke.
-if(NOT ISH_SDK)
-  add_executable(ish-smoke "${CMAKE_CURRENT_SOURCE_DIR}/../ish_smoke.c")
-  target_link_libraries(ish-smoke PRIVATE dsh_ish)
-endif()
+# The ish-smoke executable (the C-level gate tools/e2e/run-ish-local.sh drives)
+# moved to example/CMakeLists.txt in phase 2 — it is a desktop main, not part
+# of the engine build; that CMakeLists pulls this subproject in with
+# -DISH_SMOKE=1 when the smoke is wanted.
