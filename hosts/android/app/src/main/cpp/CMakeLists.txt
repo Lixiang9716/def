@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.22)
 project(dsh_runtime_android C)
 
 set(DSH_RUNTIME_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../runtime/dsh)
+set(DSH_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../src)
 set(DSH_ENGINE_DIR ${DSH_RUNTIME_DIR}/../../external/quickjs-ng/0.17.0)
 set(DSH_ZSTD_DIR ${DSH_RUNTIME_DIR}/../../external/zstd/1.5.7)
 set(DSH_WASM3_DIR ${DSH_RUNTIME_DIR}/../../external/wasm3/0.9.0/source)
@@ -15,12 +16,12 @@ add_library(dsh_runtime SHARED
         dsh_jni_binding.c
         dsh_gateway_smoke.c
         android_compat.c
-        ${DSH_RUNTIME_DIR}/host/dsh_runtime_host.c
+        ${DSH_SRC_DIR}/dsh_runtime_host.c
         # dsh_socket.c — the loopback socket seam's pump table (contract
         # v1.8.0): dsh_runtime_host.c references dsh_socket_poll/close_all
         # unconditionally, so leaving it out is a link error, not a
         # negotiation (the gateway still decides what gets SERVED).
-        ${DSH_RUNTIME_DIR}/host/dsh_socket.c
+        ${DSH_SRC_DIR}/dsh_socket.c
         # dsh_wasm.c — the WebAssembly seam (contract v1.2.0 wasmRun), served
         # to the gateway by the Kotlin WasmPrimitive: the module is interpreted
         # IN-PROCESS by wasm3 (no JIT, no child process — D2), the same engine
@@ -30,7 +31,7 @@ add_library(dsh_runtime SHARED
         # landed (#335 B4) the release seat answered every shell run with a
         # gateway denial — the shell tool could not execute even its own
         # starter echo.wasm.
-        ${DSH_RUNTIME_DIR}/host/dsh_wasm.c
+        ${DSH_SRC_DIR}/dsh_wasm.c
         "${DSH_WASM3_DIR}/m3_bind.c"
         "${DSH_WASM3_DIR}/m3_code.c"
         "${DSH_WASM3_DIR}/m3_compile.c"
@@ -76,7 +77,7 @@ add_library(dsh_runtime SHARED
         ${DSH_ZSTD_DIR}/decompress/zstd_decompress_block.c)
 
 target_include_directories(dsh_runtime PRIVATE
-        ${DSH_RUNTIME_DIR}/host
+        ${DSH_SRC_DIR}
         ${DSH_ENGINE_DIR}
         ${DSH_WASM3_DIR}
         ${DSH_ZSTD_DIR}
