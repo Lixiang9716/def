@@ -168,7 +168,7 @@ method, D9/D6) plus the three platform hosts:
 
 ```
 dsh-mobile/
-├── build/               # the build facade: build|test|check|sync × platform(s) — see BUILD.md
+├── build/               # the build facade: build|compile|test|check|sync × platform(s) — see BUILD.md
 ├── test/                # e2e checker (check.mjs), scenario manifests, per-platform runners
 ├── docs/                # architecture, decision records
 ├── packages/            # release packaging (version bump, tag guards)

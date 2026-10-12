@@ -7,13 +7,14 @@
 因此本地构建为绿与 `dev/<platform>` 检查为绿，是同一件事。
 
 ```
-build/build.sh [build|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
+build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
 ```
 
 | 示例 | 发生什么 |
 | --- | --- |
 | `build/build.sh android` | 从规范 runtime 暂存 android 闭包 → `gradlew assembleDebug` → `run-dsh-e2e.sh`（日志校验） |
 | `build/build.sh android harmony` | 两个平台同样流程——任意平台组合 |
+| `build/build.sh compile core` | 只跑工具链腿——`runtime/dsh/host/build.sh`（不重新暂存闭包、不跑 e2e 腿） |
 | `build/build.sh test ios` | 只跑 e2e 腿（构建须已新鲜） |
 | `build/build.sh check` | 只跑 `closures` 门禁——不需要任何工具链 |
 | `build/build.sh sync harmony` | 从 `runtime/dsh` 重新暂存 harmony 的已提交闭包 |

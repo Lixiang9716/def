@@ -8,13 +8,14 @@ that platform does, with the same commands — so a green local build and a gree
 `dev/<platform>` check mean the same thing.
 
 ```
-build/build.sh [build|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
+build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
 ```
 
 | Examples | What happens |
 | --- | --- |
 | `build/build.sh android` | stage the android closure from the canonical runtime → `gradlew assembleDebug` → `run-dsh-e2e.sh` (log-verified) |
 | `build/build.sh android harmony` | the same, for both platforms — any mix of platforms |
+| `build/build.sh compile core` | the toolchain leg only — `runtime/dsh/host/build.sh` (no closure re-stage, no e2e legs) |
 | `build/build.sh test ios` | the e2e leg only (build must already be fresh) |
 | `build/build.sh check` | the `closures` gate only — no toolchains needed |
 | `build/build.sh sync harmony` | re-stage the committed harmony closure from `runtime/dsh` |

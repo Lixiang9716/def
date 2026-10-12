@@ -146,7 +146,7 @@ CI 的端到端测试只对**结构化日志**做断言，绝不用截图（截�
 
 ```
 dsh-mobile/
-├── build/               # 构建门面: build|test|check|sync × 平台(可多选) — 见 BUILD.md
+├── build/               # 构建门面: build|compile|test|check|sync × 平台(可多选) — 见 BUILD.md
 ├── test/                # e2e 校验器(check.mjs)、场景清单、各平台 runner
 ├── docs/                # 架构文档、决策记录
 ├── packages/            # 发布打包(版本提升、tag 守卫)

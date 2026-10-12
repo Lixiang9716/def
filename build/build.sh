@@ -14,10 +14,11 @@
 # the closure is fresh, the app compiled, and the scenario verdicts passed.
 #
 # usage:
-#   build/build.sh [build|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
+#   build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
 #
 #   build/build.sh android            # sync + compile + test, one platform
 #   build/build.sh android harmony    # multiple platforms
+#   build/build.sh compile core       # the toolchain leg only (no sync, no e2e)
 #   build/build.sh test ios           # the e2e leg only (build must be fresh)
 #   build/build.sh check              # closure drift check only (the closures gate)
 #   build/build.sh sync               # re-stage every committed closure
@@ -41,7 +42,7 @@ LIST=0
 
 for arg in "$@"; do
     case "$arg" in
-        build|test|check|sync) COMMAND=$arg ;;
+        build|compile|test|check|sync) COMMAND=$arg ;;
         --release) RELEASE=1 ;;
         --list) LIST=1 ;;
         ios|android|harmony|core) PLATFORMS="$PLATFORMS $arg" ;;
@@ -55,12 +56,12 @@ for arg in "$@"; do
                     ios|android|harmony|core) PLATFORMS="$PLATFORMS $t" ;;
                     all) PLATFORMS="$PLATFORMS ios android harmony core" ;;
                     *) echo "build: unknown platform '$t' in '$arg'" >&2
-                       echo "usage: build/build.sh [build|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
+                       echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
                        exit 2 ;;
                 esac
             done ;;
         *) echo "build: unknown platform or flag '$arg'" >&2
-           echo "usage: build/build.sh [build|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
+           echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
            exit 2 ;;
     esac
 done
@@ -237,8 +238,9 @@ for p in $PLATFORMS; do
         echo ""
         echo "== build: $COMMAND $p ==============="
         case "$COMMAND" in
-            build) stage_sync "$p"; stage_compile "$p"; stage_test "$p" ;;
-            test)  stage_test "$p" ;;
+            build)   stage_sync "$p"; stage_compile "$p"; stage_test "$p" ;;
+            compile) stage_compile "$p" ;;
+            test)    stage_test "$p" ;;
         esac
     fi
 done
