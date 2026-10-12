@@ -573,7 +573,7 @@ ensure_npm "dsh-session-format-v2-to-v3" "0.1.6-alpha.2" "b488cb16ecae0128f023f9
 # tsx ×34, flock ×24, chokidar ×16, @agentclientprotocol/sdk ×10). End by
 # rebuilding the layout: idempotent, and it refreshes links a re-pin left
 # dangling.
-sh ../ci/parity-node-modules.sh \
+sh ../runtime/dsh/ci/parity-node-modules.sh \
     || { echo "vendor: parity-node-modules.sh FAILED — the test faces would not resolve" >&2; exit 1; }
 
 echo "vendor: upstream test assets ready"
