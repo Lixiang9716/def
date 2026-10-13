@@ -13,12 +13,21 @@
 # cannot trip closures/bundle-files.
 #
 # ARCH GUARD: the CLI's link embeds the iSH static libs — AArch64 assembly
-# an x86_64 assembler cannot build. Non-arm64 machines skip here; the
-# gov.yml arm64 job (ubuntu-24.04-arm) + arm64 dev machines carry the proof.
-if [ "$(uname -m)" != "arm64" ]; then
-    echo "quickjs-boot-parse: SKIP — $(uname -m) cannot assemble the iSH AArch64 objects; the gov.yml arm64 job proves the boot graph"
-    exit 0
-fi
+# an x86_64 assembler cannot build, and the tree's Apple-syntax asm is
+# refused by GNU as on Linux besides. The proof rides the arm64 machines,
+# in BOTH uname spellings: macOS reports arm64, Linux arm64 reports
+# aarch64 — the gov.yml arm64 job (ubuntu-24.04-arm) was self-skipping on
+# that spelling (fixed 2026-10-13). Admitting aarch64 exposed the second
+# layer the skip had been hiding: the with-ish miss-build dies in the
+# engine's asm there — so Linux arm64's miss-build goes --no-ish (the
+# parse never touches ishRun; the c-core.yml face is the same escape).
+# x86_64 machines skip here entirely.
+case "$(uname -m)" in
+    arm64|aarch64) ;;
+    *)
+        echo "quickjs-boot-parse: SKIP — $(uname -m) cannot assemble the iSH AArch64 objects; the gov.yml arm64 job proves the boot graph"
+        exit 0 ;;
+esac
 
 # Budget: sub-second with the prebuilt CLI (measured 0.04s); on a miss the
 # CLI is built first (host/build.sh — the same rule run-*-e2e.sh uses; a cold
@@ -32,16 +41,29 @@ cd "$ROOT/runtime/dsh"
 # 1. The engine exists — build on miss (rule 5: a missing engine is a loud
 #    build, never a silent skip).
 if [ ! -x build/dsh-cli ]; then
-    # host/build.sh links the iSH static libs, whose vendor tree is
-    # materialized by ensure-ish.sh — NOT by ensure.sh/ensure-dsh.sh (the
-    # gov.yml materialize step), so a cold CI runner needs it here first
-    # (the 2026-09-29 CI run: 'vendored iSH-arm64 sources not found').
-    if [ ! -d ../../external/ish ] || [ -z "$(find ../../external/ish -mindepth 1 -maxdepth 1 -type d -print -quit 2>/dev/null)" ]; then
-        echo "quickjs-boot-parse: ish vendor tree absent — materializing (../../external/ensure-ish.sh)"
-        sh ../../external/ensure-ish.sh
+    # Engine-aware miss-build. macOS arm64 assembles the engine, so the
+    # miss-build is the app-identical with-ish link. Linux arm64 NEVER can
+    # (the Apple-syntax asm dies in GNU as — measured 2026-10-13, the
+    # ubuntu-24.04-arm job's first real attempt after the guard stopped
+    # self-skipping) — but this gate proves the boot graph, which touches
+    # no ishRun, so the miss-build goes --no-ish there (src/build.sh's
+    # escape; the same face c-core.yml carries).
+    if [ "$(uname -s)" = "Linux" ]; then
+        echo "quickjs-boot-parse: build/dsh-cli missing — building --no-ish (Linux cannot assemble the iSH engine)"
+        sh ../../src/build.sh --no-ish
+    else
+        # The with-ish link embeds the iSH static libs, whose vendor tree
+        # is materialized by ensure-ish.sh — NOT by ensure.sh/ensure-dsh.sh
+        # (the gov.yml materialize step), so a cold CI runner needs it here
+        # first (the 2026-09-29 CI run: 'vendored iSH-arm64 sources not
+        # found').
+        if [ ! -d ../../external/ish ] || [ -z "$(find ../../external/ish -mindepth 1 -maxdepth 1 -type d -print -quit 2>/dev/null)" ]; then
+            echo "quickjs-boot-parse: ish vendor tree absent — materializing (../../external/ensure-ish.sh)"
+            sh ../../external/ensure-ish.sh
+        fi
+        echo "quickjs-boot-parse: build/dsh-cli missing — building (host/build.sh)"
+        sh ../../src/build.sh
     fi
-    echo "quickjs-boot-parse: build/dsh-cli missing — building (host/build.sh)"
-    sh ../../src/build.sh
 fi
 
 # 2. The stub scenario: imports the two split roots under the real loader.
@@ -67,6 +89,14 @@ log.debug('quickjs parse probe: boot graph resolved', {
 globalThis.__dshComplete(true, 'quickjs parse probe: boot graph compiled');
 STUB_EOF
 
-# 3. Boot it: exit 0 only when the whole graph compiles AND evaluates under
+# 3. The vendored dsh closure: the shim graph pulls dsh: modules (fs.js ->
+#    dsh:util-crypto), materialized by ensure-dsh.sh — NOT by ensure.sh
+#    (gov.yml's materialize step carries engine + ish only), so a fresh CI
+#    runner needs it here (measured 2026-10-13 on ubuntu-24.04-arm:
+#    'cannot load module dsh:util-crypto'). Idempotent; network only on
+#    first fetch.
+sh ../../external/ensure-dsh.sh
+
+# 4. Boot it: exit 0 only when the whole graph compiles AND evaluates under
 #    the vendored engine.
 ./build/dsh-cli . "$STUB"

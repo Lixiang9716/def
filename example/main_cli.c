@@ -21,7 +21,17 @@
  * usage: dsh-cli [base] [entry] [--http] [--env KEY=VALUE ...]
  */
 #include "dsh_runtime_host.h"
+/* The iSH seam (contract v1.3.0 ishRun) is OPT-IN, mirroring the
+ * DSH_WITH_SQLITE face in dsh_runtime_host.c: src/build.sh defines
+ * DSH_CLI_WITH_ISH exactly when the link carries the engine libs. A
+ * --no-ish build (Linux CI: the iSH guest asm is Apple-syntax, GNU as
+ * refuses it) never sees the seam header — the one thing main() still
+ * needs is the guest mount constant, restated here from src/dsh_ish.h. */
+#if defined(DSH_CLI_WITH_ISH)
 #include "dsh_ish.h"
+#else
+#define DSH_ISH_GUEST_MOUNT "/mnt/workspace"
+#endif
 #include "dsh_wasm.h" /* the wasm seam (contract v1.2.0): dsh_wasm_run */
 #include "dsh_socket.h" /* the loopback socket seam (contract v1.8.0) */
 
@@ -1046,6 +1056,7 @@ static void smoke_ish_run(smoke_backend *b, int call_id, const char *args) {
     } else if (argc == 0) {
         smoke_reject(b, call_id, "ishRun", "invalid", "empty argv");
     } else {
+#if defined(DSH_CLI_WITH_ISH)
         char guest_workdir[1024];
         if (path[0] == '\0')
             snprintf(guest_workdir, sizeof(guest_workdir), "%s", b->ish_mount);
@@ -1065,6 +1076,13 @@ static void smoke_ish_run(smoke_backend *b, int call_id, const char *args) {
             }
         }
         free(error);
+#else
+        /* --no-ish build: no engine is linked, so this host answers the
+         * same honest `unavailable` a with-ish host without a staged guest
+         * root answers (the branch above) — never a fake success. */
+        smoke_reject(b, call_id, "ishRun", "unavailable",
+                     "no Linux userland linked (built --no-ish)");
+#endif
     }
     free(scope);
     free(path);

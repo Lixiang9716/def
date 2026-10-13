@@ -1,0 +1,108 @@
+name: c-core
+# The C-host desktop CLI's Linux CI face — ubuntu-24.04-arm, built --no-ish.
+#
+# WHY --no-ish: the iSH guest userland (contract v1.3.0 ishRun) is carried in
+# Apple-syntax AArch64 assembly, which the GNU as on every Linux runner
+# refuses — no Linux CI can build the engine (an x86_64 assembler cannot
+# build AArch64 objects at all). The with-ish proof therefore stays on the
+# arm64 macOS dev machines; the gov.yml arm64 job's boot-parse build rides
+# --no-ish on a miss too (the parse never touches ishRun); here the CLI is
+# built through src/build.sh's --no-ish escape: ensure-ish.sh and the ish
+# cmake sub-build are skipped, the link drops -ldsh_ish -lishcore (keeping
+# -lsqlite3 — the node:sqlite seam links it directly), and ishRun answers
+# the gateway's honest `unavailable` (example/main_cli.c's opt-in
+# DSH_CLI_WITH_ISH face, mirroring DSH_WITH_SQLITE). The iSH line is
+# awaiting removal, so the CI face carries no ish at all.
+#
+# Leg dependency note (2026-10-13 recon, runtime/dsh/ci/*): NONE of the ten
+# test-core legs touches ishRun/ish — word-boundary grep over the ten
+# run-*.sh scripts and their scenario payloads finds ish only in
+# run-session-preset-join-node.sh's header COMMENT (that leg runs plain node
+# precisely because the with-ish CLI was macOS/Linux-of-old-only), and
+# ishRun only in the Harmony host's served-nowhere list. So no leg needs a
+# skip here; every leg reuses the --no-ish build/dsh-cli the build step
+# produces.
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'example/**'
+      - '.github/workflows/c-core.yml'
+      - 'build/build.sh'
+      - 'external/ensure.sh'
+      - 'external/ensure-dsh.sh'
+      - 'runtime/dsh/ci/**'
+      - 'runtime/dsh/upstream/**'
+      - 'contract/**'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'example/**'
+      - '.github/workflows/c-core.yml'
+      - 'build/build.sh'
+      - 'external/ensure.sh'
+      - 'external/ensure-dsh.sh'
+      - 'runtime/dsh/ci/**'
+      - 'runtime/dsh/upstream/**'
+      - 'contract/**'
+  workflow_dispatch:
+concurrency:
+  group: c-core-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core:
+    runs-on: ubuntu-24.04-arm
+    # The quickjs-boot-parse job's 15-minute budget is the measured ceiling
+    # for the COLD CLI build (with ish; this face skips that sub-build) — 60
+    # bounds the build plus the ten log-verified legs with wide headroom.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Cache the vendored trees
+        # Same pattern as weekly-sweep/gov.yml: the vendored trees are
+        # untracked by design (D6), materialized by sha256-pinned ensure
+        # scripts, cached keyed on the pin tables themselves — a cache row
+        # that outlives a pin change refetches exactly what moved; the cache
+        # is an accelerator, never a source of truth. weekly-sweep's shape
+        # MINUS ish: this face never materializes or links the engine.
+        uses: actions/cache@v6
+        with:
+          path: |
+            external/quickjs-ng
+            external/zstd
+            external/wasm3
+            external/dsh
+            external/npm
+          key: c-core-${{ hashFiles('external/ensure.sh', 'external/ensure-dsh.sh') }}
+      - name: Materialize the vendored trees
+        # ensure.sh: engine + zstd + wasm3. ensure-dsh.sh: the runtime
+        # closure the legs' boots serve. NOT ensure-ish.sh — the whole point
+        # of this face (see the header).
+        run: |
+          external/ensure.sh
+          external/ensure-dsh.sh
+      - name: Build core (--no-ish)
+        # build = sync + compile + test: the compile leg produces the
+        # --no-ish build/dsh-cli (+ release flavor is NOT built here — the
+        # debug default only), and its embedded test pass runs the ten legs.
+        run: sh build/build.sh build core --no-ish
+      - name: Test core (--no-ish)
+        # The ten log-verified legs, standalone: re-run over the fresh
+        # build so the report artifact below always follows a dedicated
+        # suite pass (cheap — everything is compiled and vendored by now).
+        run: sh build/build.sh test core --no-ish
+      - name: Upload the leg reports
+        # The legs' own receipts (logs.txt / scenario.jsonl / verdict.json /
+        # receipt.json under runtime/dsh/artifacts/) plus the raw logs-*.txt
+        # the checkers diffed — the E2E evidence, uploaded even on red.
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: c-core-reports
+          path: |
+            runtime/dsh/artifacts/
+            runtime/dsh/logs-*.txt
