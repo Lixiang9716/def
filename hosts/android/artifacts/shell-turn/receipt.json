@@ -1,0 +1,25 @@
+{
+  "host": "android emulator-5554 (sdk_phone64_arm64, API image, adb-root seat)",
+  "phase": "t0216.shell.turn",
+  "verdict": "pass",
+  "build": "assembleRelease signed with the debug keystore (the page-open recipe) — the user-facing SessionServe seat, drives compiled out",
+  "model": "vendored dsh-llm-mock over adb reverse loopback; DSH_MOCK_SEQUENCE='tool_call_success success', DSH_MOCK_TOOL_NAME=shell, DSH_MOCK_TOOL_ARGS={command:'echo hi-from-shell > note.txt && cat note.txt'}",
+  "drive": "composer's own wire: POST /api/session/prompt (client-request envelope, session/prompt method, array content parts) with the logcat-carried session token — the identical request the page sends",
+  "proves": [
+    "the release interactive seat boots and serves the official client (serving dsh-web-official on 127.0.0.1:46291)",
+    "a turn submitted through the serving seat's own wire reaches the real spine agent loop",
+    "the mock's scripted tool call drives the ONE shell tool seat: the tool card renders 'Tool call · shell · echo hi-from-shell > note.…' in the official UI (screens/03)",
+    "the dsh-shell-js executor ran in-app over the gateway fs primitives: note.txt (14 bytes, 'hi-from-shell') exists on the container disk under files/profiles/default/dsh/",
+    "the durable session journal landed (session.v3.jsonl.zstd, zstd-framed by the vendored persistence backend)",
+    "the retry plane is release-visible: the turn's trajectory renders 'Retried model request (2/5) · 45s' (the adb-root adbd restart tore the reverse tunnel mid-turn; re-established, the transport recovered — the honest artifact of the blip, and the recovery banner + retry card are the D8 plane working)"
+  ],
+  "evidence": {
+    "screens": ["screens/02-turn-rendered.png", "screens/03-tool-card-expanded.png"],
+    "journal": "session-journal.jsonl.zstd (11974 bytes; decode via the vendored persistence stack)",
+    "state": "state-snapshot.json (the bridge projection snapshot)",
+    "mock": "mock-server-stdout.txt (attempt 1 tool_call_success completed, attempt 2 success completed)",
+    "logcat": "logs.txt (release strip: debug/info compiled out per rule L4 — 4 warn-grade lines)"
+  },
+  "tree": "origin/main 9515a29f (worktree feat/t0216-shell-turn-sim)",
+  "producedAt": "2026-10-13T08:30:00Z"
+}
