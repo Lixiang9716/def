@@ -5,9 +5,10 @@ name: c-core
 # Apple-syntax AArch64 assembly, which the GNU as on every Linux runner
 # refuses — no Linux CI can build the engine (an x86_64 assembler cannot
 # build AArch64 objects at all). The with-ish proof therefore stays on the
-# arm64 macOS dev machines and the gov.yml arm64 job; here the CLI is built
-# through src/build.sh's --no-ish escape: ensure-ish.sh and the ish cmake
-# sub-build are skipped, the link drops -ldsh_ish -lishcore (keeping
+# arm64 macOS dev machines; the gov.yml arm64 job's boot-parse build rides
+# --no-ish on a miss too (the parse never touches ishRun); here the CLI is
+# built through src/build.sh's --no-ish escape: ensure-ish.sh and the ish
+# cmake sub-build are skipped, the link drops -ldsh_ish -lishcore (keeping
 # -lsqlite3 — the node:sqlite seam links it directly), and ishRun answers
 # the gateway's honest `unavailable` (example/main_cli.c's opt-in
 # DSH_CLI_WITH_ISH face, mirroring DSH_WITH_SQLITE). The iSH line is
