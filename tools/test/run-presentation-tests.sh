@@ -9,11 +9,13 @@
 # (presentation/web-client-v2 is whole-tree staged into the harmony HAP
 # rawfile — vendor-official.sh webclient_files; see the Agent Note
 # 2026-09-30-driver-presentation-node-faces-carry-real-coverage.md). The
-# tree-count invariant is a REAL gate now (`webclient-staged-tree` in
-# gates.json → tools/check-webclient-staged-tree.sh — it used to live only
-# here, a CI-workflow step, which is how #288 passed a local `gov run`
-# green while CI went red); this runner re-asserts it before AND after each
-# suite by calling the same script, so the count has one home.
+# shipped-set invariant is a REAL gate now — the webclient manifest legs
+# of gen-staging-emit (the webclient*.rows store family; the retired
+# check-webclient-staged-tree.sh count-16 could only notice a total, never
+# WHICH file leaked). It used to live only here, a CI-workflow step, which
+# is how #288 passed a local `gov run` green while CI went red; this runner
+# re-asserts it before AND after each suite through the web legs'
+# standalone face, so the shipped-file list has one home.
 #
 # Dependencies: each suite installs its own devDependencies when absent.
 # Both suites carry COMMITTED lockfiles (gitignore-exempt like
@@ -26,7 +28,7 @@ set -eu
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$ROOT"
 
-# The shipped-set count lives in tools/check-webclient-staged-tree.sh (the
+# The shipped-file list lives in the webclient*.rows store files (the
 # gate's own home) — the runner does not carry a second copy.
 run_suite() {
     suite_dir="$1"
@@ -40,7 +42,7 @@ run_suite() {
     npm test
 }
 assert_product_tree() {
-    sh "$ROOT/tools/check-webclient-staged-tree.sh"
+    node "$ROOT/tools/gen-staging-emit-web.mjs" --check "$ROOT/tools/generated/staging"
 }
 
 assert_product_tree
@@ -48,4 +50,4 @@ run_suite "presentation/lynx-client" "lynx-client (driver loop / wire envelope /
 assert_product_tree
 run_suite "test/web-client-v2-suite" "web-client-v2 suite (envelope / mux / journal fold)"
 assert_product_tree
-echo "presentation-tests: PASS (lynx-client + web-client-v2 suites green; product tree intact)"
+echo "presentation-tests: PASS (lynx-client + web-client-v2 suites green; product tree matches its store)"

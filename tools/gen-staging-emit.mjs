@@ -2,8 +2,9 @@
 // dsh:logging-exempt (dev script: console IS the product, like check-staging.mjs)
 /**
  * gen-staging-emit.mjs — the staging manifest CONSOLIDATION face (the
- * ledger's step three; check-staging verifies, gen-staging-manifests
- * derives, this emits and enforces).
+ * ledger's step three: check-staging verifies the graph→list direction,
+ * this tool derives, emits and enforces — the single authority for what
+ * the generated manifests name).
  *
  * Single source: the DERIVATION (the import graph + the stagers' own pin
  * declarations) plus small committed policy files for the rows no
@@ -34,6 +35,10 @@
  *                                       twin pair splices from one section)
  *   ios-zod.rows                       — the DERIVED zod closure (the py
  *                                       ZOD_FILES block materializes from it)
+ *   webclient{,-v2,-compact,-mini}.rows — each staged web client's declared
+ *                                       shipped-file list (product tree,
+ *                                       android/harmony mirrors and the iOS
+ *                                       declaration all judged against it)
  *
  * modes:
  *   --check <dir>  the enforcement gate: recompute the derivation and
@@ -81,6 +86,7 @@ import { walkGraph, inScope } from './check-staging-graph.mjs';
 import { buildHosts } from './check-staging-hosts.mjs';
 import { androidCheck, androidEmit, iosCheck, iosEmit } from './gen-staging-emit-hosts.mjs';
 import { closureCheck, closureEmit } from './gen-staging-emit-closure.mjs';
+import { webCheck, webEmit } from './gen-staging-emit-web.mjs';
 
 const fail = (msg) => { throw new Error(`gen-staging-emit: ${msg}`); };
 
@@ -89,8 +95,8 @@ const BLOCK_START = 'const BUNDLE_FILES: string[] = [';
 const BLOCK_END = '\n];';
 const ROW_RE = /'([^']+)'/g;
 
-/** The committed Index.ets array rows, AS ORDERED (the splice preserves the
- * hand row order; only membership is generated). */
+/** The committed Index.ets array rows, AS ORDERED (drift when the order is
+ * not the canonical sort). */
 function committedRows() {
   const src = readFileSync(FILES, 'utf8');
   const at = src.indexOf(BLOCK_START);
@@ -114,15 +120,13 @@ function derivedRows() {
   return [...reached.keys()].filter(inScope).sort();
 }
 
-/** Splice the Index.ets array block in place: preserve the committed row
- * order, append added rows (sorted) at the block's end, drop removed rows.
- * Returns whether the source changed. */
+/** Splice the Index.ets array block in place: CANONICAL SORTED order — the
+ * sorted list is THE list, so a splice only moves membership (an unsorted
+ * committed block is drift the next emit re-orders once). Returns whether
+ * the source changed. */
 function spliceIndex(rows) {
   const { src, at, end, rows: current } = committedRows();
-  const wanted = [...new Set(rows)];
-  const kept = current.filter((r) => wanted.includes(r));
-  const added = wanted.filter((r) => !current.includes(r)).sort();
-  const next = [...kept, ...added];
+  const next = [...new Set(rows)].sort();
   if (next.length === current.length && next.every((r, i) => r === current[i])) {
     return false;
   }
@@ -217,7 +221,7 @@ function main() {
     const ios = iosCheck(dir);
     if (ios.disk.length) fail(`the declared ios rows are structurally broken (no emit can heal them): ${ios.disk.join(' · ')}`);
     const drift = [...harmonyCheck(dir).drift, ...androidCheck(dir).drift, ...ios.drift,
-      ...closureCheck(dir).drift];
+      ...closureCheck(dir).drift, ...webCheck(dir).drift];
     if (drift.length) {
       console.error('gen-staging-emit: the generated manifests drifted — run'
         + ` \`node tools/gen-staging-emit.mjs --emit ${dir}\`, review, commit:`);
@@ -226,10 +230,10 @@ function main() {
       return;
     }
     console.log('gen-staging-emit: the generated staging manifests match their'
-      + ` derivations (harmony + android + ios + the closure/pin legs) in ${dir}`);
+      + ` derivations (harmony + android + ios + closure/pin + webclient legs) in ${dir}`);
   } else {
     for (const line of [...harmonyEmit(dir), ...androidEmit(dir), ...iosEmit(dir),
-      ...closureEmit(dir)]) {
+      ...closureEmit(dir), ...webEmit(dir)]) {
       console.log(`gen-staging-emit: ${line}`);
     }
   }

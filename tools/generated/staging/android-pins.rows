@@ -6,38 +6,36 @@
 # materialized pins. The upstream/system-plugins whole-dir mirrors, the
 # dsh-root file list and the scenario/web-live rosters stay with their own
 # legs and mechanics (whole-dir mirrors are drift-free by construction).
-
 # block: dsh-spine — the stage_pkg roster (vendor/dsh spine packages),
 # spliced into the stage + verify `for pkg in` headers
 agent
 agent-loop
+agent-presets
+atomic-write
+attachment
 brand
+chunked-list
+fs
+fs-local
+home-paths
 llm
 sandbox
 scope
 session
 session-projection
 settings
+skill
+skill-filesystem
+subagent
 system-prompt
 timeout
+tool-fs
+tool-skill
+tool-str-replace-editor
+tool-todo
 tools
 typert-protocol
 util-values
-agent-presets
-atomic-write
-home-paths
-fs
-attachment
-fs-local
-tool-fs
-tool-str-replace-editor
-tool-todo
-skill
-skill-filesystem
-tool-skill
-subagent
-chunked-list
-
 # block: dsh-npm-faces — the npm faces staged AT the vendor/dsh rel paths
 # (the preset marker seeders walk vendor/dsh dirs only). The MOBILE
 # PRESET'S SHELL SURFACE: tool-ralph/tool-pwsh are disabled rows today —
@@ -48,44 +46,40 @@ chunked-list
 # the vendor/dsh rel path like every npm face. The WEB plane's npm
 # closure (the tool-web row, #335 B5): the dsh-web seam + the search-only
 # tool — the turndown/domino/@joplin chain rides its own cp block.
-tool-present
-tool-ralph
-tool-bash
-tool-pwsh
 plugin-manager
+tool-bash
+tool-present
+tool-pwsh
+tool-ralph
 tool-web
-
 # block: presets-npm — the presets-closure npm roster (the Agent presets
 # closure boot.js imports statically: the cordis Loader service + the
 # include walker + js-yaml's ESM dist; the INTERACTIVE rows' npm-scope
 # packages; the SUBAGENT row's listing service), spliced into both
 # `for pkg in` headers
 dsh-anonymous-user-id
-dsh-goal
+dsh-compaction-image-offload
 dsh-file-reference
 dsh-file-reference-local
+dsh-goal
 dsh-llm-retry
+dsh-session-format-catalog
 dsh-session-query
 dsh-session-title
-dsh-session-format-catalog
-dsh-compaction-image-offload
-
 # block: shelljs-face-dirs — the SHELLJS_FACE_DIRS value (the dsh-shell-js
 # parser closure's dir faces: production trees, *.js)
-shelljs@0.10.0/src
-minimatch@10.0.3/dist/commonjs
-@isaacs/brace-expansion@5.0.1/dist/commonjs
 @isaacs/balanced-match@4.0.1/dist/commonjs
-
+@isaacs/brace-expansion@5.0.1/dist/commonjs
+minimatch@10.0.3/dist/commonjs
+shelljs@0.10.0/src
 # block: shelljs-single-files — the SHELLJS_SINGLE_FILES value (single-file
 # mains copied by name)
 @isaacs/balanced-match@4.0.1/dist/commonjs/index.js
 @isaacs/brace-expansion@5.0.1/dist/commonjs/index.js
 shelljs@0.10.0/shell.js
-
 # block: shelljs-pkgs — the SHELLJS_PKGS value (every package.json the
 # loader's main probe reads)
-shelljs@0.10.0
-minimatch@10.0.3
-@isaacs/brace-expansion@5.0.1
 @isaacs/balanced-match@4.0.1
+@isaacs/brace-expansion@5.0.1
+minimatch@10.0.3
+shelljs@0.10.0

@@ -1,110 +1,99 @@
-# 暂存清单往返证明:四份手单 vs 推导现实(2026-09-29)
+# 暂存清单往返证明:从四份手单到生成商店(2026-10-13)
 
 [English](staging-manifest-roundtrip.md) | 简体中文
 
-per-host 暂存清单今天是手编的(harmony 的 `Index.ets` BUNDLE_FILES、harmony 的
-`ci/vendor-official.sh` CLOSURE/SPINE_OURS、android 的
-`ci/stage-spine-closure.sh` 各表、iOS `Tools/gen_bundle_header.py`
-RESOURCES/TREES)。台账上半场交付了 `tools/check-staging.mjs`,单向证明
-图→表。下半场 —— 即本文件的主题 —— 是 `tools/gen-staging-manifests.mjs`:从现实
-推导每份清单必须列什么,并逐行报告往返差。**Phase 2 只把生成器作为证据落仓,
-不替换已提交清单**;把流程翻转(宿主代码块从生成器输出、接进 stager)是转硬
-后的下一步。
+本笔记最初(2026-09-29)是四份手维护暂存清单的往返**证据**;它提出的工具
+此后成为仓库的权威。今天清单是**生成的**:`tools/generated/staging/` 下的
+声明/推导行商店,由 `tools/gen-staging-emit.mjs` 物化进宿主;其 `--check`
+即阻塞级 `staging-generated` 门。本次重写记录已落地的事实(#413 校验器、
+#420 清单商店、#485 closure/pin/zod 清单、以及 2026-10-13 收官:webclient
+腿、规范化排序、shim 命名空间政策、生成器自身退役)。
 
-以下全部数字来自携带本文件的提交所在树上的一次运行:
+## 1. emit 契约(取代往返报告的东西)
 
-```
-node tools/gen-staging-manifests.mjs --out /tmp/gen-out
-```
-
-## 1. 结论:往返成立
-
-`staging-generate: round-trip holds · 0 freeze-fatal row(s)`(退出码 0)。推导
-各腿要求的每一行都已出现在已提交清单中 —— 新装冻结类今天零实例。工具的拒绝
-案例是真的,不是摆设:在清单之外往启动图里加一个 shim(一个被
-`upstream/boot.js` 引用的临时文件)即触发
-`FATAL harmony BUNDLE_FILES missing graph row: …` 与退出码 1;而 stager 点名、
-物化树里却缺席的 pin 目录(vendor 改名/升版)会以退出码 2 中止并报出目录名 ——
-若腿静默清空,证据报告会在 vendored 行悄悄腐坏成误分类 "extra" 时依旧绿着。
-两种突变还原后均恢复退出码 0。开发过程中两者都真实触发过,各抓各的类。
-
-## 2. 推导覆盖了什么
-
-推导腿(机制在 `tools/gen-staging-legs.mjs`):
-
-- **graph** —— check-staging 自己的 `walkGraph`,以各宿主根启动(harmony 到达
-  121 个文件);
-- **dshpins** —— 三个 stager 共同声明的 dsh pin 花名册(SPINE_PKG_DSH ∪
-  android stage 循环 ∪ iOS TREES comprehension + iOS RESOURCES 点名的 dsh
-  pin),按 `stage_pkg` 规则(materialized 树上的 package.json + lib/** −
-  .d.ts + presets/**)展开,npm-face 别名(tool-present 族)按 vendor/dsh
-  拼写展开;
-- **pinfiles** —— noble *.js、pi-ai js+json、goal 三件套 js+json,以及 zod
-  的运行时闭包(**重走 pin 自身导入图重算**);
-- **closure-faces** —— npm 单文件 face,逐字取自 vendor-official.sh 的
-  CLOSURE 行(策略,不重推导);
-- **webclient** —— presentation/web-client{,-next,-compact} 按其暂存名。
-
-各清单结果:
-
-| 清单面 | 已提交 | 推导 | 缺失(会冻结) | 多出(推导不出) |
-|---|---|---|---|---|
-| harmony BUNDLE_FILES | 930 唯一行 | 897 | **0** | 33,全部分类 |
-| android stage-spine-closure | 15 scenario 行 + 镜像 | — | 0(图完全落在镜像 ∪ 花名册内) | — |
-| iOS RESOURCES | 69 | 46 图推导 | 0 | 23 策略行,已分类 |
-| iOS TREES | 73 镜像根 | — | 0 个盘上缺失 | — |
-
-工具每次运行都顺带证明的跨清单一致性:zod 闭包有三份手拷贝(BUNDLE_FILES、
-harmony CLOSURE、iOS ZOD_FILES),三份都与重算的 79 行闭包集合相等。android
-的 stage/verify 孪生表(scenario、dsh、npm)全部一致;没有声明的 pin 在盘上
-缺席。
-
-## 3. 逐条差 —— 每条:生成器局限还是清单手误
-
-先说实话:生成器**不**逐字节复现已提交清单。成立的是集合级与归因级的往返。
-残余如下:
-
-1. **BUNDLE_FILES 里 312 行重复**(1242 原始行 → 930 唯一行)。是清单自身的
-   时代沉积,不是生成器缺陷:整段整段的 spine 分组被贴了两遍(
-   `upstream-suite-leg.js` 时代的每一行都出现在新旧两代表里)。今天无害 ——
-   所有消费方都去重(`check-bundle-files` 计 930)—— 但这正是手工维护的可见
-   沉淀,也正是生成化从构造上消除的东西。
-2. **顺序。**已提交清单是到达序;生成器输出 canonical 排序。图决定不了顺序,
-   所以这是生成器策略,双方都不是缺陷。Phase 3 让排序成为唯一顺序。
-3. **33 行已提交但无腿可推导** —— 工具逐条分类:
-   - 17 行 `upstream/shims/*`(crypto、os、path、node-module、util-types、
-     child-process/stream/zlib 族……):**宿主加载器命名空间** —— 经 C bare
-     map 与 `__dshModuleDefine` 注册到达,而这些是 JS 行走刻意看不见的数据。
-     不是手误;要推导它们需要 per-host C 表(或一条声明式 shim 命名空间
-     策略)。
-   - 8 行插件 `manifest.json` + `dsh-device-plane/index.js`:**运行时数据**
-     —— 插件加载器读 manifest,不存在导入边。
-   - `e2e-stage.js`:**e2e 载具** —— 为 runner 自身的加载而暂存,启动图到不了。
-   - 4 行 util-crypto 文档(LICENSE + 三个 README):util-crypto 用了一个
-     兄弟 pin 都不用的暂存形状(带文档行)—— 本次审计唯一判定为"疑似清单不
-     一致"的条目,无害(rawfile 里字节齐全)但下次动 vendor 时值得看一眼。
-   - 2 行 npm-face(cordis-plugin-loader/include 的 `lib/index.js`):
-     与 shim 同类的**宿主加载器命名空间** —— 加载器桥解析该 face,不存在
-     JS 导入边。
-4. **harmony CLOSURE/SPINE_OURS advisory 面上 31 条计数型覆盖差** —— 已知且
-   有意:该表暂存的是更窄的 officialweb+spine 闭包,图到而不表有的行只是
-   上下文,永不定罪(门正是为此把该面配成 advisory)。
-
-## 4. 本报告不主张什么
-
-- 不替换清单、不动 vendor 流程 —— Phase 2 是证据。
-- android 31 个未暂存 scenario 是宿主策略(花名册即策略),不是缺口;工具
-  复述花名册,不发明花名册。
-- BUNDLE_FILES 未点名的 10 个盘上 shim(string-decoder、slot-registry、
-  node-sqlite……)今天只由宿主加载器命名空间背书。将来某行 C bare map 指向
-  其中之一时,JS 树里没有任何东西能抓到 —— 这个盲区正是 Phase 3 翻转 + 一条
-  声明式 shim 命名空间策略的最强论据。
-
-## 5. 复现
+一个权威,一对动词:
 
 ```
-external/ensure-dsh.sh          # 物化 vendored pins
-sh hosts/harmony/ci/vendor-official.sh --closure-only   # rawfile 闭包
-node tools/gen-staging-manifests.mjs --out /tmp/gen-out  # 本报告数字
-node tools/check-staging.mjs --block harmony,android,ios # 验证器,绿
+node tools/gen-staging-emit.mjs --check tools/generated/staging   # 门(漂移退 1)
+node tools/gen-staging-emit.mjs --emit tools/generated/staging    # 物化;正确树上零字节差异
+```
+
+- **generated = (derived − exclude) ∪ policy。** derived 行来自现实(导入
+  图、物化 pin 树);policy 行是手声明的暂存决策、必须存在于盘。policy/
+  exclude 文件可手编辑——一行的迁移就是 diff 里可见的暂存决策;derived
+  文件绝不手改。
+- **宿主块由商店机器拼接**(Index.ets 的 BUNDLE_FILES、stager 的清单块、
+  py 块),顺序为**规范化排序**——排好序的清单就是清单本身,盘上商店与宿主
+  源一致。机器块的任何手改或手重排都是漂移;正确树上 emit 是字节零操作。
+- **vendored pin 的翻转契约**:物化 pin 树中的新文件只有经 `--emit`+提交
+  才进入暂存清单(diff 里显式过目)。翻转前 find 生成的 span 现为商店中的
+  `@walk` 标记行,check/emit 时对物化树重算——find 的自动性按设计消失。
+- **check-staging 仍是第二张网**(`staging-check` 门):三个宿主的
+  图→清单覆盖方向与清单→盘陈旧行方向,阻塞。
+
+## 2. 商店清单(本提交的盘上计数)
+
+| 商店文件 | 行数 | 是什么 | 拼接进 |
+|---|---|---|---|
+| harmony-BUNDLE_FILES.rows(+ .policy/.exclude) | 1227(policy 1078) | 推导图 ∪ policy − exclude | Index.ets BUNDLE_FILES |
+| android-scenario.rows / android-web-live.rows(各含 .policy) | 17 / 14 | 宿主条目 policy ∪ 传递可达 | stage-spine-closure.sh 的 scenario+web-live for-in 头(stage+verify 孪生) |
+| ios-RESOURCES.rows / ios-TREES.rows | 125 / 106 | 声明式接入表 + 镜像根 | gen_bundle_resources.py RESOURCES / gen_bundle_header.py TREES |
+| harmony-closure{,-spine,-shelljs}.rows | 132 / 247 / 47 | vendor-official.sh 的拷贝清单(字面 policy + `@walk` pin span) | CLOSURE、SPINE_OURS、SHELLJS_PARSER_FACES 三个赋值 |
+| android-pins.rows(`# block:` 分节) | 54 | stager 的 pin/face 名册 | 六个 stage+verify `for pkg in` 头 + 三个 SHELLJS_* 值 |
+| ios-zod.rows | 79 | DERIVED:zod pin 的导入闭包(对 py 的 ZOD_ROOT 跑 zodClosureRows) | py 的 ZOD_FILES 块 |
+| webclient{,-v2,-compact,-mini}.rows | 3 / 16 / 4 / 3 | 每个暂存 web client 的声明随发文件清单 | 无——stager 整树拷贝;商店是门判断产品树、镜像与 iOS 声明的依据 |
+| shim-namespace.policy.md | — | 「推导不可见行」的记录性声明 | — |
+
+受 code-size 门拆分的卫星模块:`gen-staging-emit-hosts.mjs`(android+ios)、
+`gen-staging-emit-closure.mjs`(closure/pin/zod 三腿)、
+`gen-staging-emit-web.mjs`(webclient 腿;兼独立 CLI 供 presentation
+runner 使用),机制在 `gen-staging-legs.mjs`。
+
+## 3. 各腿推导 vs 声明
+
+- **推导**:harmony 图闭包(boot 根 + 暂存 scenario 上的 walkGraph);
+  android scenario/web-live 的传递导入;zod 闭包(pin 自身的相对导入
+  图);所有 `@walk` span(domino/turndown-plugin-gfm libs、goal 三连、
+  14 个 dsh spine pin——对物化树重算)。
+- **声明**:哪些 scenario 暂存;以 dsh 相对路径暂存的 npm faces;accessor
+  后缀(Swift 链接符号);镜像根;随发文件清单;harmony closure 块的每个
+  字面行。
+- **按设计不可推导**:shim 命名空间与桥接解析的 npm faces——见
+  `tools/generated/staging/shim-namespace.policy.md`,它回答了本笔记旧
+  §4 的悬案(C bare map 与 `__dshModuleDefine` 表是 JS walk 有意不可见的
+  数据)。该文件即这一边界的记录性声明,含接受的残余风险(C 表有行而清单
+  无行时 CI 不可见)及其缓解。
+
+## 4. 剩余手维护面(诚实的零)
+
+拷贝**名册**已全部归商店所有——最初四份手单没有一份仍以手单形式存在。
+仍为手写的是组装与构造,不是名册:
+
+- vendor-official.sh 的 CLOSURE **组装尾块**(llm.js、manifest.json、平面
+  scenario、system-plugins 行)——缝合各商店块的那一行,仍带自己的字面行;
+- 脚本侧按**整体**而非清单的暂存块:npm-face 暂存调用、MOBILE 预设 cp 块、
+  NOBLE_DIR/PIAI_DIR 整 pin 扫描、webclient find 循环;
+- android stager 的整目录镜像(upstream/、system-plugins/——构造性免漂移)、
+  其 12 文件 dsh 根清单、RETIRED_PLUGINS 座位表;
+- ios 嵌入器的 WEBCLIENT_TREES(由 web 腿对照 webclient 商店家族判定)。
+
+## 5. 字节不变量
+
+翻转改变的是「谁写清单」,从未改变被暂存的字节:每次落地后
+`sh build/build.sh sync android && sh build/build.sh sync harmony` 再生暂存
+树均**零漂移**(assets/、rawfile/ 与 iOS Generated 包 porcelain 干净),且
+组装后的 shell CLOSURE 值与翻转前的 eval 逐字节 diff 相等。本次收官的规范
+化排序按设计重排拼接块——行的**集合**不变,因此每个被拷贝文件不变;每次
+落地由双 sync 证明。
+
+## 6. 复现
+
+```
+external/ensure-dsh.sh                                   # 物化 vendored pins
+node tools/gen-staging-emit.mjs --check tools/generated/staging   # 门:绿
+node tools/gen-staging-emit.mjs --emit tools/generated/staging    # 正确树上零操作
+node tools/gen-staging-emit-web.mjs --check tools/generated/staging  # webclient 家族独立面
+node tools/check-staging.mjs --block harmony,android,ios # 校验器:绿
+sh build/build.sh sync android && sh build/build.sh sync harmony  # 暂存树零漂移
+node tools/check-asset-mirrors.mjs                       # 阻塞级跨宿主字节面:绿
 ```

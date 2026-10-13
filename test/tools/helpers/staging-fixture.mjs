@@ -1,6 +1,6 @@
 // Fixture repo builder for the staging-tool tests.
 //
-// check-staging.mjs and gen-staging-manifests.mjs resolve the repo root from
+// check-staging.mjs resolves the repo root from
 // their own import.meta.url, so the way to run them against a synthetic tree
 // is to copy the real tool sources VERBATIM into a tmp dir laid out as a repo
 // and surround them with minimal, parser-compatible manifests. Every test
@@ -13,8 +13,8 @@
 // $() find spans + simple-var interpolation), stage-spine-closure.sh (twelve
 // for-in lists: scenario/web-live/dsh/npm/faces × stage/verify + the mirror
 // needles), gen_bundle_resources.py (RESOURCES with prose comments) +
-// gen_bundle_header.py (TREES with a
-// comprehension + `] + [` continuation, ZOD_FILES).
+// gen_bundle_header.py (TREES with a comprehension + `] + [` continuation,
+// ZOD_FILES).
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -24,7 +24,6 @@ import { fileURLToPath } from 'node:url';
 export const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const TOOL_FILES = [
   'check-staging.mjs', 'check-staging-graph.mjs', 'check-staging-hosts.mjs',
-  'gen-staging-manifests.mjs', 'gen-staging-legs.mjs',
 ];
 export const VER = '0.1.6-alpha.2';
 export const ZOD_PIN = 'vendor/npm/zod@4.4.3';
@@ -147,11 +146,10 @@ function indexEts(rows) {
   ].join('\n');
 }
 
-/** stage-spine-closure.sh: TWELVE for-in lists (scenario/web-live/dsh/npm/
- * faces × stage/verify twins — the generator refuses any other count) + the
- * three whole-dir mirror needles the verifier requires + VER/ZOD_SRC. The
- * verify twins carry the `cmp -s "$DSH/<dir>/$s"` anchor the parsers
- * classify the dir and the role by (the real script's shape). */
+/** stage-spine-closure.sh: the scenario/web-live for-in pairs + the three
+ * whole-dir mirror needles the verifier requires + VER/ZOD_SRC. The verify
+ * twins carry the `cmp -s "$DSH/<dir>/$s"` anchor the parser classifies the
+ * dir and the role by (the real script's shape). */
 function stageSpineClosureSh() {
   const scenario = 'leg-a.js upstream-suite-leg.js';
   const webLive = 'web-leg.js';
@@ -174,9 +172,6 @@ function stageSpineClosureSh() {
     'for s in ' + webLive + '; do',
     '        cp "$DSH/web-live/$s" "$ASSETS/web-live/$s"',
     'done',
-    'for pkg in tool-present tool-web; do',
-    '    stage_npm_face_at_dsh_path "$pkg"',
-    'done',
     'find "$DSH/upstream" -maxdepth 1 -name \'*.js\' -type f | while IFS= read -r src; do',
     '    cp "$src" "$ASSETS/upstream/$(basename "$src")"',
     'done',
@@ -189,7 +184,6 @@ function stageSpineClosureSh() {
     '# verify twins',
     'for pkg in ' + dsh + '; do test -d "$ASSETS/vendor/dsh/$pkg@$VER"; done',
     'for pkg in ' + npm + '; do test -d "$ASSETS/vendor/npm/@deepseek-ai/$pkg@$VER"; done',
-    'for pkg in tool-present tool-web; do verify_npm_face_at_dsh_path "$pkg"; done',
     'for s in ' + scenario + '; do cmp -s "$DSH/scenario/$s" "$ASSETS/scenario/$s"; done',
     'for s in ' + webLive + '; do cmp -s "$DSH/web-live/$s" "$ASSETS/web-live/$s"; done',
     '',
@@ -379,13 +373,6 @@ export function buildGreenFixture() {
   fx.write('hosts/android/ci/stage-spine-closure.sh', stageSpineClosureSh());
   fx.write('hosts/ios/Tools/gen_bundle_header.py', genBundleHeaderPy());
   fx.write('hosts/ios/Tools/gen_bundle_resources.py', genBundleResourcesPy());
-  // The store: the goal-trio leg reads its @walk pin dirs from here (the
-  // pre-flip vendor-official.sh find segments, flipped into the store).
-  fx.write('tools/generated/staging/harmony-closure.rows', [
-    '# fixture store: the @walk marker is the pin choice findSpanPinDirs reads',
-    `@walk all ${ZOD_PIN}`,
-    '',
-  ].join('\n'));
   mirrorRawfileBundle(fx);
   return fx;
 }

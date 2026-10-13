@@ -1,19 +1,18 @@
 #!/bin/sh
 # run-tools-tests.sh — the CI gates workflow's tools-face step
 # (.github/workflows/gov.yml): the repo's own gate-tool net (test/tools
-# vitest face) — the staging verifier/generator pair's hermetic fixture
-# tests, the code-size gate tests, and the publisher-token validator's
-# counterexample net (tools/publisher-token.test.mjs, PR #285 review:
-# the suite was manually-runnable only, so a future validator regression
-# turned nothing red).
+# vitest face) — the staging verifier's hermetic fixture tests
+# (tools/check-staging.test.mjs), the code-size gate tests, and the
+# publisher-token validator's counterexample net
+# (tools/publisher-token.test.mjs, PR #285 review: the suite was
+# manually-runnable only, so a future validator regression turned nothing
+# red).
 #
 # Placement contract: this step runs AFTER `gov run` in the gates job, by
 # which point the workflow has materialized the vendored closure
-# (external/ensure.sh + ensure-dsh.sh) and staged the harmony
-# rawfile (vendor-official.sh --closure-only) — the gen-staging-manifests
-# real-repo leg's documented precondition. Local runs need the same
-# materialization (`sh external/ensure-dsh.sh` and
-# `sh build/build.sh sync harmony`) or that one leg fails loud.
+# (external/ensure.sh + ensure-dsh.sh) — the real-repo smoke legs'
+# documented precondition. Local runs need the same materialization
+# (`sh external/ensure-dsh.sh`) or those legs fail loud.
 #
 # Dependencies: the suite installs its own devDependencies when absent.
 # The face carries a COMMITTED lockfile (test/tools/package-lock.json):

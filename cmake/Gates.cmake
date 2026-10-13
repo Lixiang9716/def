@@ -6,7 +6,7 @@
 # root, and enable_testing() below runs at top level — the only scope from
 # which CTest sees this suite.
 #
-# The two tests (and exactly two — see the phase-2 seam at the bottom):
+# The tests:
 #
 #   dsh-gate-closures
 #     Wraps `sh build/check-closures.sh` — the `closures` gate declared in
@@ -22,6 +22,13 @@
 #     to a configure-time STATUS message naming the remedy
 #     (uv tool install govrail) and simply leaves the test unregistered.
 #
+#   dsh-test-core
+#     Wraps `sh build/build.sh test core --no-ish` — the CLI proof legs over
+#     the vendored upstream spine (build.sh's own test verb, the cold-start
+#     --no-ish build honored so a Linux CI checkout without the iSH engine
+#     still tests; the same command c-core.yml runs). LONG: one hour of
+#     timeout, mirrored from the CI job's own budget.
+#
 # Ownership: ctest is a second face of the gates, not a replacement. The DAG
 # definition (gates.json), the task cards, and the pre-push hooks stay owned
 # by govrail; `gov run` remains the canonical invocation. These tests exist
@@ -32,12 +39,18 @@
 #   ctest --test-dir build/cmake-macos-dev -R dsh-gate-closures
 #
 # Phase-2 seam: the individual gates in gates.json are deliberately NOT
-# wrapped as separate ctest tests in phase 1 — the two tests above are the
-# whole surface. Per-gate wrapping (with per-gate timeouts mirrored from
-# gates.json) is the natural phase-2 extension and should extend, not
-# replace, these two test names.
+# wrapped as separate ctest tests — the tests above are the whole surface.
+# Per-gate wrapping (with per-gate timeouts mirrored from gates.json) is the
+# natural extension and should extend, not replace, these test names.
 
 enable_testing()
+
+# dsh-test-core: build.sh's own test verb for the core (see the header).
+add_test(
+    NAME dsh-test-core
+    COMMAND sh build/build.sh test core --no-ish
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+set_tests_properties(dsh-test-core PROPERTIES TIMEOUT 3600)
 
 # dsh-gate-closures: the committed-closure byte check. The script computes
 # the repo root from its own location, but the command below (`sh

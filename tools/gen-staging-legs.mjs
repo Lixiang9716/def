@@ -1,5 +1,5 @@
-// dsh:logging-exempt satellite of gen-staging-manifests.mjs (dev script: console
-// IS the product, like check-bundle-files.mjs).
+// dsh:logging-exempt satellite of the gen-staging-emit tool family
+// (dev script: console IS the product, like check-bundle-files.mjs).
 /**
  * gen-staging-legs.mjs — the derivation legs of the staging-manifest
  * generator. Each leg turns one kind of REALITY (the import graph, a
