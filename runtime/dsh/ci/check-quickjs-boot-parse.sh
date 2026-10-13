@@ -89,6 +89,14 @@ log.debug('quickjs parse probe: boot graph resolved', {
 globalThis.__dshComplete(true, 'quickjs parse probe: boot graph compiled');
 STUB_EOF
 
-# 3. Boot it: exit 0 only when the whole graph compiles AND evaluates under
+# 3. The vendored dsh closure: the shim graph pulls dsh: modules (fs.js ->
+#    dsh:util-crypto), materialized by ensure-dsh.sh — NOT by ensure.sh
+#    (gov.yml's materialize step carries engine + ish only), so a fresh CI
+#    runner needs it here (measured 2026-10-13 on ubuntu-24.04-arm:
+#    'cannot load module dsh:util-crypto'). Idempotent; network only on
+#    first fetch.
+sh ../../external/ensure-dsh.sh
+
+# 4. Boot it: exit 0 only when the whole graph compiles AND evaluates under
 #    the vendored engine.
 ./build/dsh-cli . "$STUB"
