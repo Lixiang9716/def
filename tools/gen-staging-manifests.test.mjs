@@ -69,6 +69,7 @@ describe('gen-staging-manifests green fixture: android and ios surfaces', () => 
       scenarioStageVsVerify: [], webLiveStageVsVerify: [],
       pkgStageVsVerify: [], pkgVerifyVsStage: [],
       npmStageVsVerify: [], npmVerifyVsStage: [],
+      facesStageVsVerify: [], facesVerifyVsStage: [],
     });
     expect(a.pinsAbsent).toEqual([]);
     expect(a.graphRowsOutsideMirrors).toEqual([]);
@@ -140,6 +141,21 @@ describe('gen-staging-manifests freeze-fatal: the android twins', () => {
     const r = fx.run('gen-staging-manifests.mjs');
     expect(r.status).toBe(1);
     expect(r.stdout).toContain('FATAL android graph row outside mirrors: scenario/leg-c.js');
+  });
+
+  it('a faces stage/verify twin drift → fatal, exit 1', () => {
+    const fx = freshFixture();
+    // the verify twin forgets tool-web: a staged face the check never cmps
+    // is a drift the closures gate would be blind to (the store-spliced
+    // twins make this structurally impossible; the leg still names it)
+    const sh = join('hosts/android/ci/stage-spine-closure.sh');
+    fx.write(sh, fx.read(sh).replace(
+      'for pkg in tool-present tool-web; do verify_npm_face_at_dsh_path "$pkg"; done',
+      'for pkg in tool-present; do verify_npm_face_at_dsh_path "$pkg"; done',
+    ));
+    const r = fx.run('gen-staging-manifests.mjs');
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain('FATAL android faces twin drift (verify lacks): tool-web');
   });
 
 });

@@ -24,6 +24,16 @@
  *                                     — the embedder's declared accession
  *                                       table + mirror roots (the py blocks
  *                                       materialize from them)
+ *   harmony-closure{,-spine,-shelljs}.rows
+ *                                     — the vendor-official.sh copy lists:
+ *                                       literal policy rows + `@walk` find-
+ *                                       span positions (the sh blocks
+ *                                       materialize from them)
+ *   android-pins.rows                  — the android pin/face rosters by
+ *                                       `# block:` section (each stage+verify
+ *                                       twin pair splices from one section)
+ *   ios-zod.rows                       — the DERIVED zod closure (the py
+ *                                       ZOD_FILES block materializes from it)
  *
  * modes:
  *   --check <dir>  the enforcement gate: recompute the derivation and
@@ -50,8 +60,14 @@
  * gen-staging-emit-hosts.mjs), and the ios embedder's RESOURCES/TREES
  * (declared rows files; the accessor suffixes are Swift-linked policy no
  * derivation can mint, so there the rows files are the source and the py
- * blocks are materialized). The harmony vendor-official.sh CLOSURE rawfile
- * staging remains CLOSURE-driven (find-generated at stage time).
+ * blocks are materialized). The closure/pin legs
+ * (gen-staging-emit-closure.mjs) flip the last hand-maintained copy
+ * rosters: vendor-official.sh's CLOSURE/SPINE_OURS/SHELLJS_PARSER_FACES
+ * blocks (find spans recomputed at emit time against the materialized pin
+ * trees — a new vendored file joins only via --emit + commit, never
+ * automatically again), the android stager's pin/face rosters (stage and
+ * verify twins splice from one store section), and the ios ZOD_FILES
+ * closure (derived from the pin's own import graph).
  *
  * usage:
  *   node tools/gen-staging-emit.mjs --emit <dir>
@@ -64,6 +80,7 @@ import { join } from 'node:path';
 import { walkGraph, inScope } from './check-staging-graph.mjs';
 import { buildHosts } from './check-staging-hosts.mjs';
 import { androidCheck, androidEmit, iosCheck, iosEmit } from './gen-staging-emit-hosts.mjs';
+import { closureCheck, closureEmit } from './gen-staging-emit-closure.mjs';
 
 const fail = (msg) => { throw new Error(`gen-staging-emit: ${msg}`); };
 
@@ -199,7 +216,8 @@ function main() {
   if (mode === '--check') {
     const ios = iosCheck(dir);
     if (ios.disk.length) fail(`the declared ios rows are structurally broken (no emit can heal them): ${ios.disk.join(' · ')}`);
-    const drift = [...harmonyCheck(dir).drift, ...androidCheck(dir).drift, ...ios.drift];
+    const drift = [...harmonyCheck(dir).drift, ...androidCheck(dir).drift, ...ios.drift,
+      ...closureCheck(dir).drift];
     if (drift.length) {
       console.error('gen-staging-emit: the generated manifests drifted — run'
         + ` \`node tools/gen-staging-emit.mjs --emit ${dir}\`, review, commit:`);
@@ -208,9 +226,10 @@ function main() {
       return;
     }
     console.log('gen-staging-emit: the generated staging manifests match their'
-      + ` derivations (harmony + android + ios) in ${dir}`);
+      + ` derivations (harmony + android + ios + the closure/pin legs) in ${dir}`);
   } else {
-    for (const line of [...harmonyEmit(dir), ...androidEmit(dir), ...iosEmit(dir)]) {
+    for (const line of [...harmonyEmit(dir), ...androidEmit(dir), ...iosEmit(dir),
+      ...closureEmit(dir)]) {
       console.log(`gen-staging-emit: ${line}`);
     }
   }
