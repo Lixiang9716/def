@@ -49,8 +49,8 @@
   "managed_scope": {
     "version": "managed-scope-policy/v2",
     "profile": "production",
-    "observe_change_policy": "review_required",
-    "approval_mode": "inherit",
+    "observe_change_policy": "informational",
+    "approval_mode": "auto",
     "approval_thresholds": {
       "entry_removal_count": 25,
       "entry_removal_percent": 25
@@ -142,6 +142,138 @@
         "source": "user",
         "created_by": "zcode-main-agent",
         "order": 0,
+        "enabled": true
+      },
+      {
+        "rule_id": "officialweb-hosts-copy-exclude",
+        "action": "exclude",
+        "pattern": "hosts/android/app/src/main/assets/dsh/scenario/android-officialweb-web-live.js",
+        "pattern_kind": "file",
+        "reason": "owner ruling 2026-10-13: retired duplicate copies whose byte-identical index twins lock aoci_remove_entry (aoci-spec/aoci-code#117); the surviving originals stay managed",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 500,
+        "enabled": true
+      },
+      {
+        "rule_id": "shell-wasm-programs-copy-exclude",
+        "action": "exclude",
+        "pattern": "hosts/android/app/src/main/assets/dsh/system-plugins/dsh-shell-wasm/programs.js",
+        "pattern_kind": "file",
+        "reason": "owner ruling 2026-10-13: retired duplicate copies whose byte-identical index twins lock aoci_remove_entry (aoci-spec/aoci-code#117); the surviving originals stay managed",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 501,
+        "enabled": true
+      },
+      {
+        "rule_id": "officialweb-runtime-copy-exclude",
+        "action": "exclude",
+        "pattern": "runtime/dsh/scenario/android-officialweb-web-live.js",
+        "pattern_kind": "file",
+        "reason": "owner ruling 2026-10-13: retired duplicate copies whose byte-identical index twins lock aoci_remove_entry (aoci-spec/aoci-code#117); the surviving originals stay managed",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 502,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-510-dsh",
+        "action": "exclude",
+        "pattern": "external/dsh/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 510,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-511-npm",
+        "action": "exclude",
+        "pattern": "external/npm/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 511,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-512-node_modules",
+        "action": "exclude",
+        "pattern": "external/node_modules/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 512,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-513-dsh-tests",
+        "action": "exclude",
+        "pattern": "external/dsh-tests@*/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 513,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-514-quickjs-ng",
+        "action": "exclude",
+        "pattern": "external/quickjs-ng/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 514,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-515-wasm3",
+        "action": "exclude",
+        "pattern": "external/wasm3/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 515,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-516-zstd",
+        "action": "exclude",
+        "pattern": "external/zstd/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 516,
+        "enabled": true
+      },
+      {
+        "rule_id": "external-materialized-517-ish",
+        "action": "exclude",
+        "pattern": "external/ish/**",
+        "pattern_kind": "glob",
+        "reason": "scope migration parity: the materialized pin trees were unmanaged at runtime/dsh/vendor pre-rename; phase-2 moved them to external/ and they must keep that disposition (untracked, gitignored, re-derivable from pinned tarballs; the tracked dsh-tarballs mirror and pin tables stay managed)",
+        "decision_basis": "maintainer_direction",
+        "source": "user",
+        "created_by": "zcode-main-agent",
+        "order": 517,
         "enabled": true
       }
     ]
