@@ -1,0 +1,17 @@
+{
+  "host": "iOS Simulator A4AE41BF-026A-441E-85DF-F53522996073 (pid 57457, -dsh-serve seat)",
+  "phase": "t0216.shell.turn",
+  "verdict": "pass",
+  "build": "the installed org.dsh.DSHHost driven with -dsh-serve (AppDelegate.swift:54) — no rebuild; container trees staged per the run-ios-live-write.sh recipe",
+  "model": "vendored dsh-llm-mock on the host loopback (no reverse — the simulator shares it); tool_call_success → shell",
+  "drive": "composer's own wire: POST /api/session/prompt (client-request envelope) with the dsh.serve origin token (SessionServe.swift:496) and the /api/state pageSession",
+  "proves": [
+    "the interactive seat boots and serves the official client (127.0.0.1:64149, the previous round's 404 was the legacy harness chain — CarrierRoutes.swift:30 — not the auth gate)",
+    "the prompt was accepted through the serving seat's own wire (prompt-response.json)",
+    "the mock's two attempts completed (mock-server-stdout.txt) and the official UI renders the shell tool card (screens/)",
+    "the executor's fsWrite landed on the container disk byte-exact: Documents/profiles/default/dsh/note.txt",
+    "the durable session journal landed (session-journal.jsonl.zstd, 11323 bytes)"
+  ],
+  "tree": "origin/main cbf225414453 (dirty working tree at receipt time)",
+  "producedAt": "2026-10-13T09:37:06Z"
+}

@@ -1,0 +1,27 @@
+{
+  "host": "harmony 127.0.0.1:5557 (dsh_phone emulator)",
+  "phase": "t0216.shell.turn",
+  "verdict": "pass",
+  "build": "hvigorw assembleHap buildMode=release (DSH_RELEASE=1, debuggable=false) — the user-facing OfficialServe seat (startReleaseServe), drives compiled out",
+  "model": "vendored dsh-llm-mock over hdc rport loopback; DSH_MOCK_SEQUENCE='tool_call_success success', DSH_MOCK_TOOL_NAME=shell, DSH_MOCK_TOOL_ARGS={'command':'echo hi-from-harmony > note.txt && cat note.txt'}",
+  "drive": "the seat's own wire: POST /api/onboarding/save (the page's BYOK panel wire — the runtime validates, keychain-seals dsh.llm/byok-route, and REBINDS the live transport), then /api/session/create + /api/session/prompt (client-request envelopes, the identical request the page sends; the prompt answer: {'type':'server-response','rpcId':'rpc-shellturn-1','result':{'ok':true,'value':{'accepted':true}}})",
+  "proves": [
+    "the release interactive seat boots and serves the official client (serve-line.txt: the WARN-grade dsh.serve origin line — hilog.info is dropped for non-debuggable apps on this image, so the line rides warn; the one-line level change is part of this leg)",
+    "the credential entered through the seat's real BYOK face and the route rebound: onboarding/status answered mode=byok with the mock baseURL (credential-wire.txt); no staged file, no root — the sandbox refuses shell-side creation and the release build carries no E2E leg machinery, so the llm.live-stream 0666-placeholder handshake is unavailable to this seat by construction",
+    "a turn submitted through the serving seat's own wire reaches the real spine agent loop: session/create bound the session to the byok provider/model, session/prompt answered accepted:true",
+    "the mock's scripted tool call drove the ONE shell tool seat: the tool card renders 'Tool call · shell · echo hi-fr…' in the official UI (screens/04; the trajectory tab's tool gantt in screens/02)",
+    "the dsh-shell-js executor ran in-app over the gateway fs primitives: note.txt (16 bytes, 'hi-from-harmony') exists on the container disk under files/dsh-fs/workspace/",
+    "the durable session journal landed (session-journal.jsonl.zstd, 14816 bytes, zstd-framed by the vendored persistence backend; decode via the vendored persistence stack)"
+  ],
+  "evidence": {
+    "screens": ["screens/02-trajectory-tool-run.png", "screens/04-tool-card-expanded.png"],
+    "probe": "note.txt (byte-exact 'hi-from-harmony')",
+    "journal": "session-journal.jsonl.zstd (14816 bytes)",
+    "state": "state-snapshot.json (the bridge projection snapshot)",
+    "mock": "mock-server-stdout.txt (attempt 1 tool_call_success completed, attempt 2 success completed)",
+    "wire": "credential-wire.txt (save/status envelopes) + serve-line.txt (the harvest line)",
+    "logs": "logs.txt (release strip: warn/error only per rule L4)"
+  },
+  "tree": "origin/main cbf225414453 (dirty working tree at receipt time)",
+  "producedAt": "2026-10-13T10:09:29Z"
+}

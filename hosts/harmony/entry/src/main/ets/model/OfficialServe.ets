@@ -939,8 +939,13 @@ export class OfficialServe {
     const url = 'http://127.0.0.1:' + this.port + '/?token=' + this.token;
     // The harvest line (the iOS/Android `dsh.serve: origin token=` sibling —
     // the drives talk to the /api plane through it; the token never leaves
-    // this log).
-    hilog.info(0x0000, 'dsh.serve', 'origin token=%{public}s port=%{public}d',
+    // this log). WARN, not info: on the dsh_phone image a non-debuggable
+    // (release) app's hilog.info never reaches the buffer (hilog.error and
+    // hilog.warn do — measured by the release-logging leg, whose asserted
+    // zeros name warn as the retained level), so at info this line was dead
+    // exactly where its consumers (the release-seat drives) run. Same tag,
+    // same bytes, one level: the token's leak surface is unchanged.
+    hilog.warn(0x0000, 'dsh.serve', 'origin token=%{public}s port=%{public}d',
       this.token, this.port);
     hilog.info(0x0000, TAG, 'official: opening origin %{public}s', url);
     this.onOrigin(url);
