@@ -4,15 +4,14 @@
  * gen-staging-manifests.mjs — the P2 staging-manifest GENERATOR (the ledger's
  * step two; tools/check-staging.mjs is step one, the verifier).
  *
- * check-staging proves graph→list in one direction; the hand lists themselves
- * stay hand (a missed row freezes a shim silently on a fresh install). This
- * tool flips the flow: it DERIVES what each manifest must name from reality —
- * the closure's import graph plus the materialized vendor trees — under the
- * staging policy the stagers themselves declare, and reports the round-trip
- * delta against the committed manifests row by row. Phase 2 ships the
- * generator + the delta ONLY: the committed manifests are not replaced (that
- * flip, and emitting the hosts' source blocks from here, is the post-
- * hardening step), so today the tool is evidence, not authority.
+ * This tool DERIVES what each manifest must name from reality — the closure's
+ * import graph plus the materialized vendor trees — under the staging policy
+ * the stagers themselves declare (the scripts' own rosters plus the
+ * generated store), and reports the round-trip delta against the committed
+ * manifests row by row. gen-staging-emit.mjs owns the flip (the store plus
+ * the spliced host blocks); this tool stays the independent cross-check — a
+ * delta here is evidence against the emit tool's own derivation, so none of
+ * it is silently normalized away.
  *
  * Derivation legs (mechanics in gen-staging-legs.mjs):
  *   graph    — check-staging's walkGraph over each host's roots; the roots'
@@ -21,24 +20,22 @@
  *   dshpins  — every materialized vendor/dsh/<pkg>@<ver> expands to
  *              package.json + lib/** (−.d.ts) + presets/** (the stage_pkg /
  *              suite-extras rule);
- *   pinfiles — noble *.js, pi-ai js+json, the goal trio js+json, zod's
- *              recomputed import closure; npm single-file faces are policy,
- *              extracted verbatim from vendor-official.sh's CLOSURE rows;
+ *   pinfiles — noble *.js, pi-ai js+json, the goal trio js+json (the
+ *              store's @walk markers), zod's recomputed import closure;
+ *              npm single-file faces are policy, extracted verbatim from
+ *              vendor-official.sh's CLOSURE rows;
  *   webcl    — presentation/web-client{,-next,-compact} at their staged names.
  *
  * Round-trip verdicts: a derived graph-leg row missing from a committed
- * manifest is the fresh-install death class → exit 1. Everything else
+ * manifest is the fresh-install death class → exit 1; everything else
  * (extras, duplicate hand rows, ordering the graph cannot dictate,
- * host-loader-namespace rows the JS tree cannot see) is reported as
- * classified delta — discovering a manifest typo IS the deliverable, so none
- * of it is silently normalized away.
+ * host-loader-namespace rows the JS tree cannot see) is classified delta.
  *
  * usage: node tools/gen-staging-manifests.mjs [--host harmony|android|ios]
  *                                            [--out DIR] [--json]
- * exit: 0 = the derived graph closure is covered by every committed manifest
+ * exit: 0 = every committed manifest covers the derived graph closure
  *       1 = a derived graph-leg row is missing from a committed manifest
- *       2 = usage/structure error (a manifest this tool cannot parse is a
- *           manifest nobody can trust)
+ *       2 = usage/structure error (an unparsable manifest is untrustworthy)
  */
 import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -52,9 +49,8 @@ const fail = (msg) => { throw new Error(`gen-staging-manifests: ${msg}`); };
 
 // --- committed-source policy extraction -------------------------------------
 
-// Quote-bearing patterns are built via new RegExp from plain strings: a quote
-// inside a regex LITERAL desyncs govrail's code-size string tracking and
-// ghosts phantom INDENT violations (govrail#411) — see check-staging-graph.mjs.
+// Quote-bearing patterns ride new RegExp from plain strings (govrail#411 —
+// see check-staging-graph.mjs).
 const ETS_ROW = new RegExp("'([^']+)'", 'g');
 const PY_ROW = new RegExp('"([^"]*)"', 'g');
 const SHELL_ASSIGN = (name) => new RegExp(`^${name}="(.*)"$`, 'm');
@@ -78,11 +74,9 @@ function bundleRawRows() {
  * script puts them inside one window). Fails loud on a duplicate or an
  * incomplete pair — the twin drift report is only as good as the pairing. */
 function parseAndroidJsListPairs(jsLists) {
-  // Quote-bearing pattern via new RegExp from a plain string: a quote inside
-  // a regex LITERAL desyncs govrail's code-size string tracking (govrail#411).
-  // No g flag: String.match returns the FIRST match with its capture groups
-  // (a g flag yields a bare string array — the groups vanish), and the first
-  // anchor inside the body window is the loop's own.
+  // Quote-bearing pattern via new RegExp from a plain string (govrail#411);
+  // no g flag: String.match must return the FIRST match WITH its capture
+  // groups, and the first anchor in the body window is the loop's own.
   const ANCHOR = new RegExp('(cp|cmp -s) "\\$DSH/(scenario|web-live)/\\$s"');
   const jsRows = { scenario: { stage: null, verify: null }, 'web-live': { stage: null, verify: null } };
   for (const l of jsLists) {
@@ -104,23 +98,29 @@ function parseAndroidJsListPairs(jsLists) {
 }
 
 /** android stage-spine-closure.sh: the `for s in` scenario/web-live rosters
- * and the for-pkg lists (stage + verify twins for each) — kept separate so
- * twin drift is reportable. The script carries EIGHT for-in lists
- * (scenario/web-live/dsh/npm × stage/verify); the .js lists are paired by
- * parseAndroidJsListPairs, the pkg lists by content, and anything else is a
- * structural drift this tool refuses to guess around. */
+ * and the for-pkg lists (stage + verify twins for each; TWELVE for-in lists
+ * total, scenario/web-live/dsh/npm/faces × stage/verify — the .js lists are
+ * paired by parseAndroidJsListPairs, the pkg lists by kind, a pkg loop's
+ * kind being its own first body line, and anything else is a structural
+ * drift this tool refuses to guess around). */
 function androidScriptFacts() {
   const file = join(REPO, 'hosts/android/ci/stage-spine-closure.sh');
   const src = readFileSync(file, 'utf8');
   const lists = [...src.matchAll(/for (?:pkg|s) in ([^;]+); do/g)]
-    .map((m) => ({
-      names: m[1].replace(/\\\n/g, ' ').split(/\s+/).filter(Boolean),
-      // the loop body: enough window to cover header + body + done
-      body: src.slice(m.index, m.index + 1400),
-    }));
+    .map((m) => {
+      const rest = src.slice(m.index + m[0].length, m.index + 1400).split('\n');
+      return {
+        names: m[1].replace(/\\\n/g, ' ').split(/\s+/).filter(Boolean),
+        // the loop's own first body line (same line as `; do` if the loop is
+        // single-line, else the next line — never a later loop's text)
+        firstBody: rest[0].trim() || (rest[1] ?? '').trim(),
+        body: src.slice(m.index, m.index + 1400),
+      };
+    });
   const kind = (l) => (l.names.some((x) => x.endsWith('.js')) ? 'scenario'
-    : l.names.every((x) => x.startsWith('dsh-')) ? 'npm' : 'dsh');
-  const byKind = { scenario: [], npm: [], dsh: [] };
+    : /npm_face_at_dsh_path/.test(l.firstBody) ? 'faces'
+      : l.names.every((x) => x.startsWith('dsh-')) ? 'npm' : 'dsh');
+  const byKind = { scenario: [], npm: [], dsh: [], faces: [] };
   for (const l of lists) byKind[kind(l)].push(l);
   for (const k of Object.keys(byKind)) {
     const expect = k === 'scenario' ? 4 : 2;
@@ -145,27 +145,29 @@ function androidScriptFacts() {
     pkgVerify: byKind.dsh[1].names,
     npmStage: byKind.npm[0].names,
     npmVerify: byKind.npm[1].names,
+    facesStage: byKind.faces[0].names,
+    facesVerify: byKind.faces[1].names,
   };
 }
 
-/** The pin dirs a `$(cd runtime/dsh && find … | LC_ALL=C sort)` segment in
- * vendor-official.sh names — the generated-at-stage-time rows whose pin CHOICE
- * is still the script's own declaration. Both find segments are parsed; the
- * vendor/npm ones are the goal-trio faces the BUNDLE_FILES derivation walks. */
-function findSpanPinDirs(src, face) {
-  const span = new RegExp('\\$\\(cd runtime/dsh && find ([\\s\\S]*?)\\| LC_ALL=C sort\\)', 'g');
+/** The pin dirs the harmony-closure store's `@walk` markers name — the
+ * pre-flip vendor-official.sh `$(cd runtime/dsh && find … | sort)` spans,
+ * whose pin CHOICE moved into the store with the flip. This leg walks the
+ * vendor/npm ones the BUNDLE_FILES derivation covers. */
+function findSpanPinDirs() {
+  const src = readFileSync(join(REPO, 'tools/generated/staging/harmony-closure.rows'), 'utf8');
   const dirs = new Set();
-  for (const m of src.matchAll(span)) {
-    for (const tok of m[1].replace(/\\\n/g, ' ').split(/\s+/)) {
-      if (tok.startsWith(`${face}/`)) dirs.add(tok);
+  for (const m of src.matchAll(/^@walk \S+ (.*)$/gm)) {
+    for (const tok of m[1].trim().split(/\s+/)) {
+      if (tok.startsWith('vendor/npm/')) dirs.add(tok);
     }
   }
   return [...dirs].sort();
 }
 
-/** vendor-official.sh's own declarations: SPINE_PKG_DSH (the find-segment pin
- * roster), NOBLE/PIAI, the goal-trio find pins, the npm-face verify loop and
- * the MOBILE preset cp block. Every pin version this tool derives comes from
+/** vendor-official.sh's own declarations: SPINE_PKG_DSH, NOBLE/PIAI, the
+ * npm-face verify loop and the MOBILE preset cp block (the goal trio rides
+ * the store's @walk markers). Every pin version this tool derives comes from
  * these declarations (or android's VER=) — never a local copy. */
 function closureScriptFacts() {
   const file = join(REPO, 'hosts/harmony/ci/vendor-official.sh');
@@ -174,8 +176,8 @@ function closureScriptFacts() {
   const noble = src.match(SHELL_ASSIGN('NOBLE_DIR'));
   const piai = src.match(SHELL_ASSIGN('PIAI_DIR'));
   if (!pkg || !noble || !piai) fail('SPINE_PKG_DSH/NOBLE_DIR/PIAI_DIR not found in vendor-official.sh');
-  const goalTrio = findSpanPinDirs(src, 'vendor/npm');
-  if (!goalTrio.length) fail('no vendor/npm pin dirs in the find segments of vendor-official.sh (goal trio)');
+  const goalTrio = findSpanPinDirs();
+  if (!goalTrio.length) fail('no vendor/npm pin dirs in the harmony-closure.rows @walk markers (goal trio)');
   // The harmony-only declarations: the verify loop's `for face in ...` line
   // names every npm face the script stages at the dsh rel path; the cp
   // block's presets-mobile source paths name the MOBILE preset docs.
@@ -196,10 +198,9 @@ function closureScriptFacts() {
 }
 
 /** The dsh pin-name roster the three stagers jointly declare: SPINE_PKG_DSH
- * (harmony's find segments) ∪ android's stage loop ∪ iOS TREES comprehension
- * + the dsh pins iOS RESOURCES names. NOT a glob of the materialized tree —
- * the tree also holds the test-closure pins, which no runtime manifest
- * stages. */
+ * ∪ android's stage loop ∪ the iOS TREES comprehension + RESOURCES dsh pins.
+ * NOT a glob of the materialized tree — it also holds the test-closure pins
+ * no runtime manifest stages. */
 function dshPinRoster(hosts, facts, closure) {
   const iosMirrors = hosts.ios.surfaces.primary.mirrorRoots
     .map((m) => m.rel.match(/^vendor\/dsh\/([^@]+)@/)?.[1])
@@ -218,10 +219,9 @@ const WEBCLIENT_TREES = [
   { dir: 'presentation/web-client-compact', staged: 'dsh-web-client-compact' },
 ];
 
-/** One stager-named pin subtree — the dir MUST exist. A missing pin tree is
- * not an empty leg, it is a materialization failure that would silently rot
- * the evidence (a bumped pin leaves the old rows "extra" and the report
- * green); rules.md rule 5: fail loud, naming the dir (exit 2). */
+/** One stager-named pin subtree — the dir MUST exist: a missing pin tree is
+ * a materialization failure that would silently rot the evidence green
+ * (rules.md rule 5: fail loud, naming the dir, exit 2). */
 function pinRowsOrFail(pin, opts) {
   if (!existsSync(join(DSH, pin))) {
     fail(`pin tree absent: ${pin} — a stager names it; external/ensure*.sh materializes the pins`);
@@ -229,9 +229,8 @@ function pinRowsOrFail(pin, opts) {
   return dirPinRows(DSH, pin, opts) ?? [];
 }
 
-/** Every leg for harmony's BUNDLE_FILES, kept per-leg so the delta can
- * attribute each row to the reality that demands it. Every pin/version comes
- * from the stagers' own declarations (facts/closure) — no local copies. */
+/** Every harmony BUNDLE_FILES leg, kept per-leg so the delta can attribute
+ * each row to the reality that demands it — no local copies. */
 function deriveBundleFiles(host, closureRows, roster, facts, closure) {
   const legs = new Map();
   legs.set('graph', [...walkGraph(host.roots(host.surfaces)).reached.keys()].sort());
@@ -281,8 +280,7 @@ const mirrorCovers = (rel, roots) => roots.some((r) => (r.endsWith('/**')
   ? rel.startsWith(r.slice(0, -2))
   : rel === r || rel.startsWith(`${r}/`)));
 
-/** ios gen_bundle_header.py's ZOD_FILES rows — the third hand copy of the zod
- * closure (BUNDLE_FILES and the CLOSURE carry the other two). */
+/** ios gen_bundle_header.py's ZOD_FILES rows — the third zod closure copy. */
 function iosZodFiles() {
   const file = join(REPO, 'hosts/ios/Tools/gen_bundle_header.py');
   const src = readFileSync(file, 'utf8');
@@ -321,10 +319,8 @@ function roundTripHarmony(hosts, facts, closure) {
       pin: zod,
       recomputed: zodDerived.length,
       bundleFiles: zodHand.length, closure: zodClosureHand.length, iosZodFiles: zodIos.length,
-      // "all three hand copies agree with each other and with the recomputed
-      // closure": the union check proves closure/ios hold no EXTRA row, but
-      // a copy MISSING a row slips a subset test (union size stays at
-      // zodHand.length) — equal lengths close that quadrant.
+      // "all three hand copies agree with the recomputed closure": a copy
+      // MISSING a row slips a subset test — equal lengths close that quadrant.
       copiesAgree: new Set([...zodHand, ...zodClosureHand, ...zodIos]).size === zodHand.length
         && zodClosureHand.length === zodHand.length
         && zodIos.length === zodHand.length
@@ -354,6 +350,8 @@ function roundTripAndroid(hosts, facts) {
     pkgVerifyVsStage: facts.pkgVerify.filter((p) => !facts.pkgStage.includes(p)),
     npmStageVsVerify: facts.npmStage.filter((p) => !facts.npmVerify.includes(p)),
     npmVerifyVsStage: facts.npmVerify.filter((p) => !facts.npmStage.includes(p)),
+    facesStageVsVerify: facts.facesStage.filter((p) => !facts.facesVerify.includes(p)),
+    facesVerifyVsStage: facts.facesVerify.filter((p) => !facts.facesStage.includes(p)),
   };
   const pinAbs = (p) => (/^dsh-/.test(p)
     ? `vendor/npm/@deepseek-ai/${p}@${facts.ver}` : `vendor/dsh/${p}@${facts.ver}`);
@@ -412,6 +410,8 @@ function freezeFatal(reports) {
       for (const m of r.twins.pkgVerifyVsStage) out.push(`android pkg twin drift (stage lacks): ${m}`);
       for (const m of r.twins.npmStageVsVerify) out.push(`android npm twin drift (verify lacks): ${m}`);
       for (const m of r.twins.npmVerifyVsStage) out.push(`android npm twin drift (stage lacks): ${m}`);
+      for (const m of r.twins.facesStageVsVerify) out.push(`android faces twin drift (verify lacks): ${m}`);
+      for (const m of r.twins.facesVerifyVsStage) out.push(`android faces twin drift (stage lacks): ${m}`);
       for (const m of r.graphRowsOutsideMirrors) out.push(`android graph row outside mirrors: ${m}`);
     }
     if (r.host === 'ios') {
@@ -436,7 +436,7 @@ function hostLines(r) {
     lines.push(`scenario roster: ${r.scenarioRoster.rows} staged (policy) of ${r.scenarioRoster.onDisk} on-disk — ${r.scenarioRoster.unstagedByPolicy} unstaged by host policy`);
     lines.push(`mirrors: ${r.mirrors.join(', ')}`);
     lines.push(`graph rows outside mirrors: ${r.graphRowsOutsideMirrors.length}`);
-    lines.push(`twin lists: scenario drift ${r.twins.scenarioStageVsVerify.length} · web-live drift ${r.twins.webLiveStageVsVerify.length} · pkg drift ${r.twins.pkgStageVsVerify.length}/${r.twins.pkgVerifyVsStage.length} · npm drift ${r.twins.npmStageVsVerify.length}/${r.twins.npmVerifyVsStage.length} · declared pins absent on disk: ${r.pinsAbsent.length}`);
+    lines.push(`twin lists: scenario drift ${r.twins.scenarioStageVsVerify.length} · web-live drift ${r.twins.webLiveStageVsVerify.length} · pkg drift ${r.twins.pkgStageVsVerify.length}/${r.twins.pkgVerifyVsStage.length} · npm drift ${r.twins.npmStageVsVerify.length}/${r.twins.npmVerifyVsStage.length} · faces drift ${r.twins.facesStageVsVerify.length}/${r.twins.facesVerifyVsStage.length} · declared pins absent on disk: ${r.pinsAbsent.length}`);
     for (const p of r.pinsAbsent) lines.push(`    PIN ABSENT ${p}`);
   } else {
     lines.push(`RESOURCES: ${r.resources.rows} rows — ${r.resources.graphDerived} graph-derived, ${r.resources.policyRows.length} policy rows (classified, not graph-derivable)`);

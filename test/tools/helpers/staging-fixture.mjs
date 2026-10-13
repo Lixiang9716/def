@@ -10,8 +10,8 @@
 // The manifest shapes below are reduced but syntactically true to the real
 // ones the parsers walk: Index.ets BUNDLE_FILES (multiline `const … = [` …
 // `\n];`), vendor-official.sh (multiline double-quoted CLOSURE accumulation +
-// $() find spans + simple-var interpolation), stage-spine-closure.sh (eight
-// for-in lists: scenario/web-live/dsh/npm × stage/verify + the mirror
+// $() find spans + simple-var interpolation), stage-spine-closure.sh (twelve
+// for-in lists: scenario/web-live/dsh/npm/faces × stage/verify + the mirror
 // needles), gen_bundle_resources.py (RESOURCES with prose comments) +
 // gen_bundle_header.py (TREES with a
 // comprehension + `] + [` continuation, ZOD_FILES).
@@ -147,11 +147,11 @@ function indexEts(rows) {
   ].join('\n');
 }
 
-/** stage-spine-closure.sh: EIGHT for-in lists (scenario/web-live/dsh/npm ×
- * stage/verify twins — the generator refuses any other count) + the three
- * whole-dir mirror needles the verifier requires + VER/ZOD_SRC. The verify
- * twins carry the `cmp -s "$DSH/<dir>/$s"` anchor the parsers classify the
- * dir and the role by (the real script's shape). */
+/** stage-spine-closure.sh: TWELVE for-in lists (scenario/web-live/dsh/npm/
+ * faces × stage/verify twins — the generator refuses any other count) + the
+ * three whole-dir mirror needles the verifier requires + VER/ZOD_SRC. The
+ * verify twins carry the `cmp -s "$DSH/<dir>/$s"` anchor the parsers
+ * classify the dir and the role by (the real script's shape). */
 function stageSpineClosureSh() {
   const scenario = 'leg-a.js upstream-suite-leg.js';
   const webLive = 'web-leg.js';
@@ -174,6 +174,9 @@ function stageSpineClosureSh() {
     'for s in ' + webLive + '; do',
     '        cp "$DSH/web-live/$s" "$ASSETS/web-live/$s"',
     'done',
+    'for pkg in tool-present tool-web; do',
+    '    stage_npm_face_at_dsh_path "$pkg"',
+    'done',
     'find "$DSH/upstream" -maxdepth 1 -name \'*.js\' -type f | while IFS= read -r src; do',
     '    cp "$src" "$ASSETS/upstream/$(basename "$src")"',
     'done',
@@ -186,6 +189,7 @@ function stageSpineClosureSh() {
     '# verify twins',
     'for pkg in ' + dsh + '; do test -d "$ASSETS/vendor/dsh/$pkg@$VER"; done',
     'for pkg in ' + npm + '; do test -d "$ASSETS/vendor/npm/@deepseek-ai/$pkg@$VER"; done',
+    'for pkg in tool-present tool-web; do verify_npm_face_at_dsh_path "$pkg"; done',
     'for s in ' + scenario + '; do cmp -s "$DSH/scenario/$s" "$ASSETS/scenario/$s"; done',
     'for s in ' + webLive + '; do cmp -s "$DSH/web-live/$s" "$ASSETS/web-live/$s"; done',
     '',
@@ -375,6 +379,13 @@ export function buildGreenFixture() {
   fx.write('hosts/android/ci/stage-spine-closure.sh', stageSpineClosureSh());
   fx.write('hosts/ios/Tools/gen_bundle_header.py', genBundleHeaderPy());
   fx.write('hosts/ios/Tools/gen_bundle_resources.py', genBundleResourcesPy());
+  // The store: the goal-trio leg reads its @walk pin dirs from here (the
+  // pre-flip vendor-official.sh find segments, flipped into the store).
+  fx.write('tools/generated/staging/harmony-closure.rows', [
+    '# fixture store: the @walk marker is the pin choice findSpanPinDirs reads',
+    `@walk all ${ZOD_PIN}`,
+    '',
+  ].join('\n'));
   mirrorRawfileBundle(fx);
   return fx;
 }

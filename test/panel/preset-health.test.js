@@ -63,13 +63,19 @@ const markerNames = () => {
       names.add(pkg.startsWith('dsh-') ? `@deepseek-ai/${pkg}` : `@deepseek-ai/dsh-${pkg}`);
     }
   }
-  // the npm-face block: stage_npm_face_at_dsh_path <face> pins the npm face's
-  // bytes at the dsh rel path (the #325 shell faces; plugin-manager since the
-  // workspace-registry tier) — the marker is the dsh-prefixed package name.
-  const npmFaces = [...joined.matchAll(/stage_npm_face_at_dsh_path (\S+)/g)];
-  expect(npmFaces.length, 'stage_npm_face_at_dsh_path calls not found').toBeGreaterThanOrEqual(4);
+  // the npm-face block: the store's dsh-npm-faces section (tools/generated/
+  // staging/android-pins.rows). Since the emit flip the stager's stage and
+  // verify twins splice from this ONE section (the staging-generated gate
+  // fails on drift), so the store — not the spliced loop — is the roster's
+  // single source; the marker is the dsh-prefixed package name.
+  const pinsStore = readFileSync(join(REPO, 'tools/generated/staging/android-pins.rows'), 'utf8');
+  const facesSection = pinsStore.match(/# block: dsh-npm-faces[^\n]*\n([\s\S]*?)(?=\n# block:|\s*$)/);
+  const npmFaces = facesSection
+    ? facesSection[1].split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'))
+    : [];
+  expect(npmFaces.length, 'the android-pins.rows dsh-npm-faces section not found').toBeGreaterThanOrEqual(4);
   for (const face of npmFaces) {
-    names.add(`@deepseek-ai/dsh-${face[1]}`);
+    names.add(`@deepseek-ai/dsh-${face}`);
   }
   return names;
 };

@@ -195,9 +195,61 @@ web-live/session-persist-restart.js
 web-live/harmony-session-persist-restart.js
 web-live/session-persist-restart-core.js
 vendor/npm/turndown@7.2.4/lib/turndown.es.js
-$(cd runtime/dsh && find vendor/npm/@mixmark-io/domino@2.2.0/lib \
-    vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib \
-    -type f | LC_ALL=C sort)
+vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib/turndown-plugin-gfm.cjs.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/CSSStyleDeclaration.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/CharacterData.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/ChildNode.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Comment.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/ContainerNode.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/CustomEvent.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/DOMException.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/DOMImplementation.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/DOMTokenList.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Document.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/DocumentFragment.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/DocumentType.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Element.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Event.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/EventTarget.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/FilteredElementList.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/HTMLParser.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Leaf.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/LinkedList.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Location.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/MouseEvent.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/MutationConstants.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NamedNodeMap.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NavigatorID.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Node.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeFilter.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeIterator.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeList.es5.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeList.es6.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeList.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeTraversal.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NodeUtils.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/NonDocumentTypeChildNode.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/ProcessingInstruction.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Text.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/TreeWalker.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/UIEvent.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/URL.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/URLUtils.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/Window.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/WindowTimers.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/attributes.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/config.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/defineElement.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/events.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/htmlelts.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/impl.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/index.d.ts
+vendor/npm/@mixmark-io/domino@2.2.0/lib/index.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/select.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/style_parser.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/svg.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/utils.js
+vendor/npm/@mixmark-io/domino@2.2.0/lib/xmlnames.js
 web-live/write-surface-options.js
 upstream/web-boot.js
 upstream/web-shims.js
@@ -210,8 +262,8 @@ upstream/shims/path.js
 vendor/npm/cordis@4.0.2/lib/index.js
 vendor/npm/cosmokit@1.8.3/lib/index.js
 vendor/npm/schemastery@3.18.2/lib/index.mjs
-vendor/npm/@deepseek-ai/$PIN/lib/index.js
-vendor/npm/@deepseek-ai/$PIN/lib/client.js
+vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/index.js
+vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/lib/client.js
 vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs
 vendor/npm/fflate@0.8.2/esm/browser.js
 vendor/npm/@deepseek-ai/dsh-anonymous-user-id@0.1.6-alpha.2/lib/index.js
@@ -312,11 +364,35 @@ vendor/npm/yaml@2.9.0/browser/dist/util.js
 vendor/npm/yaml@2.9.0/browser/dist/visit.js
 vendor/npm/yaml@2.9.0/browser/index.js
 vendor/npm/yaml@2.9.0/browser/package.json
-$(cd runtime/dsh && find vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2 \
-    vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2 \
-    vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2 \
-    vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2 \
-    \( -name '*.js' -o -name '*.json' \) -type f | LC_ALL=C sort)"
+vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2/lib/index.js
+vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2/lib/types/index.js
+vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2/lib/types/search.js
+vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2/package.json
+vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2/lib/index.js
+vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2/lib/types/grammar.js
+vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2/lib/types/index.js
+vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2/lib/types/types.js
+vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2/package.json
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/index.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/invariant.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/typert.host.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/typert.remote-client.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/client.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/domain.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/fold.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/index.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/invariant.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/runtime.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/lib/types/types.js
+vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2/package.json
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/index.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/invariant.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/types/brand.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/types/history.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/types/index.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/types/invariant.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/lib/types/types.js
+vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2/package.json"
 
 # The W-SESS spine closure (harmony.session.live-read): OUR authored spine
 # files first, then the vendored upstream trees — generated from the
@@ -484,32 +560,100 @@ vendor/dsh/agent-presets@0.1.6-alpha.2/presets/ptc/agent.cordis.yml
 vendor/dsh/agent-presets@0.1.6-alpha.2/presets/ptc/preset.yml
 vendor/dsh/agent-presets@0.1.6-alpha.2/presets/standard/agent.cordis.yml
 vendor/dsh/agent-presets@0.1.6-alpha.2/presets/standard/preset.yml
-vendor/dsh/session-persistence@0.1.6-alpha.2/package.json"
-# Machine-read interface: tools/gen-staging-manifests.mjs pulls this roster
-# out of this script (SHELL_ASSIGN('SPINE_PKG_DSH')) — shellcheck sees no
-# in-file use by design; the SC2034 silence is scoped to this one line.
-# shellcheck disable=SC2034
-SPINE_PKG_DSH="agent agent-instructions agent-loop agent-presets atomic-write attachment brand chunked-list command-compact command-feedback command-goal commands compaction compaction-basic compaction-tool-result-pruner credentials fs fs-local goal home-paths jobs llm output-retention persona plan-mode sandbox scope session session-persistence session-projection settings skill skill-filesystem subagent system-prompt terminal timeout token-meter tool-ask-user tool-bash tool-fs tool-goal tool-jobs tool-present tool-pwsh tool-ralph tool-skill tool-str-replace-editor tool-subagent tool-subagent-control tool-todo tool-workflow tools typert-protocol user-questions util-time util-values workflow"
-SPINE_OURS="$SPINE_OURS
+vendor/dsh/session-persistence@0.1.6-alpha.2/package.json
 vendor/npm/cordis@4.0.2/package.json
 vendor/npm/cosmokit@1.8.3/package.json
 vendor/npm/schemastery@3.18.2/package.json
-vendor/npm/@deepseek-ai/$PIN/package.json
-$(cd runtime/dsh && find vendor/dsh/agent@0.1.6-alpha.2 \
-    vendor/dsh/agent-loop@0.1.6-alpha.2 \
-    vendor/dsh/brand@0.1.6-alpha.2 \
-    vendor/dsh/llm@0.1.6-alpha.2 \
-    vendor/dsh/sandbox@0.1.6-alpha.2 \
-    vendor/dsh/scope@0.1.6-alpha.2 \
-    vendor/dsh/session@0.1.6-alpha.2 \
-    vendor/dsh/session-projection@0.1.6-alpha.2 \
-    vendor/dsh/settings@0.1.6-alpha.2 \
-    vendor/dsh/system-prompt@0.1.6-alpha.2 \
-    vendor/dsh/timeout@0.1.6-alpha.2 \
-    vendor/dsh/tools@0.1.6-alpha.2 \
-    vendor/dsh/typert-protocol@0.1.6-alpha.2 \
-    vendor/dsh/util-values@0.1.6-alpha.2 \
-    \( -name '*.js' -o -name '*.mjs' -o -name '*.json' \) -type f | LC_ALL=C sort)
+vendor/npm/@deepseek-ai/dsh-client-modules@0.1.6-alpha.2/package.json
+vendor/dsh/agent-loop@0.1.6-alpha.2/lib/index.js
+vendor/dsh/agent-loop@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/agent-loop@0.1.6-alpha.2/package.json
+vendor/dsh/agent@0.1.6-alpha.2/lib/index.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/consumed-work.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/dispatch.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/invariant.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/model-selection.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/projection.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/runtime-types.js
+vendor/dsh/agent@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/agent@0.1.6-alpha.2/package.json
+vendor/dsh/brand@0.1.6-alpha.2/lib/index.js
+vendor/dsh/brand@0.1.6-alpha.2/package.json
+vendor/dsh/llm@0.1.6-alpha.2/lib/index.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/typert.host.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/typert.remote-client.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/adapter-failure.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/api-key.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/assembler.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/assistant-stream.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/attribution.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/brand.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/call-config.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/content.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/error.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/invariant.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/message.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/retry-policy.js
+vendor/dsh/llm@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/llm@0.1.6-alpha.2/package.json
+vendor/dsh/sandbox@0.1.6-alpha.2/lib/index.js
+vendor/dsh/sandbox@0.1.6-alpha.2/package.json
+vendor/dsh/scope@0.1.6-alpha.2/lib/index.js
+vendor/dsh/scope@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/scope@0.1.6-alpha.2/package.json
+vendor/dsh/session-projection@0.1.6-alpha.2/lib/index.js
+vendor/dsh/session-projection@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/session-projection@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/session-projection@0.1.6-alpha.2/package.json
+vendor/dsh/session@0.1.6-alpha.2/lib/index.js
+vendor/dsh/session@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/invariant.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/known-event-types.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/preparation.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/repair.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/request-header.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/seq-ranges.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/surface.js
+vendor/dsh/session@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/session@0.1.6-alpha.2/package.json
+vendor/dsh/settings@0.1.6-alpha.2/lib/index.js
+vendor/dsh/settings@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/settings@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/settings@0.1.6-alpha.2/lib/types/invariant.js
+vendor/dsh/settings@0.1.6-alpha.2/lib/types/redact.js
+vendor/dsh/settings@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/settings@0.1.6-alpha.2/package.json
+vendor/dsh/system-prompt@0.1.6-alpha.2/lib/index.js
+vendor/dsh/system-prompt@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/system-prompt@0.1.6-alpha.2/package.json
+vendor/dsh/timeout@0.1.6-alpha.2/lib/index.js
+vendor/dsh/timeout@0.1.6-alpha.2/package.json
+vendor/dsh/tools@0.1.6-alpha.2/lib/index.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/invariant.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/invariant.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/json-schema.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/presentation.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/ptc.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/py-types.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/schema.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/testing.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/ts-types.js
+vendor/dsh/tools@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/tools@0.1.6-alpha.2/package.json
+vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/index.js
+vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/types/index.js
+vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/types/owned-value.js
+vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/types/remote-error.js
+vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/types/types.js
+vendor/dsh/typert-protocol@0.1.6-alpha.2/package.json
+vendor/dsh/util-values@0.1.6-alpha.2/lib/index.js
+vendor/dsh/util-values@0.1.6-alpha.2/package.json
 vendor/npm/zod@4.4.3/index.js
 vendor/npm/zod@4.4.3/v4/classic/checks.js
 vendor/npm/zod@4.4.3/v4/classic/coerce.js
@@ -589,6 +733,11 @@ vendor/npm/zod@4.4.3/v4/locales/vi.js
 vendor/npm/zod@4.4.3/v4/locales/yo.js
 vendor/npm/zod@4.4.3/v4/locales/zh-CN.js
 vendor/npm/zod@4.4.3/v4/locales/zh-TW.js"
+# Machine-read interface: tools/gen-staging-manifests.mjs pulls this roster
+# out of this script (SHELL_ASSIGN('SPINE_PKG_DSH')) — shellcheck sees no
+# in-file use by design; the SC2034 silence is scoped to this one line.
+# shellcheck disable=SC2034
+SPINE_PKG_DSH="agent agent-instructions agent-loop agent-presets atomic-write attachment brand chunked-list command-compact command-feedback command-goal commands compaction compaction-basic compaction-tool-result-pruner credentials fs fs-local goal home-paths jobs llm output-retention persona plan-mode sandbox scope session session-persistence session-projection settings skill skill-filesystem subagent system-prompt terminal timeout token-meter tool-ask-user tool-bash tool-fs tool-goal tool-jobs tool-present tool-pwsh tool-ralph tool-skill tool-str-replace-editor tool-subagent tool-subagent-control tool-todo tool-workflow tools typert-protocol user-questions util-time util-values workflow"
 # The dsh-shell-js system plugin's vendor faces (the formal vendor round,
 # 2026-10-11; shrunk the same date by the hand-written-parser swap, which
 # retired bash-parser's 29-tree closure): shelljs's shell.js + src face
@@ -598,9 +747,7 @@ vendor/npm/zod@4.4.3/v4/locales/zh-TW.js"
 # closure of each package main + package.json (no tests/bin/maps).
 # Index.ets's BUNDLE_FILES mirrors every row one-for-one
 # (check-bundle-files.mjs pins the pair in both directions).
-SHELLJS_PARSER_FACES="
-
-vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js
+SHELLJS_PARSER_FACES="vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js
 vendor/npm/@isaacs/balanced-match@4.0.1/package.json
 vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js
 vendor/npm/@isaacs/brace-expansion@5.0.1/package.json
@@ -646,8 +793,7 @@ vendor/npm/shelljs@0.10.0/src/to.js
 vendor/npm/shelljs@0.10.0/src/toEnd.js
 vendor/npm/shelljs@0.10.0/src/touch.js
 vendor/npm/shelljs@0.10.0/src/uniq.js
-vendor/npm/shelljs@0.10.0/src/which.js
-"
+vendor/npm/shelljs@0.10.0/src/which.js"
 CLOSURE="$CLOSURE
 $SPINE_OURS
 llm.js
