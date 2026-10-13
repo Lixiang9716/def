@@ -1,129 +1,119 @@
-# The staging-manifest round-trip: the four hand lists vs the derived reality (2026-09-29)
+# The staging-manifest round-trip: from four hand lists to the generated store (2026-10-13)
 
 English | [简体中文](staging-manifest-roundtrip.zh.md)
 
-The per-host staging manifests are hand lists (harmony's `Index.ets`
-BUNDLE_FILES, harmony's `ci/vendor-official.sh` CLOSURE/SPINE_OURS, android's
-`ci/stage-spine-closure.sh` lists, iOS `Tools/gen_bundle_header.py`
-RESOURCES/TREES). The ledger's step one shipped `tools/check-staging.mjs`,
-which proves graph→list in one direction. Step two — this file's subject — is
-`tools/gen-staging-manifests.mjs`: it derives what each manifest must name
-from reality and reports the round-trip delta. **Phase 2 ships the generator
-as evidence only; the committed manifests are not replaced.** Flipping the
-flow (the hosts' blocks emitted from the generator, wired into the stagers)
-is the post-hardening step.
+This research note started (2026-09-29) as the round-trip EVIDENCE for four
+hand-maintained staging manifests; the tools it proposed have since become
+the repo's authority. Today the manifests are **generated**: a store of
+declared/derived rows under `tools/generated/staging/` is materialized into
+the hosts by `tools/gen-staging-emit.mjs`, whose `--check` is the
+blocking `staging-generated` gate. This rewrite records the landed reality
+(#413 the verifier, #420 the manifest store, #485 the closure/pin/zod
+lists, and the 2026-10-13 close-out: webclient legs, canonical sort order,
+the shim-namespace policy, the generator's own retirement).
 
-All numbers below are from one run on the tree at the commit that carries
-this file:
+## 1. The emit contract (what replaced the round-trip report)
 
-```
-node tools/gen-staging-manifests.mjs --out /tmp/gen-out
-```
-
-## 1. The verdict: the round-trip holds
-
-`staging-generate: round-trip holds · 0 freeze-fatal row(s)` (exit 0). Every
-row the derivation legs demand is present in the committed manifests — the
-fresh-install freeze class has zero instances today. The tool's rejection
-cases are real, not vacuous: adding one shim to the boot graph outside the
-manifests (a scratch file imported from `upstream/boot.js`) trips
-`FATAL harmony BUNDLE_FILES missing graph row: …` and exit 1, and a pin tree
-a stager names that is absent from the materialized tree (vendor rename/
-re-pin) aborts exit 2 naming the dir — a silently emptied leg would let the
-evidence rot green while vendored rows decay into misclassified "extras".
-Reverting either mutation restores exit 0. Both fired during development and
-caught exactly their class.
-
-## 2. What the derivation covers
-
-Derivation legs (mechanics in `tools/gen-staging-legs.mjs`):
-
-- **graph** — check-staging's own `walkGraph` over each host's roots
-  (121 files reached for harmony);
-- **dshpins** — the dsh pin-name roster the three stagers jointly declare
-  (SPINE_PKG_DSH ∪ android's stage loop ∪ iOS TREES comprehension + the dsh
-  pins iOS RESOURCES names), expanded over the materialized trees by the
-  `stage_pkg` rule (package.json + lib/** − .d.ts + presets/**), with the
-  npm-face aliases (tool-present family) expanded at their vendor/dsh
-  spelling;
-- **pinfiles** — noble *.js, pi-ai js+json, the goal trio js+json, and zod's
-  runtime closure **recomputed by walking the pin's own import graph**;
-- **closure-faces** — the npm single-file faces, taken verbatim from
-  vendor-official.sh's CLOSURE rows (policy, not re-derived);
-- **webclient** — presentation/web-client{,-next,-compact} at their staged
-  names.
-
-Result per manifest:
-
-| surface | committed | derived | missing (would freeze) | extra (not derived) |
-|---|---|---|---|---|
-| harmony BUNDLE_FILES | 930 unique | 897 | **0** | 33, all classified |
-| android stage-spine-closure | 15 scenario rows + mirrors | — | 0 (graph fully under mirrors ∪ roster) | — |
-| iOS RESOURCES | 69 | 46 graph-derived | 0 | 23 policy rows, classified |
-| iOS TREES | 73 mirror roots | — | 0 absent on disk | — |
-
-Cross-manifest agreement the tool now proves on every run: the zod closure
-exists as THREE hand copies (BUNDLE_FILES, the harmony CLOSURE, iOS
-ZOD_FILES) and all three equal the recomputed 79-row closure, byte-for-byte
-in set terms. Android's stage/verify twins (scenario, dsh, npm lists) agree;
-no declared pin is absent on disk.
-
-## 3. The delta, itemized — each entry: generator limit or manifest typo
-
-Honesty first: the generator does NOT reproduce the committed bytes. The
-round-trip that holds is set-level and attribution-level. The residue:
-
-1. **312 duplicate rows in BUNDLE_FILES** (1242 raw → 930 unique). Manifest
-   artifact, not a generator defect: entire spine groupings are pasted twice
-   (every `upstream-suite-leg.js`-era row appears in two generations of the
-   list). Harmless today — every consumer dedupes (`check-bundle-files`
-   counts 930) — but it is the visible sediment of hand maintenance, and it
-   is exactly what generation removes by construction.
-2. **Ordering.** The committed list is arrival-ordered; the generator emits
-   canonical sorted rows. The graph cannot dictate order, so this is
-   generator policy, not a defect on either side. Phase 3 makes the sorted
-   order THE order.
-3. **33 committed rows no leg derives** — each classified by the tool:
-   - 17 `upstream/shims/*` rows (crypto, os, path, node-module, util-types,
-     the child-process/stream/zlib family…): **host-loader namespace** —
-     reached through the C bare map and the `__dshModuleDefine`
-     registrations, which are DATA the JS walk deliberately cannot see.
-     Not a typo; the generator would need the per-host C tables (or a
-     declared shim namespace policy) to derive them.
-   - 8 plugin `manifest.json` rows + `dsh-device-plane/index.js`:
-     **runtime-data** — the plugin loader reads manifests; no import edge
-     exists.
-   - `e2e-stage.js`: **e2e-harness** — staged for the runner's own load,
-     not reached from the boot graph.
-   - 4 util-crypto doc rows (LICENSE + three READMEs): util-crypto is staged
-     under a pin shape NO sibling pin uses (docs/LICENSE rows) — the one
-     entry this audit calls a probable manifest inconsistency, harmless
-     (rawfile holds the bytes) but worth a look at the next vendor touch.
-   - 2 npm-face rows (cordis-plugin-loader/include `lib/index.js`):
-     **host-loader namespace** like the shims — the loader bridge resolves
-     the face; no JS import edge exists.
-4. **31 counted coverage misses on the harmony CLOSURE/SPINE_OURS advisory
-   surface** — known and deliberate: that list stages the narrower
-   officialweb+spine closure, so graph rows outside it are context, never a
-   verdict (the gate runs the surface advisory for exactly this reason).
-
-## 4. What this does NOT claim
-
-- The manifests are not replaced and the vendor flow is untouched — Phase 2
-  is evidence.
-- The 31 unstaged android scenarios are host policy (the roster is the
-  policy), not gaps; the tool restates rosters, it does not invent them.
-- The 10 on-disk shims BUNDLE_FILES does not name (string-decoder,
-  slot-registry, node-sqlite, …) are justified only by the host-loader
-  namespace today. If a future C bare-map row points at one, nothing in the
-  JS tree catches it — that blind spot is the strongest argument for the
-  Phase 3 flip plus a declared shim-namespace policy.
-
-## 5. Reproducing
+One authority, one verb pair:
 
 ```
-external/ensure-dsh.sh          # materialize the vendored pins
-sh hosts/harmony/ci/vendor-official.sh --closure-only   # rawfile closure
-node tools/gen-staging-manifests.mjs --out /tmp/gen-out  # this report's numbers
-node tools/check-staging.mjs --block harmony,android,ios # the verifier, green
+node tools/gen-staging-emit.mjs --check tools/generated/staging   # the gate (drift exits 1)
+node tools/gen-staging-emit.mjs --emit tools/generated/staging    # materialize; no-op on a correct tree
+```
+
+- **generated = (derived − exclude) ∪ policy.** Derived rows come from
+  reality (the import graph, the materialized pin trees); policy rows are
+  hand-declared staging decisions that must exist on disk. Policy/exclude
+  files are hand-editable — a row's move between them is a staging decision
+  in the diff; derived files are never hand-edited.
+- **Host blocks are machine-spliced from the store** (Index.ets's
+  BUNDLE_FILES, the stagers' list blocks, the py blocks), in CANONICAL
+  SORTED order — the sorted list is THE list, on disk and in the host
+  sources alike. A hand edit or a hand reorder of a machine-owned block is
+  drift; an emit on a correct tree is a byte no-op.
+- **The flip contract for vendored pins**: a new file in a materialized pin
+  joins the staging lists only via `--emit` + commit (reviewed in the
+  diff). The pre-flip `find`-generated spans are `@walk` marker lines in
+  the store, recomputed at check/emit time — the find's automaticity is
+  gone by design.
+- **check-staging stays the second net** (`staging-check` gate): the
+  graph→manifest coverage direction and manifest→disk staleness for all
+  three hosts, blocking.
+
+## 2. The store inventory (disk counts at this commit)
+
+| store file | rows | what it is | spliced into |
+|---|---|---|---|
+| harmony-BUNDLE_FILES.rows (+ .policy/.exclude) | 1227 (policy 1078) | derived graph ∪ policy − exclude | Index.ets BUNDLE_FILES |
+| android-scenario.rows / android-web-live.rows (+ .policy each) | 17 / 14 | host entry policy ∪ transitively reached | stage-spine-closure.sh scenario+web-live for-in headers (stage + verify twins) |
+| ios-RESOURCES.rows / ios-TREES.rows | 125 / 106 | declared accession table + mirror roots | gen_bundle_resources.py RESOURCES / gen_bundle_header.py TREES |
+| harmony-closure{,-spine,-shelljs}.rows | 132 / 247 / 47 | the vendor-official.sh copy lists (literal policy + `@walk` pin spans) | the CLOSURE, SPINE_OURS, SHELLJS_PARSER_FACES assignments |
+| android-pins.rows (`# block:` sections) | 54 | the stager's pin/face rosters | six stage+verify `for pkg in` headers + three SHELLJS_* values |
+| ios-zod.rows | 79 | DERIVED: the pinned zod's import closure (zodClosureRows over the py's ZOD_ROOT) | the py ZOD_FILES block |
+| webclient{,-v2,-compact,-mini}.rows | 3 / 16 / 4 / 3 | each staged web client's declared shipped-file list | nothing — the stagers whole-copy; the store is what the gate judges product, mirrors and iOS declarations against |
+| shim-namespace.policy.md | — | the declaration of record for the rows no derivation can see | — |
+
+Satellites by the code-size gate: `gen-staging-emit-hosts.mjs` (android +
+ios halves), `gen-staging-emit-closure.mjs` (the closure/pin/zod legs),
+`gen-staging-emit-web.mjs` (the webclient legs; also a standalone CLI for
+the presentation runner), mechanics in `gen-staging-legs.mjs`.
+
+## 3. What the legs derive vs declare
+
+- **Derived**: the harmony graph closure (walkGraph over the boot roots +
+  staged scenarios); the android transitive scenario/web-live imports; the
+  zod closure (the pin's own relative-import graph); every `@walk` span
+  (the domino/turndown-plugin-gfm libs, the goal trio, the 14 dsh spine
+  pins — recomputed from the materialized trees).
+- **Declared**: which scenarios stage; the npm faces staged at dsh rel
+  paths; the accessor suffixes (Swift links against them); the mirror
+  roots; the shipped-file lists; every literal row of the harmony closure
+  blocks.
+- **Not derivable by design**: the shim namespace and bridge-resolved npm
+  faces — see `tools/generated/staging/shim-namespace.policy.md`, which
+  answers this note's old §4 open question (the C bare map and
+  `__dshModuleDefine` tables are data the JS walk deliberately cannot
+  see). That file is the boundary's declaration of record, including the
+  accepted residual risk (a C table row with no manifest row is invisible
+  to CI) and its mitigations.
+
+## 4. Remaining hand surfaces (the honest zero)
+
+The copy ROSTERS are fully store-owned — none of the four original hand
+lists survives as a hand list. What remains hand-written is composition and
+construction, not rosters:
+
+- vendor-official.sh's CLOSURE **assembly tail** (llm.js, manifest.json,
+  the plane scenarios, the system-plugins rows) — the line that stitches
+  the store-backed blocks, still carrying its own literal rows;
+- the script-side **stage blocks** that are wholes, not lists: the npm-face
+  stage calls, the MOBILE preset cp block, the NOBLE_DIR/PIAI_DIR whole-pin
+  scans, the webclient find loops;
+- the android stager's whole-dir mirrors (upstream/, system-plugins/ —
+  drift-free by construction), its 12-file dsh-root list, and the
+  RETIRED_PLUGINS seat list;
+- the ios embedder's WEBCLIENT_TREES (judged against the webclient store
+  family by the web legs).
+
+## 5. Byte-identity invariant
+
+The flip changed who writes the manifests, never the staged bytes: after
+each landing, `sh build/build.sh sync android && sh build/build.sh sync
+harmony` regenerated the staged trees with **zero drift** (porcelain clean
+on assets/, rawfile/ and the iOS Generated bundle), and the composed shell
+CLOSURE value was diffed byte-for-byte against its pre-flip eval. The
+canonical-sort pass (this close-out) reorders the spliced blocks by design
+— the row SET, and therefore every copied file, is unchanged; the double
+sync proves it per landing.
+
+## 6. Reproducing
+
+```
+external/ensure-dsh.sh                                   # materialize the vendored pins
+node tools/gen-staging-emit.mjs --check tools/generated/staging   # the gate: green
+node tools/gen-staging-emit.mjs --emit tools/generated/staging    # a byte no-op on a correct tree
+node tools/gen-staging-emit-web.mjs --check tools/generated/staging  # the webclient family standalone
+node tools/check-staging.mjs --block harmony,android,ios # the verifier: green
+sh build/build.sh sync android && sh build/build.sh sync harmony  # zero staged-tree drift
+node tools/check-asset-mirrors.mjs                       # the blocking cross-host byte face: green
 ```

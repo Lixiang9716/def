@@ -38,8 +38,8 @@ const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
 // The fail-loud leg's scaffolding lives at module scope: the code-size gate
 // caps a function at 50 lines, and the red-leg describe reads cleaner with
-// its fixtures beside the other module constants (idiom:
-// gen-staging-manifests.test.mjs's "structural drift fails loud" block).
+// its fixtures beside the other module constants (the house idiom of the
+// tools' counterexample nets).
 const RED_SUMMARIES = readJson(SUMMARIES);
 const GEN = join(import.meta.dirname, 'gen-marketplace-index.mjs');
 const THROWAWAY_SEED = Buffer.alloc(32).toString('base64'); // never a real credential

@@ -19,7 +19,6 @@
       "descriptor-parity",
       "vendoring-repro",
       "bundle-files",
-      "webclient-staged-tree",
       "quickjs-boot-parse",
       "staging-check",
       "staging-generated",
@@ -271,18 +270,6 @@
       "timeoutMs": 120000
     },
     {
-      "id": "webclient-staged-tree",
-      "command": [
-        "sh",
-        "tools/check-webclient-staged-tree.sh"
-      ],
-      "description": "presentation/web-client-v2 holds exactly its shipped files — the whole-tree-staged harmony HAP directory admits no tooling leakage (the #288 CI-only invariant, now a real gate; A12)",
-      "needs": [
-        "self-test"
-      ],
-      "timeoutMs": 60000
-    },
-    {
       "id": "quickjs-boot-parse",
       "command": [
         "sh",
@@ -331,11 +318,15 @@
         "--check",
         "tools/generated/staging"
       ],
-      "description": "the generated staging manifests match their derivations (gen-staging-emit: harmony BUNDLE_FILES + android rosters + ios RESOURCES/TREES + the closure/pin legs — vendor-official.sh CLOSURE blocks, android pin/face rosters, ios ZOD_FILES; drift = run --emit, review, commit)",
+      "description": "the generated staging manifests match their derivations (gen-staging-emit: harmony BUNDLE_FILES + android rosters + ios RESOURCES/TREES + the closure/pin legs — vendor-official.sh CLOSURE blocks, android pin/face rosters, ios ZOD_FILES; the webclient shipped-file store; drift = run --emit, review, commit)",
       "needs": [
         "self-test"
       ],
       "paths": [
+        "presentation/web-client/**",
+        "presentation/web-client-v2/**",
+        "presentation/web-client-compact/**",
+        "presentation/web-client-mini/**",
         "runtime/dsh/scenario/**",
         "runtime/dsh/upstream/**",
         "runtime/dsh/system-plugins/**",
@@ -350,7 +341,8 @@
         "tools/gen-staging-legs.mjs",
         "tools/check-staging-graph.mjs",
         "tools/check-staging-hosts.mjs",
-        "tools/generated/staging/**"
+        "tools/generated/staging/**",
+        "tools/gen-staging-emit-web.mjs"
       ]
     },
     {
@@ -379,14 +371,17 @@
         "tools/check-asset-mirrors.mjs",
         "--json"
       ],
-      "description": "product trees vs host mirrors byte-identical both ways, iOS embedder declaration aligned (check-asset-mirrors; the #286 timeline.js class)",
-      "allowFailure": true,
+      "description": "product trees vs host mirrors byte-identical both ways, iOS embedder declaration aligned across the full webclient family incl. v0 + mini (check-asset-mirrors; the #286 timeline.js class) — blocking since the webclient manifest legs store-declared the family",
       "paths": [
+        "presentation/web-client/**",
         "presentation/web-client-v2/**",
         "presentation/web-client-compact/**",
+        "presentation/web-client-mini/**",
+        "hosts/android/app/src/main/assets/dsh/webclient/**",
         "hosts/android/app/src/main/assets/dsh/webclient-*/**",
         "hosts/harmony/entry/src/main/resources/rawfile/dsh/webclient/**",
         "hosts/ios/Tools/gen_bundle_header.py",
+        "hosts/ios/Tools/gen_bundle_resources.py",
         "tools/check-asset-mirrors.mjs"
       ],
       "timeoutMs": 120000,

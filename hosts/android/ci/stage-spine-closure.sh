@@ -52,9 +52,9 @@ ZOD_DST=$ASSETS/vendor/npm/zod@4.4.3
 # system-plugins mirror; THESE are the faces its parser.js map probes — a
 # face staged without a --check twin below is a drift the closures gate is
 # blind to (the anti-drift rule), so every loop here has a twin there.
-SHELLJS_FACE_DIRS="shelljs@0.10.0/src minimatch@10.0.3/dist/commonjs @isaacs/brace-expansion@5.0.1/dist/commonjs @isaacs/balanced-match@4.0.1/dist/commonjs"
+SHELLJS_FACE_DIRS="@isaacs/balanced-match@4.0.1/dist/commonjs @isaacs/brace-expansion@5.0.1/dist/commonjs minimatch@10.0.3/dist/commonjs shelljs@0.10.0/src"
 SHELLJS_SINGLE_FILES="@isaacs/balanced-match@4.0.1/dist/commonjs/index.js @isaacs/brace-expansion@5.0.1/dist/commonjs/index.js shelljs@0.10.0/shell.js"
-SHELLJS_PKGS="shelljs@0.10.0 minimatch@10.0.3 @isaacs/brace-expansion@5.0.1 @isaacs/balanced-match@4.0.1"
+SHELLJS_PKGS="@isaacs/balanced-match@4.0.1 @isaacs/brace-expansion@5.0.1 minimatch@10.0.3 shelljs@0.10.0"
 
 if [ "$MODE" != "check" ]; then
 
@@ -84,13 +84,13 @@ stage_pkg() {
 # Agent 预设 closure (2026-09-22 settings-surfaces leg), and the FILE-TOOLS
 # row (vendored fs-local backend + upstream file tools), plus the SKILL row
 # (the agent-flow E2E's vendored skill family).
-for pkg in agent agent-loop brand llm \
-         sandbox scope session session-projection \
-         settings system-prompt timeout tools \
-         typert-protocol util-values agent-presets atomic-write \
-         home-paths fs attachment fs-local \
-         tool-fs tool-str-replace-editor tool-todo skill \
-         skill-filesystem tool-skill subagent chunked-list; do
+for pkg in agent agent-loop agent-presets atomic-write \
+         attachment brand chunked-list fs \
+         fs-local home-paths llm sandbox \
+         scope session session-projection settings \
+         skill skill-filesystem subagent system-prompt \
+         timeout tool-fs tool-skill tool-str-replace-editor \
+         tool-todo tools typert-protocol util-values; do
     say "staging vendor/dsh/$pkg@$VER"
     stage_pkg "$DSH/../../external/dsh/$pkg@$VER" "$ASSETS/vendor/dsh/$pkg@$VER"
 done
@@ -129,8 +129,8 @@ stage_npm_face_at_dsh_path() {
 # machine-spliced here and into the verify twin below from ONE list (the
 # staging-generated gate fails on drift); the per-face rationale prose lives
 # in that store section.
-for pkg in tool-present tool-ralph tool-bash tool-pwsh \
-         plugin-manager tool-web; do
+for pkg in plugin-manager tool-bash tool-present tool-pwsh \
+         tool-ralph tool-web; do
     stage_npm_face_at_dsh_path "$pkg"
 done
 # the dsh-web seam: the npm face's dir name (dsh-web@) IS the canonical rel
@@ -171,9 +171,9 @@ cp "$DSH/../../external/npm/js-yaml@4.1.0/dist/js-yaml.mjs" \
    "$ASSETS/vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs"
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
-for pkg in dsh-anonymous-user-id dsh-goal dsh-file-reference dsh-file-reference-local \
-         dsh-llm-retry dsh-session-query dsh-session-title dsh-session-format-catalog \
-         dsh-compaction-image-offload; do
+for pkg in dsh-anonymous-user-id dsh-compaction-image-offload dsh-file-reference dsh-file-reference-local \
+         dsh-goal dsh-llm-retry dsh-session-format-catalog dsh-session-query \
+         dsh-session-title; do
     say "staging vendor/npm/@deepseek-ai/$pkg@$VER (lib)"
     (cd "$DSH/../../external/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
         while IFS= read -r rel; do
@@ -459,13 +459,13 @@ note_skip() { [ -n "$SKIPS_FILE" ] && echo x >> "$SKIPS_FILE"; return 0; }
 DRIFT=$(mktemp)
 trap 'rm -f "$DRIFT" "$SKIPS_FILE"' EXIT
 note_drift() { echo "$1" >> "$DRIFT"; }
-for pkg in agent agent-loop brand llm \
-         sandbox scope session session-projection \
-         settings system-prompt timeout tools \
-         typert-protocol util-values agent-presets atomic-write \
-         home-paths fs attachment fs-local \
-         tool-fs tool-str-replace-editor tool-todo skill \
-         skill-filesystem tool-skill subagent chunked-list; do
+for pkg in agent agent-loop agent-presets atomic-write \
+         attachment brand chunked-list fs \
+         fs-local home-paths llm sandbox \
+         scope session session-projection settings \
+         skill skill-filesystem subagent system-prompt \
+         timeout tool-fs tool-skill tool-str-replace-editor \
+         tool-todo tools typert-protocol util-values; do
     (cd "$DSH/../../external/dsh/$pkg@$VER" && find lib -type f ! -name '*.d.ts'; echo LICENSE; echo package.json) |
     while IFS= read -r rel; do
         [ -f "$DSH/../../external/dsh/$pkg@$VER/$rel" ] || continue
@@ -492,8 +492,8 @@ verify_npm_face_at_dsh_path() {
 # the workspace-registry tier, and the WEB plane's tool face included): same
 # store list, spliced twice — a staged face the check never cmps is a drift
 # the closures gate is blind to.
-for pkg in tool-present tool-ralph tool-bash tool-pwsh \
-         plugin-manager tool-web; do
+for pkg in plugin-manager tool-bash tool-present tool-pwsh \
+         tool-ralph tool-web; do
     verify_npm_face_at_dsh_path "$pkg"
 done
 # The WEB plane's direct-stage twins (the dsh-web seam + the HTML→markdown
@@ -558,9 +558,9 @@ done
     done
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
-for pkg in dsh-anonymous-user-id dsh-goal dsh-file-reference dsh-file-reference-local \
-         dsh-llm-retry dsh-session-query dsh-session-title dsh-session-format-catalog \
-         dsh-compaction-image-offload; do
+for pkg in dsh-anonymous-user-id dsh-compaction-image-offload dsh-file-reference dsh-file-reference-local \
+         dsh-goal dsh-llm-retry dsh-session-format-catalog dsh-session-query \
+         dsh-session-title; do
     (cd "$DSH/../../external/npm/@deepseek-ai/$pkg@$VER" && find lib -type f ! -name '*.d.ts') |
         while IFS= read -r rel; do
             path="vendor/npm/@deepseek-ai/$pkg@$VER/$rel"

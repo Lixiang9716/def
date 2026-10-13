@@ -9,7 +9,9 @@
  * rosters into the store:
  *
  * harmony — ci/vendor-official.sh's three newline-separated copy lists
- *   materialize from the store, in block order (order-preserving splice):
+ *   materialize from the store, in CANONICAL SORTED order (the sorted
+ *   list is THE list; the store's row order and marker positions are
+ *   declarations, not bytes):
  *     harmony-closure.rows         → the CLOSURE base assignment
  *     harmony-closure-spine.rows   → the SPINE_OURS assignment
  *     harmony-closure-shelljs.rows → the SHELLJS_PARSER_FACES assignment
@@ -48,8 +50,8 @@
  *   edit IS drift), every declared row must name a materialized pin, and
  *   every @walk root must exist (a missing pin tree is a loud structural
  *   error, never an empty expansion). emit(dir) — write the
- *   materialization in place (membership moves only; the committed row
- *   order survives). An emit on a correct tree is a no-op diff.
+ *   materialization in place; a hand REORDER of a machine-owned block is
+ *   drift like a hand edit. An emit on a correct tree is a no-op diff.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, sep } from 'node:path';
@@ -153,9 +155,11 @@ function quotedAssignments(src, name) {
   return spans;
 }
 
-/** Materialize one harmony block: literal rows ride, `@walk` positions
- * expand to the sorted recomputation across the marker's dirs (one sort —
- * exactly the pre-flip `find dir1 dir2 … | LC_ALL=C sort` semantics). */
+/** Materialize one harmony block: literal rows plus every `@walk` span's
+ * recomputation, one sort ACROSS the whole block (CANONICAL SORTED — the
+ * sorted list is THE list; the pre-flip spans sorted only their own dirs,
+ * and the store's row order / marker positions are declarations, not
+ * bytes). */
 function expandItems(items, where) {
   const rows = [];
   for (const item of items) {
@@ -165,11 +169,11 @@ function expandItems(items, where) {
       fail(`@walk pin tree(s) absent (${where}): ${absent.join(', ')}`
         + ' — external/ensure*.sh materializes the pins');
     }
-    const expanded = item.dirs.flatMap((d) => WALK_RULES[item.walk](d)).sort();
+    const expanded = item.dirs.flatMap((d) => WALK_RULES[item.walk](d));
     if (!expanded.length) fail(`@walk ${item.dirs.join(' ')} (${where}) expanded to zero rows`);
     rows.push(...expanded);
   }
-  return rows;
+  return [...new Set(rows)].sort();
 }
 
 // --- harmony -----------------------------------------------------------------
@@ -267,7 +271,7 @@ function androidPlan(dir) {
     if (spec.assign) {
       const spans = quotedAssignments(src, spec.assign);
       if (!spans.length) fail(`${spec.assign} assignment not found in ${ANDROID_SH}`);
-      const want = `${spec.assign}="${rows.join(' ')}"`;
+      const want = `${spec.assign}="${[...rows].sort().join(' ')}"`;
       if (src.slice(spans[0].start, spans[0].end) !== want) {
         drift.push(`${ANDROID_SH} ${spec.assign} drifted from ${PINS_FILE}`);
       }
@@ -282,10 +286,10 @@ function androidPlan(dir) {
         fail(`the ${spec.section} for-in loop (anchor '${anchor.slice(0, 36)}…')`
           + ` not found in ${ANDROID_SH}`);
       }
-      if (src.slice(head, end) !== forInHeader(rows)) {
+      if (src.slice(head, end) !== forInHeader([...rows].sort())) {
         drift.push(`${ANDROID_SH} ${spec.section} list drifted from ${PINS_FILE}`);
       }
-      edits.push({ start: head, end, text: forInHeader(rows) });
+      edits.push({ start: head, end, text: forInHeader([...rows].sort()) });
     }
   }
   return { src, drift, edits };

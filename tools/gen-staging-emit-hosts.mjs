@@ -112,13 +112,13 @@ function androidDerived() {
   return split;
 }
 
-/** The generated rows for one dir = policy ∪ (transitive − excluded).
- * Policy rows must exist on disk (a deleted file leaves the staging lists
- * in the same commit); an excluded row no edge reaches is drift, not
- * silence. The exclude file is legitimately absent while empty. The spliced
- * list ORDER is the committed stage list's (kept rows stay put, added rows
- * append sorted) — the generated .rows file stays the sorted canonical. */
-function androidExpected(artifacts, dirName, derived, committed) {
+/** The generated rows for one dir = policy ∪ (transitive − excluded), in
+ * CANONICAL SORTED order — the sorted list is THE list, on disk and in the
+ * spliced headers alike (an unsorted committed list is drift the next emit
+ * re-orders once). Policy rows must exist on disk (a deleted file leaves the
+ * staging lists in the same commit); an excluded row no edge reaches is
+ * drift, not silence. The exclude file is legitimately absent while empty. */
+function androidExpected(artifacts, dirName, derived) {
   const policy = declared(artifacts, `android-${dirName}.policy.rows`,
     'run --emit to harvest the committed entries');
   const gone = policy.filter((r) => !existsSync(join(DSH, r)));
@@ -130,9 +130,7 @@ function androidExpected(artifacts, dirName, derived, committed) {
     fail(`android-${dirName}.exclude.rows names rows no edge reaches (drop them or move to policy): ${unknown.join(', ')}`);
   }
   const set = new Set([...policy, ...derived.filter((r) => !excluded.includes(r))]);
-  const rows = [...committed.filter((r) => set.has(r)),
-    ...[...set].filter((r) => !committed.includes(r)).sort()];
-  return { rows, policy, excluded };
+  return { rows: [...set].sort(), policy, excluded };
 }
 
 /** Wrap one for-in header: four names per line, continuation style kept;
@@ -159,9 +157,9 @@ function androidSplice(src, spans, manifests) {
 }
 
 /** --check half: the committed lists must equal the derivation exactly
- * (stage and verify twins are one list spliced twice; membership compares
- * sorted — the spliced list's order is the committed hand order). `drift`
- * is what an emit fixes; the caller adds the remedy line. */
+ * (stage and verify twins are one list spliced twice; the CANONICAL SORTED
+ * order is THE list, so an unsorted committed header drifts like a missing
+ * row). `drift` is what an emit fixes; the caller adds the remedy line. */
 export function androidCheck(dir) {
   const src = readFileSync(join(REPO, ANDROID_SH), 'utf8');
   const spans = androidLoops(src);
@@ -170,8 +168,7 @@ export function androidCheck(dir) {
   const manifests = {};
   const sorted = (rows) => rows.slice().sort().join(' ');
   for (const dirName of ANDROID_DIRS) {
-    manifests[dirName] = androidExpected(dir, dirName, derived[dirName],
-      spans[`stage:${dirName}`].rows);
+    manifests[dirName] = androidExpected(dir, dirName, derived[dirName]);
     const stage = spans[`stage:${dirName}`].rows;
     const verify = spans[`verify:${dirName}`].rows;
     const want = manifests[dirName].rows;
@@ -203,8 +200,7 @@ export function androidEmit(dir) {
       writeFileSync(join(dir, policyName), `${entries.join('\n')}\n`);
       did.push(`${policyName} harvested (${entries.length} entries)`);
     }
-    manifests[dirName] = androidExpected(dir, dirName, derived[dirName],
-      spans[`stage:${dirName}`].rows);
+    manifests[dirName] = androidExpected(dir, dirName, derived[dirName]);
     writeFileSync(join(dir, `android-${dirName}.rows`), `${manifests[dirName].rows.join('\n')}\n`);
     const twin = sorted(spans[`verify:${dirName}`].rows) !== sorted(spans[`stage:${dirName}`].rows);
     if (sorted(spans[`stage:${dirName}`].rows) !== sorted(manifests[dirName].rows) || twin) {
