@@ -31,8 +31,11 @@ grep -q "leak or new): web/js/.case-leak-tmp.js" "$OUT" || {
   exit 1
 }
 restore
-if ! node "$REPO/tools/gen-staging-emit.mjs" --check "$STORE" >/dev/null 2>&1; then
-  echo "case-staging-generated-webclient-leak: FAIL — the restored tree still fails the gate" >&2
+OUT2="$(mktemp)"
+if ! node "$REPO/tools/gen-staging-emit.mjs" --check "$STORE" > "$OUT2" 2>&1; then
+  echo "case-staging-generated-webclient-leak: FAIL — the restored tree still fails the gate; residual output:" >&2
+  tail -20 "$OUT2" >&2
   exit 1
 fi
+rm -f "$OUT" "$OUT2"
 echo "case-staging-generated-webclient-leak: unsynced file rejected (exact name named); restored tree green"
