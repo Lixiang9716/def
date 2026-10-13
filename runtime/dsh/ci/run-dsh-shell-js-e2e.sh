@@ -40,7 +40,7 @@ LLM_PID=$!
 cleanup() {
     kill "$LLM_PID" 2>/dev/null || true
     wait "$LLM_PID" 2>/dev/null || true
-    rm -f "$LLM_LOG"
+    rm -f "$LLM_LOG" "${SHELL_LOG:-}"
 }
 trap cleanup EXIT INT TERM
 
@@ -66,19 +66,23 @@ echo "mock llm server: $LLM_URL" >&2
 
 # 4. run the scenario (--http: loopback httpFetch; --env: the launch env
 #    snapshot that carries the llm route) and verify the log one-to-one.
+#    The log is /tmp scratch, never a tree file — a cwd-relative log here
+#    is how a stale logs-dsh-shell-js.txt once rode a PR into the
+#    canonical runtime tree (git-rm'd 2026-10-13).
+SHELL_LOG="$(mktemp /tmp/dsh-shell-js-e2e.XXXXXX)"
 ./build/dsh-cli . scenario/dsh-shell-js.js \
     --http \
     --env "DSH_MOCK_LLM_URL=$LLM_URL" \
-    --env "DSH_MOCK_LLM_KEY=$MOCK_KEY" > logs-dsh-shell-js.txt
+    --env "DSH_MOCK_LLM_KEY=$MOCK_KEY" > "$SHELL_LOG"
 mkdir -p "$ART_DIR"
-cp logs-dsh-shell-js.txt "$ART_DIR/logs.txt"
-grep '^dsh.runtime.log:' logs-dsh-shell-js.txt > "$ART_DIR/scenario.jsonl"
+cp "$SHELL_LOG" "$ART_DIR/logs.txt"
+grep '^dsh.runtime.log:' "$SHELL_LOG" > "$ART_DIR/scenario.jsonl"
 node "$ROOT/test/e2e/check.mjs" \
     --manifest "$ROOT/test/e2e/scenarios/dsh-shell-js.json" \
-    --log logs-dsh-shell-js.txt \
+    --log "$SHELL_LOG" \
     --out "$ART_DIR/verdict.json"
 
-EVENTS="$(grep -c '^dsh.runtime.log:' logs-dsh-shell-js.txt)"
+EVENTS="$(grep -c '^dsh.runtime.log:' "$SHELL_LOG")"
 cat > "$ART_DIR/receipt.json" <<EOF
 {
   "host": "darwin-cli (Darwin $(uname -srm))",

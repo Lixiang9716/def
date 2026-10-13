@@ -36,6 +36,11 @@ sh ../../external/ensure-dsh.sh
 # 3. ONE pinned profile container for BOTH processes — the cross-start
 #    survival claim is about THIS directory's disk contents.
 CONTAINER="$(mktemp -d /tmp/dsh-session-persist.XXXXXX)"
+# The legs' logs live in /tmp scratch — writing them into the tree's
+# cwd is how three stale logs-*.txt once rode a PR into the canonical
+# runtime tree (git-rm'd 2026-10-13; keep the scratch off the tree).
+LOG_CREATE="$(mktemp /tmp/dsh-persist-create.XXXXXX)"
+LOG_RESUME="$(mktemp /tmp/dsh-persist-resume.XXXXXX)"
 
 # 4. start the mock LLM server with TWO scripted successes (one turn per
 #    process; REPEAT_LAST guards a retry) and wait for the endpoint announce
@@ -47,7 +52,7 @@ MOCK_PID=$!
 cleanup() {
     kill "$MOCK_PID" 2>/dev/null || true
     wait "$MOCK_PID" 2>/dev/null || true
-    rm -f "$MOCK_LOG"
+    rm -f "$MOCK_LOG" "$LOG_CREATE" "$LOG_RESUME"
 }
 trap cleanup EXIT INT TERM
 
@@ -80,7 +85,7 @@ run_leg() {
 }
 
 # 5. process 1: the create leg (boot → mock turn → durable artifact).
-run_leg create logs-persist-create.txt
+run_leg create "$LOG_CREATE"
 
 # 6. REAL-DISK artifact check between the processes: the stored session must
 #    exist under <container>/dsh/sessions/ (the shims' write-through mirror),
@@ -106,24 +111,24 @@ ls -l $PERSIST_FILES >&2
 
 # 7. process 2: the resume leg (same container — the loop's config-driven
 #    start restores the stored session and the turn continues the journal).
-run_leg resume logs-persist-resume.txt
+run_leg resume "$LOG_RESUME"
 
 # 8. the cross-start refusals that must NOT appear (the pre-leg behavior:
 #    "cannot resume: session persistence is not configured").
-if grep -q "cannot resume" logs-persist-create.txt logs-persist-resume.txt; then
+if grep -q "cannot resume" "$LOG_CREATE" "$LOG_RESUME"; then
     echo "a leg hit the loud unconfigured-persistence path:" >&2
-    grep -n "cannot resume" logs-persist-create.txt logs-persist-resume.txt >&2
+    grep -n "cannot resume" "$LOG_CREATE" "$LOG_RESUME" >&2
     exit 1
 fi
 
 # 9. artifacts + the receipt (what this run proves; one JSON document).
 mkdir -p "$ART_DIR"
-cp logs-persist-create.txt "$ART_DIR/logs-create.txt"
-cp logs-persist-resume.txt "$ART_DIR/logs-resume.txt"
+cp "$LOG_CREATE" "$ART_DIR/logs-create.txt"
+cp "$LOG_RESUME" "$ART_DIR/logs-resume.txt"
 cp "$MOCK_LOG" "$ART_DIR/mock-server-stdout.txt"
 
-EVENTS_CREATE="$(grep -c '"scenario":"session.persistence"' logs-persist-create.txt || true)"
-EVENTS_RESUME="$(grep -c '"scenario":"session.persistence"' logs-persist-resume.txt || true)"
+EVENTS_CREATE="$(grep -c '"scenario":"session.persistence"' "$LOG_CREATE" || true)"
+EVENTS_RESUME="$(grep -c '"scenario":"session.persistence"' "$LOG_RESUME" || true)"
 ARTIFACT_LINE="$(ls -l $PERSIST_FILES | head -1 | awk '{print $5, $9}')"
 cat > "$ART_DIR/receipt.json" <<EOF
 {
