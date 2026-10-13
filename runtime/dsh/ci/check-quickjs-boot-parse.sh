@@ -13,12 +13,18 @@
 # cannot trip closures/bundle-files.
 #
 # ARCH GUARD: the CLI's link embeds the iSH static libs — AArch64 assembly
-# an x86_64 assembler cannot build. Non-arm64 machines skip here; the
-# gov.yml arm64 job (ubuntu-24.04-arm) + arm64 dev machines carry the proof.
-if [ "$(uname -m)" != "arm64" ]; then
-    echo "quickjs-boot-parse: SKIP — $(uname -m) cannot assemble the iSH AArch64 objects; the gov.yml arm64 job proves the boot graph"
-    exit 0
-fi
+# an x86_64 assembler cannot build, and the tree's Apple-syntax asm is
+# refused by GNU as on Linux besides. The proof rides the arm64 machines,
+# in BOTH uname spellings: macOS reports arm64, Linux arm64 reports
+# aarch64 — the gov.yml arm64 job (ubuntu-24.04-arm) was self-skipping on
+# that spelling (fixed 2026-10-13); x86_64 machines skip here (the
+# --no-ish CLI face, c-core.yml, carries the engine-free proof).
+case "$(uname -m)" in
+    arm64|aarch64) ;;
+    *)
+        echo "quickjs-boot-parse: SKIP — $(uname -m) cannot assemble the iSH AArch64 objects; the gov.yml arm64 job proves the boot graph"
+        exit 0 ;;
+esac
 
 # Budget: sub-second with the prebuilt CLI (measured 0.04s); on a miss the
 # CLI is built first (host/build.sh — the same rule run-*-e2e.sh uses; a cold

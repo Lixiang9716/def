@@ -79,10 +79,11 @@ jobs:
           node test/upstream-suite/transpile.mjs
           sh runtime/dsh/ci/parity-node-modules.sh
       - name: Build the desktop CLI
-        # host/build.sh compiles the iSH static libs (cmake) then the CLI
-        # (cc); the quickjs-boot-parse job's 15-minute budget on the same
-        # runner image is the measured ceiling for the cold build.
-        run: sh src/build.sh
+        # --no-ish: the iSH guest asm is Apple-syntax and this Linux runner's
+        # GNU as refuses it, so the engine sub-build cannot run here — the
+        # CLI builds without it (ishRun answers `unavailable`; no sweep leg
+        # touches it). The full no-ish CI face is c-core.yml.
+        run: sh src/build.sh --no-ish
       - name: Run the full upstream-suite sweep
         # --paral 4: the sweep script's own default, kept explicit. The step
         # is continue-on-error ON PURPOSE (see the header): red findings are
