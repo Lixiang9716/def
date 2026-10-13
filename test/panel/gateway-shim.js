@@ -94,7 +94,13 @@ export const fsStat = async (scope, path) => {
   const entry = workspace.get(key);
   if (entry === undefined) {
     if (childKeysOf(key).length > 0) return { kind: 'dir', size: 0, mtime: new Date(0).toISOString() };
-    throw new GatewayError('io', 'fsStat', `cannot stat ${path}: no such file or directory`);
+    // The contract's answer for a missing path is kind "other", not an io
+    // rejection (main_cli.c's fsStat records the semantics; the device
+    // hosts match). This double used to throw io, which let the snapshot's
+    // kind:null arm answer for every reader while the real gateway's
+    // "other" arm crashed — the divergence hid the wild-refusal class the
+    // 2026-10-13 standing loop caught. Keep the double honest.
+    return { kind: 'other', size: 0, mtime: '' };
   }
   if (entry.dir === true) return { kind: 'dir', size: 0, mtime: new Date(0).toISOString() };
   return { kind: 'file', size: entry.length, mtime: new Date(0).toISOString() };

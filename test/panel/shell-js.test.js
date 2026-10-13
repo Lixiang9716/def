@@ -171,6 +171,8 @@ const REFUSAL_CASES = [
   { command: 'echo a & echo b', needle: 'background' },
   { command: '! echo a', needle: 'negation' },
   { command: 'cat < f.txt', needle: 'input redirect' },
+  { command: 'echo hi 2>&1', needle: 'fd-duplication' },
+  { command: 'echo `pwd`', needle: 'command substitution' },
   { command: 'echo ${FOO:-default}', needle: 'parameter expansion operator' },
   { command: 'echo hi > ../escape.txt', needle: 'escapes the workspace' },
   { command: 'echo hi 2> ../../escape.txt', needle: 'escapes the workspace' },
@@ -200,6 +202,49 @@ describe('shell-js: refusals are by name', () => {
     const result = await run('cat <<EOF\nhi\nEOF');
     expect(result.exitCode).toBe(2);
     expect(result.stdout).toBe('');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The standing loop's pins (T-0217, 2026-10-13): every wild refusal the
+// observation battery caught on the real gateway, pinned so the dialect
+// contract carries it. The battery that found these drove agent-realistic
+// command lines through the REAL ToolRuntime on the CLI carrier.
+// ---------------------------------------------------------------------------
+describe('shell-js: the wild refusals the standing loop pinned', () => {
+  it('brace alternatives expand purely — `echo {a,b}` is the words, never a pathname match', async () => {
+    // bash order: braces expand textually before pathname expansion, so a
+    // real file named `a` must not attract the word, and a host without a
+    // lister primitive must not turn a pure echo into a crash (the CLI
+    // seat's wild refusal: the fsList walk hard-failed the line).
+    putFile('a', 'X');
+    const result = await run('echo {a,b}');
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe('a b\n');
+  });
+
+  it('a reader on a missing path refuses by name — never the wrapper-bug shape', async () => {
+    // The contract answers kind "other" for a missing stat; the read face
+    // must hand the body the ENOENT it catches (grep's exit-2 convention,
+    // cat's exit 1), not the internal "(wrapper bug)" wording.
+    const cat = await run('cat missing.txt');
+    expect(cat.exitCode).not.toBe(0);
+    expect(cat.stderr).toContain('missing.txt');
+    expect(cat.stderr).not.toContain('wrapper bug');
+    const grep = await run('grep x missing.txt');
+    expect(grep.exitCode).toBe(2);
+    expect(grep.stderr).toContain('missing.txt');
+    expect(grep.stderr).not.toContain('wrapper bug');
+  });
+
+  it('head on a missing path fails loudly — never a silent empty success', async () => {
+    // The battery caught head answering exit 0 with empty stdout for a
+    // path that did not exist: the worst shape the refusal vocabulary
+    // knows, a wrong result that looks like success.
+    const result = await run('head -n 1 missing.txt');
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('missing.txt');
   });
 });
 

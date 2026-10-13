@@ -187,6 +187,27 @@ const walkCandidates = async (root, candidates) => {
   await walk(root, 0);
 };
 
+/** The constructs that need the fs walk. Braces are deliberately NOT
+ * here — they expand purely (see expandGlob). */
+const PATHNAME_MAGIC = /[*?[\]]/;
+
+/** Results take bash's spelling: an absolute pattern yields absolute
+ * words; a relative pattern yields words relative to the CWD the shell
+ * expanded it in — as a REAL relative path (`..` segments included), so
+ * the argv a program receives resolves back to the matched candidate
+ * under that same cwd. A match outside the cwd (a `..`-prefixed pattern
+ * whose lexical fold anchored the walk at an ancestor) must come back as
+ * `../name`, never as the bare name: the bare name would re-resolve
+ * INSIDE the cwd and silently target the wrong file. */
+const spellWord = (word, absolute) => {
+  log.debug('spell word', { word, absolute });
+  if (absolute) return `/${word}`;
+  if (session.cwd === '') return word;
+  // Absolute spellings feed P.relative directly (its own resolve()
+  // would re-anchor bare names at the cwd a second time).
+  return P.relative(`/${session.cwd}`, `/${word}`);
+};
+
 export const expandGlob = async (pattern) => {
   log.debug('glob expand', { pattern });
   await ensureApplets();
@@ -196,36 +217,35 @@ export const expandGlob = async (pattern) => {
   // instead would make `rm *.tmp` act on the wrong directory's files.
   const rel = resolveAgainstCwd(pattern);
   if (rel === null) return null; // escapes the workspace: not ours to walk
-  const segments = rel === '' ? [] : rel.split('/');
-  // bash without extglob treats the five extglob prefixes as literals;
-  // minimatch v10 has no noext switch anymore, so such patterns refuse as
-  // patterns (match nothing) rather than matching magically.
   if (EXTGLOB_PREFIX.test(rel)) return [];
-  // The walk root: the leading literal segments (no magic).
-  let rootSegs = 0;
-  while (rootSegs < segments.length && !SEGMENT_MAGIC.test(segments[rootSegs])) rootSegs += 1;
-  const root = rootSegs === 0 ? '' : segments.slice(0, rootSegs).join('/');
+  // Bash order: brace alternatives expand PURELY first (textual, no fs),
+  // then each result undergoes pathname expansion. A brace-only word never
+  // touches fsList — `echo {a,b}` is the words `a b` even on a host whose
+  // lister is unavailable (the standing loop's wild refusal: the walk
+  // hard-failed a pure echo on the CLI seat), and on listing hosts the
+  // words no longer accidentally pathname-match real files named a/b.
+  // Only the remaining `*?[` magic walks the workspace.
+  const patterns = shellState.minimatch.braceExpand(rel);
+  const matches = [];
+  for (const one of patterns) { // eslint-disable-line no-await-in-loop
+    if (!PATHNAME_MAGIC.test(one)) {
+      matches.push(spellWord(one, absolute));
+      continue;
+    }
+    const segments = one.split('/');
+    // The walk root: the leading literal segments (no magic).
+    let rootSegs = 0;
+    while (rootSegs < segments.length && !SEGMENT_MAGIC.test(segments[rootSegs])) rootSegs += 1;
+    const root = rootSegs === 0 ? '' : segments.slice(0, rootSegs).join('/');
 
-  const candidates = [];
-  await walkCandidates(root, candidates);
-
-  // Results take bash's spelling: an absolute pattern yields absolute
-  // words; a relative pattern yields words relative to the CWD the shell
-  // expanded it in — as a REAL relative path (`..` segments included), so
-  // the argv a program receives resolves back to the matched candidate
-  // under that same cwd. A match outside the cwd (a `..`-prefixed pattern
-  // whose lexical fold anchored the walk at an ancestor) must come back as
-  // `../name`, never as the bare name: the bare name would re-resolve
-  // INSIDE the cwd and silently target the wrong file.
-  const matches = candidates
-    .filter((candidate) => shellState.minimatch(candidate, rel, { dot: false }))
-    .map((candidate) => {
-      if (absolute) return `/${candidate}`;
-      if (session.cwd === '') return candidate;
-      // Absolute spellings feed P.relative directly (its own resolve()
-      // would re-anchor bare names at the cwd a second time).
-      return P.relative(`/${session.cwd}`, `/${candidate}`);
-    });
+    const candidates = [];
+    await walkCandidates(root, candidates);
+    for (const candidate of candidates) {
+      if (shellState.minimatch(candidate, one, { dot: false })) {
+        matches.push(spellWord(candidate, absolute));
+      }
+    }
+  }
   matches.sort();
   return matches;
 };

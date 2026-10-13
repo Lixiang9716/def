@@ -37,7 +37,11 @@ export const appletWc = async (argv, ctx) => {
         const read = await fsRead(g.scope, g.path);
         inputs.push({ name: file, text: new TextDecoder().decode(read.bytes) });
       } catch (error) {
-        throw new ShellRefusal(2, `wc: ${file}: ${error?.message ?? error}`);
+        // The caller's spelling, never the gateway path — the error text
+        // carries the workspace prefix the caller never wrote (the battery
+        // caught it as "wc: missing.txt: cannot read dsh/missing.txt").
+        void error;
+        throw new ShellRefusal(2, `wc: ${file}: cannot read file`);
       }
     }
   }

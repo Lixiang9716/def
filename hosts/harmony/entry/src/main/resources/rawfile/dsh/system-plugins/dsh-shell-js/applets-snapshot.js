@@ -203,9 +203,17 @@ class Snapshot {
 /** stat/lstat + existsSync over the snapshot's entry table. */
 const faceStat = (entryOf) => {
   log.debug('face stat', {});
+  // The contract's stat answers kind "other" for a missing path (the CLI
+  // smoke backend and the device hosts alike), and the dialect has no
+  // special files — so exactly two kinds exist for a body: file and dir.
+  // "other" answers as absent, which is what keeps the pristine guards
+  // honest (grep's existsSync probe then reports its own exit-2 convention
+  // instead of openSync's ENOENT escaping as a raw throw).
+  const present = (entry) => entry !== undefined
+    && (entry.kind === 'file' || entry.kind === 'dir');
   const statObject = (entry, spelling) => {
     log.debug('stat object', { spelling });
-    if (entry === undefined || entry.kind === null) throw ENOENT('stat', spelling);
+    if (!present(entry)) throw ENOENT('stat', spelling);
     const isFile = entry.kind === 'file';
     const isDir = entry.kind === 'dir';
     const mtime = entry.mtime ? new Date(entry.mtime) : new Date(0);
@@ -225,10 +233,7 @@ const faceStat = (entryOf) => {
     };
   };
   return {
-    existsSync: (p) => {
-      const e = entryOf(p);
-      return e !== undefined && e.kind !== null;
-    },
+    existsSync: (p) => present(entryOf(p)),
     statSync: (p) => statObject(entryOf(p), p),
     lstatSync: (p) => statObject(entryOf(p), p),
   };
@@ -261,6 +266,13 @@ const faceRead = (snapshot, entryOf) => ({
       e.code = 'EISDIR';
       throw e;
     }
+    // The contract's stat answers kind "other" for a missing path (the CLI
+    // smoke backend and the device hosts alike) — a read reaching an entry
+    // that never became a file IS that miss, and the body gets the ENOENT
+    // it knows how to catch, never the internal shape below (the wild
+    // refusal the standing loop caught: grep/sort/tail on any file that
+    // existed on disk but outside this session surfaced "(wrapper bug)").
+    if (entry.kind !== 'file') throw ENOENT('open', p);
     if (entry.bytes === undefined) {
       // The wrapper prefetches everything the arguments imply; a body
       // reaching past that is a wrapper bug — loud, never blank.
@@ -348,7 +360,20 @@ const faceFd = (snapshot) => ({
     const key = resolveAgainstCwd(p);
     const reading = flags.startsWith('r');
     const entry = snapshot.files.get(key);
-    if (reading && (entry === undefined || entry.kind === null)) throw ENOENT('open', p);
+    if (reading) {
+      // The read face's discipline (see faceRead): the contract's stat
+      // answers kind "other" for a missing path — a read-mode open of an
+      // entry that never became a file is that miss (head's silent-empty
+      // success was the wild refusal; the body gets the ENOENT/EISDIR it
+      // catches, never a successful fd over no bytes).
+      if (entry === undefined || entry.kind === null) throw ENOENT('open', p);
+      if (entry.kind === 'dir') {
+        const e = new Error(`EISDIR: illegal operation on a directory, open '${p}'`);
+        e.code = 'EISDIR';
+        throw e;
+      }
+      if (entry.kind !== 'file') throw ENOENT('open', p);
+    }
     const fd = {
       key,
       reading,
