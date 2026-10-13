@@ -1,0 +1,1357 @@
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"main begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"take","data":[{"type":"runtime.config"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/runtime","provider":"openai-compatible","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → 127.0.0.1:64126 (user-supplied endpoint)","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-b4-ondevice-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-b4-ondevice-0001"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"openai-compatible\")"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+dsh.runtime.log: {"level":"warn","module":"cordis:agent-presets","message":"agent \"s-b4-ondevice-0001\" was published without joining an agent preset; its tools, prompt sections, and skill catalog resolve against the empty global layer (join through AgentPresets.mount() or composeFrom() in the agent factory setup)","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.gateway.audit: {"verdict":"granted","ts":"2026-10-13T09:36:40Z","primitive":"fsRead","caller":"dsh.runtime.scenario","outcome":"io"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsMkdir"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsMkdir","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"probe/sub/hello.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","ts":"2026-10-13T09:36:40Z","primitive":"fsWrite"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"probe/sub/hello.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsRead","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsStat","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsList"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsList","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRename"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsRename","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsList"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsList","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsStat","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRemove"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","ts":"2026-10-13T09:36:40Z","primitive":"fsRemove"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"io","primitive":"fsStat","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"fs primitives probe","data":[{"stage":"done","mkdir":"ok","write":"written=16","read":"hello primitives","stat":"file size=16","list":"hello.txt:file","rename":"moved.txt","statDir":"dir","remove":"removed","statAfterRemove":"ERR io: cannot stat probe/sub"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsMkdir"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:40Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsMkdir","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"probe/wasm/echo.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","ts":"2026-10-13T09:36:40Z","primitive":"fsWrite"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"wasmRun"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","ts":"2026-10-13T09:36:40Z","primitive":"wasmRun"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"wasmRun"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"io","ts":"2026-10-13T09:36:40Z","primitive":"wasmRun"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"wasmRun"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"wasmRun"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"io","ts":"2026-10-13T09:36:40Z","primitive":"wasmRun"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"wasmRun"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"wasm probe","data":[{"stage":"done","module":"written 77 bytes","run":"result=15 output=\"hello from wasm\"","missingExport":"io: wasmRun: no export \"nope\": function lookup failed","noModule":"io: cannot read probe/wasm/absent.wasm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"ishRun"}]}
+dsh_ish_verify: verdict=ok rootfs=/Users/lixiang/Library/Developer/CoreSimulator/Devices/A4AE41BF-026A-441E-85DF-F53522996073/data/Containers/Data/Application/1DBF1830-B7B2-4976-B4C6-C913A25F51EF/Documents/profiles/default/ish-rootfs entries=521 additions=1 mutable-changed=0 tree-sha256=15edca1e340ed98aae463ce1d214b8f49583fb2f3802d233577ebb559a92d4da elapsed-ms=198
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","ts":"2026-10-13T09:36:41Z","primitive":"ishRun"}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"ish probe","data":[{"stage":"done","run":"exit=0 stdout=\"hello-from-guest\\n\" timedOut=false truncated=false"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginLiveMount","message":"install creation mount","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginLiveMount","message":"prefix derive","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.plugin-manager","message":"write legs assembled","data":[{"marketplace":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"cordis legs assembled","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"web.boot"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.claim"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.claim"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"runtime.booted","entries":58,"source":"vendored @deepseek-ai/dsh-client-modules composed in-runtime"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"write.surface.claimed","endpointCount":39,"streams":["session/follow","workspace/follow","session/control","$events"],"source":"the on-device spine (ctx.sessions/agents/settings)"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"settings probes begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus deliver","data":[{"type":"api.request"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:46Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsStat","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/plugins/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:46Z","caller":"dsh.runtime.scenario","outcome":"io","primitive":"fsRead","verdict":"granted"}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:46Z","caller":"dsh.runtime.scenario","outcome":"io","primitive":"fsRead","verdict":"granted"}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:46Z","caller":"dsh.runtime.scenario","outcome":"io","primitive":"fsRead","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.preset.roster","presets":["standard","mobile","ptc","minimal","cordis"],"default":"mobile","authorable":false,"modeSelectionEnabled":true,"healthy":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:46Z","caller":"dsh.runtime.scenario","outcome":"ok","primitive":"fsStat","verdict":"granted"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.plugin.inventory","managementAvailable":false,"entries":78,"clientEntries":49,"presets":5,"presetRows":125,"toolRows":["@deepseek-ai/dsh-tool-ask-user","@deepseek-ai/dsh-tool-bash","@deepseek-ai/dsh-tool-bash-persistent","@deepseek-ai/dsh-tool-cordis","@deepseek-ai/dsh-tool-fs","@deepseek-ai/dsh-tool-fs-search","@deepseek-ai/dsh-tool-goal","@deepseek-ai/dsh-tool-jobs","@deepseek-ai/dsh-tool-present","@deepseek-ai/dsh-tool-pwsh","@deepseek-ai/dsh-tool-pwsh-persistent","@deepseek-ai/dsh-tool-ralph","@deepseek-ai/dsh-tool-skill","@deepseek-ai/dsh-tool-subagent","@deepseek-ai/dsh-tool-subagent-control","@deepseek-ai/dsh-tool-subagent-control/list-agents","@deepseek-ai/dsh-tool-todo","@deepseek-ai/dsh-tool-web","@deepseek-ai/dsh-tool-workflow"],"spineSample":[{"id":"agent-loop","enabled":true,"fiberPhase":"active"},{"id":"llm","enabled":true,"fiberPhase":"active"},{"id":"shell-js","enabled":true,"fiberPhase":"active"}]}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"settings.pluginManager.readonly","bundles":3,"readOnlyBundles":2,"bundleRows":78,"plugins":78,"workspaceRows":0}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"settings.probes.done"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"settings probes done","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.web","message":"b4 runtime resident (write surface live; awaiting the page)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest validate","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Service"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Event"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Builtin"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Slots"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Theme"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest synced","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"inventory read","data":[{"runnerMounted":false}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:48Z","verdict":"granted","outcome":"io","primitive":"fsRead","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"caller":"dsh.runtime.scenario","verdict":"granted","outcome":"io","ts":"2026-10-13T09:36:48Z","primitive":"fsRead"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"inventory read","data":[{"runnerMounted":false}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"inventory read","data":[{"runnerMounted":false}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest validate","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Service"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Event"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Builtin"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Slots"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"provider validate","data":[{"id":"Theme"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"manifest synced","data":[{"providers":5}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"warn","module":"cordis:agent-presets","message":"agent \"session-c47505b4-f1c2-4e11-bbb6-7ee71bccb43f\" was published without joining an agent preset; its tools, prompt sections, and skill catalog resolve against the empty global layer (join through AgentPresets.mount() or composeFrom() in the agent factory setup)","data":[]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:53Z","verdict":"granted","outcome":"io","primitive":"fsRead","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"bus on message","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"api.respond"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"write.prompt.observed","sessionId":"session-c47505b4-f1c2-4e11-bbb6-7ee71bccb43f","seq":5}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/request/built","provider":"openai-compatible","model":"mock-1","messages":2,"tools":19,"path":"/chat/completions","method":"POST","agentLoopMarked":true,"stream":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:64126/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:54Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"httpFetch","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:35","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":715}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":668}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","fields":["choices"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-start"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerCancel","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"tool-call-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","fields":["choices"]}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"tool-call-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","finish":"tool_calls","usage":{"inputTokens":3,"outputTokens":2,"totalTokens":5}}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","done":true}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-end"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"usage"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"finish"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"end"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":false}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"path"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"os"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"util"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"child_process"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"execa"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"fast-glob"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"dormant fs stub","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"fs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"name":"shelljs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"shelljs","from":""}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/common","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"os","from":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fast-glob","from":"vendor/npm/shelljs@0.10.0/src/common.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/cat","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cat.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/cd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"os","from":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/chmod","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/chmod"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/chmod"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/chmod.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/cmd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/cmd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cmd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"execa","from":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cmd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/cp","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/cp.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/dirs","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/dirs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/dirs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./cd","from":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/dirs.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/echo","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"util","from":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/echo.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/exec","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/exec"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/exec"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"child_process","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./tempdir","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"os","from":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/tempdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./pwd","from":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/exec.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/pwd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/exec-child","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/exec-child"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/exec-child"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"child_process","from":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/exec-child.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/find","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/find"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/find"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./ls","from":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/find.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fast-glob","from":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/ls.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/grep","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/grep"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/grep"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/grep.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/head","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/head"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/head"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/head.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/ln","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/ln"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/ln"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/ln.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/ls","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/ls"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/mkdir","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/mkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/mkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mkdir.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/mv","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/mv"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/mv"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./cp","from":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/cp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./rm","from":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/mv.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/rm.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/popd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/popd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/popd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/popd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/popd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/pushd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/pushd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/pushd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/pushd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/pushd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/pwd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/pwd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/rm","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/rm"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/sed","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/sed"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/sed"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/sed.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/set","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/set"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/set"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/set.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/sort","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/sort"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/sort"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/sort.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/tail","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/tail"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/tail"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/tail.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/tempdir","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/tempdir"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/test","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/test"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/test"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/test.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/to","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/to"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/to"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/to.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/toEnd","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/toEnd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/toEnd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/toEnd.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/touch","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/touch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/touch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/touch.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/uniq","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/uniq"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/uniq"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/uniq.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/which","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/which"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/which"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"fs","from":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"path","from":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/which.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/error","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/error"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/error"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/error.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./src/errorCode","from":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/shell.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0","request":"./src/errorCode"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/errorCode"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./common","from":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/shelljs@0.10.0/src/errorCode.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/shelljs@0.10.0/src","request":"./common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/shelljs@0.10.0/src/common"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"name":"minimatch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"minimatch","from":""}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3","request":"dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"@isaacs/brace-expansion","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/@isaacs/brace-expansion@5.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/@isaacs/brace-expansion@5.0.1","request":"dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"@isaacs/balanced-match","from":"vendor/npm/@isaacs/brace-expansion@5.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/@isaacs/balanced-match@4.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.cjs"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/package.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/@isaacs/balanced-match@4.0.1","request":"dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/@isaacs/balanced-match@4.0.1/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./assert-valid-pattern.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/assert-valid-pattern.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./ast.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./brace-expressions.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/brace-expressions.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./unescape.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./escape.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"exists probe","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"text cache miss","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"read text","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor module load","data":[{"spec":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./unescape.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./ast.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/ast.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./escape.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/escape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"vendor require","data":[{"request":"./unescape.js","from":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"dir of","data":[{"p":"vendor/npm/minimatch@10.0.3/dist/commonjs/index.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"vendor/npm/minimatch@10.0.3/dist/commonjs","request":"./unescape.js"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"resolve package entry","data":[{"dir":"vendor/npm/minimatch@10.0.3/dist/commonjs/unescape.js"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js.shelljs","message":"shelljs loaded through the vendor seam","data":[{"version":"0.10.0","noglob":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"parse","data":[{"chars":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"scan","data":[{"chars":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip newlines","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"and-or","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"pipeline","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"command","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word","data":[{"at":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"command word","data":[{"text":"echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":4}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word","data":[{"at":5}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":16}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":17}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect","data":[{"at":17}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":18}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":19}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word","data":[{"at":19}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":27}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":28}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":28}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":28}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":28}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip newlines","data":[{"at":30}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"pipeline","data":[{"at":30}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"command","data":[{"at":30}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":30}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word","data":[{"at":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"command word","data":[{"text":"cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word","data":[{"at":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"redirect starts","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"word starts","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip blank","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"skip newlines","data":[{"at":43}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run output","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture sink created","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture sink created","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"evaluate node","data":[{"type":"LogicalExpression"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"evaluate node","data":[{"type":"Command"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"pipeline","data":[{"members":1}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run member","data":[{"type":"Command"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"prefix vars","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"split suffix","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"apply redirects","data":[{"count":1}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"expand word","data":[{"chars":8}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"resolve against cwd","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"redirect sink","data":[{"internal":"note.txt","append":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"to gateway","data":[{"internal":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"scope roots","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"expand word","data":[{"chars":4}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"evaluate word","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"expand word","data":[{"chars":11}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.cmds","message":"applet","data":[{"applet":"echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"util format","data":[{"template":"hi-from-ios"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"shell outcome","data":[{"code":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"redirect write","data":[{"bytes":12}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"exit through","data":[{"code":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"redirect close","data":[{"path":"dsh/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"dsh/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.gateway.audit: {"ts":"2026-10-13T09:36:55Z","verdict":"granted","outcome":"ok","primitive":"fsWrite","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"evaluate node","data":[{"type":"Command"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"pipeline","data":[{"members":1}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run member","data":[{"type":"Command"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"prefix vars","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"split suffix","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"apply redirects","data":[{"count":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"expand word","data":[{"chars":3}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"evaluate word","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"expand word","data":[{"chars":8}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.cmds","message":"applet","data":[{"applet":"cat"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"split flags","data":[{"args":1}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"run shelljs body","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"snapshot","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"prefetch read","data":[{"internal":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"prefetch stat","data":[{"internal":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"resolve against cwd","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"to gateway","data":[{"internal":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"scope roots","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsStat","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"to gateway","data":[{"internal":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"scope roots","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsRead","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":16}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"node face","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"face stat","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"resolve against cwd","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"resolve against cwd","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.snapshot","message":"stat object","data":[{"spelling":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"resolve against cwd","data":[{"p":"note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.applets","message":"normalize","data":[{"p":"/note.txt"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"shell outcome","data":[{"code":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture write","data":[{"bytes":12}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"exit through","data":[{"code":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run text","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":12}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/request/built","provider":"openai-compatible","model":"mock-1","messages":4,"tools":19,"path":"/chat/completions","method":"POST","agentLoopMarked":true,"stream":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:64126/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerCancel","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.gateway.audit: {"outcome":"ok","caller":"dsh.runtime.scenario","primitive":"httpFetch","verdict":"granted","ts":"2026-10-13T09:36:55Z"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:75","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":675}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":75}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":628}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","delta":"Hello"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-start"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","delta":" from"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","delta":" upst"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","delta":"ream"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","finish":"stop","usage":{"inputTokens":3,"outputTokens":19,"totalTokens":22}}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"llm/sse","done":true}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-end"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"usage"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"finish"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"end"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"info","module":"b4.web","message":"e2e","data":[{"scenario":"composer.live-write","event":"write.turn.settled","sessionId":"session-c47505b4-f1c2-4e11-bbb6-7ee71bccb43f","events":16,"text":"Hello from upstream"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerSchedule","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount begin","data":[{"spec":"pomodoro-clock"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"manifest read begin","data":[{"spec":"pomodoro-clock","prefix":"dsh"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh/plugins/pomodoro-clock/manifest.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"b4.bus","message":"post","data":[{"type":"mux.item"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"io","primitive":"fsRead","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":75}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"warn","module":"dsh.plugin-mount","message":"plugin mount refused","data":[{"step":"read","spec":"pomodoro-clock","reason":"no readable manifest at dsh/plugins/pomodoro-clock/manifest.json: cannot read dsh/plugins/pomodoro-clock/manifest.json"}]}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"verdict":"granted","outcome":"ok","primitive":"timerCancel","ts":"2026-10-13T09:36:55Z","caller":"dsh.runtime.scenario"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
