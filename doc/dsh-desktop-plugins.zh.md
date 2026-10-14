@@ -23,7 +23,7 @@ workspace 包**，共 298 个。
 | 运行时主干 | session、agent、system-prompt、tools、session-projection、settings、agent-loop、llm（传递引入 sandbox、scope、brand、invariants、timeout、typert-protocol、util-crypto、util-values） | `mountSpine`，逐字 vendored 包 |
 | 预设数据源 | agent-presets + cordis-plugin-loader（连带 home-paths、atomic-write、js-yaml） | 真·上游服务；一个 Loader 同时服务 presets 注入与客户端组装（T-0035） |
 | 文件工具行 | fs-local、tool-fs、tool-str-replace-editor、attachment（+ npm diff） | 内存工作区世界跑 vendored fs-local 后端；read/write/edit + str_replace_editor 注册进 ToolRuntime（T-0035） |
-| 工具移植 | tool-todo；自研 dsh-shell-wasm（`shell`）、dsh-shell-ish（`ish`） | ToolRuntime；背后是契约 `wasmRun`/`ishRun` |
+| 工具移植 | tool-todo；自研 shell——`dsh-shell-js` 自 2026-10-11 起持有 `shell` 席位，`dsh-shell-wasm` 仅为引擎门保留 | ToolRuntime；背后是契约 fs 原语 / `wasmRun`（`dsh-shell-ish` 已随 iSH 引擎于 2026-10 退役） |
 | 官方 web 层 | 58 包应用层 + 5 个 shell 静态模块 + 构建出的 SPA | staged 客户端 bundle 在运行时组装，由 carrier 服务 |
 | 镜像 API | api-session-controller、api-settings-controller 的行为 | 写面板（web-write.js）——真正的控制器包未挂载 |
 | Web API（T-0035） | pluginInventory/list（诚实只读快照）、agentPresets/list\|read\|copy\|deletePreset\|select、pluginManager/listBundles\|listPlugins（只读行，`readOnlyReason: management-required`） | 已认领端点；manager 的写端点有意不认领 |
@@ -32,8 +32,9 @@ workspace 包**，共 298 个。
 
 网关 fs 作用域之上的 fs + tool-fs-search（等子进程接缝）；web 工具
 （`tool-web`、`web-fetch-http`、基于 `httpFetch` 的搜索提供方）；审批/
-提问（`tool-ask-user`、`user-approval` 走 `presentApproval`）；跑在
-`ishRun` 上的 shell/终端栈；会话质量层（compaction、persona、plan-mode、
+提问（`tool-ask-user`、`user-approval` 走 `presentApproval`）；shell/
+终端栈如今由 `dsh-shell-js` 承担（`ishRun` 已于 2026-10 退役——真实
+用户态不再是接入目标）；会话质量层（compaction、persona、plan-mode、
 标题、permission-presets）；持久化/恢复（fs-scope jsonl 后端）；技能
 （fs 发现）；commands/goals/workflows；streamable-HTTP 上的 MCP；
 workspace-files 与文件侧栏；以 staged 树 + 插件系统回执日志为后端的

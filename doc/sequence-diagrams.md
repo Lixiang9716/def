@@ -92,7 +92,7 @@ sequenceDiagram
         S->>P: load plugin
         P->>S: probe optional faces (they fail honestly)
     end
-    Note over S,P: no hostType branch anywhere —<br/>the descriptor IS the platform difference<br/>(ishRun: iOS available / others unavailable)
+    Note over S,P: no hostType branch anywhere —<br/>the descriptor IS the platform difference<br/>(ishRun: unavailable everywhere — retired 2026-10)
 ```
 
 ## 4. Live LLM streaming session
@@ -175,37 +175,24 @@ sequenceDiagram
 Evidence: `install.verified-tarball` (22/22), `install.full-cycle` (41/41),
 `install.from-http` (46/46).
 
-## 7. ishRun — the emulated userland, with per-boot integrity
+## 7. ishRun — retired; every host answers the honest `unavailable`
 
 ```mermaid
 sequenceDiagram
-    participant P as Shell plugin (dsh-shell-ish)
+    participant P as Shell plugin (dsh-shell-js)
     participant G as Gateway (ishRun)
-    participant H as Host (dsh_ish)
-    participant V as Verifier (dsh_ish_verify) [NEW]
-    participant E as iSH engine (in-process)
-    participant G2 as Guest Alpine userland
+    participant H as Host (no engine)
 
-    Note over H,V: staging: rootfs extracted →<br/>manifest sealed (<rootfs>.manifest, sha256 per entry)
+    Note over G,H: the iSH engine, the guest userland and<br/>the dsh_ish seam left the repo (2026-10);<br/>the frozen contract entry (v1.3.0, D5) stays
     P->>G: ishRun(command)
-    G->>H: boot guest (under boot lock)
-    H->>V: verify staged tree vs manifest
-    alt digest mismatch (tamper/partial write)
-        V--xH: REFUSED (expected vs actual named)
-        H-->>G: structured error → audit
-    else verified (~25ms warm)
-        H->>E: boot (41–79ms measured)
-        E->>G2: exec command (child of guest init)
-        G2-->>E: stdout/stderr/exit (via zombie)
-        E-->>H: result
-        H-->>G: {exitCode, stdout}
-        G-->>P: result + audit record
-    end
-    Note over H,V: guest ADDITIONS tolerated + counted<br/>(contract: installs persist);<br/>apk upgrade of a pinned member → refused at next boot
+    G->>H: dispatch (registered retired row)
+    H-->>G: {code:"unavailable"} — no Linux userland served
+    G-->>P: structured rejection + audit record<br/>(granted/unavailable — never denied, never faked)
 ```
 
-Evidence: `userland.shell` (11/11 + deliverable digest), plus the new
-tamper-rejection case in `run-ish-local.sh`.
+Every host answers the same way (iOS, Android, HarmonyOS, the desktop CLI);
+`dsh-shell-js` over the fs primitives is the shell surface that remains — an
+in-process bash subset, stated as an emulation, not a userland.
 
 ## 8. Settings surfaces — presets and plugin inventory
 

@@ -40,6 +40,13 @@ class GatewayCore private constructor(val manifest: GatewayManifest) {
          * unavailable in the descriptor, and their handlers answer
          * `unavailable`. */
         val PHASED_ROWS = listOf("cameraRecordStart", "cameraRecordStop")
+
+        /** The RETIRED row: ishRun's engine (the in-process iSH guest) left
+         * the repository with the 2026-10 retirement — the contract entry is
+         * frozen (D5), so the row answers the honest `unavailable` (§7 #1:
+         * absence is information for negotiation, never faked) before any
+         * grant walk, never the flat `denied` an unknown name would take. */
+        val RETIRED_ROWS = listOf("ishRun")
         const val AUDIT_PREFIX = "dsh.gateway.audit: "
         private const val AUDIT_TAG = "dsh.runtime.audit"
         private const val UI_TAG = "dsh.runtime.ui"
@@ -151,6 +158,7 @@ class GatewayCore private constructor(val manifest: GatewayManifest) {
      * granted calls run their handler (which settles off-thread). */
     fun dispatch(callId: Int, name: String, argsJSON: String) {
         if (name == "httpFetch.abort") return dispatchAbort(name, argsJSON)
+        if (RETIRED_ROWS.contains(name)) return dispatchRetired(callId, name)
         val base = name.substringBefore('.')
         val handler = handlers[name]
         if (handler != null && !manifest.grants(base)
@@ -173,6 +181,21 @@ class GatewayCore private constructor(val manifest: GatewayManifest) {
         settleFn?.invoke(
             callId, false,
             errorJSON("denied", name, "primitive not granted to ${manifest.id}"),
+        )
+    }
+
+    /** The retired rows' answer: `unavailable` with a readable reason,
+     * audited granted/unavailable — the grant walk has nothing left to
+     * grant or deny once the implementation is gone (contract §7 #1). */
+    private fun dispatchRetired(callId: Int, name: String) {
+        audit(name, "granted", "unavailable")
+        settleFn?.invoke(
+            callId, false,
+            errorJSON(
+                "unavailable", name,
+                "retired — the iSH engine left the repository (2026-10); " +
+                    "no host serves a Linux userland here",
+            ),
         )
     }
 

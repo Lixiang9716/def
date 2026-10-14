@@ -24,7 +24,7 @@ ToolRuntime, a vendor pin (`vendor/ensure-dsh.sh`) + shim rows
 | Runtime spine | session, agent, system-prompt, tools, session-projection, settings, agent-loop, llm (+ sandbox, scope, brand, invariants, timeout, typert-protocol, util-crypto, util-values transitively) | `mountSpine` over verbatim vendored packages |
 | 预设 data source | agent-presets + cordis-plugin-loader (+ home-paths, atomic-write, js-yaml) | REAL upstream services; one Loader serves the presets inject AND the client composition (T-0035) |
 | The file-tools row | fs-local, tool-fs, tool-str-replace-editor, attachment (+ npm diff) | in-memory workspace world over the vendored fs-local backend; read/write/edit + str_replace_editor on the ToolRuntime (T-0035) |
-| Tool ports | tool-todo; in-house dsh-shell-wasm (`shell`), dsh-shell-ish (`ish`) | ToolRuntime; backed by contract `wasmRun`/`ishRun` |
+| Tool ports | tool-todo; in-house shells — `dsh-shell-js` holds the `shell` seat (2026-10-11), `dsh-shell-wasm` kept for the engine gates only | ToolRuntime; backed by the contract fs primitives / `wasmRun` (`dsh-shell-ish` retired with the iSH engine, 2026-10) |
 | Official web tier | the 58-package application tier + 5 shell-static modules + the built SPA | staged client bundles composed in-runtime; served by the carrier |
 | Mirrored API | api-session-controller, api-settings-controller behavior | the write surface (web-write.js) — the real controllers stay unmounted |
 | Web API (T-0035) | pluginInventory/list (honest read-only snapshot), agentPresets/list\|read\|copy\|deletePreset\|select, pluginManager/listBundles\|listPlugins (read-only rows, `readOnlyReason: management-required`) | claimed endpoints; the manager's write legs deliberately unclaimed |
@@ -34,7 +34,9 @@ ToolRuntime, a vendor pin (`vendor/ensure-dsh.sh`) + shim rows
 fs over gateway scopes + tool-fs-search (needs the subprocess seam);
 web tools (`tool-web`, `web-fetch-http`, search providers over
 `httpFetch`); approval/questions (`tool-ask-user`, `user-approval` over
-`presentApproval`); the shell/terminal stack over `ishRun`; the
+`presentApproval`); the shell/terminal stack rides `dsh-shell-js` today
+(`ishRun` retired 2026-10 — a real userland is no longer an integration
+target); the
 session-quality layer (compaction, persona, plan-mode, titles,
 permission-presets); persistence/resume (fs-scope jsonl backend); skills
 (fs-backed); commands/goals/workflows; MCP over streamable-HTTP;

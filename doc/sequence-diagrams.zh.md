@@ -86,7 +86,7 @@ sequenceDiagram
         S->>P: 加载插件
         P->>S: 探测可选面（诚实地失败）
     end
-    Note over S,P: 运行时代码没有任何 hostType 分支——<br/>描述符本身就是平台差异<br/>(ishRun：iOS 可用 / 其余不可用)
+    Note over S,P: 运行时代码没有任何 hostType 分支——<br/>描述符本身就是平台差异<br/>(ishRun：处处 unavailable —— 2026-10 退役)
 ```
 
 ## 4. 实时 LLM 流式会话
@@ -169,37 +169,24 @@ sequenceDiagram
 证据：`install.verified-tarball`（22/22）、`install.full-cycle`（41/41）、
 `install.from-http`（46/46）。
 
-## 7. ishRun —— 模拟用户land，含每次引导完整性校验
+## 7. ishRun —— 已退役;每个宿主都答诚实的 `unavailable`
 
 ```mermaid
 sequenceDiagram
-    participant P as Shell 插件 (dsh-shell-ish)
+    participant P as Shell 插件 (dsh-shell-js)
     participant G as 网关 (ishRun)
-    participant H as 宿主 (dsh_ish)
-    participant V as 校验器 (dsh_ish_verify)【新增】
-    participant E as iSH 引擎（进程内）
-    participant G2 as Guest Alpine 用户land
+    participant H as 宿主 (无引擎)
 
-    Note over H,V: 暂存：rootfs 解出 →<br/>封印 manifest（<rootfs>.manifest，逐条 sha256）
+    Note over G,H: iSH 引擎、客体用户态与 dsh_ish 缝<br/>已移出仓库(2026-10);<br/>冻结的契约条目(v1.3.0,D5)保留
     P->>G: ishRun(command)
-    G->>H: 引导 guest（引导锁内）
-    H->>V: 校验 staged 树 vs manifest
-    alt 摘要不匹配（篡改/半写）
-        V--xH: 拒绝（点名 expected 与 actual）
-        H-->>G: 结构化错误 → 审计
-    else 通过（热态约 25ms）
-        H->>E: 引导（实测 41–79ms）
-        E->>G2: 执行命令（guest init 的子进程）
-        G2-->>E: stdout/stderr/退出码（经 zombie）
-        E-->>H: 结果
-        H-->>G: {exitCode, stdout}
-        G-->>P: 结果 + 审计记录
-    end
-    Note over H,V: guest 的新增文件容忍并计数<br/>（契约：安装持久化）；<br/>apk upgrade 替换钉版成员 → 下次引导拒绝
+    G->>H: 派发(已注册的退役行)
+    H-->>G: {code:"unavailable"} —— 不提供 Linux 用户态
+    G-->>P: 结构化拒绝 + 审计记录<br/>(granted/unavailable —— 永不 denied,永不伪造)
 ```
 
-证据：`userland.shell`（11/11 + 交付物摘要），以及 `run-ish-local.sh`
-中新增的篡改拒绝案例。
+所有宿主一律如此回答(iOS、Android、HarmonyOS、桌面 CLI);留下来的 shell
+表面是跑在 fs 原语之上的 `dsh-shell-js`——进程内 bash 子集,如实陈述为
+模拟,而非用户态。
 
 ## 8. 设置面板 —— 预设与插件清单
 

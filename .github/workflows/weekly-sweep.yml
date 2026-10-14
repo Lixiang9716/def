@@ -10,9 +10,9 @@ name: weekly-sweep
 # infrastructure failure (the report never got written) fails the run, so a
 # silently-broken inspection cannot masquerade as a clean one.
 #
-# The arm64 runner is not a preference: the desktop CLI's link embeds the iSH
-# static libs — AArch64 assembly an x86_64 runner cannot assemble (the same
-# constraint that puts the quickjs-boot-parse gate on ubuntu-24.04-arm).
+# The arm64 runner is not a preference: it is the architecture the sweep's
+# measured baseline (2026-09-30, ~8 minutes for 645 specs at --paral 4) was
+# taken on.
 on:
   schedule:
     - cron: "17 3 * * 0" # Sundays 03:17 UTC — weekend, off the hour, off the rush
@@ -26,11 +26,10 @@ jobs:
     # The 90s per-leg cap (with one retry, run_to in the sweep script)
     # bounds every spec, so the run cannot hang open-ended. The measured
     # full sweep is ~8 minutes for 645 specs at --paral 4 on an arm64 dev
-    # machine (2026-09-30); a CI arm runner's slower cores, the cold iSH +
-    # CLI build (the quickjs-boot-parse job's 15-minute budget is the
-    # measured ceiling), and a cold ~25 MB tarball + ~190 npm-face
-    # materialization fit inside 40 minutes with room to spare — 240 keeps
-    # ~3x headroom on that estimate under GitHub's 360 cap.
+    # machine (2026-09-30); a CI arm runner's slower cores, the cold CLI
+    # build, and a cold ~25 MB tarball + ~190 npm-face materialization fit
+    # inside 40 minutes with room to spare — 240 keeps ~3x headroom on that
+    # estimate under GitHub's 360 cap.
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@v7
@@ -51,20 +50,16 @@ jobs:
             external/quickjs-ng
             external/zstd
             external/wasm3
-            external/ish
             external/dsh
             external/npm
             external/dsh-tests@dsh-v0.1.6-alpha.2
-          key: weekly-sweep-${{ hashFiles('external/ensure.sh', 'external/ensure-ish.sh', 'external/ensure-dsh.sh', 'external/ensure-dsh-tests.sh') }}
+          key: weekly-sweep-${{ hashFiles('external/ensure.sh', 'external/ensure-dsh.sh', 'external/ensure-dsh-tests.sh') }}
       - name: Materialize the vendored trees
-        # ensure.sh: engine + zstd + wasm3. ensure-ish.sh: the iSH sources the
-        # CLI links — NOT covered by ensure.sh (the gap the 2026-09-29 CI run
-        # hit: 'vendored iSH-arm64 sources not found'). ensure-dsh.sh: the
-        # runtime closure the boot serves. ensure-dsh-tests.sh: the upstream
+        # ensure.sh: engine + zstd + wasm3. ensure-dsh.sh: the runtime
+        # closure the boot serves. ensure-dsh-tests.sh: the upstream
         # test tree + the pinned npm test faces the transpiled specs import.
         run: |
           external/ensure.sh
-          external/ensure-ish.sh
           external/ensure-dsh.sh
           external/ensure-dsh-tests.sh
       - name: Materialize the node-side test tooling
@@ -79,11 +74,7 @@ jobs:
           node test/upstream-suite/transpile.mjs
           sh runtime/dsh/ci/parity-node-modules.sh
       - name: Build the desktop CLI
-        # --no-ish: the iSH guest asm is Apple-syntax and this Linux runner's
-        # GNU as refuses it, so the engine sub-build cannot run here — the
-        # CLI builds without it (ishRun answers `unavailable`; no sweep leg
-        # touches it). The full no-ish CI face is c-core.yml.
-        run: sh src/build.sh --no-ish
+        run: sh src/build.sh
       - name: Run the full upstream-suite sweep
         # --paral 4: the sweep script's own default, kept explicit. The step
         # is continue-on-error ON PURPOSE (see the header): red findings are

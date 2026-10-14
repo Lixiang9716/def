@@ -14,15 +14,12 @@
 # the closure is fresh, the app compiled, and the scenario verdicts passed.
 #
 # usage:
-#   build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--no-ish] [--list]
+#   build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]
 #
 #   build/build.sh android            # sync + compile + test, one platform
 #   build/build.sh android harmony    # multiple platforms
 #   build/build.sh compile core       # the toolchain leg only (no sync, no e2e)
 #   build/build.sh test ios           # the e2e leg only (build must be fresh)
-#   build/build.sh build core --no-ish # the CLI without the iSH engine (Linux CI:
-#                                      #  the iSH Apple-syntax asm is refused by
-#                                      #  GNU as — see src/build.sh / c-core.yml)
 #   build/build.sh check              # closure drift check only (the closures gate)
 #   build/build.sh sync               # re-stage every committed closure
 #   build/build.sh --list             # platforms + toolchain state, no work done
@@ -41,15 +38,12 @@ cd "$ROOT"
 COMMAND=build
 PLATFORMS=""
 RELEASE=0
-NO_ISH=0
-NO_ISH_FLAG=""
 LIST=0
 
 for arg in "$@"; do
     case "$arg" in
         build|compile|test|check|sync) COMMAND=$arg ;;
         --release) RELEASE=1 ;;
-        --no-ish) NO_ISH=1; NO_ISH_FLAG="--no-ish" ;;
         --list) LIST=1 ;;
         ios|android|harmony|core) PLATFORMS="$PLATFORMS $arg" ;;
         all) PLATFORMS="$PLATFORMS ios android harmony core" ;;
@@ -62,12 +56,12 @@ for arg in "$@"; do
                     ios|android|harmony|core) PLATFORMS="$PLATFORMS $t" ;;
                     all) PLATFORMS="$PLATFORMS ios android harmony core" ;;
                     *) echo "build: unknown platform '$t' in '$arg'" >&2
-                       echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--no-ish] [--list]" >&2
+                       echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
                        exit 2 ;;
                 esac
             done ;;
         *) echo "build: unknown platform or flag '$arg'" >&2
-           echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--no-ish] [--list]" >&2
+           echo "usage: build/build.sh [build|compile|test|check|sync] [ios|android|harmony|core|all ...] [--release] [--list]" >&2
            exit 2 ;;
     esac
 done
@@ -106,9 +100,7 @@ harmony_toolchain() {
 }
 
 core_toolchain() {
-    # cmake builds the iSH engine subproject; a --no-ish build is pure cc and
-    # needs no cmake (the Linux CI face, c-core.yml, builds exactly so).
-    [ "$NO_ISH" = "1" ] || need cmake "the C host + iSH engine build via CMake"
+    need cmake "the C host build via CMake"
 }
 
 # ---- platform steps (the exact CI commands; BUILD.md keeps the mapping) -----
@@ -167,10 +159,10 @@ stage_compile() {
             core_toolchain
             if [ "$RELEASE" = "1" ]; then
                 echo "build: compile core (C host CLI, debug + release flavors)"
-                sh "$ROOT/src/build.sh" $NO_ISH_FLAG && sh "$ROOT/src/build.sh" --release $NO_ISH_FLAG
+                sh "$ROOT/src/build.sh" && sh "$ROOT/src/build.sh" --release
             else
                 echo "build: compile core (C host CLI, debug flavor)"
-                sh "$ROOT/src/build.sh" $NO_ISH_FLAG
+                sh "$ROOT/src/build.sh"
             fi ;;
         *)
             echo "::error::build: compile: unknown platform '$1' (want ios|android|harmony|core)" >&2
@@ -195,16 +187,6 @@ stage_test() {
             hosts/harmony/ci/run-host-e2e.sh ;;
         core)
             echo "build: test core (the CLI proof legs over the vendored upstream spine)"
-            # --no-ish: the legs each rebuild-on-miss with a plain
-            # `src/build.sh` (with-ish), which on Linux dies in the iSH asm —
-            # so when the flag is set and no CLI exists, build it HERE once,
-            # honoring the flag; the legs' rebuild-on-miss then never fires
-            # (the c-core.yml order — build core --no-ish, then test core —
-            # makes this the cold-start path).
-            if [ "$NO_ISH" = "1" ] && [ ! -x runtime/dsh/build/dsh-cli ]; then
-                core_toolchain
-                sh "$ROOT/src/build.sh" --no-ish
-            fi
             runtime/dsh/ci/run-upstream-e2e.sh
             runtime/dsh/ci/run-upstream-boot-e2e.sh
             runtime/dsh/ci/run-settings-surfaces-e2e.sh
@@ -246,7 +228,7 @@ if [ "$COMMAND" = "check" ]; then
     exec "$ROOT/build/check-closures.sh"
 fi
 
-echo "build: command=$COMMAND platforms=[$PLATFORMS ] release=$RELEASE no-ish=$NO_ISH"
+echo "build: command=$COMMAND platforms=[$PLATFORMS ] release=$RELEASE"
 for p in $PLATFORMS; do
     if [ "$COMMAND" = "sync" ]; then
         echo ""

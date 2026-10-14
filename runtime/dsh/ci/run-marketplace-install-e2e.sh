@@ -36,14 +36,9 @@ SEED_2="d2e3f405162738495a6b7c8d9e0f1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b"
 SEED_ATK="e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6"
 WAIT_DEADLINE_SECONDS=15
 
-# 1. vendored upstream closure: pinned + sha256-verified. ensure-ish.sh is
-#    named EXPLICITLY (siblings run-upstream-parity.sh / check-quickjs-boot-
-#    parse.sh do the same): the spike host links the iSH engine, ensure.sh
-#    does not materialize it, and a fresh checkout has no build/ binary —
-#    without this line the leg is unreproducible there.
+# 1. vendored upstream closure: pinned + sha256-verified.
 sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh
-sh ../../external/ensure-ish.sh
 
 # 2. build the spike host when the binary is missing.
 [ -x build/dsh-cli ] || sh ../../src/build.sh

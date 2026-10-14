@@ -347,10 +347,11 @@ class SessionServe private constructor(
 
     /** The full primitive table — the spine and its tools use the real
      * gateway (fs scopes, httpFetch for the llm transport, timers, the
-     * capability plane's capture burst); the phased rows declare honestly. */
+     * capability plane's capture burst); the phased and retired rows
+     * declare honestly. */
     private val DESCRIPTOR: String = JSONObject()
         .put("available", JSONArray(GatewayCore.PRIMITIVES))
-        .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS)).toString()
+        .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS + GatewayCore.RETIRED_ROWS)).toString()
 
     /** The BindingBridge the C host calls back (runtime thread): gateway calls
      * dispatch into the core; bus messages fold into the web-boot row
