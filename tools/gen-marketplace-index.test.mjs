@@ -121,7 +121,7 @@ describe('the fail-loud leg: a plugin without its summaries row aborts the publi
   });
 
   it('the same fixture with a row-linked id publishes clean — the red fails on exactly the missing row', () => {
-    const id = 'dsh-shell-ish'; // a real summaries row exists (the green legs cover it)
+    const id = 'dsh-shell-wasm'; // a real summaries row exists (the green legs cover it)
     expect(RED_SUMMARIES[id], 'fixture precondition: the id must have a row in the real file')
       .toBeDefined();
     const fx = fixtureTree(id);

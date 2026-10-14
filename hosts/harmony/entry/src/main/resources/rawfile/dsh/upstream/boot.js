@@ -73,10 +73,10 @@ import * as TurnRecovery from 'upstream/turn-recovery.js';
 // The outboard shell tool: ONE bash-subset shell executor over the host's
 // scoped workspace fs face — dsh-shell-js. The seat switch (2026-10-11): it
 // takes the `shell` tool registration the retired dsh-shell-wasm (contract
-// v1.2.0 `wasmRun`) and dsh-shell-ish (contract v1.3.0 `ishRun`) plugins used
-// to hold; their source trees stay under runtime/dsh/system-plugins for the
-// local engine gates and workspace installs, but no host stages or mounts
-// them any more. It is a staged system plugin, not a vendored upstream
+// v1.2.0 `wasmRun`) plugin used to hold; its source tree stays under
+// runtime/dsh/system-plugins for workspace installs, but no host stages or
+// mounts it any more (the dsh-shell-ish tree retired outright, 2026-10-14).
+// It is a staged system plugin, not a vendored upstream
 // package: an in-house implementation package is where a host-specific
 // capability belongs (D6) — `system-plugins/dsh-fs` beside it is the same
 // shape. Mounted after `tools`, which its `inject` waits for.

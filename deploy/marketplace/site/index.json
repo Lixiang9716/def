@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "marketplace": "dsh",
-  "generatedAt": "2026-10-01T00:00:00Z",
+  "generatedAt": "2026-10-14T15:47:33Z",
   "keys": {
-    "dsh-market-test-1": "/N+f25lfa324yOUOQAQW/eZKIaWTXdbKEkDkRMksZ3c="
+    "dsh-market-test-1": "lWfn8zS4zUBzjDHlDJK+Tz2gnuJcsJp5/G54JnjFAcE="
   },
   "entries": [
     {
@@ -11,7 +11,7 @@
       "version": "0.1.0",
       "type": "service",
       "tgzUrl": "https://marketplace.example.invalid/packages/dsh-ble@0.1.0.tgz",
-      "blobSha256": "33c70463abeb953f615d1733645876f1b76c9167d4f29eeb461db5af489eb77a",
+      "blobSha256": "7ff0e98d8e3d177a5df85bf62579561841d271a1e30a576d356fc9c864577efe",
       "manifestSha256": "c1ab6e5c645d544467398cb68e54c94f84c8e1b4a4f075f06e211924fc9837a5",
       "capabilities": {
         "required": [
@@ -29,7 +29,7 @@
       "version": "0.1.0",
       "type": "service",
       "tgzUrl": "https://marketplace.example.invalid/packages/dsh-device-plane@0.1.0.tgz",
-      "blobSha256": "075e2be95ea181a3b1a76bffe9bed9185efba3f5d25920e681af67b43df0fdc7",
+      "blobSha256": "b305a0b72445a3308e9f5c300a3e6ab4c7dbe6ac60272d04aab251d5ac0269ca",
       "manifestSha256": "e126711756df5c629f230c3ee39f53a1c2e049d93fc729e79b36cd4277531375",
       "capabilities": {
         "required": [
@@ -52,7 +52,7 @@
       "version": "0.1.0",
       "type": "service",
       "tgzUrl": "https://marketplace.example.invalid/packages/dsh-fs@0.1.0.tgz",
-      "blobSha256": "2aba944dd24aa7589b3f4ad220568fb74ee0ece827fe6e02dc1dc0271c8781e2",
+      "blobSha256": "6aa7cfc6496324bec9e6affa60b835cab0d8a059f7ac3109f073ffa57a792634",
       "manifestSha256": "635617cc08f68944cfb520afee664c9ddfadf8e802d4d6cebb0ac2d950d09156",
       "capabilities": {
         "required": [
@@ -106,22 +106,22 @@
       }
     },
     {
-      "id": "dsh-shell-ish",
+      "id": "dsh-plugin-manager-tools",
       "version": "0.1.0",
       "type": "service",
-      "tgzUrl": "https://marketplace.example.invalid/packages/dsh-shell-ish@0.1.0.tgz",
-      "blobSha256": "1693a7fd4ebfdae53ec99d8e7751d77d55e5352f2f2ee14ed89319344efb2957",
-      "manifestSha256": "f4aa9db9885a4902fde14a62eef4f3c680a7b253317060bff14b7f99b03ca51a",
+      "tgzUrl": "https://marketplace.example.invalid/packages/dsh-plugin-manager-tools@0.1.0.tgz",
+      "blobSha256": "bf71041a171f1b17cf16eae1f69a8ad2a9fd7b0d1672d6d2774446c57fbca997",
+      "manifestSha256": "b4eda0f2d04f3d06cb570fabb714d066c3f1ff9229fe3a9ff095dc8dd0774a19",
       "capabilities": {
         "required": [
-          "ishRun",
-          "fsRead"
+          "fsRead",
+          "fsWrite"
         ],
         "optional": []
       },
       "summary": {
-        "en": "The shell capability over contract ishRun: a real Linux userland emulated in-process.",
-        "zh": "shell 能力走契约 ishRun:进程内模拟的真实 Linux 用户态。"
+        "en": "The plugin_manager tool over the workspace dsh.plugins/1 registry: list, enable/disable, install workspace-authored trees, remove — every leg answers in band.",
+        "zh": "plugin_manager 工具操作工作区 dsh.plugins/1 注册表:列举、启停、安装工作区创作树、移除——每条腿都带内应答。"
       }
     },
     {
@@ -129,7 +129,7 @@
       "version": "0.1.0",
       "type": "service",
       "tgzUrl": "https://marketplace.example.invalid/packages/dsh-shell-wasm@0.1.0.tgz",
-      "blobSha256": "5a7a01b2e1b82f9842060f960eee9c1e0d36a43df1034bf800298cb2d06509f1",
+      "blobSha256": "205d4dc9bdc652e1f4cddffc8113759a528c2ca0535cd0c9f04d667374ab71ee",
       "manifestSha256": "18e92dfba2b5229f048ebf81350dc708b268eea29e8eafd32fdadef7a253932c",
       "capabilities": {
         "required": [
@@ -184,7 +184,7 @@
   "signatures": [
     {
       "key": "dsh-market-test-1",
-      "value": "IGeqptrA0scTPdz+8no2fzdLlAD9qiJQ866oYnYBe5SZlDOxD60VSIZ4iB5bFEFXR15NEDGUhYYhjebiki53Cg=="
+      "value": "y93OQwAsT9qb38G043mM06YN+D7ezgn39mddrN37pAg4N00tlyatw44xy5xsFsIgyE12niAaWQWYqXezg2hUBA=="
     }
   ]
 }

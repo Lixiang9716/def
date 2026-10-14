@@ -1,0 +1,24 @@
+{
+  "title": "PR-1: retire the dsh-shell-ish JS face (plugins, local gate family, marketplace listing)",
+  "created": "2026-10-14T15:44:10+00:00",
+  "rules": {
+    "hash": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
+    }
+  },
+  "checklist": [
+    "[x] grep-prove every deletion point's reference relationships",
+    "[x] delete system-plugins/dsh-shell-ish and runtime/dsh/system-plugins/dsh-shell-ish",
+    "[x] delete scenario-local/userland-shell.js and test/e2e/run-ish-local.sh (checker json stays: frozen-evidence manifest, e2e-matrix gate)",
+    "[x] marketplace: catalog/summaries ish rows out, site sample regenerated via generate-index.mjs, ish tgz removed, test row swapped",
+    "[x] gateway.js ishRun wrapper kept (composer-web-live.js importer) and documented",
+    "[x] RETIRED_PLUGINS trimmed to dsh-shell-wasm; boot.js comment trimmed; staged twins via sync",
+    "[x] local validation: panel run.sh, tools vitest, marketplace verify, minimal gov gate set with receipt",
+    "PR opened, CI all green, squash merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0228"
+}
