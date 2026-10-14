@@ -135,13 +135,11 @@
 # reproducible materializer; the web-boot closure below stayed tracked at
 # restore is verified against: the upstream build embeds its absolute work
 # external/ensure-dsh.sh, copied + cmp-verified by
-# external/ensure-ish-rootfs.sh, which is the tracked provenance
 # same reason as the engines above: upstream's real-world C cannot survive an
 # sha256-verified by external/ensure-wasm3.sh, untracked for the
 # spine closure. VERBATIM upstream bytes (sha256-pinned by
 # staging, untracked for the same reason)
 # straight into the shared C host, untracked so the syntax-class checker never
-# terms — pinned + sha256-verified by external/ensure-ish.sh, kept
 # test-closure pass materializes them beside the stripped spine dirs)
 # the SKILL row (the agent-flow E2E's vendored skill family — same D9 spine
 # the directory's MANIFEST.sha256 + ROSTER.json + PROVENANCE.md, and
@@ -236,9 +234,6 @@ hosts/harmony/entry/src/main/resources/rawfile/dsh/vendor/npm/pngjs@5.0.0/
 hosts/harmony/entry/src/main/resources/rawfile/dsh/vendor/npm/zod@4.4.3/
 hosts/ios/**/*.xcuserstate
 hosts/ios/**/xcuserdata/
-# (hosts/ios/App/Generated/ish-rootfs.tar.gz rode here until the D9 flip; the
-# whole App/Generated/ and DSHHost.xcodeproj/ trees are ignored by
-# hosts/ios/.gitignore since the generated bundles stopped being committed)
 hosts/ios/DerivedData/
 hosts/ios/Pods/
 node_modules/
@@ -269,7 +264,6 @@ runtime/dsh/upstream-tests/
 runtime/dsh/vendor
 external/dsh-tests@*/
 external/dsh/
-external/ish/
 external/npm/
 external/quickjs-ng/
 external/wasm3/

@@ -15,10 +15,6 @@
 #   external/ensure-dsh.sh  — the pinned upstream DSH JS closure;
 #                                         not needed to compile dsh-core, but
 #                                         CI/dev expect the pins present
-# The iSH ensures (ensure-ish.sh / ensure-ish-rootfs.sh) are deliberately NOT
-# run here: the in-process Linux userland is built by its own CMake project
-# (src/ish), whose callers run external/ensure-ish.sh themselves
-# (host/build.sh, the iOS app build pre-phase).
 
 option(DSH_SKIP_VENDOR
   "Skip vendor materialization — only when you KNOW the pinned trees are already on disk"

@@ -126,34 +126,3 @@ jobs:
         # the harmony rawfile — the gen-staging real-repo leg's
         # precondition; see tools/test/run-tools-tests.sh.
         run: sh tools/test/run-tools-tests.sh
-
-  # The quickjs-boot-parse gate builds the desktop CLI, whose link embeds
-  # the iSH static libs — AArch64 assembly an x86_64 runner cannot
-  # assemble. The arm64 runner (free for public repos) proves the boot
-  # graph compiles under the vendored engine; x86_64 gate runs skip the
-  # gate by its own arch guard.
-  quickjs-boot-parse:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.12'
-      - name: Install govrail
-        run: pip install govrail==0.48.0
-      - name: Cache the engine + ish vendor trees
-        uses: actions/cache@v6
-        with:
-          path: |
-            external/quickjs-ng
-            external/zstd
-            external/wasm3
-            external/ish
-          key: qjs-boot-arm64-${{ hashFiles('external/ensure.sh', 'external/ensure-ish.sh') }}
-      - name: Materialize the engine + ish trees
-        run: |
-          external/ensure.sh
-          external/ensure-ish.sh
-      - name: Run the quickjs-boot-parse gate
-        run: gov run --gate quickjs-boot-parse

@@ -50,11 +50,12 @@ class BindingHost internal constructor(
         private const val ENGINE_LABEL = "quickjs-ng 0.17.0"
 
         /** RuntimeDescriptor pre-eval: the full table available, the
-         * capability plane's phased rows unavailable — conformance §7
-         * (Android Keystore + SAF + camera2 make the surface real). */
+         * capability plane's phased rows and the retired ishRun row
+         * unavailable — conformance §7 (Android Keystore + SAF + camera2
+         * make the surface real; §7 #1 makes the absence honest). */
         private val DESCRIPTOR: String = JSONObject()
             .put("available", JSONArray(GatewayCore.PRIMITIVES))
-            .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS))
+            .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS + GatewayCore.RETIRED_ROWS))
             .toString()
 
         @Volatile internal var instance: BindingHost? = null

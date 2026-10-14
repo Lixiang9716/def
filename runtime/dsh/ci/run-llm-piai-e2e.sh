@@ -22,8 +22,7 @@
 #          green in both planes by design.
 #
 # Prerequisites run ONCE here so a missing environment fails fast with a
-# named step (the recon round's own finding: the C host refuses to configure
-# without the vendored iSH userland — ensure-ish.sh is part of the preheat).
+# named step.
 #
 # usage: run-llm-piai-e2e.sh   (roll-up: artifacts/macos-cli-llm-piai-e2e/)
 set -eu
@@ -37,8 +36,6 @@ mkdir -p "$ROLLUP"
 echo "[preheat] vendored upstream closure (ensure + ensure-dsh)" >&2
 sh ../../external/ensure.sh > /dev/null
 sh ../../external/ensure-dsh.sh > /dev/null
-echo "[preheat] vendored iSH-AArch64 userland (the C host's configure demand)" >&2
-sh ../../external/ensure-ish.sh > /dev/null
 echo "[preheat] host binary (built only when missing)" >&2
 [ -x build/dsh-cli ] || sh ../../src/build.sh
 

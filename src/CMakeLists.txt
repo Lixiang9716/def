@@ -8,8 +8,8 @@
 # hosts/ios/DSHHost.xcodeproj/project.pbxproj (the three agree on the engine
 # set). Platform-edge TUs stay out: dsh_jni_scenario.c / dsh_jni_binding.c /
 # dsh_gateway_smoke.c / android_compat.c are the Android JNI shell's,
-# napi_init.cpp / gateway_smoke.cpp the HarmonyOS NAPI shell's, main_cli.c /
-# ish_smoke.c are executables' mains, SpikeBundle.c an iOS-generated app file.
+# napi_init.cpp / gateway_smoke.cpp the HarmonyOS NAPI shell's, main_cli.c an
+# executable's main, SpikeBundle.c an iOS-generated app file.
 #
 # The engine trees under external/ are UNTRACKED; the root CMakeLists.txt
 # includes cmake/Vendor.cmake (materializing quickjs/wasm3/zstd) BEFORE this
@@ -79,42 +79,6 @@ add_library(dsh-core STATIC
   "${DSH_ZSTD_DIR}/decompress/zstd_ddict.c"
   "${DSH_ZSTD_DIR}/decompress/zstd_decompress.c"
   "${DSH_ZSTD_DIR}/decompress/zstd_decompress_block.c")
-
-# dsh_ish.c — the in-process Linux emulator bridge (contract v1.3.0 ishRun).
-# It compiles clean on Apple clang — but ONLY against the vendored iSH engine
-# tree, which cmake/Vendor.cmake deliberately does not materialize (the iSH
-# ensures stay owned by the engine's own build, src/ish, whose
-# callers run external/ensure-ish.sh themselves). Test-compiled with Apple clang
-# on this configuration: plain, it dies on "kernel/calls.h file not found";
-# with the engine include dir + the three engine configuration defines below
-# it compiles with zero diagnostics. The engine implementation itself stays in
-# libishcore.a — a static library records undefined symbols instead of
-# resolving them, so consumers link the same -lishcore -lsqlite3 -lz -lresolv
-# set src/build.sh and the iOS pre-phase already pass. Skip loudly rather
-# than fail when the tree was never fetched: its own build path is the
-# contract for that case.
-set(DSH_ISH_PIN e1d579480fba88e8f0428e3cf23811bcdd05421f) # src/ish/CMakeLists.txt's ISH_PIN
-set(DSH_ISH_SRC "${DSH_VENDOR_DIR}/ish/${DSH_ISH_PIN}")
-if(EXISTS "${DSH_ISH_SRC}/kernel/calls.h")
-  target_sources(dsh-core PRIVATE dsh_ish.c)
-  # Scoped to this one TU: the engine's headers must not see the rest of the
-  # spine, and the spine must not see the engine's configuration macros
-  # (the triple is src/ish/CMakeLists.txt's add_compile_definitions).
-  set_source_files_properties(dsh_ish.c PROPERTIES
-    INCLUDE_DIRECTORIES "${DSH_ISH_SRC}"
-    COMPILE_DEFINITIONS "GUEST_ARM64=1;ENGINE_ASBESTOS=1;LOG_HANDLER_DPRINTF=1")
-  # The graph face of the -lishcore -lsqlite3 -lz -lresolv set: pull the
-  # engine subproject in and carry it on dsh-core's INTERFACE, so every
-  # consumer (example/dsh-cli, the ish-smoke gate) links the same engine the
-  # shell faces link — one resolution site, not a per-consumer copy.
-  add_subdirectory(ish)
-  target_link_libraries(dsh-core PUBLIC dsh_ish)
-else()
-  message(STATUS
-    "dsh-core: dsh_ish.c LEFT OUT — vendored iSH tree absent at "
-    "${DSH_ISH_SRC} (run external/ensure-ish.sh; the engine's own "
-    "build, src/ish, is the contract for this dependency)")
-endif()
 
 target_include_directories(dsh-core PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"

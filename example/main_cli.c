@@ -21,17 +21,6 @@
  * usage: dsh-cli [base] [entry] [--http] [--env KEY=VALUE ...]
  */
 #include "dsh_runtime_host.h"
-/* The iSH seam (contract v1.3.0 ishRun) is OPT-IN, mirroring the
- * DSH_WITH_SQLITE face in dsh_runtime_host.c: src/build.sh defines
- * DSH_CLI_WITH_ISH exactly when the link carries the engine libs. A
- * --no-ish build (Linux CI: the iSH guest asm is Apple-syntax, GNU as
- * refuses it) never sees the seam header — the one thing main() still
- * needs is the guest mount constant, restated here from src/dsh_ish.h. */
-#if defined(DSH_CLI_WITH_ISH)
-#include "dsh_ish.h"
-#else
-#define DSH_ISH_GUEST_MOUNT "/mnt/workspace"
-#endif
 #include "dsh_wasm.h" /* the wasm seam (contract v1.2.0): dsh_wasm_run */
 #include "dsh_socket.h" /* the loopback socket seam (contract v1.8.0) */
 
@@ -108,10 +97,6 @@ typedef struct smoke_backend {
     smoke_req *tail;
     int failed;
     int http; /* --http: the loopback httpFetch backend is live */
-    /* Where the in-process Linux guest sees this backend's scope root. The
-     * same files, one mount away: the guest command's cwd is
-     * <ish_mount>/<scope-relative path>. */
-    const char *ish_mount;
     /* The timer seam (contract v1.4.0): armed wake-ups pending fire. The
      * run loop sleeps to the earliest fire_at when otherwise quiescent —
      * one arm fires at most once, cancel-or-fire resolves one way. */
@@ -1030,63 +1015,13 @@ static void smoke_fs_remove(smoke_backend *b, int call_id, const char *args) {
     smoke_fs_args_free(&a);
 }
 
-/* `ishRun` — one program in the host's in-process Linux userland (contract
- * v1.3.0). The scope root this backend already owns is what gets mounted inside
- * the guest, so the command runs against the same files the fs primitives serve;
- * the guest cwd is that scope-relative path. A host with no staged guest root
- * (no DSH_ISH_ROOTFS) answers `unavailable` rather than pretending, which is what
- * a host without an engine must say. */
+/* `ishRun` (contract v1.3.0) — RETIRED: this host has no Linux userland
+ * anymore, so the registered row answers the contract's honest `unavailable`
+ * (§7#1: absence is information for negotiation, never faked). */
 static void smoke_ish_run(smoke_backend *b, int call_id, const char *args) {
-    char *scope = json_str_dup(args, "scope");
-    char *path = json_str_dup(args, "path");
-    int argc = 0;
-    char **argv = json_str_array(args, "argv", &argc);
-    int timeout_ms = json_int(args, "timeoutMs", 0);
-    const char *rootfs = getenv("DSH_ISH_ROOTFS");
-
-    if (!scope || strcmp(scope, "app") != 0) {
-        smoke_reject(b, call_id, "ishRun", "denied", "scope not granted");
-    } else if (!path || (path[0] != '\0' && !smoke_path_ok(path))) {
-        /* An empty path is the scope root — the workspace the guest sees at its
-         * mount point; anything else is an fs-style escape check. */
-        smoke_reject(b, call_id, "ishRun", "invalid", "bad working directory");
-    } else if (rootfs == NULL || rootfs[0] == '\0') {
-        smoke_reject(b, call_id, "ishRun", "unavailable",
-                     "no Linux guest root staged (DSH_ISH_ROOTFS)");
-    } else if (argc == 0) {
-        smoke_reject(b, call_id, "ishRun", "invalid", "empty argv");
-    } else {
-#if defined(DSH_CLI_WITH_ISH)
-        char guest_workdir[1024];
-        if (path[0] == '\0')
-            snprintf(guest_workdir, sizeof(guest_workdir), "%s", b->ish_mount);
-        else
-            snprintf(guest_workdir, sizeof(guest_workdir), "%s/%s", b->ish_mount, path);
-        char *error = NULL;
-        if (dsh_ish_boot(rootfs, b->tmpdir, b->ish_mount, &error) < 0) {
-            smoke_reject(b, call_id, "ishRun", "io", error ? error : "guest boot failed");
-        } else {
-            char *json = dsh_ish_run(guest_workdir, (const char *const *) argv,
-                                     timeout_ms, &error);
-            if (json == NULL) {
-                smoke_reject(b, call_id, "ishRun", "io", error ? error : "guest run failed");
-            } else {
-                smoke_settle(b, call_id, 1, json);
-                free(json);
-            }
-        }
-        free(error);
-#else
-        /* --no-ish build: no engine is linked, so this host answers the
-         * same honest `unavailable` a with-ish host without a staged guest
-         * root answers (the branch above) — never a fake success. */
-        smoke_reject(b, call_id, "ishRun", "unavailable",
-                     "no Linux userland linked (built --no-ish)");
-#endif
-    }
-    free(scope);
-    free(path);
-    json_str_array_free(argv, argc);
+    (void) args;
+    smoke_reject(b, call_id, "ishRun", "unavailable",
+                 "no Linux userland (the iSH engine has been retired)");
 }
 
 /* ---- the keychain primitives (contract v1.0.0 §4, rows 8-9) --------------
@@ -1578,7 +1513,6 @@ static int spike_run_main(int argc, char **argv) {
     dsh_runtime_sink sink = { on_log, NULL };
     smoke_backend b = {0};
     b.tmpdir = smoke_tmpdir();
-    b.ish_mount = DSH_ISH_GUEST_MOUNT;
     b.rt = dsh_runtime_new(base, &sink);
     if (!b.rt || !b.tmpdir) {
         fprintf(stderr, "rt: runtime init failed\n");

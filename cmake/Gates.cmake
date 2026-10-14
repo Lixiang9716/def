@@ -23,11 +23,10 @@
 #     (uv tool install govrail) and simply leaves the test unregistered.
 #
 #   dsh-test-core
-#     Wraps `sh build/build.sh test core --no-ish` — the CLI proof legs over
-#     the vendored upstream spine (build.sh's own test verb, the cold-start
-#     --no-ish build honored so a Linux CI checkout without the iSH engine
-#     still tests; the same command c-core.yml runs). LONG: one hour of
-#     timeout, mirrored from the CI job's own budget.
+#     Wraps `sh build/build.sh test core` — the CLI proof legs over
+#     the vendored upstream spine (build.sh's own test verb; the same
+#     command c-core.yml runs). LONG: one hour of timeout, mirrored from
+#     the CI job's own budget.
 #
 # Ownership: ctest is a second face of the gates, not a replacement. The DAG
 # definition (gates.json), the task cards, and the pre-push hooks stay owned
@@ -48,7 +47,7 @@ enable_testing()
 # dsh-test-core: build.sh's own test verb for the core (see the header).
 add_test(
     NAME dsh-test-core
-    COMMAND sh build/build.sh test core --no-ish
+    COMMAND sh build/build.sh test core
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 set_tests_properties(dsh-test-core PROPERTIES TIMEOUT 3600)
 

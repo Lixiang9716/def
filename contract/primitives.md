@@ -96,6 +96,14 @@
 > ride the v1.9.0 seam. Same additive rule as v1.1.0–v1.9.0: a host without
 > the surface keeps negotiating `gateway@1`, answers each `unavailable`, and
 > the Web Client's creation viewer remains the negotiation floor.
+>
+> **Status note (2026-10-15, no version change)**: `ishRun` (v1.3.0) has **no
+> in-service host** — the iSH engine left the repository in the 2026-10
+> retirement, and every host answers the primitive `unavailable`, exactly what
+> §7 #1 prescribes for an absent primitive. The frozen entry is kept verbatim —
+> the [table row](#2-v0-table-9-primitives) and §4 "emulated userland" below:
+> shapes are immutable for the life of major version 1 (D5), so a future
+> implementation would adopt these same shapes, not a new primitive.
 
 This is the shared service foundation of all four platforms (iOS / Android / HarmonyOS /
 desktop interop): the **narrow primitive table of the capability gateway**. Every host
