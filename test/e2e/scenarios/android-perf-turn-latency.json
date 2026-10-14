@@ -1,0 +1,139 @@
+{
+  "scenario": "android.perf.turn-latency",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "client.selected",
+      "match": {
+        "client": "dsh-web-official",
+        "source": "launch"
+      }
+    },
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "perf.turn.boot",
+      "match": {
+        "profile": "mobile",
+        "provider": "mock"
+      }
+    },
+    {
+      "event": "llm/request/built",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "messages": 2,
+        "path": "/chat/completions",
+        "method": "POST",
+        "agentLoopMarked": true,
+        "stream": true
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "Hello"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " from"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": " upst"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "delta": "ream"
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "finish": "stop",
+        "usage": {
+          "inputTokens": 3,
+          "outputTokens": 19,
+          "totalTokens": 22
+        }
+      }
+    },
+    {
+      "event": "llm/sse",
+      "match": {
+        "done": true
+      }
+    },
+    {
+      "event": "assistant/text/asserted",
+      "match": {
+        "text": "Hello from upstream"
+      }
+    },
+    {
+      "event": "perf.turn.latency",
+      "match": {
+        "deltas": 4,
+        "firstDelta": "Hello",
+        "textLen": 19
+      }
+    },
+    {
+      "event": "perf.turn.completed",
+      "match": {
+        "status": "pass"
+      }
+    }
+  ]
+}

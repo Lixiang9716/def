@@ -1,0 +1,94 @@
+10-14 19:08:09.380 11832 11832 I dsh.canary: dsh-canary-66963-1791976097
+10-14 19:08:12.767 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"client.selected","client":"dsh-web-official","source":"launch"}]}
+10-14 19:08:13.027 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+10-14 19:08:13.105 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"android.perf.turn","message":"boot phase begin","data":[]}
+10-14 19:08:13.109 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+10-14 19:08:13.109 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+10-14 19:08:13.113 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+10-14 19:08:13.114 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+10-14 19:08:13.127 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+10-14 19:08:13.128 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+10-14 19:08:13.130 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+10-14 19:08:13.131 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+10-14 19:08:13.142 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+10-14 19:08:13.147 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+10-14 19:08:13.169 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+10-14 19:08:13.169 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+10-14 19:08:13.171 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+10-14 19:08:13.171 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+10-14 19:08:13.219 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+10-14 19:08:13.221 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+10-14 19:08:13.223 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+10-14 19:08:13.225 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+10-14 19:08:13.233 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-android-perf-turn-0001"}]}
+10-14 19:08:13.236 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-android-perf-turn-0001"}]}
+10-14 19:08:13.237 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+10-14 19:08:13.237 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+10-14 19:08:13.237 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+10-14 19:08:13.237 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+10-14 19:08:13.237 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+10-14 19:08:14.043 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+10-14 19:08:14.044 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"perf.turn.boot","bootMs":938,"profile":"mobile","provider":"mock"}]}
+10-14 19:08:14.044 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"android.perf.turn","message":"turn phase begin","data":[]}
+10-14 19:08:14.046 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.047 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.051 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.056 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.058 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.059 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.071 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.073 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.077 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
+10-14 19:08:14.077 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/request/built","provider":"mock","model":"mock-1","messages":2,"tools":17,"path":"/chat/completions","method":"POST","agentLoopMarked":true,"stream":true}]}
+10-14 19:08:14.103 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:42395/mock-llm/chat/completions","method":"POST"}]}
+10-14 19:08:14.109 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"warn","scenario":"timers","event":"arm/failed","message":"setTimeout: the gateway timer arm failed — timers cannot fire on this host (further failures stay silent): primitive not granted to dsh.runtime.scenario"}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.110 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.111 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.111 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.111 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"timerSchedule"}]}
+10-14 19:08:14.135 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.138 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:10","buffered":0}]}
+10-14 19:08:14.139 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":675}]}
+10-14 19:08:14.139 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":10}]}
+10-14 19:08:14.139 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":628}]}
+10-14 19:08:14.143 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+10-14 19:08:14.143 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.146 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","delta":"Hello"}]}
+10-14 19:08:14.147 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-start"}]}
+10-14 19:08:14.149 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.151 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+10-14 19:08:14.151 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.154 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.157 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","delta":" from"}]}
+10-14 19:08:14.158 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+10-14 19:08:14.160 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.162 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.163 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","delta":" upst"}]}
+10-14 19:08:14.164 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+10-14 19:08:14.165 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.166 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.167 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","delta":"ream"}]}
+10-14 19:08:14.169 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"text-delta"}]}
+10-14 19:08:14.170 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.171 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.175 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","finish":"stop","usage":{"inputTokens":3,"outputTokens":19,"totalTokens":22}}]}
+10-14 19:08:14.175 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.175 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"llm/sse","done":true}]}
+10-14 19:08:14.177 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"block-end"}]}
+10-14 19:08:14.178 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.180 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"usage"}]}
+10-14 19:08:14.181 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"chunk","chunkType":"finish"}]}
+10-14 19:08:14.186 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.187 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"end"}]}
+10-14 19:08:14.188 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.197 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+10-14 19:08:14.203 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"assistant/text/asserted","text":"Hello from upstream"}]}
+10-14 19:08:14.203 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"perf.turn.latency","promptToFirstDeltaMs":102,"firstDeltaToSettleMs":57,"turnMs":159,"deltas":4,"firstDelta":"Hello","textLen":19}]}
+10-14 19:08:14.203 11840 11859 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"android.perf.turn","message":"e2e","data":[{"scenario":"android.perf.turn-latency","event":"perf.turn.completed","status":"pass"}]}
+10-14 19:08:14.203 11840 11859 I dsh.runtime.result: android.perf.turn-latency PASS | quickjs-ng 0.17.0
+10-14 19:08:14.203 11840 11859 I dsh.runtime.result: ALL PASS

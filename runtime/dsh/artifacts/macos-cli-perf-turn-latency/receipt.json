@@ -1,0 +1,23 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "quickjsPin": "0.17.0+fork-tostring+async-context+tc39+promise-mark (63b33ea5)",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim)",
+  "scenario": "perf.turn-latency",
+  "measured": {"bootMs":115,"promptToFirstDeltaMs":113,"firstDeltaToSettleMs":12,"turnMs":125,"deltas":4},
+  "wire": "boot spine (agent.followup → onSse → whenIdle), the on-device seats' path — NOT the page's write-surface wire perf-baseline's sessionTurnMs rides",
+  "mockPacing": "success behavior (instant wire); the segments bound the runtime's own cost on this machine",
+  "machine": {
+    "os": "Darwin Darwin 27.0.0",
+    "arch": "arm64",
+    "chip": "Apple M1",
+    "memoryBytes": "8589934592",
+    "node": "v24.14.0",
+    "note": "numbers are machine-local wall-clock; jittery by nature — the manifest pins events + stable fields only, measured values live here"
+  },
+  "deviceSibling": "hosts/android/ci/run-perf-turn-latency.sh (same segments on the Android seat; lands its own receipt)",
+  "checker": "test/e2e/scenarios/perf-turn-latency.json",
+  "events": 14,
+  "exitCode": 0
+}

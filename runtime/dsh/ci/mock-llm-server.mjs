@@ -32,6 +32,12 @@ import { startMockLlmServer } from '../../../external/dsh/llm-mock-server@0.1.6-
 // with schema-valid arguments); defaults keep the upstream mock's own.
 const sequence = (process.env.DSH_MOCK_SEQUENCE ?? 'success auth_error').split(/\s+/);
 const repeatLast = process.env.DSH_MOCK_REPEAT_LAST === '1';
+// DSH_MOCK_CHUNK_DELAY_MS paces the success stream's deltas (0 = the default
+// instant wire): the mid-turn kill leg (session-persist-midturn) needs the
+// stream PROVABLY still open when the runner kills the process — a delay the
+// runner's kill window is sized against, not a sleep hoping the state arrives
+// (the delay IS the scripted model's pacing, the device seat's SLOW_TURN twin).
+const chunkDelayMs = Number(process.env.DSH_MOCK_CHUNK_DELAY_MS ?? 0);
 // The expected bearer (the wire-evidence check). Drivers that audit a
 // credential's leak surface (security.byok-leak) point this at THEIR canary
 // so the real value is the one the mock demands; the default keeps every
@@ -45,7 +51,7 @@ const handle = await startMockLlmServer({
   repeatLast,
   successText: 'Hello from upstream',
   chunkSize: 5,
-  chunkDelayMs: 0,
+  chunkDelayMs,
   apiKey,
   requestId: 'mock-req-1',
   ...(process.env.DSH_MOCK_TOOL_NAME !== undefined ? { toolName: process.env.DSH_MOCK_TOOL_NAME } : {}),
