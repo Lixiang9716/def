@@ -20,9 +20,7 @@ final class FSPrimitives {
 
     /// The profile container the reserved "app" scope resolves to
     /// (data-protocols.md §1). Static so a host-side drive can name the SAME
-    /// directory the gateway will use — the guest userland lives beside it
-    /// (`<app root>/ish-rootfs`, IshPrimitive) and the spine has to be told
-    /// about it before any primitive exists.
+    /// directory the gateway will use.
     static func defaultAppRoot() -> URL {
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         return documents.appendingPathComponent("profiles/default", isDirectory: true)
@@ -50,12 +48,18 @@ final class FSPrimitives {
         core.register(name: "fsRename") { call, done in self.rename(call, done) }
         // Contract v1.2.0: one export of one module, executed in-process.
         core.register(name: "wasmRun") { call, done in self.wasmRun(call, done) }
-        // Contract v1.3.0: one program in the in-process Linux guest. It rides
-        // the SAME scope registry (the scope root is what the guest mounts), so
-        // it is registered here rather than by a driver — and this closure keeps
-        // the primitive alive.
-        let ish = IshPrimitive(fs: self)
-        core.register(name: "ishRun") { call, done in ish.run(call, done) }
+        // Contract v1.3.0 `ishRun`, post-retirement: the vendored iSH engine is
+        // gone, so the row answers the honest `unavailable` (contract §7#1).
+        // The row is NOT deleted: dispatchKnown's no-handler fallback settles
+        // `denied` ("primitive not granted" — GatewayCore.swift), which is the
+        // Android/Harmony deviation the retirement audit names, not the honest
+        // answer. A registered handler keeps the audit verdict truthful
+        // ("granted"/"unavailable") and the descriptor still names the row.
+        core.register(name: "ishRun") { _, done in
+            done(.failure(GatewayError(
+                code: "unavailable", primitive: "ishRun",
+                message: "retired: this host ships no guest userland")))
+        }
     }
 
     /// Binds a fresh user scope handle to a security-scoped URL (picker
@@ -428,9 +432,9 @@ final class FSPrimitives {
 
     /// The scope's root directory plus whether it needs a security-scoped
     /// access bracket — for a primitive that hands the DIRECTORY to a host
-    /// subsystem instead of operating on a file inside it (ishRun mounts it as
-    /// the guest workspace). The caller owns the bracket: such a mount outlives
-    /// the call, so the access is held for the process, not for the call.
+    /// subsystem instead of operating on a file inside it. The caller owns the
+    /// bracket: such a mount outlives the call, so the access is held for the
+    /// process, not for the call.
     func scopeForMount(_ scope: String) -> (URL, Bool)? {
         rootURL(for: scope)
     }
@@ -438,7 +442,7 @@ final class FSPrimitives {
     /// Validates (scope, path) args; settles `invalid` via `done` and returns
     /// nil on any malformed input. Paths must be POSIX-relative, no escape.
     /// Shared with the primitives that are not fs calls but still name their
-    /// target the same way (wasmRun's module, ishRun's working directory).
+    /// target the same way (wasmRun's module).
     func target(
         _ call: GatewayCall, primitive: String, _ done: @escaping GatewayDone
     ) -> (String, String)? {
