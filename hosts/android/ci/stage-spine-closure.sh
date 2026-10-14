@@ -365,11 +365,11 @@ say "staging system-plugins (whole directories — a plugin joins by existing)"
 # The RETIRED seats (the dsh-shell-js takeover, 2026-10-11): a plugin leaves
 # the staged seat by joining this hand-declared list IN THE SAME COMMIT its
 # boot.js registry row leaves the composition — the source tree stays under
-# runtime/dsh/system-plugins (the local engine gates + workspace installs
-# still read it), but the mirror no longer stages it, so assets never carry
-# a plugin nothing mounts. A name here that boot.js still imports is a boot
-# that cannot load — the seat grep in the agent note is the audit.
-RETIRED_PLUGINS="dsh-shell-wasm dsh-shell-ish"
+# runtime/dsh/system-plugins (workspace installs still read it), but the
+# mirror no longer stages it, so assets never carry a plugin nothing mounts.
+# A name here that boot.js still imports is a boot that cannot load — the
+# seat grep in the agent note is the audit.
+RETIRED_PLUGINS="dsh-shell-wasm"
 for src in "$DSH"/system-plugins/*/; do
     p=$(basename "$src")
     case " $RETIRED_PLUGINS " in *" $p "*) continue ;; esac
