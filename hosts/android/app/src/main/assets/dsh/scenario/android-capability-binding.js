@@ -101,8 +101,10 @@ const SESSION_ID = 's-m4-0001';
 const TURN_ONE = ['Host', ' binding'];
 // The capability plane's phased rows (contract/proposals v1.10.0): shapes on
 // record, implementations follow as their own changes — the descriptor
-// declares them unavailable by design (GatewayCore PHASED_ROWS).
-const PHASED_ROWS = ['cameraRecordStart', 'cameraRecordStop'];
+// declares them unavailable by design (GatewayCore PHASED_ROWS). The retired
+// row joins them: ishRun's engine left the repo (2026-10), the frozen
+// contract entry answers `unavailable` (GatewayCore RETIRED_ROWS, §7 #1).
+const PHASED_ROWS = ['cameraRecordStart', 'cameraRecordStop', 'ishRun'];
 
 if (!globalThis.__dshGatewayNegotiate('gateway@1')) {
   fail('gateway negotiation failed');
