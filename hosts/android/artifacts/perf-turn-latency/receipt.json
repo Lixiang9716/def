@@ -1,0 +1,18 @@
+{
+  "host": "android",
+  "udid": "emulator-5554",
+  "runner": "hosts/android/ci/run-perf-turn-latency.sh",
+  "phase": "perf.turn-latency",
+  "launch": "emulator/device, --ez dsh.perfturn true (one spine turn over the carrier scripted route)",
+  "tree": "origin/main a9f93207a168 (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "build": "debug (the JS info stream this leg's evidence rides; numbers include debug-build overhead — the release flavor suppresses that stream)",
+  "measured": {"bootMs":938,"promptToFirstDeltaMs":102,"firstDeltaToSettleMs":57,"turnMs":159,"deltas":4},
+  "wire": "boot spine (agent.followup → onSse → whenIdle), the on-device seats' path",
+  "cliSibling": "runtime/dsh/artifacts/macos-cli-perf-turn-latency/receipt.json (same segments, CLI host)",
+  "scenarios": [
+    { "manifest": "android-perf-turn-latency", "verdict": "verdict-android-perf-turn-latency.json", "pass": true }
+  ],
+  "screens": ["screens/01-turn-settled.png"],
+  "producedAt": "2026-10-14T11:08:24Z"
+}

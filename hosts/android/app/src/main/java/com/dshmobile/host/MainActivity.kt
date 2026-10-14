@@ -73,6 +73,8 @@ class MainActivity : Activity() {
         } else if (intent.getBooleanExtra(EXTRA_WRITE, false)) {
             startWriteLive()
         } else if (intent.getBooleanExtra(EXTRA_RESTART, false)) { startPersistRestart()
+        } else if (intent.getBooleanExtra(EXTRA_RESTART_MIDTURN, false)) { startPersistMidturn()
+        } else if (intent.getBooleanExtra(EXTRA_PERF_TURN, false)) { startPerfTurnLatency()
         } else {
             setContentView(verdictView)
             JsRuntime.post {

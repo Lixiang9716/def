@@ -1,0 +1,20 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
+  "scenario": "session.persistence.midturn",
+  "proves": [
+    "the kill turn's journal MATERIALIZES MID-STREAM (backend.flush + stat non-empty at the midturn/durable marker) while the mock stream is provably still open",
+    "the runner's SIGKILL lands on the leg's own durable marker — a condition, never a clock — with the turn unfinished (no assistant message, no turn/end in process 1's journal)",
+    "process 2 on the SAME container: the vendored agent-loop's resume path appends the interrupted-turn closers (synthesized step/end + turn/end reason.kind 'interrupted') so the restored journal ends at a REAL boundary",
+    "no 'corrupt session log' and no 'cannot resume' anywhere — the half-written turn never yields a half-written artifact",
+    "the recovery turn CONTINUES the journal across the kill: 8 persisted + 2 closers + 1 seed marker = 11 restored, turn 2 appends 9, turnBoundary.lastTurn == 2"
+  ],
+  "killBoundary": "midturn/durable marker -> SIGKILL",
+  "mockPacing": "slow_success @ 250ms/chunk (DSH_MOCK_CHUNK_DELAY_MS; the plain success behavior hardcodes delay 0)",
+  "events": 24,
+  "artifact": { "bytesAtKill": 9713, "bytesAfterResume": 19224 },
+  "container": "/tmp/dsh-midturn.B62XMy",
+  "checker": "test/e2e/scenarios/session-persistence-midturn.json",
+  "exitCode": 0
+}
