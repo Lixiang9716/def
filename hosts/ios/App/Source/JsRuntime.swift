@@ -117,8 +117,8 @@ final class JsRuntime {
 
     private func drive(bundleRoot: String, sink: RuntimeLogSink) -> JsOutcome {
         var cSink = sink.cSink
-        // Created through the shared factory so the guest-userland declaration
-        // (contract v1.3.0 `ishRun`) is made on EVERY drive, not just this one.
+        // Created through the shared factory so the DSH_-prefixed launch-env
+        // snapshot reaches the spine on EVERY drive, not just this one.
         guard let host = dsh_runtime_new_declaring(bundleRoot, &cSink, note: sink.note) else {
             return fail(sink, "dsh_runtime_new returned NULL")
         }

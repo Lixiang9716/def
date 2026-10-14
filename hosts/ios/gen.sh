@@ -2,17 +2,10 @@
 # Regenerate the iOS dsh app: embed the runtime/dsh JS bundle as C byte
 # arrays, then regenerate DSHHost.xcodeproj from project.yml. Run
 # external/ensure.sh first — xcodegen needs the quickjs sources
-# on disk to reference them. CI does not need this script: the generated
-# project is committed and the Xcode pre-build phase re-runs the generator.
-#
-# The guest userland tarball must exist BEFORE xcodegen runs: project.yml
-# picks App/Generated up as resources at GENERATE time, so a tarball that
-# only appears in the build phase (FetchIshRootfs) lands in no project and
-# the built app ships without the guest — measured live 2026-10-01 (the
-# ish probe answered `unavailable: ... is missing` with no tarball in the
-# bundle; regenerating after ensure-ish-rootfs.sh fixed it).
+# on disk to reference them. CI runs this same script ahead of its build
+# (dev-ios.yml): since the D9 flip the generated project is build output,
+# not a committed file.
 set -e
 cd "$(dirname "$0")"
 python3 Tools/gen_bundle_header.py
-../../external/ensure-ish-rootfs.sh App/Generated
 xcodegen generate

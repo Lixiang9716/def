@@ -118,7 +118,10 @@ final class GatewayCore {
     /// The full serving table (contract/primitives.md §2 through v1.10.0):
     /// the name list IS the RuntimeDescriptor's available array, so it must
     /// stay identical to what `registerStandardPrimitives` actually wires —
-    /// an honestly-declared descriptor (conformance §7).
+    /// an honestly-declared descriptor (conformance §7). `ishRun` stays named
+    /// post-retirement (the iSH engine is gone; its handler answers the honest
+    /// `unavailable`, see FSPrimitives.register): deleting the row would drop
+    /// calls into dispatchKnown's no-handler fallback, which settles `denied`.
     static let primitives = [
         "fsRead", "fsWrite", "fsScope", "fsStat", "fsList", "fsMkdir",
         "fsRemove", "fsRename", "wasmRun", "ishRun",
