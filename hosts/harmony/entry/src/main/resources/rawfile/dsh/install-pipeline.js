@@ -66,7 +66,11 @@ export class InstallRejected extends Error {
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 const PKG_ID = /^[a-z0-9][a-z0-9.-]*$/;
 const CAPABILITY = /^[a-zA-Z][a-zA-Z0-9.-]*(@[0-9]+)?$/;
-const REL_PATH = /^(?!\/)(?!(^|\/)\.\.($|\/)).+$/;
+// Relative, and no `..` segment ANYWHERE: the `.*` positions the lookahead at
+// every offset — without it the class only rejects a LEADING `../`, and an
+// entry like `bundle/../../x.js` passed validation into path construction
+// (harmless end-to-end only because tar-mini refuses such members outright).
+const REL_PATH = /^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$)).+$/;
 
 const isStr = (v) => typeof v === 'string';
 
