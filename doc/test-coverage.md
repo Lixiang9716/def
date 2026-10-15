@@ -92,3 +92,33 @@ Whole surfaces deliberately not registered:
    `tools/test/coverage-floors.json` to measured − 5.
 4. The gate already watches every registered surface — no gates.json edit
    needed.
+
+## Test-hardening program (2026-10-15)
+
+A 16-item hardening program, owner-approved: three waves, each method lands
+as its own leg/seat with evidence; a row's status flips in the PR that lands
+it. Complements (does not replace) the floors above — coverage answers "are
+the surfaces covered", the methods below answer "are the assertions strong
+enough" and "what happens at the edges".
+
+| # | Method | Wave | Status | Lands as |
+|---|--------|------|--------|----------|
+| 1 | Chaos LLM mock profiles (malformed SSE, truncation, slow-drip, oversized chunks) | 1 | planned | mock-llm-server.mjs profiles + transport-guard legs |
+| 2 | C host ASan/UBSan CI leg | 1 | planned | c-core sanitizer build |
+| 3 | axe-core a11y regression (web-client-v2, after the #519 manual pass) | 1 | planned | suite leg |
+| 4 | Visual regression diff (dev-carrier screenshots; warn-tier, never a CI log assertion) | 1 | planned | ui-sweep pixel diff |
+| 5 | Scoped mutation pilot (Stryker: shell-js refusal vocab, lynx fold/surface-core, publisher-token) | 1 | planned | informational score + survivor triage |
+| 6 | bash differential harness (POSIX subset, dsh-shell-js vs real bash on Linux CI) | 2 | planned | c-core Linux leg |
+| 7 | Property-based parser tests (fast-check: parser-syntax, path, semver-range) | 2 | planned | panel suite families |
+| 8 | Persistence journal schema-migration tests (cross-version replay) | 2 | planned | migration legs |
+| 9 | Static analysis: clang-tidy (src), detekt (Kotlin) | 2 | planned | CI legs |
+| 10 | Supply-chain audit of the vendored npm closure (CVE + license) | 2 | planned | vendoring step |
+| 11 | Soak/aging leg (1-2h: heap/fd/journal integrity) | 3 | planned | CLI/emulator runner |
+| 12 | Generative structure-aware fuzz of the gateway wire / SSE parser | 3 | planned | fuzz harness (needs infra) |
+| 13 | Provider cassette replay (LLM contract quirks offline) | 3 | planned | recorded fixtures |
+| 14 | Host queue-boundary concurrency stress (the D2 dispatch seam) | 3 | planned | dispatch stress harness |
+| 15 | App upgrade matrix (install -r across builds; AssetSync stamps) | 3 | planned | upgrade legs |
+| 16 | Resource-starvation behavior (disk-full journal, low memory) | 3 | planned | starvation legs |
+
+Rows never regress silently: a landed row whose leg disappears is a finding
+(same spirit as the coverage floors).
