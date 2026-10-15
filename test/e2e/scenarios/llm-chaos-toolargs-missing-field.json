@@ -1,0 +1,369 @@
+{
+ "scenario": "llm.chaos.toolargs-missing-field",
+ "extract": {
+  "prefix": "dsh.runtime.log:"
+ },
+ "expect": [
+  {
+   "event": "llm/runtime",
+   "match": {
+    "provider": "mock",
+    "model": "mock-1",
+    "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+    "transport": "gateway httpFetch → loopback chat-completions mock server",
+    "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+   }
+  },
+  {
+   "event": "upstream/profile",
+   "match": {
+    "profile": "mobile",
+    "root": "empty (patch layers compose over it)",
+    "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+    "layers": [
+     "session",
+     "agent",
+     "system-prompt",
+     "tools",
+     "session-projection",
+     "settings",
+     "agent-loop"
+    ]
+   }
+  },
+  {
+   "event": "upstream/services",
+   "match": {
+    "kernel": "@deepseek-ai/cordis@4.0.2",
+    "services": [
+     "sessions",
+     "agents",
+     "systemPrompt",
+     "tools",
+     "sessionProjections",
+     "settings",
+     "agentLoop",
+     "llm"
+    ],
+    "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+   }
+  },
+  {
+   "event": "session/created",
+   "match": {
+    "sessionId": "s-llm-chaos-0001"
+   }
+  },
+  {
+   "event": "agent/created",
+   "match": {
+    "id": "main",
+    "sessionId": "s-llm-chaos-0001"
+   }
+  },
+  {
+   "comment": "the DSH_MOCK_TOOLARGS preset armed the scripted tool call with the hostile arguments",
+   "event": "chaos/profile",
+   "match": {
+    "profile": "toolargs-missing-field",
+    "source": "ci/mock-llm-server.mjs DSH_MOCK_TOOLARGS preset (schema-hostile tool arguments, vendored dsh-llm-mock-server wire)"
+   }
+  },
+  {
+   "event": "llm/request/built",
+   "match": {
+    "provider": "mock",
+    "model": "mock-1",
+    "messages": 2,
+    "tools": 17,
+    "path": "/chat/completions",
+    "method": "POST",
+    "agentLoopMarked": true,
+    "stream": true,
+    "attempt": 1
+   }
+  },
+  {
+   "comment": "request 1 — the scripted tool call: the mock splits the hostile arguments across two deltas",
+   "event": "llm/sse",
+   "match": {
+    "fields": [
+     "choices"
+    ]
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "fields": [
+     "choices"
+    ]
+   }
+  },
+  {
+   "comment": "the terminal chunk lands finish_reason tool_calls (usage fields unpinned — vendored accounting)",
+   "event": "llm/sse",
+   "match": {
+    "finish": "tool_calls"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "done": true
+   }
+  },
+  {
+   "comment": "request 2 — the scripted closing text after the rejected tool round (the no-crash witness)",
+   "event": "llm/request/built",
+   "match": {
+    "provider": "mock",
+    "model": "mock-1",
+    "messages": 4,
+    "tools": 17,
+    "path": "/chat/completions",
+    "method": "POST",
+    "agentLoopMarked": true,
+    "stream": true,
+    "attempt": 2
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "delta": "Hello"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "delta": " from"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "delta": " upst"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "delta": "ream"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "finish": "stop"
+   }
+  },
+  {
+   "event": "llm/sse",
+   "match": {
+    "done": true
+   }
+  },
+  {
+   "event": "agent/inbox/spliced",
+   "match": {
+    "seq": 0
+   }
+  },
+  {
+   "event": "turn/start",
+   "match": {
+    "turn": 1
+   }
+  },
+  {
+   "event": "agent/inbox/spliced",
+   "match": {
+    "seq": 2
+   }
+  },
+  {
+   "event": "step/start",
+   "match": {
+    "turn": 1,
+    "step": 1
+   }
+  },
+  {
+   "event": "system/message",
+   "match": {
+    "seq": 4,
+    "plugin": "@deepseek-ai/dsh-system-prompt"
+   }
+  },
+  {
+   "event": "user/message",
+   "match": {
+    "seq": 5
+   }
+  },
+  {
+   "event": "request/header",
+   "match": {
+    "seq": 6,
+    "reason": "initial"
+   }
+  },
+  {
+   "event": "request/context",
+   "match": {
+    "seq": 7,
+    "provider": "mock",
+    "model": "mock-1"
+   }
+  },
+  {
+   "comment": "the tool-call carrier message: blocks carry the call, no text",
+   "event": "assistant/message",
+   "match": {
+    "seq": 8,
+    "blocks": [
+     "tool-call"
+    ],
+    "text": "",
+    "provider": "mock",
+    "model": "mock-1"
+   }
+  },
+  {
+   "comment": "the item misses its required `content` property: the validator answers missing required property",
+   "event": "tool/call",
+   "match": {
+    "seq": 9,
+    "turn": 1,
+    "step": 1,
+    "name": "todo_write",
+    "argsLength": 32
+   }
+  },
+  {
+   "comment": "the validation layer structured rejection: isError tool-result + ToolArgsError name + INVALID_ARGS code — the turn keeps walking",
+   "event": "tool/result",
+   "match": {
+    "seq": 10,
+    "turn": 1,
+    "step": 1,
+    "isError": true,
+    "resultBlocks": [
+     "tool-result"
+    ],
+    "errorCode": "INVALID_ARGS",
+    "errorName": "ToolArgsError"
+   }
+  },
+  {
+   "event": "step/end",
+   "match": {
+    "turn": 1,
+    "step": 1
+   }
+  },
+  {
+   "event": "step/start",
+   "match": {
+    "turn": 1,
+    "step": 2
+   }
+  },
+  {
+   "comment": "the closing text arrives — the turn completes AFTER the rejection (no crash)",
+   "event": "assistant/message",
+   "match": {
+    "seq": 13,
+    "blocks": [
+     "text"
+    ],
+    "text": "Hello from upstream",
+    "provider": "mock",
+    "model": "mock-1"
+   }
+  },
+  {
+   "event": "step/end",
+   "match": {
+    "turn": 1,
+    "step": 2
+   }
+  },
+  {
+   "comment": "the rejection is never turn-fatal: completed, no error code, no cancel",
+   "event": "turn/end",
+   "match": {
+    "turn": 1,
+    "reason": "completed",
+    "errorCode": null,
+    "cancelKind": null
+   }
+  },
+  {
+   "comment": "the journal: 16 records, NO todo/write — the tool body never executed behind the rejection",
+   "event": "session/log/asserted",
+   "match": {
+    "count": 16,
+    "types": [
+     "agent/inbox/spliced",
+     "turn/start",
+     "agent/inbox/spliced",
+     "step/start",
+     "system/message",
+     "user/message",
+     "request/header",
+     "request/context",
+     "assistant/message",
+     "tool/call",
+     "tool/result",
+     "step/end",
+     "step/start",
+     "assistant/message",
+     "step/end",
+     "turn/end"
+    ]
+   }
+  },
+  {
+   "comment": "the guard summary: structured rejection, todos untouched, exactly two wire requests",
+   "event": "chaos/toolargs/asserted",
+   "match": {
+    "profile": "toolargs-missing-field",
+    "isError": true,
+    "code": "INVALID_ARGS",
+    "errorName": "ToolArgsError",
+    "argsLength": 32,
+    "todosWritten": false,
+    "wireRequests": 2
+   }
+  },
+  {
+   "event": "agent/status",
+   "match": {
+    "status": "running"
+   }
+  },
+  {
+   "event": "agent/status",
+   "match": {
+    "status": "idle"
+   }
+  },
+  {
+   "event": "projection/turn-boundary",
+   "match": {
+    "lastTurn": 1
+   }
+  },
+  {
+   "event": "chaos/completed",
+   "match": {
+    "status": "pass",
+    "profile": "toolargs-missing-field",
+    "guards": "schema-guard rejection (structured INVALID_ARGS, turn completes, todos untouched)",
+    "upstream": "0.1.6-alpha.2"
+   }
+  }
+ ]
+}

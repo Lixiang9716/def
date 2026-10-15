@@ -52,6 +52,37 @@
  * drivers that want them without a named profile. An unknown profile name is
  * a defect now (rule 5), not a silently normal mock.
  *
+ * MALFORMED TOOL-ARGUMENT PROFILES (test-hardening row 23, doc/test-coverage.md):
+ * DSH_MOCK_TOOLARGS names a hostile SHAPE for the `tool_call_success` scripted
+ * call's arguments — an independent env key from DSH_MOCK_CHAOS (that one owns
+ * the transport wire; this one owns the tool-argument payload). Every profile
+ * is schema-valid JSON at the mock boundary (the vendored server refuses to
+ * start otherwise) and SEMANTICALLY invalid for the named tool's parameter
+ * schema, so the rejection contract under test lives entirely in the harness
+ * validation layer, never in a hand-broken wire:
+ *
+ *   type-error     '{"todos":42}'                    — a number where the
+ *                    schema wants an array; the validator answers a
+ *                    path-qualified type violation
+ *   missing-field  '{"todos":[{"status":"pending"}]}' — the item's required
+ *                    `content` property is absent; the validator answers
+ *                    `missing required property`
+ *   deep-nesting   a 2048-deep nested array at todos[0] — parses fine,
+ *                    then hits the schema's object constraint; the vendored
+ *                    validator walks explicit frames (no recursion), so the
+ *                    depth must not crash or overflow anything
+ *   oversized      a single 2 MiB string at `todos` — reassembled across the
+ *                    mock's two-delta split, carried end to end, then rejected
+ *                    on type (length-pinned, never logged)
+ *
+ * Each profile arms sequence `tool_call_success success` (tool round → closing
+ * text, so the turn COMPLETES after the rejection — the no-crash witness) and
+ * toolName `todo_write` (the vendored tool-todo schema the legs validate
+ * against). Explicit DSH_MOCK_SEQUENCE / DSH_MOCK_TOOL_ARGS still win over
+ * the preset. DSH_MOCK_CHAOS and DSH_MOCK_TOOLARGS are mutually exclusive —
+ * arming both is a defect now (rule 5). An unknown profile name is a defect
+ * now (rule 5), not a silently normal mock.
+ *
  * usage: node mock-llm-server.mjs
  */
 import { startMockLlmServer } from '../../../external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js';
@@ -99,6 +130,41 @@ if (chaosName !== undefined && chaosPreset === undefined) {
     `mock-llm-server: unknown DSH_MOCK_CHAOS profile ${JSON.stringify(chaosName)} `
     + `(want one of ${Object.keys(CHAOS_PROFILES).join('|')})`);
 }
+
+// ---- malformed tool-argument profiles (preset table above) -----------------
+// The oversized profile's scripted text length must match scenario/llm-chaos.js
+// (OVERSIZED_TOOLARGS_LENGTH) and the manifests' pinned argsLength values.
+const TOOLARGS_DEPTH = 2048;
+const TOOLARGS_OVERSIZED_LENGTH = 2 * 1024 * 1024;
+const TOOLARGS_PROFILES = {
+  'type-error': { toolArguments: '{"todos":42}' },
+  'missing-field': { toolArguments: '{"todos":[{"status":"pending"}]}' },
+  // 2048 nested brackets at todos[0]: JSON-parses everywhere, then the schema's
+  // object constraint rejects it — the validator's explicit-frame walk (no
+  // recursion) is what must survive the depth.
+  'deep-nesting': {
+    toolArguments: `{"todos":[${'['.repeat(TOOLARGS_DEPTH)}${']'.repeat(TOOLARGS_DEPTH)}]}`,
+  },
+  'oversized': { toolArguments: `{"todos":"${'x'.repeat(TOOLARGS_OVERSIZED_LENGTH)}"}` },
+};
+const toolargsName = process.env.DSH_MOCK_TOOLARGS;
+const toolargsPreset = toolargsName === undefined ? undefined : TOOLARGS_PROFILES[toolargsName];
+if (toolargsName !== undefined && toolargsPreset === undefined) {
+  throw new Error(
+    `mock-llm-server: unknown DSH_MOCK_TOOLARGS profile ${JSON.stringify(toolargsName)} `
+    + `(want one of ${Object.keys(TOOLARGS_PROFILES).join('|')})`);
+}
+if (chaosPreset !== undefined && toolargsPreset !== undefined) {
+  throw new Error('mock-llm-server: DSH_MOCK_CHAOS and DSH_MOCK_TOOLARGS are mutually exclusive '
+    + '(the transport wire and the tool-argument payload do not co-arm)');
+}
+if (toolargsPreset !== undefined) {
+  // The preset fills what the env leaves open; explicit DSH_MOCK_SEQUENCE /
+  // DSH_MOCK_TOOL_ARGS win (same rule as the chaos presets above).
+  if (process.env.DSH_MOCK_SEQUENCE === undefined) sequence = ['tool_call_success', 'success'];
+}
+const toolName = process.env.DSH_MOCK_TOOL_NAME ?? (toolargsPreset !== undefined ? 'todo_write' : undefined);
+const toolArguments = process.env.DSH_MOCK_TOOL_ARGS ?? toolargsPreset?.toolArguments;
 if (chaosPreset !== undefined && process.env.DSH_MOCK_SEQUENCE === undefined) {
   // Explicit DSH_MOCK_SEQUENCE wins over the preset (a driver that needs a
   // longer script keeps working); the preset fills what the env leaves open.
@@ -121,12 +187,22 @@ const handle = await startMockLlmServer({
   chunkDelayMs,
   apiKey,
   requestId: 'mock-req-1',
-  ...(process.env.DSH_MOCK_TOOL_NAME !== undefined ? { toolName: process.env.DSH_MOCK_TOOL_NAME } : {}),
-  ...(process.env.DSH_MOCK_TOOL_ARGS !== undefined ? { toolArguments: process.env.DSH_MOCK_TOOL_ARGS } : {}),
+  ...(toolName !== undefined ? { toolName } : {}),
+  ...(toolArguments !== undefined ? { toolArguments } : {}),
   onEvent: (event) => console.log(JSON.stringify(event)),
 });
 console.log(`MOCK_BASE_URL=${handle.baseURL}`);
 if (chaosName !== undefined) console.log(JSON.stringify({ type: 'chaos', profile: chaosName, sequence }));
+if (toolargsName !== undefined) {
+  // length only — the hostile arguments themselves are never logged
+  console.log(JSON.stringify({
+    type: 'toolargs',
+    profile: toolargsName,
+    toolName,
+    argsLength: toolArguments.length,
+    sequence,
+  }));
+}
 
 const close = () => {
   handle.close().then(() => process.exit(0));
