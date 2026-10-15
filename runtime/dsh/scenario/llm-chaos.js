@@ -23,6 +23,21 @@
  *                  single-delta text) → the byte bridge and parser carry it
  *                  and the turn completes with the full text (length-pinned)
  *
+ * The toolargs- family (test-hardening row 23, doc/test-coverage.md) arms the
+ * mock's scripted tool call with HOSTILE ARGUMENT SHAPES (ci/mock-llm-server.mjs
+ * DSH_MOCK_TOOLARGS — type-error / missing-field / deep-nesting / oversized,
+ * all JSON-valid at the wire, all invalid for todo_write's parameter schema).
+ * The contract under test is the harness validation layer's rejection over the
+ * REAL agent loop (defineTool's execute-time schema walk → ToolArgsError →
+ * structured isError tool result): the rejection is STRUCTURED (tool/result
+ * carries isError + the INVALID_ARGS code + the ToolArgsError name), the turn
+ * NEVER crashes (it completes on the scripted closing text — no retries, no
+ * turn error), and the tool body NEVER ran (the todos projection stays at its
+ * pre-first-write null and the journal has no todo/write — no partial side
+ * effects). Deep nesting must not overflow the validator (its walk is
+ * explicit-frame, not recursive); oversized arguments must survive the mock's
+ * two-delta split and the byte bridge intact (length-pinned).
+ *
  * (slow-drip — the read-idle TIMEOUT leg — runs node-side in
  * ci/llm-chaos-read-idle.mjs: the CLI smoke backend drains the response body
  * synchronously inside the httpFetch call, so a mid-body stall can never
@@ -42,8 +57,18 @@ const SESSION_ID = 's-llm-chaos-0001';
 const INPUT_TEXT = 'Say hello';
 // The oversized profile's scripted text length must match ci/mock-llm-server.mjs.
 const OVERSIZED_LENGTH = 2 * 1024 * 1024;
+// The toolargs oversized profile's scripted arguments length must match
+// ci/mock-llm-server.mjs (TOOLARGS_OVERSIZED_LENGTH: `{"todos":"` + 2 MiB + `"}`).
+const OVERSIZED_TOOLARGS_LENGTH = 2 * 1024 * 1024 + 12;
+// The scripted closing text the mock serves after the rejected tool round
+// (the vendored mock's DEFAULT_SUCCESS_TEXT — the turn must COMPLETE on it).
+const TOOLARGS_CLOSING_TEXT = 'Hello from upstream';
 
-const CLI_PROFILES = new Set(['no-headers', 'truncation', 'malformed-sse', 'oversized']);
+const CLI_PROFILES = new Set([
+  'no-headers', 'truncation', 'malformed-sse', 'oversized',
+  'toolargs-type-error', 'toolargs-missing-field', 'toolargs-deep-nesting', 'toolargs-oversized',
+]);
+const toolargsProfile = () => profile.startsWith('toolargs-');
 
 // The scenario id and the witness budget resolve from the launch env (the
 // quickjs runtime has no ambient process): set at main() start, before any
@@ -110,6 +135,30 @@ const SESSION_EVENT_FIELDS = {
       ...(sized ? { textLength: text.length, textHead: text.slice(0, 8) } : { text }),
       provider: data.message?.source?.provider,
       model: data.message?.source?.model,
+    };
+  },
+  // the hostile tool round: the raw argument STRING is length-pinned (the
+  // toolargs-oversized one is 2 MiB — the text itself never enters the log)
+  'tool/call': (data, seq) => ({
+    seq,
+    turn: data.turn,
+    step: data.step,
+    name: data.name,
+    argsLength: typeof data.arguments === 'string' ? data.arguments.length : null,
+  }),
+  // the structured-rejection witness: isError + the HarnessError info the
+  // scheduler attaches (the ToolArgsError name + INVALID_ARGS code). isError
+  // rides the message's tool-result content block (createToolResultMessage).
+  'tool/result': (data, seq) => {
+    const block = data.message?.content?.find((b) => b.type === 'tool-result');
+    return {
+      seq,
+      turn: data.turn,
+      step: data.step,
+      isError: block?.isError ?? null,
+      resultBlocks: data.message?.content?.map((b) => b.type),
+      errorCode: data.error?.code ?? null,
+      errorName: data.error?.name ?? null,
     };
   },
   'turn/end': (data) => ({
@@ -265,6 +314,54 @@ const assertProfileGuards = (reason, retries, retryStarted, assistant, text, cap
   }
 };
 
+/** The toolargs- family's guard assertions: the harness validation layer's
+ * rejection contract over hostile tool arguments — STRUCTURED (isError +
+ * INVALID_ARGS + ToolArgsError), NO CRASH (the turn completes on the scripted
+ * closing text), NO PARTIAL SIDE EFFECTS (the tool body never ran: the todos
+ * projection stays at its pre-first-write null, the journal has no todo/write). */
+const assertToolargsGuards = (ctx, session, events, types, captures) => {
+  log.debug('asserting the toolargs guards', { profile, wire: captures.wire.length });
+  const expectedArgsLength = profile === 'toolargs-oversized' ? OVERSIZED_TOOLARGS_LENGTH : null;
+  const reason = events.find((record) => record.type === 'turn/end')?.data?.reason ?? {};
+  demand(reason.kind === 'completed', `turn/end reason is ${reason.kind} (a rejected tool call must not fail the turn)`);
+  const toolCall = events.find((record) => record.type === 'tool/call');
+  demand(toolCall?.data?.name === 'todo_write', `tool/call names ${JSON.stringify(toolCall?.data?.name)} (want todo_write)`);
+  const rawArgsLength = typeof toolCall?.data?.arguments === 'string' ? toolCall.data.arguments.length : null;
+  if (expectedArgsLength !== null) {
+    demand(rawArgsLength === expectedArgsLength,
+      `tool/call arguments length is ${rawArgsLength} (want the scripted ${expectedArgsLength})`);
+  }
+  const toolResults = events.filter((record) => record.type === 'tool/result');
+  demand(toolResults.length === 1, `expected exactly one tool/result, got ${toolResults.length}`);
+  const result = toolResults[0].data ?? {};
+  const resultBlock = result.message?.content?.find((b) => b.type === 'tool-result');
+  demand(resultBlock?.isError === true, `tool-result block isError is ${resultBlock?.isError} (want the structured rejection)`);
+  demand(result.error?.code === 'INVALID_ARGS', `tool/result error code is ${JSON.stringify(result.error?.code)} (want INVALID_ARGS)`);
+  demand(result.error?.name === 'ToolArgsError', `tool/result error name is ${JSON.stringify(result.error?.name)} (want ToolArgsError)`);
+  const resultText = resultBlock?.content?.filter((b) => b.type === 'text').map((b) => b.text).join('') ?? '';
+  demand(resultText.startsWith('Error: invalid arguments'), `tool/result text is ${JSON.stringify(resultText.slice(0, 48))}… (want the ToolArgsError diagnostic)`);
+  const retries = events.filter((record) => record.type === 'llm/retry');
+  demand(retries.length === 0, `a rejected tool call scheduled ${retries.length} retries (never retryable)`);
+  demand(captures.wire.length === 2, `wire requests: ${captures.wire.length} (want 2: the tool round + the closing text)`);
+  const assistants = events.filter((record) => record.type === 'assistant/message')
+    .map((record) => record.data?.message?.content?.filter((b) => b.type === 'text').map((b) => b.text).join('') ?? '');
+  demand(assistants.length === 2, `expected 2 assistant messages (tool-call carrier + closing), got ${assistants.length}`);
+  demand(assistants[0] === '', 'the tool-call carrier message carries text');
+  demand(assistants[1] === TOOLARGS_CLOSING_TEXT, `the closing text is ${JSON.stringify(assistants[1])}`);
+  const todos = ctx.sessionProjections.stateOf(session, 'todos');
+  demand(todos === null, `todos projection is ${JSON.stringify(todos)?.slice(0, 64)} (the rejected call must leave it at the pre-first-write null)`);
+  demand(!types.includes('todo/write'), 'a todo/write landed in the journal — the tool body executed');
+  emit('chaos/toolargs/asserted', {
+    profile,
+    isError: true,
+    code: result.error.code,
+    errorName: result.error.name,
+    argsLength: rawArgsLength,
+    todosWritten: false,
+    wireRequests: captures.wire.length,
+  });
+};
+
 /** The journal walk + the per-profile guard assertions. */
 const assertPhase = (ctx, session, captures) => {
   log.debug('assert phase begin', {});
@@ -284,7 +381,8 @@ const assertPhase = (ctx, session, captures) => {
   const text = assistant?.data?.message?.content
     ?.filter((block) => block.type === 'text').map((block) => block.text).join('') ?? '';
 
-  assertProfileGuards(reason, retries, retryStarted, assistant, text, captures);
+  if (toolargsProfile()) assertToolargsGuards(ctx, session, events, types, captures);
+  else assertProfileGuards(reason, retries, retryStarted, assistant, text, captures);
 
   for (const status of captures.agentStatuses) {
     emit('agent/status', { status: typeof status === 'string' ? status : String(status) });
@@ -300,7 +398,7 @@ const main = async () => {
   const env = launchEnv();
   profile = env.DSH_CHAOS_PROFILE ?? '';
   if (!CLI_PROFILES.has(profile)) {
-    // fail loud before any boot: the CLI legs carry exactly these four profiles
+    // fail loud before any boot: the CLI legs carry exactly these profiles
     fail(`unknown DSH_CHAOS_PROFILE ${JSON.stringify(profile)} (want one of ${[...CLI_PROFILES].join('|')})`);
     return;
   }
@@ -317,7 +415,9 @@ const main = async () => {
   emit('agent/created', { id: AGENT_ID, sessionId: SESSION_ID });
   emit('chaos/profile', {
     profile,
-    source: 'ci/mock-llm-server.mjs DSH_MOCK_CHAOS preset (vendored dsh-llm-mock-server behaviors)',
+    source: toolargsProfile()
+      ? 'ci/mock-llm-server.mjs DSH_MOCK_TOOLARGS preset (schema-hostile tool arguments, vendored dsh-llm-mock-server wire)'
+      : 'ci/mock-llm-server.mjs DSH_MOCK_CHAOS preset (vendored dsh-llm-mock-server behaviors)',
   });
 
   const watchdog = armWatchdogWitness(ctx, captures);
@@ -328,12 +428,14 @@ const main = async () => {
   emit('chaos/completed', {
     status: 'pass',
     profile,
-    guards: {
-      'no-headers': 'retry pacing (15000 pace adopted) + turn-watchdog backstop',
-      'truncation': 'parser close contract (STREAM_CLOSED, non-retryable)',
-      'malformed-sse': 'parser payload contract (MALFORMED_RESPONSE, non-retryable)',
-      'oversized': 'byte-bridge survival (2 MiB single delta completes)',
-    }[profile],
+    guards: toolargsProfile()
+      ? 'schema-guard rejection (structured INVALID_ARGS, turn completes, todos untouched)'
+      : {
+        'no-headers': 'retry pacing (15000 pace adopted) + turn-watchdog backstop',
+        'truncation': 'parser close contract (STREAM_CLOSED, non-retryable)',
+        'malformed-sse': 'parser payload contract (MALFORMED_RESPONSE, non-retryable)',
+        'oversized': 'byte-bridge survival (2 MiB single delta completes)',
+      }[profile],
     upstream: '0.1.6-alpha.2',
   });
   globalThis.__dshComplete(true, 'pass');

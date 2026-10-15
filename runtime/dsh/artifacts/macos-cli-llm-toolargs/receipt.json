@@ -1,0 +1,13 @@
+{
+  "scenario": "llm.chaos.toolargs-*",
+  "profiles": ["toolargs-type-error", "toolargs-missing-field", "toolargs-deep-nesting", "toolargs-oversized"],
+  "mock": "vendored dsh-llm-mock-server tool_call_success with schema-hostile arguments (DSH_MOCK_TOOLARGS presets; no vendored edits, no transport changes)",
+  "proves": [
+    "type-error: a number where todo_write wants an array is rejected by the harness validation layer as a STRUCTURED isError tool result carrying the ToolArgsError name and the INVALID_ARGS code with the path-qualified diagnostic — the turn still completes on the scripted closing text",
+    "missing-field: an item missing its required content property is rejected the same way (missing required property) — no retry is scheduled, the tool body never runs",
+    "deep-nesting: a 2048-deep nested array at todos[0] parses on the wire, survives the mock's two-delta split and the byte bridge, and the validator's explicit-frame (non-recursive) walk rejects it without overflow — the same structured rejection, no crash",
+    "oversized: a single 2 MiB arguments string rides the two-delta tool_call split end to end (journal length-pinned) and is rejected on type — the same structured rejection with the turn completing",
+    "no partial side effects in every leg: the todos projection stays at its pre-first-write null and the journal records no todo/write — the tool body never executed behind the rejection"
+  ],
+  "exitCode": 0
+}
