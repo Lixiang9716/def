@@ -1,0 +1,63 @@
+name: supply-audit
+# Supply-chain audit of the vendored npm closure (test-hardening row 10):
+# license compliance (GPL-family denied per the repo's standing discipline)
+# plus known-CVE lookup over the exact pinned closure, reported from OSV.dev
+# (the aggregator behind npm audit's advisory database — the vendor tree has
+# no lockfile, so `npm audit` itself cannot judge it).
+#
+# REPORT-ONLY by design: findings are surfaced in the job summary and the
+# JSON artifact; remediation (re-pins, removals, policy exceptions) belongs
+# to the vendor-package flow, never an automatic version bump. The step's
+# exit code is echoed into the summary before the job is failed-soft, so a
+# violation is impossible to miss but cannot block unrelated merges.
+on:
+  schedule:
+    - cron: "47 6 * * 1" # Mondays 06:47 UTC — off the hour, off the rush
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "tools/supply-audit/**"
+      - "external/ensure-dsh.sh"
+      - "external/ensure-dsh-tests.sh"
+      - ".github/workflows/supply-audit.yml"
+concurrency:
+  group: supply-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 # cold materialization runs ~190 sequential pin fetches
+    steps:
+      - uses: actions/checkout@v7
+      - name: Materialize the vendored closure
+        # The vendor tree is untracked by design; a cold CI checkout needs
+        # the pinned trees on disk before the audit can read licenses. The
+        # ensure scripts are their own gate: every fetch is sha256-verified
+        # against the pin table, so a drifted upstream fails HERE, loudly.
+        run: sh external/ensure-dsh.sh && sh external/ensure-dsh-tests.sh
+      - name: Self-test the audit script
+        run: python3 tools/supply-audit/__main__.py --self-test
+      - name: Run the audit
+        # License findings fail the script (exit 1), CVE findings are
+        # report-only unless --fail-on-cve opts in. Either way the verdict
+        # is recorded and the job stays green: this leg reports, the
+        # vendor-package flow decides.
+        run: |
+          set +e
+          python3 tools/supply-audit/__main__.py --out supply-audit-report.json 2> supply-audit-summary.txt
+          verdict=$?
+          {
+            echo "### Supply-chain audit (report-only)"
+            echo ""
+            echo '```'
+            cat supply-audit-summary.txt
+            echo '```'
+            echo ""
+            echo "audit exit code: ${verdict} (0 clean · 1 license-policy violation · 2 CVE threshold · 4 environment)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+      - name: Upload the machine-readable report
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-audit-report
+          path: supply-audit-report.json
