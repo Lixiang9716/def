@@ -1,7 +1,9 @@
 name: c-core
 # The C-host desktop CLI's Linux CI face — the sync+compile+test build over
 # the vendored pins, then the ten log-verified test-core legs re-run over the
-# fresh build with the report artifact uploaded even on red.
+# fresh build with the report artifact uploaded even on red, then the
+# shell-diff differential (test-hardening row 6): every cases.json script
+# through the runner's real bash vs the dsh-shell-js executor.
 #
 # A second face, `sanitize`: the ten log-verified test-core legs — narrowed
 # to the widest-coverage subset that fits this job's 60-minute bound under
@@ -24,6 +26,8 @@ on:
       - 'external/ensure-dsh.sh'
       - 'runtime/dsh/ci/**'
       - 'runtime/dsh/upstream/**'
+      - 'runtime/dsh/system-plugins/dsh-shell-js/**'
+      - 'test/shell-diff/**'
       - 'contract/**'
   push:
     branches: [main]
@@ -36,6 +40,8 @@ on:
       - 'external/ensure-dsh.sh'
       - 'runtime/dsh/ci/**'
       - 'runtime/dsh/upstream/**'
+      - 'runtime/dsh/system-plugins/dsh-shell-js/**'
+      - 'test/shell-diff/**'
       - 'contract/**'
   workflow_dispatch:
 concurrency:
@@ -83,9 +89,18 @@ jobs:
         # build so the report artifact below always follows a dedicated
         # suite pass (cheap — everything is compiled and vendored by now).
         run: sh build/build.sh test core
+      - name: Shell diff harness (dsh-shell-js × real bash)
+        # test-hardening row 6: every cases.json script through the runner's
+        # real bash (Linux has it) and through the dsh-shell-js executor's
+        # real ToolRuntime dispatch, normalized exit/stdout/stderr compared
+        # per case expectation. Red = an unpinned difference = a dialect
+        # bug; the report + divergence list ride the artifact upload below
+        # even on red.
+        run: sh test/shell-diff/run.sh
       - name: Upload the leg reports
         # The legs' own receipts (logs.txt / scenario.jsonl / verdict.json /
-        # receipt.json under runtime/dsh/artifacts/) plus the raw logs-*.txt
+        # receipt.json under runtime/dsh/artifacts/, shell-diff's
+        # report.json + divergences.md included) plus the raw logs-*.txt
         # the checkers diffed — the E2E evidence, uploaded even on red.
         if: always()
         uses: actions/upload-artifact@v7
