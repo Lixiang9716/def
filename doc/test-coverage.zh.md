@@ -87,10 +87,10 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 
 | # | 方法 | 波次 | 状态 | 落地形态 |
 |---|------|------|------|----------|
-| 1 | 敌意 LLM mock 画像（畸形 SSE、截断、slow-drip、超大块） | 1 | planned | mock-llm-server.mjs 画像 + 传输守卫腿 |
+| 1 | 敌意 LLM mock 画像（畸形 SSE、截断、slow-drip、超大块） | 1 | **已落**（#528） | mock-llm-server.mjs 画像 + 传输守卫腿 |
 | 2 | C 宿主 ASan/UBSan CI 腿 | 1 | planned | c-core sanitizer 构建 |
-| 3 | axe-core 可访问性回归（web-client-v2，接 #519 手工审查） | 1 | planned | 套件腿 |
-| 4 | 视觉回归 diff（dev-carrier 截图；warn 级，绝不做 CI 日志断言） | 1 | planned | ui-sweep 像素 diff |
+| 3 | axe-core 可访问性回归（web-client-v2，接 #519 手工审查） | 1 | **已落**（#527） | 套件腿 |
+| 4 | 视觉回归 diff（dev-carrier 截图；warn 级，绝不做 CI 日志断言） | 1 | **已落**（#527） | ui-sweep 像素 diff |
 | 5 | 收窄变异试点（Stryker：shell-js 拒绝词汇、lynx fold/surface-core、publisher-token） | 1 | planned | 信息性分数 + 存活体分诊 |
 | 6 | bash 差分测试（POSIX 子集，dsh-shell-js 对真 bash，Linux CI） | 2 | planned | c-core Linux 腿 |
 | 7 | 属性测试解析器（fast-check：parser-syntax、path、semver-range） | 2 | planned | panel 套件族 |
