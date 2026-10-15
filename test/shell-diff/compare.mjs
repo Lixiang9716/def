@@ -77,17 +77,25 @@ const readJsonl = (path, seat) => {
 const dsh = readJsonl(dshPath, 'dsh');
 const bash = readJsonl(bashPath, 'bash');
 
-/** The only normalization: scratch-root scrubbing + CRLF. */
+/** The only normalization: scratch-root scrubbing + CRLF, plus any
+ * per-case rule the CASE DATA declares (`normalizeStdout`) — each one
+ * scopes out REFERENCE-seat rendering variance (e.g. BSD wc pads counts,
+ * GNU does not) so the comparison isolates the product. Declared in the
+ * case, never applied silently. */
 const normalize = (text) => String(text)
   .replaceAll(sandbox, '')
   .replaceAll(`${dshRoot}/`, '')
   .replaceAll(dshRoot, '')
   .replaceAll('\r\n', '\n');
-const normSide = (side) => ({
-  exitCode: side.exitCode,
-  stdout: normalize(side.stdout),
-  stderr: normalize(side.stderr),
-});
+const normSide = (one, side) => {
+  let stdout = normalize(side.stdout);
+  if (one.normalizeStdout === 'trim-leading-spaces') stdout = stdout.replace(/^ +/gm, '');
+  return {
+    exitCode: side.exitCode,
+    stdout,
+    stderr: normalize(side.stderr),
+  };
+};
 
 /** The assertion per kind — see the header. Returns {verdict, detail}. */
 const judge = (one, dn, bn) => {
@@ -143,8 +151,8 @@ const cases = CASES.map((one) => {
   if (d === undefined || b === undefined) {
     return { id: one.id, family: one.family, kind: one.kind, note: one.note, verdict: 'MISSING', detail: `no ${d === undefined ? 'dsh' : 'bash'} result for the case`, dsh: null, bash: null };
   }
-  const dn = normSide(d);
-  const bn = normSide(b);
+  const dn = normSide(one, d);
+  const bn = normSide(one, b);
   const judgment = judge(one, dn, bn);
   return {
     id: one.id,

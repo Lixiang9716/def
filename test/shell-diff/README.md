@@ -12,9 +12,13 @@ feeding the SAME script to two seats and comparing the normalized results:
 
 A difference between the seats is only ever a finding after normalization
 (scratch roots scrubbed to workspace-relative spellings, CRLF folded,
-nothing else smoothed) and after classification against the dialect
-contract (below). Unexpected differences are bugs: they fail the leg, and
-the generated `divergences.md` lists them with both sides' evidence.
+plus any per-case rule the CASE DATA declares — `normalizeStdout:
+"trim-leading-spaces"` on `pipe-grep-wc` scopes out the reference wc's
+BSD-vs-GNU padding so both platforms assert the product exactly; declared
+per case, never applied silently) and after classification against the
+dialect contract (below). Unexpected differences are bugs: they fail the
+leg, and the generated `divergences.md` lists them with both sides'
+evidence.
 
 ## Layout (data and assertions are separate)
 
@@ -94,6 +98,11 @@ outside this harness's file scope):
   the last member's 0.
 - Redirect targets skip glob expansion; the CLI backend's fsWrite
   materializes missing parents (bash's fopen does not).
+
+Platform note on the reference seat: `wc` pads counts BSD-wise on macOS
+and prints them bare on GNU — CI's Linux (GNU) reference already agrees
+with dsh byte-for-byte (`pipe-grep-wc` is a `match` there); the case's
+declared normalization keeps a macOS-local run green too.
 
 ## The dialect contract this matrix holds dsh-shell-js to
 

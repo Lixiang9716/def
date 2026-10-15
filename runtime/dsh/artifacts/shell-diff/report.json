@@ -55,10 +55,10 @@
     {
       "id": "pipe-grep-wc",
       "family": "pipes",
-      "kind": "divergence",
-      "note": "OPEN FINDING (wording): the count agrees (2) but GNU wc pads stdin counts to %7d ('       2') while the hand-written wc prints bare '2'",
-      "verdict": "divergence-pinned",
-      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 0",
+      "kind": "match",
+      "note": "the count (2) is the contract's substance; the reference seat's wc pads counts BSD-wise on macOS ('       2') and prints them bare on GNU (Linux CI, where the seats already agree byte-for-byte) — the declared trim-leading-spaces normalization scopes out the reference binary's rendering so both platforms assert the product exactly",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
       "dsh": {
         "exitCode": 0,
         "stdout": "2\n",
@@ -66,7 +66,7 @@
       },
       "bash": {
         "exitCode": 0,
-        "stdout": "       2\n",
+        "stdout": "2\n",
         "stderr": ""
       }
     },
@@ -831,11 +831,11 @@
     }
   ],
   "verdicts": {
-    "match": 23,
+    "match": 24,
     "refusal-ok": 3,
-    "divergence-pinned": 21,
+    "divergence-pinned": 20,
     "...of which contract-documented": 1,
-    "...of which open findings": 20,
+    "...of which open findings": 19,
     "BUG": 0,
     "CHANGED": 0,
     "MISSING": 0
