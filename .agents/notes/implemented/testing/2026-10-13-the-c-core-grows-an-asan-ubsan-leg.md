@@ -33,14 +33,17 @@ PR. No gate anywhere compiled the shared host with a sanitizer.
   script would break the local-macOS face.
 - The leg set is the plan row's documented fallback: the widest-coverage
   SUBSET that fits the 60-minute job bound. Measured on the arm64 runner
-  (run 38760413938): the full ten blew the bound — upstream-session 2 min,
-  upstream-boot 51 min (it materializes and serves the web-client bundles
-  through the sanitized pump), job killed before leg 3. The subset keeps
+  across two CI runs (38760413938, 38778823092): upstream-boot alone ran
+  51 min, and settings-surfaces spent 4 min building client bundles then
+  40+ min in its scenario without finishing — both drive the built web
+  client through the sanitized pump, which is the pathology. The kept five
+  legs measured 15.8 min of legs + 1.2 min of build (~18 min job):
   upstream-session (deepest turn path), seam-inventory (widest single
   sweep: every product flag + every service resolver), shim-exposure-probe,
-  office (zstd's heaviest path), dsh-shell-js, settings-surfaces; it drops
-  upstream-boot (the measured outlier), open-design + plugin-forms (narrow
-  flows the six subsume), and session-preset-join-node (pure node, never
+  office (zstd's heaviest path, the slowest keeper at 8.7 min),
+  dsh-shell-js. Dropped: upstream-boot + settings-surfaces (the two
+  measured client-driving outliers), open-design + plugin-forms (narrow
+  flows the five subsume), session-preset-join-node (pure node, never
   loads the C host). The excluded legs ran clean under ASan in the local
   full-ten validation, so the gap is runner throughput, not findings.
   Local validation ran the full ten legs green under the flavor on macOS
@@ -67,11 +70,12 @@ PR. No gate anywhere compiled the shared host with a sanitizer.
 
 ## Consequences
 
-Every c-core-path PR now pays one more arm64 job (~25 min for the subset,
-under the shared 60-minute bound) and gets, in exchange, memory-safety
-verdicts on the shared host with symbolized stacks. Findings in vendored
-third-party TUs count the same as host findings — that is deliberate: the
-closure ships as one binary. Known coverage gap: the web-client-serving
-boot path is not sanitized on CI (the measured outlier); it ran clean
-under ASan locally, and re-widening the subset (or sharding the job) is
-the move if that path ever grows its own code.
+Every c-core-path PR now pays one more arm64 job (~18 min for the five-leg
+subset, under the shared 60-minute bound) and gets, in exchange,
+memory-safety verdicts on the shared host with symbolized stacks. Findings
+in vendored third-party TUs count the same as host findings — that is
+deliberate: the closure ships as one binary. Known coverage gap: the two
+client-driving legs (web-client boot + settings surfaces) are not
+sanitized on CI — both ran clean under ASan locally, and re-widening the
+subset (or sharding the job) is the move if the client-serving pump ever
+grows its own code.

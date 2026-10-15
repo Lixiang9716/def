@@ -5,14 +5,14 @@ name: c-core
 #
 # A second face, `sanitize`: the ten log-verified test-core legs — narrowed
 # to the widest-coverage subset that fits this job's 60-minute bound under
-# ASan (measured on ubuntu-24.04-arm: the upstream-boot leg alone is 51 min
-# sanitized, so the full ten cannot fit; the subset and the exclusions are
-# argued at the step) — driven by an asan+ubsan build of the same CLI
-# (src/build.sh --sanitize). Any sanitizer report — memory error, undefined
-# behavior, leak — exits nonzero, fails the leg (set -eu), and fails the
-# job, with symbolized stacks (leak detection is Linux-only:
-# ASAN_OPTIONS=detect_leaks=1 lives in this job's env because macOS ASan
-# rejects it).
+# ASan (measured on ubuntu-24.04-arm across two runs: the client-driving
+# legs — upstream-boot 51 min, settings-surfaces 40+ min unfinished — cannot
+# fit; the subset and the exclusions are argued at the step) — driven by an
+# asan+ubsan build of the same CLI (src/build.sh --sanitize). Any sanitizer
+# report — memory error, undefined behavior, leak — exits nonzero, fails the
+# leg (set -eu), and fails the job, with symbolized stacks (leak detection
+# is Linux-only: ASAN_OPTIONS=detect_leaks=1 lives in this job's env because
+# macOS ASan rejects it).
 on:
   pull_request:
     paths:
@@ -97,20 +97,19 @@ jobs:
 
   sanitize:
     # The memory-safety face: the ten legs, narrowed to the widest-coverage
-    # subset that fits (measured: the full ten blew this job's 60-minute
-    # bound on the arm64 runner — upstream-boot alone ran 51 minutes under
-    # ASan, serving the web-client bundles through the sanitized pump), over
-    # the asan+ubsan CLI flavor. The flavor is opt-in — src/build.sh
-    # --sanitize writes dsh-cli-sanitize BESIDE (never over) the default
-    # dsh-cli — so the core job's default build is byte-identical and
-    # untouched. This job installs the sanitized binary at the legs'
-    # expected build/dsh-cli path in its own ephemeral workspace and lets
-    # any nonzero CLI exit (ASan error, UBSan abort via
+    # subset that fits (measured across two runs: the client-driving legs —
+    # upstream-boot 51 min, settings-surfaces 40+ min unfinished — blow the
+    # 60-minute bound under ASan), over the asan+ubsan CLI flavor. The
+    # flavor is opt-in — src/build.sh --sanitize writes dsh-cli-sanitize
+    # BESIDE (never over) the default dsh-cli — so the core job's default
+    # build is byte-identical and untouched. This job installs the sanitized
+    # binary at the legs' expected build/dsh-cli path in its own ephemeral
+    # workspace and lets any nonzero CLI exit (ASan error, UBSan abort via
     # -fno-sanitize-recover=all, LSan leak) fail the leg's set -eu script —
     # red means red, no sanitizer report can slip through.
     runs-on: ubuntu-24.04-arm
-    # Sanitizers roughly double the compile and slow the runtime; the subset
-    # below measured ~25 min end to end, well under this bound.
+    # The kept five legs measured 15.8 min + 1.2 min build (~18 min job) —
+    # wide headroom under this bound.
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
@@ -141,19 +140,22 @@ jobs:
         run: sh src/build.sh --sanitize
       - name: Run the sanitizer-subset legs under the sanitized CLI
         # doc/test-coverage.md row 2's documented fallback: the full ten
-        # timed out on this runner under ASan (measured, run 38760413938:
-        # upstream-session 2 min, upstream-boot 51 min — the job died at
-        # 60 before leg 3), so the subset picks the widest coverage that
-        # fits. In, and what each adds: upstream-session (the deepest turn
-        # path — llm streaming, tool calls, persistence), seam-inventory
-        # (every product flag + composition plane + every upstream-catalog
-        # service through the resolver — the widest single sweep),
-        # shim-exposure-probe (the shim/globalThis face), office (the
-        # binary-document path — zstd's heaviest workout), dsh-shell-js
-        # (shell tool exec through the module loader), settings-surfaces
-        # (the settings read/write surfaces). Out, and why: upstream-boot
-        # (the measured 51-min outlier), open-design + plugin-forms (narrow
-        # single-feature flows the six subsume), session-preset-join-node
+        # timed out on this runner under ASan, twice, with measured numbers
+        # (runs 38760413938 and 38778823092): upstream-boot 51 min alone;
+        # settings-surfaces 4 min of client-bundle build + 40 min of
+        # scenario without finishing — both legs drive the built web client
+        # through the sanitized pump, which is the pathology. The kept five
+        # measured 15.8 min of legs + 1.2 min build (~18 min job, wide
+        # headroom under the 60-minute bound): upstream-session (the
+        # deepest turn path — llm streaming, tool calls, persistence),
+        # seam-inventory (every product flag + composition plane + every
+        # upstream-catalog service through the resolver — the widest single
+        # sweep), shim-exposure-probe (the shim/globalThis face), office
+        # (the binary-document path — zstd's heaviest workout), dsh-shell-js
+        # (shell tool exec through the module loader). Out, and why:
+        # upstream-boot and settings-surfaces (the two measured
+        # client-driving outliers), open-design + plugin-forms (narrow
+        # single-feature flows the five subsume), session-preset-join-node
         # (pure node — never loads the C host, nothing to sanitize). The
         # excluded legs ran clean under ASan in the local full-ten
         # validation (macOS); the gap is runner throughput, not findings.
@@ -172,7 +174,6 @@ jobs:
           runtime/dsh/ci/run-shim-exposure-probe.sh
           runtime/dsh/ci/run-office-e2e.sh
           runtime/dsh/ci/run-dsh-shell-js-e2e.sh
-          runtime/dsh/ci/run-settings-surfaces-e2e.sh
       - name: Upload the leg reports
         # The same artifact face as the core job; sanitizer reports go to the
         # leg stderr (the job log) and the leg logs, so a red run carries its
