@@ -188,6 +188,7 @@ stage_test() {
         core)
             echo "build: test core (the CLI proof legs over the vendored upstream spine)"
             runtime/dsh/ci/run-upstream-e2e.sh
+            runtime/dsh/ci/run-llm-chaos-e2e.sh
             runtime/dsh/ci/run-upstream-boot-e2e.sh
             runtime/dsh/ci/run-settings-surfaces-e2e.sh
             runtime/dsh/ci/run-session-preset-join-node.sh

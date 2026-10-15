@@ -1,0 +1,170 @@
+{
+ "scenario": "llm.chaos.no-headers",
+ "extract": {
+  "prefix": "dsh.runtime.log:"
+ },
+ "expect": [
+  {
+   "event": "llm/runtime",
+   "match": {
+    "provider": "mock",
+    "model": "mock-1",
+    "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+    "transport": "gateway httpFetch → loopback chat-completions mock server",
+    "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+   }
+  },
+  {
+   "event": "upstream/profile",
+   "match": {
+    "profile": "mobile",
+    "root": "empty (patch layers compose over it)",
+    "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+    "layers": ["session", "agent", "system-prompt", "tools", "session-projection", "settings", "agent-loop"]
+   }
+  },
+  {
+   "event": "upstream/services",
+   "match": {
+    "kernel": "@deepseek-ai/cordis@4.0.2",
+    "services": ["sessions", "agents", "systemPrompt", "tools", "sessionProjections", "settings", "agentLoop", "llm"],
+    "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+   }
+  },
+  {
+   "event": "session/created",
+   "match": { "sessionId": "s-llm-chaos-0001" }
+  },
+  {
+   "event": "agent/created",
+   "match": { "id": "main", "sessionId": "s-llm-chaos-0001" }
+  },
+  {
+   "event": "chaos/profile",
+   "match": {
+    "profile": "no-headers",
+    "source": "ci/mock-llm-server.mjs DSH_MOCK_CHAOS preset (vendored dsh-llm-mock-server behaviors)"
+   }
+  },
+  {
+   "comment": "the connection_reset wire: the call dies before any response head — ONE wire request, no SSE evidence at all",
+   "event": "llm/request/built",
+   "match": {
+    "provider": "mock",
+    "model": "mock-1",
+    "messages": 2,
+    "tools": 17,
+    "path": "/chat/completions",
+    "method": "POST",
+    "agentLoopMarked": true,
+    "stream": true,
+    "attempt": 1
+   }
+  },
+  {
+   "comment": "the turn-watchdog backstop (scenario-armed, 1.5s) fired INSIDE the paced 15s wait",
+   "event": "chaos/watchdog/fired",
+   "match": { "budgetMs": 1500, "agent": "s-llm-chaos-0001" }
+  },
+  {
+   "event": "agent/inbox/spliced",
+   "match": { "seq": 0 }
+  },
+  {
+   "event": "turn/start",
+   "match": { "turn": 1 }
+  },
+  {
+   "event": "agent/inbox/spliced",
+   "match": { "seq": 2 }
+  },
+  {
+   "event": "step/start",
+   "match": { "turn": 1, "step": 1 }
+  },
+  {
+   "event": "system/message",
+   "match": { "seq": 4, "plugin": "@deepseek-ai/dsh-system-prompt" }
+  },
+  {
+   "event": "user/message",
+   "match": { "seq": 5 }
+  },
+  {
+   "event": "request/header",
+   "match": { "seq": 6, "reason": "initial" }
+  },
+  {
+   "event": "request/context",
+   "match": { "seq": 7, "provider": "mock", "model": "mock-1" }
+  },
+  {
+   "comment": "the attempt settles as assistant/attempt (the error-finish protocol), never an assistant/message",
+   "event": "assistant/attempt",
+   "match": { "seq": 8, "turn": 1, "step": 1 }
+  },
+  {
+   "comment": "GUARD 1 — retry pacing: the fast TRANSPORT failure is paced at the seam's first slot, adopted verbatim into the journal",
+   "event": "llm/retry",
+   "match": { "seq": 9, "retry": 1, "maxRetries": 5, "delayMs": 15000, "code": "TRANSPORT", "provider": "mock" }
+  },
+  {
+   "event": "step/end",
+   "match": { "turn": 1, "step": 1 }
+  },
+  {
+   "comment": "GUARD 2 — the turn-level backstop: the turn ends aborted by the watchdog (no llm/retry-started, no second attempt, no assistant message — pinned by session/log/asserted's types)",
+   "event": "turn/end",
+   "match": { "turn": 1, "reason": "aborted", "errorCode": null, "cancelKind": "watchdog" }
+  },
+  {
+   "event": "session/log/asserted",
+   "match": {
+    "count": 12,
+    "types": [
+     "agent/inbox/spliced",
+     "turn/start",
+     "agent/inbox/spliced",
+     "step/start",
+     "system/message",
+     "user/message",
+     "request/header",
+     "request/context",
+     "assistant/attempt",
+     "llm/retry",
+     "step/end",
+     "turn/end"
+    ]
+   }
+  },
+  {
+   "event": "chaos/pacing/asserted",
+   "match": { "delayMs": 15000, "code": "TRANSPORT", "retry": 1, "maxRetries": 5 }
+  },
+  {
+   "event": "chaos/watchdog/asserted",
+   "match": { "budgetMs": 1500, "cancelKind": "watchdog", "wireRequests": 1 }
+  },
+  {
+   "event": "agent/status",
+   "match": { "status": "running" }
+  },
+  {
+   "event": "agent/status",
+   "match": { "status": "idle" }
+  },
+  {
+   "event": "projection/turn-boundary",
+   "match": { "lastTurn": 1 }
+  },
+  {
+   "event": "chaos/completed",
+   "match": {
+    "status": "pass",
+    "profile": "no-headers",
+    "guards": "retry pacing (15000 pace adopted) + turn-watchdog backstop",
+    "upstream": "0.1.6-alpha.2"
+   }
+  }
+ ]
+}

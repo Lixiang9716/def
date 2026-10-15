@@ -1,0 +1,14 @@
+{
+  "scenario": "llm.chaos.*",
+  "profiles": ["no-headers", "truncation", "malformed-sse", "oversized", "slow-drip"],
+  "mock": "vendored dsh-llm-mock-server behaviors (DSH_MOCK_CHAOS presets; no vendored edits, no transport changes)",
+  "proves": [
+    "no-headers: a wire that dies before its response head fails FAST as TRANSPORT; the retry-pacing seam (llm-retry-pacing.js) paces the first retry at 15000ms (llm/retry journal delayMs, adopted verbatim by dsh-llm-retry's recover())",
+    "no-headers: the turn-level backstop (turn-watchdog.js armed at its module contract, 1.5s) cancels the wedged turn with a watchdog cause BEFORE the paced retry executes — one wire request total, no llm/retry-started",
+    "truncation: a stream that closes without [DONE] is STREAM_CLOSED (parser close contract) and schedules no retry — the turn errors honestly",
+    "malformed-sse: a non-JSON data payload is MALFORMED_RESPONSE (parser payload contract), non-retryable — the turn errors honestly",
+    "oversized: one 2 MiB SSE delta survives the gateway byte bridge and the incremental parser; the turn completes with the full scripted text",
+    "slow-drip (node-backed): deltas flow, then a silent gap outlasts the read-idle budget — the guard aborts the attempt as TIMEOUT, retryable per the vendored retry policy (the CLI smoke backend cannot interleave guard timers with a mid-body stall; see the file header)"
+  ],
+  "exitCode": 0
+}
