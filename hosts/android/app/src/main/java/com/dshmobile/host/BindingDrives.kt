@@ -147,6 +147,42 @@ fun BindingHost.Companion.startCreateCard(activity: Activity, webView: WebView?,
     drive("create-card", CREATE_CARD_SCENARIO, CREATE_CARD_ENTRY, activity, webView, onFinished)
 
 /**
+ * The launch-table dispatcher behind MainActivity's extra chain (the
+ * code-size gate's extraction): one branch per drive factory, in the same
+ * order as the extra chain that delegates here. The create-card row is the
+ * #464 salvage miss — the factory shipped without a dispatch row, so the
+ * runner's `--ez dsh.createcard` extra fell through to the default seat
+ * (measured 2026-10-15: the drive timed out running session.mock-llm). */
+fun BindingHost.Companion.dispatchDrive(
+    activity: Activity,
+    view: WebView?,
+    onVerdict: (String) -> Unit,
+    suite: String?,
+    parity: Boolean,
+    compact: Boolean,
+    devicePlane: Boolean,
+    cameraPlane: Boolean,
+    ble: Boolean,
+    bleMock: Boolean,
+    micPlane: Boolean,
+    cardPlayer: Boolean,
+    llm: Boolean,
+    createCard: Boolean,
+): BindingHost = when {
+    suite != null -> startSuite(activity, view, onVerdict, suite)
+    parity -> startParity(activity, view, onVerdict)
+    compact -> startWhale(activity, view, onVerdict)
+    devicePlane -> startDevicePlane(activity, view, onVerdict)
+    cameraPlane -> startCameraPlane(activity, view, onVerdict)
+    ble -> startBle(activity, view, onVerdict, bleMock)
+    micPlane -> startMicPlane(activity, view, onVerdict)
+    cardPlayer -> startCardPlayer(activity, view, onVerdict)
+    createCard -> startCreateCard(activity, view, onVerdict)
+    llm -> startLlm(activity, view, onVerdict)
+    else -> start(activity, view, onVerdict)
+}
+
+/**
  * The calendar-live drive (`create.calendar.live`, the
  * gaps3/android-04 port of the iOS `-dsh-mode calendar-live` seat):
  * ONE REAL-backend turn driven on the agent (the staged credential
