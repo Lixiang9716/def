@@ -8,24 +8,31 @@
 # ROOT is the repository root — and every path below is anchored to one of
 # the two, so `sh src/build.sh` behaves identically from any cwd.
 #
-# Two variants, one per logging regime (the same split the platform Release
-# configurations produce, so this CLI is how the strip is verified on the
-# cheapest host):
+# Three variants (two logging regimes + the sanitizer-proof flavor):
 #   build.sh            → runtime/dsh/build/dsh-cli          (debug: full logging)
 #   build.sh --release  → runtime/dsh/build/dsh-cli-release  (-DDSH_RELEASE: the
 #                         shared host injects globalThis.__DSH_RELEASE__)
+#   build.sh --sanitize → runtime/dsh/build/dsh-cli-sanitize (asan+ubsan, debug
+#                         regime: the memory-safety proof flavor the c-core CI
+#                         leg runs the ten test-core legs against)
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Flags first — an unknown flag must be rejected BEFORE any work (materialize,
 # compile) happens, not after.
 RELEASE=0
+SANITIZE=0
 for arg in "$@"; do
     case "$arg" in
         --release) RELEASE=1 ;;
-        *) echo "src/build.sh: unknown flag '$arg' (want [--release])" >&2; exit 2 ;;
+        --sanitize) SANITIZE=1 ;;
+        *) echo "src/build.sh: unknown flag '$arg' (want [--release] [--sanitize])" >&2; exit 2 ;;
     esac
 done
+if [ "$RELEASE" -eq 1 ] && [ "$SANITIZE" -eq 1 ]; then
+    echo "src/build.sh: --release and --sanitize are mutually exclusive (one flavor per build)" >&2
+    exit 2
+fi
 "$ROOT/external/ensure.sh"
 VENDOR="$ROOT/external/quickjs-ng/0.17.0"
 # Vendored zstd ($ROOT/external/ensure-zstd.sh is the pin record): compiled straight
@@ -51,7 +58,30 @@ mkdir -p "$ROOT/runtime/dsh/build"
 # and on an x86_64 build (Intel Mac / x86_64 Linux) the asm dispatch would
 # reference undefined HUF_*_fast_asm_loop symbols at link time — the same
 # define every platform build passes.
-if [ "$RELEASE" -eq 1 ]; then
+if [ "$SANITIZE" -eq 1 ]; then
+    # The sanitizer flavor: asan+ubsan over the SAME source and include set as
+    # the debug build below, debug logging regime INTACT (the legs assert on
+    # structured logs — -DDSH_RELEASE would strip the evidence out from under
+    # them). -g -fno-omit-frame-pointer so every sanitizer report symbolizes
+    # with stacks; -fno-sanitize-recover=all so a UBSan finding aborts (exit
+    # nonzero) instead of warning — the CI leg is red on ANY sanitizer report.
+    # Leak detection is deliberately NOT a compile flag: it is a runtime
+    # option (the Linux CI leg sets ASAN_OPTIONS=detect_leaks=1; macOS ASan
+    # rejects the flag — LSan is unsupported there), so the flavor itself runs
+    # on both hosts. The output lands BESIDE the default binary, never over
+    # it: a no-flag build keeps producing the byte-identical dsh-cli.
+    # shellcheck disable=SC2086 # intentional word split (see the release leg below)
+    cc -std=c11 -O1 -g -D_GNU_SOURCE -DZSTD_DISABLE_ASM=1 -DDSH_WITH_SQLITE=1 \
+       -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer \
+       -I"$SCRIPT_DIR" -I"$VENDOR" -I"$ZSTD" -I"$ZSTD/common" -I"$WASM3" \
+       -o "$ROOT/runtime/dsh/build/dsh-cli-sanitize" \
+       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" \
+       $WASM3_SRC \
+       "$VENDOR/dtoa.c" "$VENDOR/libregexp.c" "$VENDOR/libunicode.c" "$VENDOR/quickjs.c" \
+       $ZSTD_SRC \
+       -lsqlite3 -lm
+    echo "built $ROOT/runtime/dsh/build/dsh-cli-sanitize (-fsanitize=address,undefined)"
+elif [ "$RELEASE" -eq 1 ]; then
     # ZSTD_SRC is a path list — word splitting is how each entry becomes its
     # own argv element for the compiler.
     # shellcheck disable=SC2086 # intentional word split
