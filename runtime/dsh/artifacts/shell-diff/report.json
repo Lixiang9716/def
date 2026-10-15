@@ -1,0 +1,848 @@
+{
+  "generatedBy": "test/shell-diff/compare.mjs (test-hardening row 6)",
+  "cases": [
+    {
+      "id": "pipe-echo-cat",
+      "family": "pipes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "hello\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "hello\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "pipe-three-member-sort-head",
+      "family": "pipes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "alpha\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "alpha\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "pipe-sort-uniq",
+      "family": "pipes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "alpha\ncharlie\ndelta\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "alpha\ncharlie\ndelta\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "pipe-grep-wc",
+      "family": "pipes",
+      "kind": "match",
+      "note": "the count (2) is the contract's substance; the reference seat's wc pads counts BSD-wise on macOS ('       2') and prints them bare on GNU (Linux CI, where the seats already agree byte-for-byte) — the declared trim-leading-spaces normalization scopes out the reference binary's rendering so both platforms assert the product exactly",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "2\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "2\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "pipe-redirect-into-file",
+      "family": "pipes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "alpha\nbravo\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "alpha\nbravo\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "pipe-first-member-unknown",
+      "family": "pipes",
+      "kind": "divergence",
+      "note": "OPEN FINDING: bash takes the LAST member's status (cat hits EOF, exits 0); dsh answers 1 — the unknown first member's failure contaminates the line and cat does not exit 0. stderr loud on both sides (GNU 'command not found' vs the dsh applet list)",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "no-such-applet-x: not found. Available applets: basename, cat, cd, cp, dirname, echo, env, find, grep, head, ls, mkdir, mv, pwd, rm, sed, sha256sum, sort, tail, tar, uniq, wc. This shell has no PATH — the applets above are everything it runs, in-process over the gateway fs primitives. File work outside them belongs to the fs tools (read/list/write/edit).cat: no paths given"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": "/scripts/pipe-first-member-unknown.sh: line 1: no-such-applet-x: command not found\n"
+      }
+    },
+    {
+      "id": "pipe-last-member-unknown",
+      "family": "pipes",
+      "kind": "match",
+      "note": "exit codes agree at 127 (the last member wins); stderr loud on both sides, text differs",
+      "verdict": "match",
+      "detail": "exit 127 + stdout agree; stderr loud on both sides (text differs, wording not contract)",
+      "dsh": {
+        "exitCode": 127,
+        "stdout": "",
+        "stderr": "no-such-applet-y: not found. Available applets: basename, cat, cd, cp, dirname, echo, env, find, grep, head, ls, mkdir, mv, pwd, rm, sed, sha256sum, sort, tail, tar, uniq, wc. This shell has no PATH — the applets above are everything it runs, in-process over the gateway fs primitives. File work outside them belongs to the fs tools (read/list/write/edit).dsh-shell-js: pipeline member failed: write to a pipe whose reader has closed (broken pipe)\n"
+      },
+      "bash": {
+        "exitCode": 127,
+        "stdout": "",
+        "stderr": "/scripts/pipe-last-member-unknown.sh: line 1: no-such-applet-y: command not found\n"
+      }
+    },
+    {
+      "id": "redirect-create-readback",
+      "family": "redirects",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "beta\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "beta\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-append-not-truncate",
+      "family": "redirects",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "alpha\nbravo\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "alpha\nbravo\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-overwrite",
+      "family": "redirects",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "two\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "two\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-parent-dir",
+      "family": "redirects",
+      "kind": "match",
+      "note": ".. stays inside the workspace root (dsh) / sandbox root (bash) — the same relative semantics, read back through the same relative spelling",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "up\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "up\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-nested-parent-creates",
+      "family": "redirects",
+      "kind": "divergence",
+      "note": "OPEN FINDING: the CLI dev backend's fsWrite materializes missing parents, so '> sub/f.txt' succeeds where bash fails (fopen cannot create, exit 1). A backend storage choice undisclosed in the dialect contract",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 1",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "x\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "/scripts/redirect-nested-parent-creates.sh: line 1: sub/f.txt: No such file or directory\ncat: sub/f.txt: No such file or directory\n"
+      }
+    },
+    {
+      "id": "redirect-mkdir-capability",
+      "family": "redirects",
+      "kind": "divergence",
+      "note": "OPEN FINDING: the CLI seat has no fsMkdir, and the gap does NOT surface as the documented capability refusal (exit 2 naming the primitive) — observed: exit 1, 'mkdir: no such file or directory: .'. bash creates d1 — recorded as context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "mkdir: no such file or directory: ."
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-stderr-of-failure",
+      "family": "redirects",
+      "kind": "divergence",
+      "note": "wording-level: both seats fail the cat loudly, 2> captures the text, and reading it back prints each seat's own wording (dsh 'cat: no such file or directory: missing.txt' vs GNU 'cat: missing.txt: No such file or directory'). Exit codes and the capture mechanism agree",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 0",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "cat: no such file or directory: missing.txt",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "cat: missing.txt: No such file or directory\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "redirect-stderr-append",
+      "family": "redirects",
+      "kind": "divergence",
+      "note": "OPEN FINDING: wc's missing-file failure is typed as a construct REFUSAL (exit 2) — the line stops as one, the refusal lands on stderr uncaptured by 2>, and the following commands never run. bash fails each wc (exit 1), captures both messages, and prints them: exit 0 with the two lines on stdout",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 2); bash: exit 0",
+      "dsh": {
+        "exitCode": 2,
+        "stdout": "",
+        "stderr": "wc: missing.txt: cannot read file\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "wc: missing.txt: open: No such file or directory\nwc: also-missing.txt: open: No such file or directory\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-assign-expand",
+      "family": "variables",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "hello dsh\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "hello dsh\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-brace-form",
+      "family": "variables",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "dsh-shell\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "dsh-shell\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-brace-concat",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "OPEN FINDING: assignment VALUES do not undergo parameter expansion — dsh stores the literal raw text ('${A}bar') where bash expands at assignment time ('foobar')",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 0",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "${A}bar\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "foobar\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-unset-is-empty",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "OPEN FINDING (quoted words glob): bash never glob-expands a quoted word; dsh checks the EXPANDED text for glob magic regardless of quoting, so '[...]' reaches the fsList walker and — on this seat, which has no fsList — refuses (exit 1, 'declared unavailable'). On a full-primitive seat a quoted word MATCHING files would expand where bash would print it literally",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "[]\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-name-boundary",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "same quoted-words-glob finding as var-unset-is-empty (the '[...]' word is quoted; bash expands $Abar to empty and prints '[]' literally — never globs)",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "[]\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-single-quote-literal",
+      "family": "variables",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "$A\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "$A\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-adjacent-quotes",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "same quoted-words-glob finding: the double-quoted '[...]' segment drags the whole word into the glob path (bash: '[foo]$A', no globbing on a quoted word)",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "[foo]$A\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-prefix-assignment-expansion",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "OPEN FINDING: dsh expands argv against the member table seeded WITH the prefix assignment; bash expands against the pre-command table (empty line). Undisclosed in the dialect contract",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 0",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "1\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "var-word-splitting",
+      "family": "variables",
+      "kind": "divergence",
+      "note": "OPEN FINDING: unquoted expansion performs no IFS word splitting, so $MSG arrives as one word (a filename containing a space; dsh: 'cat: no such file or directory: x.txt y.txt'). Undisclosed in the dialect contract",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "cat: no such file or directory: x.txt y.txt"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "one\ntwo\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-star-echo-sorted",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "documented capability gap, dishonestly shaped: expansion needs the fsList walker, the CLI backend does not serve it — but instead of the exit-2 primitive-naming refusal the gap surfaces as exit 1 'pipeline member failed: declared unavailable' (the argv-expansion loop sits outside the refusal shaping). bash's sorted expansion (fixtures created c,a,b) is the recorded context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a.txt b.txt c.txt\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-star-cat-order",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "same unshaped capability gap as glob-star-echo-sorted; bash concatenates in sorted order — context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a\nb\nc\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-question",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "same unshaped capability gap; bash matches a.txt only — context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a.txt\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-bracket",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "same unshaped capability gap; bash concatenates a.txt b.txt — context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a\nb\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-no-match-literal",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "the no-match literal passthrough is unreachable on this seat: the walker runs (fsList) before any no-match decision, and the gap surfaces as the unshaped exit-1 refusal. bash prints '*.nomatch' literally (nullglob off) — context",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "*.nomatch\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-prefix-pattern",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "OPEN FINDING (deadlock): a glob refusal in the FIRST pipeline member parks the whole line — exec.js's argv-expansion loop sits outside the try, so the refusal throws without closing the pipe writer and the downstream members read an EOF that never comes; the tool layer kills the dispatch at its 120s budget (exitCode -1). bash counts 2 lines",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit -1); bash: exit 0",
+      "dsh": {
+        "exitCode": -1,
+        "stdout": "",
+        "stderr": "dispatch-error: tool \"shell\" exceeded its 120000ms budget (tool/deadline) — the call failed in-band; the runtime stayed responsive. Do not retry the same call unchanged."
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "       2\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "glob-redirect-target-not-expanded",
+      "family": "globs",
+      "kind": "divergence",
+      "note": "OPEN FINDING: redirect targets skip glob expansion — dsh creates a literal *.txt file where bash writes the single match a.txt. Needs no fsList on either path, so it is fully exercised on this seat",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 0); bash: exit 0",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "orig\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "x\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-single-literal",
+      "family": "quotes",
+      "kind": "divergence",
+      "note": "OPEN FINDING (quoted words glob): the single-quoted word contains '*' and dsh globs it (bash never globs quoted words); on this seat the walk hits the missing fsList and refuses exit 1. On a full seat, a quoted pattern matching files would expand where bash prints it literally",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 1); bash: exit 0",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "dsh-shell-js: pipeline member failed: declared unavailable by the smoke backend\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a * b $X \"y\"\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-adjacent-segments",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "abcde\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "abcde\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-escape-inside-double",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "a \"b\"\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a \"b\"\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-backslash-plain-in-double",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "a\\b\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a\\b\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-unquoted-escape-space",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "a b\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a b\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-hash-comment",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "hi\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "hi\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-hash-midword",
+      "family": "quotes",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "hi#notcomment\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "hi#notcomment\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "quote-empty-words",
+      "family": "quotes",
+      "kind": "match",
+      "note": "two empty words join to a single space on both sides",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": " \n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": " \n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "heredoc-simple-form",
+      "family": "heredoc",
+      "kind": "refusal",
+      "note": "documented refusal (SHELL_DESCRIPTION / parser-syntax.js): heredocs are outside the honored subset; bash runs the body — recorded as context",
+      "verdict": "refusal-ok",
+      "detail": "dsh refuses exit 2 naming what is missing (needles: 1); bash context: exit 0",
+      "dsh": {
+        "exitCode": 2,
+        "stdout": "",
+        "stderr": "dsh-shell-js: parse error — heredocs << are not implemented"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "alpha\nbeta\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "heredoc-with-redirect-parse-time",
+      "family": "heredoc",
+      "kind": "refusal",
+      "note": "documented refusal; the whole LINE refuses at parse time on the dsh side (out.txt is never created) while bash creates it",
+      "verdict": "refusal-ok",
+      "detail": "dsh refuses exit 2 naming what is missing (needles: 1); bash context: exit 0",
+      "dsh": {
+        "exitCode": 2,
+        "stdout": "",
+        "stderr": "dsh-shell-js: parse error — heredocs << are not implemented"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "seq-semicolon",
+      "family": "sequencing",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "a\nb\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "a\nb\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "seq-and-runs",
+      "family": "sequencing",
+      "kind": "match",
+      "verdict": "match",
+      "detail": "exit + stdout + stderr identical after normalization",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "made\n",
+        "stderr": ""
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "made\n",
+        "stderr": ""
+      }
+    },
+    {
+      "id": "seq-or-fallback",
+      "family": "sequencing",
+      "kind": "match",
+      "note": "both sides fall back (exit 0, 'fallback'); the left side fails loudly on both (dsh: the wc refusal, bash: GNU text) and the || arm runs on both",
+      "verdict": "match",
+      "detail": "exit 0 + stdout agree; stderr loud on both sides (text differs, wording not contract)",
+      "dsh": {
+        "exitCode": 0,
+        "stdout": "fallback\n",
+        "stderr": "wc: missing.txt: cannot read file\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "fallback\n",
+        "stderr": "wc: missing.txt: open: No such file or directory\n"
+      }
+    },
+    {
+      "id": "seq-and-skips-then-continues",
+      "family": "sequencing",
+      "kind": "divergence",
+      "note": "OPEN FINDING (refusal stops the line): wc's missing-file failure is a construct refusal on the dsh side — the && arm is skipped AND the next LINE never runs (the script loop breaks on a refusal), so 'after' is never printed; exit 2. bash: wc fails (exit 1), 'nope' skipped, 'after' printed",
+      "verdict": "divergence-pinned",
+      "detail": "the known difference is present, in the pinned dsh shape (exit 2); bash: exit 0",
+      "dsh": {
+        "exitCode": 2,
+        "stdout": "",
+        "stderr": "wc: missing.txt: cannot read file\n"
+      },
+      "bash": {
+        "exitCode": 0,
+        "stdout": "after\n",
+        "stderr": "wc: missing.txt: open: No such file or directory\n"
+      }
+    },
+    {
+      "id": "seq-failure-exit-code",
+      "family": "sequencing",
+      "kind": "match",
+      "note": "the status propagates identically (exit 1 both) and BOTH sides fail loudly (dsh: 'cat: no such file or directory: missing.txt', bash: GNU text) — cat failures are plain command failures on both seats, unlike wc's",
+      "verdict": "match",
+      "detail": "exit 1 + stdout agree; stderr loud on both sides (text differs, wording not contract)",
+      "dsh": {
+        "exitCode": 1,
+        "stdout": "before\n",
+        "stderr": "cat: no such file or directory: missing.txt"
+      },
+      "bash": {
+        "exitCode": 1,
+        "stdout": "before\n",
+        "stderr": "cat: missing.txt: No such file or directory\n"
+      }
+    },
+    {
+      "id": "seq-unknown-command-127",
+      "family": "sequencing",
+      "kind": "refusal",
+      "note": "documented refusal vocabulary (exit 127, the applet list named); bash agrees on the exit code",
+      "verdict": "refusal-ok",
+      "detail": "dsh refuses exit 127 naming what is missing (needles: 2); bash context: exit 127",
+      "dsh": {
+        "exitCode": 127,
+        "stdout": "",
+        "stderr": "definitely-not-an-applet: not found. Available applets: basename, cat, cd, cp, dirname, echo, env, find, grep, head, ls, mkdir, mv, pwd, rm, sed, sha256sum, sort, tail, tar, uniq, wc. This shell has no PATH — the applets above are everything it runs, in-process over the gateway fs primitives. File work outside them belongs to the fs tools (read/list/write/edit)."
+      },
+      "bash": {
+        "exitCode": 127,
+        "stdout": "",
+        "stderr": "/scripts/seq-unknown-command-127.sh: line 1: definitely-not-an-applet: command not found\n"
+      }
+    }
+  ],
+  "verdicts": {
+    "match": 24,
+    "refusal-ok": 3,
+    "divergence-pinned": 20,
+    "...of which contract-documented": 1,
+    "...of which open findings": 19,
+    "BUG": 0,
+    "CHANGED": 0,
+    "MISSING": 0
+  },
+  "normalization": {
+    "bashSandbox": "bash-sandbox",
+    "dshWorkspace": "workspace",
+    "rule": "scratch roots scrubbed to workspace-relative; CRLF folded; nothing else smoothed"
+  }
+}
