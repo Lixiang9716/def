@@ -1,0 +1,21 @@
+{
+  "host": "oarwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
+  "scenario": "session.multi.stress",
+  "proves": [
+    "4 sessions on ONE spine round through interleaved turns with PACED streams (500ms/chunk) so turn windows genuinely overlap — the T-0210 burst shape, asserted at the runtime journal",
+    "every journal frame lands in its owning session's open turn: the ctx session/event firehose demands per-session seq CONTIGUITY (a lost or duplicated record is the T-0210 recorded-nowhere class), one open turn at a time numbered 1..K without gaps or duplicates, exactly one answering settle per turn, all with the scripted text",
+    "the scripted tool turn lands in exactly its owner (gamma, turn 2): one linked tool/call + tool/result pair citing its call seq, schema-valid todo_write arguments, and ZERO tool records in any sibling journal — checked live in the firehose and re-derived from snapshotEvents",
+    "the mid-flight insertion (delta created + prompted while alpha/beta's round-2 turns are provably still open) lands without moving any sibling's turnBoundary projection, and every projection's lastTurn equals its own session's last started turn — no cross-wiring",
+    "all four sessions recover SEPARATELY in process 2 on the same container: alpha through the config-driven start, beta/gamma/delta through ctx.agents.resume, each seed exactly its own drive-side journal, each continued by its own turn K+1",
+    "the mock served exactly 16 requests (12 + 4) — no hidden retry shifted the scripted attribution arrangement",
+    "no 'corrupt session log' and no 'cannot resume' anywhere"
+  ],
+  "mockScript": "12 entries, tool_call_success at position 7 (gamma's solo round-2b request on an idle wire), slow_success elsewhere, repeatLast for the 4 recovery turns, 500ms/chunk",
+  "events": 46,
+  "artifact": { "filesAfterDrive": 4, "filesAfterRecover": 4, "servedRequests": 16 },
+  "container": "/tmp/dsh-multistress.qkJMx4",
+  "checker": "test/e2e/scenarios/session-multi-stress.json",
+  "exitCode": 0
+}
