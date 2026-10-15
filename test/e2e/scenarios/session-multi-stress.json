@@ -1,0 +1,439 @@
+{
+  "scenario": "session.multi.stress",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → loopback chat-completions mock server",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "stress/booted",
+      "match": {
+        "leg": "drive"
+      }
+    },
+    {
+      "event": "stress/created",
+      "match": {
+        "sessionId": "s-stress-beta"
+      }
+    },
+    {
+      "event": "stress/created",
+      "match": {
+        "sessionId": "s-stress-gamma"
+      }
+    },
+    {
+      "event": "stress/round",
+      "match": {
+        "round": 1,
+        "started": ["s-stress-alpha", "s-stress-beta", "s-stress-gamma"]
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "turn": 1,
+        "records": 10,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turn": 1,
+        "records": 10,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "turn": 1,
+        "records": 10,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/round.settled",
+      "match": {
+        "round": 1,
+        "sessions": 3,
+        "peakOpen": 3
+      }
+    },
+    {
+      "event": "stress/round",
+      "match": {
+        "round": 2,
+        "started": ["s-stress-alpha", "s-stress-beta"],
+        "inserted": "s-stress-delta"
+      }
+    },
+    {
+      "event": "stress/created",
+      "match": {
+        "sessionId": "s-stress-delta"
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "turn": 2,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "turn": 2,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-delta",
+        "turn": 1,
+        "records": 10,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/round.settled",
+      "match": {
+        "round": 2,
+        "sessions": 3,
+        "inserted": "s-stress-delta",
+        "peakOpen": 3
+      }
+    },
+    {
+      "event": "stress/round",
+      "match": {
+        "round": 2,
+        "phase": "tool",
+        "soloToolTurn": "s-stress-gamma"
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turn": 2,
+        "records": 13,
+        "text": "Hello from upstream",
+        "toolCalls": 1
+      }
+    },
+    {
+      "event": "stress/tool.call.observed",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turn": 2,
+        "name": "todo_write"
+      }
+    },
+    {
+      "event": "stress/round.settled",
+      "match": {
+        "round": 2,
+        "phase": "tool",
+        "sessions": 1,
+        "peakOpen": 1
+      }
+    },
+    {
+      "event": "stress/round",
+      "match": {
+        "round": 3,
+        "started": [
+          "s-stress-alpha",
+          "s-stress-beta",
+          "s-stress-gamma",
+          "s-stress-delta"
+        ]
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "turn": 3,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "turn": 3,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turn": 3,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/turn.settled",
+      "order": "any",
+      "match": {
+        "sessionId": "s-stress-delta",
+        "turn": 2,
+        "records": 7,
+        "text": "Hello from upstream",
+        "toolCalls": 0
+      }
+    },
+    {
+      "event": "stress/round.settled",
+      "match": {
+        "round": 3,
+        "sessions": 4,
+        "peakOpen": 4
+      }
+    },
+    {
+      "event": "stress/durable",
+      "match": {
+        "sessions": 4,
+        "artifacts": [
+          "s-stress-alpha",
+          "s-stress-beta",
+          "s-stress-delta",
+          "s-stress-gamma"
+        ]
+      }
+    },
+    {
+      "event": "stress/session.summary",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "turns": 3,
+        "toolRounds": 0,
+        "events": 27,
+        "lastTurn": 3
+      }
+    },
+    {
+      "event": "stress/session.summary",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "turns": 3,
+        "toolRounds": 0,
+        "events": 27,
+        "lastTurn": 3
+      }
+    },
+    {
+      "event": "stress/session.summary",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turns": 3,
+        "toolRounds": 1,
+        "events": 33,
+        "lastTurn": 3
+      }
+    },
+    {
+      "event": "stress/session.summary",
+      "match": {
+        "sessionId": "s-stress-delta",
+        "turns": 2,
+        "toolRounds": 0,
+        "events": 19,
+        "lastTurn": 2
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "leg": "drive",
+        "sessions": 4,
+        "turns": 11,
+        "backend": "vendored session-persistence-jsonl"
+      }
+    },
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile"
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2"
+      }
+    },
+    {
+      "event": "stress/booted",
+      "match": {
+        "leg": "recover"
+      }
+    },
+    {
+      "event": "stress/resumed",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "restoredEvents": 28,
+        "turns": 3,
+        "tail": "session/end-seed"
+      }
+    },
+    {
+      "event": "stress/resumed",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "restoredEvents": 28,
+        "turns": 3,
+        "tail": "session/end-seed"
+      }
+    },
+    {
+      "event": "stress/resumed",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "restoredEvents": 34,
+        "turns": 3,
+        "tail": "session/end-seed"
+      }
+    },
+    {
+      "event": "stress/resumed",
+      "match": {
+        "sessionId": "s-stress-delta",
+        "restoredEvents": 20,
+        "turns": 2,
+        "tail": "session/end-seed"
+      }
+    },
+    {
+      "event": "stress/continued",
+      "match": {
+        "sessionId": "s-stress-alpha",
+        "turn": 4,
+        "totalEvents": 37
+      }
+    },
+    {
+      "event": "stress/continued",
+      "match": {
+        "sessionId": "s-stress-beta",
+        "turn": 4,
+        "totalEvents": 37
+      }
+    },
+    {
+      "event": "stress/continued",
+      "match": {
+        "sessionId": "s-stress-gamma",
+        "turn": 4,
+        "totalEvents": 43
+      }
+    },
+    {
+      "event": "stress/continued",
+      "match": {
+        "sessionId": "s-stress-delta",
+        "turn": 3,
+        "totalEvents": 29
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "leg": "recover",
+        "sessions": 4,
+        "backend": "vendored session-persistence-jsonl"
+      }
+    }
+  ]
+}
