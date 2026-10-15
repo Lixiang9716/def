@@ -659,13 +659,16 @@
    * WKWebView/ArkWeb — the classic mobile-webview trap. */
   font-size: 16px;
 }
-.onboarding-key-row { display: flex; gap: 6px; align-items: center; }
+.onboarding-key-row { display: flex; gap: 6px; align-items: stretch; }
 .onboarding-toggle {
   border: 1px solid var(--line);
   background: var(--bg);
   border-radius: 12px;
   padding: 8px 10px;
   font-size: 14px;
+  /* The row is stretch, not center: the toggle co-sizes with the field it
+   * toggles (44+px tall like the input), not a 37px side button — the HIG
+   * control default for a panel whose sibling buttons are already 44+. */
 }
 .onboarding-actions { display: flex; gap: 8px; margin-top: 14px; }
 .onboarding-btn {

@@ -13,7 +13,10 @@
  * `WS /api/remote.mux` answer the mobile runtime's honest claim surface —
  * `session.list` from a fixture, `session/journal` as a fixture replay,
  * everything else the structured gateway/unimplemented envelope (what the
- * on-device runtime answers before its Phase-C surface grows).
+ * on-device runtime answers before its Phase-C surface grows). The BYOK
+ * onboarding legs (onboarding/status|save|clear, the web-client-v2 panel's
+ * wire) answer from an in-memory mock keychain — onboarding-route.mjs, the
+ * runtime coverage legs' shape port.
  *
  * The boot rows are not hand-built: compose-boot.mjs composes them with
  * the VENDORED @deepseek-ai/dsh-client-modules Node half over the
@@ -30,6 +33,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { composeBootWire, serializeRows } from './compose-boot.mjs';
 import { startNextCarrier } from './next-mode.mjs';
+import { createOnboarding, onboardingOutcome } from './onboarding-route.mjs';
 import { PluginsRoute } from './plugins-route.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
 
@@ -183,7 +187,7 @@ const main = async () => {
   const isAuthed = (req) => (req.headers.cookie ?? '').split(';')
     .map((c) => c.trim()).some((c) => c === `${COOKIE_NAME}=${token}`);
   const render = () => renderIndex(readFileSync(join(DIST_ROOT, 'index.html'), 'utf8'), rows);
-  const env = { plugins, token, isAuthed, render, sessionsFixture };
+  const env = { plugins, token, isAuthed, render, sessionsFixture, onboarding: createOnboarding() };
 
   const server = createServer((req, res) => serveHttp(req, res, env));
   server.on('upgrade', (req, socket) => {
@@ -219,7 +223,7 @@ const serveHttp = (req, res, env) => {
       return pluginsHandler(env, request, respond);
     }
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {
-      return handleApi(req, url, respond, env.sessionsFixture);
+      return handleApi(req, url, respond, env.sessionsFixture, env.onboarding);
     }
     if (!env.isAuthed(req)) return authGate(req, url, respond, env.token);
     return serveDist(req, url, respond, env.render);
@@ -243,21 +247,22 @@ const authGate = (req, url, respond, token) => {
 };
 
 /** POST /api/<endpoint> — the mobile runtime's honest claim surface:
- * `session.list` from the fixture; everything else the structured
+ * `session.list` from the fixture, the BYOK onboarding legs from the
+ * in-memory port (onboarding-route.mjs); everything else the structured
  * gateway/unimplemented envelope (web-boot.js deliverApiRequest shape). */
-const handleApi = (req, url, respond, sessionsFixture) => {
+const handleApi = (req, url, respond, sessionsFixture, onboarding) => {
   if (req.method !== 'POST') return respond(405, 'text/plain', '');
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
   req.on('end', () => {
-    const outcome = apiOutcome(url, Buffer.concat(chunks).toString('utf8'), sessionsFixture);
+    const outcome = apiOutcome(url, Buffer.concat(chunks).toString('utf8'), sessionsFixture, onboarding);
     if (outcome.error !== undefined) return respond(400, 'text/plain', '');
     respond(200, 'application/json', outcome.body);
   });
 };
 
 /** Pure leg of handleApi: parse the envelope, answer the claim surface. */
-const apiOutcome = (url, bodyText, sessionsFixture) => {
+const apiOutcome = (url, bodyText, sessionsFixture, onboarding) => {
   let envelope;
   try {
     envelope = JSON.parse(bodyText);
@@ -268,16 +273,18 @@ const apiOutcome = (url, bodyText, sessionsFixture) => {
     return { error: 'malformed envelope' };
   }
   const endpoint = url.pathname.slice('/api/'.length);
-  const result = envelope.method === 'session.list'
-    ? { ok: true, value: sessionsFixture }
-    : {
-      ok: false,
-      error: {
-        code: 'gateway/unimplemented',
-        message: `endpoint ${endpoint} is not implemented by the dev carrier`,
-        details: { endpoint },
-      },
-    };
+  const result = endpoint.startsWith('onboarding/')
+    ? onboardingOutcome(onboarding, endpoint, envelope.payload?.args)
+    : envelope.method === 'session.list'
+      ? { ok: true, value: sessionsFixture }
+      : {
+        ok: false,
+        error: {
+          code: 'gateway/unimplemented',
+          message: `endpoint ${endpoint} is not implemented by the dev carrier`,
+          details: { endpoint },
+        },
+      };
   return { body: JSON.stringify({ type: 'server-response', rpcId: envelope.rpcId, result }) };
 };
 

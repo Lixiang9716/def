@@ -12,13 +12,18 @@
  * Honest by construction: every served fact is this file's own fixture
  * behavior, labeled dev-echo in the turn content; nothing pretends to be
  * the runtime. session/cancel IS claimed here (a real local cancel), so
- * the stop button is exercisable end-to-end.
+ * the stop button is exercisable end-to-end. The BYOK onboarding legs
+ * (onboarding/status|save|clear) answer from the shared in-memory mock
+ * keychain (onboarding-route.mjs) — the web-client-v2 panel boots in the
+ * loop; the onboarding/test probe stream stays gateway/unimplemented (see
+ * that module's honest boundary).
  */
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createOnboarding, onboardingOutcome } from './onboarding-route.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -43,6 +48,7 @@ const state = () => {
     sessions: new Map(), // id → {id, createdAt, journal, followers, running, title}
     mint: () => `s-dev-next-${String(nextId++).padStart(4, '0')}`,
     seq: () => nextSeq++,
+    onboarding: createOnboarding(), // the BYOK mock keychain (onboarding-route.mjs)
   };
 };
 
@@ -157,10 +163,20 @@ const seedFrom = (machine, sessionsFixture, journalPath) => {
   }
 };
 
+/** The onboarding arm: the shared mock-keychain legs (onboarding-route.mjs);
+ * an unknown onboarding verb stays the carrier's unimplemented business. */
+const serveOnboarding = (machine, endpoint, bodyText, respond) => {
+  const outcome = onboardingOutcome(machine.onboarding, endpoint, requestOf(bodyText)?.args);
+  if (outcome === null) {
+    return fail(respond, bodyText, 'gateway/unimplemented',
+      `endpoint ${endpoint} is not implemented by the dev carrier`);
+  }
+  return outcome.ok ? ok(respond, bodyText, outcome.value)
+    : fail(respond, bodyText, outcome.error.code, outcome.error.message);
+};
+
 const apiHandler = (machine, url, bodyText, respond) => {
   const endpoint = url.pathname.slice('/api/'.length);
-  const ok = (value) => respond(200, 'application/json',
-    JSON.stringify({ type: 'server-response', rpcId: rpcIdOf(bodyText), result: { ok: true, value } }));
   if (endpoint === 'session/list') {
     const items = [...machine.sessions.values()].map((session) => ({
       sessionId: session.id,
@@ -168,7 +184,7 @@ const apiHandler = (machine, url, bodyText, respond) => {
       running: session.running,
       blank: session.journal.length === 0,
     })).sort((a, b) => b.updatedAt - a.updatedAt);
-    return ok({ items });
+    return ok(respond, bodyText, { items });
   }
   if (endpoint === 'session/create') {
     const id = machine.mint();
@@ -176,7 +192,7 @@ const apiHandler = (machine, url, bodyText, respond) => {
       id, createdAt: Date.now() / 1000, journal: [],
       followers: new Set(), running: false, activeFrames: [],
     });
-    return ok({ sessionId: id });
+    return ok(respond, bodyText, { sessionId: id });
   }
   const session = machine.sessions.get(requestOf(bodyText)?.sessionId);
   if (endpoint === 'session/prompt') {
@@ -193,12 +209,15 @@ const apiHandler = (machine, url, bodyText, respond) => {
       follower.send(wireEvent(session.journal.at(-1)));
     }
     runEchoTurn(session, text, machine.seq, () => {});
-    return ok({ accepted: true });
+    return ok(respond, bodyText, { accepted: true });
   }
   if (endpoint === 'session/cancel') {
     if (session === undefined) return fail(respond, bodyText, 'session/not-found', 'unknown session');
     session.cancelTurn?.();
-    return ok({ cancelled: true });
+    return ok(respond, bodyText, { cancelled: true });
+  }
+  if (endpoint.startsWith('onboarding/')) {
+    return serveOnboarding(machine, endpoint, bodyText, respond);
   }
   return fail(respond, bodyText, 'gateway/unimplemented', `endpoint ${endpoint} is not implemented by the dev carrier`);
 };
@@ -206,6 +225,8 @@ const apiHandler = (machine, url, bodyText, respond) => {
 const rpcIdOf = (bodyText) => {
   try { return JSON.parse(bodyText)?.rpcId ?? ''; } catch { return ''; }
 };
+const ok = (respond, bodyText, value) => respond(200, 'application/json',
+  JSON.stringify({ type: 'server-response', rpcId: rpcIdOf(bodyText), result: { ok: true, value } }));
 const requestOf = (bodyText) => {
   try {
     const body = JSON.parse(bodyText);

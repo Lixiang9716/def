@@ -72,6 +72,18 @@
 
 * { box-sizing: border-box; }
 
+/* Keyboard focus is deliberate, not UA-leftover: every control on the page
+ * is custom-styled (borderless buttons, bare inputs), so the engines'
+ * differing default rings are the only indicator — and none is guaranteed
+ * once a control sets its own outline. One rule gives keyboard users (the
+ * desktop dev loop tab-navigates this same page) a consistent, on-brand
+ * indicator in both appearances (--link, the tone layer's ocean face).
+ * :focus-visible only, so touch/pointer activation never draws it. */
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
