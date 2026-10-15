@@ -1,0 +1,283 @@
+{
+  "title": "Scoped Stryker mutation pilot + survivor triage (test-hardening #5)",
+  "created": "2026-10-15T14:34:27+00:00",
+  "rules": {
+    "hash": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
+    }
+  },
+  "checklist": [
+    "[x] test/mutation standalone seat: package.json + 3 family stryker configs (reviewable in-repo)",
+    "[x] Family 1 shell-js (applets-support + shellStringOutcome) mutation run, duration recorded",
+    "[x] Family 2 lynx fold/surface-core mutation run, duration recorded",
+    "[x] Family 3 publisher-token mutation run, duration recorded",
+    "[x] Every survivor triaged: gap | equivalent | noise",
+    "[x] [gap] survivors get pinned tests; re-run kills them (no production-code edits)",
+    "[x] Agent Note (testing) with the triage table",
+    "[x] PR (CI green) merged with commit test(mutation): scoped stryker pilot + triage"
+  ],
+  "status": "done",
+  "receipt": {
+    "ts": "2026-10-15T15:43:02+00:00",
+    "mode": "quick",
+    "rules": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "green": true,
+    "gates": [
+      {
+        "gate": "self-test",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "notes",
+        "outcome": "PASS",
+        "blocking": false,
+        "duration_ms": 169,
+        "detail": "note: .agents/notes/implemented/feature/2026-09-22-the-shell-an-ios-host-can-have-wasm-in-proces.md is superseded by 2026-10-11-the-shell-all-three-hosts-can-actually-s.md \u2014 partially: that note retires\nnote: .agents/notes/implemented/process/2026-09-21-the-release-token-probe-tests-the-write-.md is superseded by 2026-09-21-the-release-pr-gets-its-required-check-b.md \u2014 the PAT requirement and the three probes below were removed the same day, in favour of `GITHUB_TOKEN` plus an explicit `gates` dispatch (D11). The probe technique is still the reason the diagnosis was possible; the code it lived in is gone.\nverify_notes: 347 note(s) ok",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "pairing",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "note-presence",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "conflict-markers",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "check",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "code-size",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "logging",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "doc-crosslinks",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "archive",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "task",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "verify-decisions",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "plane",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "panel-tests",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "e2e-matrix",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "closures",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "descriptor-parity",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "vendoring-repro",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "bundle-files",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "quickjs-boot-parse",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "staging-check",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "staging-generated",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "coverage-floor",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "asset-mirrors",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "transport-tokens",
+        "outcome": "PASS",
+        "blocking": false,
+        "duration_ms": 778,
+        "detail": "check-transport-tokens: OK (3630 tracked files scanned, 0 old spellings, 10 tokens \u00d7 33 layer checks present)",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "shellcheck-warn",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "actionlint",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      },
+      {
+        "gate": "perf-budget",
+        "outcome": "NOT_SELECTED",
+        "blocking": false,
+        "duration_ms": 0,
+        "detail": "",
+        "selected_by": "mode:quick",
+        "scoped_out": false
+      }
+    ]
+  },
+  "id": "T-0239"
+}

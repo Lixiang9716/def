@@ -81,4 +81,11 @@ describe('surface core (the bundle seam half)', () => {
     expect(crossed).toEqual([{ type: 'submit', text: 'hi' }]);
     expect(() => core.emitIntent({ type: 'alien' })).toThrow(/intent type/);
   });
+
+  it('the snapshot helper is a fresh plain-data view equal to the publication', () => {
+    const core = createSurfaceCore();
+    core.pushViewEvent(makeSettled('user-message', { text: 'hello' }));
+    expect(core.snapshot()).toEqual(core.state());
+    expect(core.snapshot()).not.toBe(core.state()); // fresh each call, never the live fold
+  });
 });

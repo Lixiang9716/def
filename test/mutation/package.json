@@ -1,0 +1,16 @@
+{
+  "name": "dsh-mutation-pilot",
+  "private": true,
+  "type": "module",
+  "description": "Scoped Stryker mutation-testing pilot (test-hardening item 5, informational — no gate). Own harness only: the mutant runs execute the families' EXISTING suites through per-family vitest configs here; no production or test bytes are re-pointed at this tree.",
+  "scripts": {
+    "shell-js": "stryker run stryker.shell-js.conf.json",
+    "lynx-fold": "stryker run stryker.lynx-fold.conf.json",
+    "publisher-token": "stryker run stryker.publisher-token.conf.json"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "^9.0.0",
+    "@stryker-mutator/vitest-runner": "^9.0.0",
+    "vitest": "^4.1.8"
+  }
+}
