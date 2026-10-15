@@ -95,30 +95,35 @@ Whole surfaces deliberately not registered:
 
 ## Test-hardening program (2026-10-15)
 
-A 16-item hardening program, owner-approved: three waves, each method lands
-as its own leg/seat with evidence; a row's status flips in the PR that lands
-it. Complements (does not replace) the floors above — coverage answers "are
-the surfaces covered", the methods below answer "are the assertions strong
-enough" and "what happens at the edges".
+A hardening program, owner-approved — 16 items on 2026-10-15, extended
+2026-10-16 with four more seats (rows 17-23, the wave-2 addition): three
+waves, each method lands as its own leg/seat with evidence; a row's status
+flips in the PR that lands it. Complements (does not replace) the floors
+above — coverage answers "are the surfaces covered", the methods below
+answer "are the assertions strong enough" and "what happens at the edges".
 
 | # | Method | Wave | Status | Lands as |
 |---|--------|------|--------|----------|
 | 1 | Chaos LLM mock profiles (malformed SSE, truncation, slow-drip, oversized chunks) | 1 | **landed** (#528) | mock-llm-server.mjs profiles + transport-guard legs |
-| 2 | C host ASan/UBSan CI leg | 1 | planned | c-core sanitizer build |
+| 2 | C host ASan/UBSan CI leg | 1 | **landed** (#526) | c-core sanitizer build |
 | 3 | axe-core a11y regression (web-client-v2, after the #519 manual pass) | 1 | **landed** (#527) | suite leg |
 | 4 | Visual regression diff (dev-carrier screenshots; warn-tier, never a CI log assertion) | 1 | **landed** (#527) | ui-sweep pixel diff |
 | 5 | Scoped mutation pilot (Stryker: shell-js refusal vocab, lynx fold/surface-core, publisher-token) | 1 | planned | informational score + survivor triage |
-| 6 | bash differential harness (POSIX subset, dsh-shell-js vs real bash on Linux CI) | 2 | planned | c-core Linux leg |
-| 7 | Property-based parser tests (fast-check: parser-syntax, path, semver-range) | 2 | planned | panel suite families |
-| 8 | Persistence journal schema-migration tests (cross-version replay) | 2 | planned | migration legs |
-| 9 | Static analysis: clang-tidy (src), detekt (Kotlin) | 2 | planned | CI legs |
-| 10 | Supply-chain audit of the vendored npm closure (CVE + license) | 2 | planned | vendoring step |
+| 6 | bash differential harness (POSIX subset, dsh-shell-js vs real bash on Linux CI) | 2 | **landed** (#540) | c-core Linux leg |
+| 7 | Property-based parser tests (fast-check: parser-syntax, path, semver-range) | 2 | **landed** (#541) | panel suite families |
+| 8 | Persistence journal schema-migration tests (cross-version replay) | 2 | **landed** (#538) | migration legs |
+| 9 | Static analysis: clang-tidy (src), detekt (Kotlin) | 2 | **landed** (#536) | CI legs |
+| 10 | Supply-chain audit of the vendored npm closure (CVE + license) | 2 | **landed** (#535) | vendoring step |
 | 11 | Soak/aging leg (1-2h: heap/fd/journal integrity) | 3 | planned | CLI/emulator runner |
 | 12 | Generative structure-aware fuzz of the gateway wire / SSE parser | 3 | planned | fuzz harness (needs infra) |
 | 13 | Provider cassette replay (LLM contract quirks offline) | 3 | planned | recorded fixtures |
 | 14 | Host queue-boundary concurrency stress (the D2 dispatch seam) | 3 | planned | dispatch stress harness |
 | 15 | App upgrade matrix (install -r across builds; AssetSync stamps) | 3 | planned | upgrade legs |
 | 16 | Resource-starvation behavior (disk-full journal, low memory) | 3 | planned | starvation legs |
+| 17 | Gateway audit-completeness invariant (every v1.x call paired, ordered, payload-free against the host audit stream — contract §6) | 2 | planned (#537 open) | gateway-audit-invariant e2e leg |
+| 18 | Install-pipeline path-traversal pins (zip-slip class: hostile members driven through the real `installPackage`; REL_PATH rejects interior `..`) | 2 | **landed** (#539) | install-path-traversal panel pins (19) |
+| 21 | Multi-session interleaved stress (4 sessions on one spine: journal attribution, projection, per-session recovery) | 3 | **landed** (#543) | session-multi-stress e2e leg |
+| 23 | Malformed tool-call argument chaos (type-error / missing-field / deep-nesting / oversized through the validation layer; structured rejection, never turn-fatal) | 1 | **landed** (#542) | llm-chaos-toolargs e2e legs |
 
 Rows never regress silently: a landed row whose leg disappears is a finding
 (same spirit as the coverage floors).
