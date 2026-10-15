@@ -39,11 +39,15 @@ export default defineConfig({
       // mux is not exported) and the official leg needs the materialized
       // vendored closure + official-web dist; next-mode/compose-boot/ws-lite
       // are its server-mode satellites. plugins-route.mjs — the pure,
-      // exported /plugins mux — IS measured.
+      // exported /plugins mux — IS measured. visual-diff.mjs is the
+      // warn-tier manual signal: its capture half only runs outside the
+      // vitest face (its threshold teeth are measured via
+      // tools/dev-web-carrier/visual-diff.test.mjs over the pure core).
       'tools/dev-web-carrier/dev-carrier.mjs',
       'tools/dev-web-carrier/next-mode.mjs',
       'tools/dev-web-carrier/compose-boot.mjs',
       'tools/dev-web-carrier/ws-lite.mjs',
+      'tools/dev-web-carrier/visual-diff.mjs',
     ],
     reportsDirectory: 'test/tools/coverage',
     reporter: ['text', 'json-summary'],
