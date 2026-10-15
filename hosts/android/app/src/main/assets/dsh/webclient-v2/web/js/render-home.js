@@ -50,7 +50,10 @@ export function renderSessionList(host, emptyNote, sessions, onOpen) {
     const main = el('div', 'session-row-main');
     main.appendChild(el('div', 'session-row-title',
       session.blank ? '新会话' : `会话 ${shortId(session.sessionId)}`));
-    const meta = [shortId(session.sessionId), relativeTime(session.updatedAt)]
+    // The title already carries the short id honestly; the meta line adds
+    // only what the title does not say (the relative time), never a second
+    // copy of the same id.
+    const meta = [relativeTime(session.updatedAt)]
       .filter((part) => part !== '').join(' · ');
     main.appendChild(el('div', 'session-row-meta', meta));
     row.appendChild(main);

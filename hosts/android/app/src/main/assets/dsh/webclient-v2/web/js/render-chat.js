@@ -40,7 +40,8 @@ const addCopyButton = (parent, text) => {
 
 const renderReasonRow = (item) => {
   const row = el('div', 'reason-row');
-  const head = el('div', 'reason-head');
+  const head = el('button', 'reason-head');
+  head.type = 'button';
   head.textContent = '思考';
   const body = el('div', 'reason-text');
   body.hidden = true;
@@ -94,7 +95,7 @@ const renderGroup = (run) => {
     ? `使用了 ${tools.map((tool) => tool.name).slice(0, 3).join('、')}${tools.length > 3 ? ' 等' : ''} 工具`
     : '思考过程';
   header.appendChild(el('span', undefined, '⚙'));
-  header.appendChild(el('span', 'group-preview', `${preview} · ${run.length}`));
+  header.appendChild(el('span', 'group-preview', preview));
   header.appendChild(el('span', 'group-chevron', '▶'));
   const body = el('div', 'group-body');
   for (const item of run) {
@@ -221,29 +222,37 @@ const buildItems = (items) => {
   return fragment;
 };
 
-export function createChatRenderer(transcript, jumpButton) {
-  const itemsHost = el('div');
-  const tailHost = el('div');
-  transcript.appendChild(itemsHost);
-  transcript.appendChild(tailHost);
-  let pinned = true;
-  let tailNodes = null;
-
+/** Scroll pinning: pinned-to-bottom with a drag-aware pause and a
+ * jump-to-latest button (the renderer's only transcript-level wiring). */
+const wirePinToBottom = (transcript, jumpButton) => {
+  const pin = { on: true };
   const nearBottom = () =>
     transcript.scrollHeight - transcript.scrollTop - transcript.clientHeight < 28;
-
   transcript.addEventListener('scroll', () => {
-    pinned = nearBottom();
-    jumpButton.hidden = pinned;
+    pin.on = nearBottom();
+    jumpButton.hidden = pin.on;
   });
   jumpButton.addEventListener('click', () => {
-    pinned = true;
+    pin.on = true;
     jumpButton.hidden = true;
     transcript.scrollTop = transcript.scrollHeight;
   });
+  return pin;
+};
+
+export function createChatRenderer(transcript, jumpButton) {
+  const itemsHost = el('div');
+  const tailHost = el('div');
+  // REPLACE, not append: openSession builds a fresh renderer per session,
+  // and appended hosts kept every previous session's rows in the
+  // transcript — old conversations bled into new ones (measured: 4 host
+  // nodes after two opens) and the DOM grew without bound.
+  transcript.replaceChildren(itemsHost, tailHost);
+  const pin = wirePinToBottom(transcript, jumpButton);
+  let tailNodes = null;
 
   const keepPinned = (force) => {
-    if (pinned || force === true) transcript.scrollTop = transcript.scrollHeight;
+    if (pin.on || force === true) transcript.scrollTop = transcript.scrollHeight;
   };
 
   const renderTailInto = (host, tail) => {

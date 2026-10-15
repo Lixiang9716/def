@@ -28,7 +28,18 @@
   --bg-raised: #FFFFFF;
   --text: var(--ink);
   --text-2: #5B6472;
-  --text-3: #8A93A3;
+  /* tertiary text: ≥4.5:1 on --bg and --bg-raised (4.76 / 4.97) */
+  --text-3: #667085;
+  /* small-text faces of the semantic hues: the brand tokens above carry
+   * identity on large surfaces; these carry the SAME meaning in small
+   * colored text, tuned so every one clears 4.5:1 on its worst real
+   * surface (tinted chip, --fill, --bg-raised — WCAG AA / HIG
+   * accessibility contrast table). --link is the ocean hue's text face. */
+  --link: #2563D9;       /* 4.70–5.43 on paper/white/user-bubble */
+  --tone-tool: #8F4D0A;  /* 5.27 on the orange chip, 5.55 on --fill */
+  --tone-reason: #653AB6;/* 6.33 on --fill */
+  --tone-fail: #B32E34;  /* 5.01 on the red chip */
+  --tone-done: #156A38;  /* 5.39 on the green chip */
   --line: rgba(14, 19, 26, 0.10);
   --fill: rgba(14, 19, 26, 0.055);
   --glass-bg: rgba(255, 255, 255, 0.62);
@@ -44,7 +55,12 @@
     --bg-raised: #11161D;
     --text: #E8ECF2;
     --text-2: #9AA4B2;
-    --text-3: #6B7686;
+    --text-3: #828C9C;      /* 5.34–5.66 on bg/raised, 4.88 on --fill */
+    --link: #79A3F0;        /* 5.63–7.61 on bg/raised/user-bubble */
+    --tone-tool: #F0A05A;   /* 6.72 on the orange chip, 7.80 on --fill */
+    --tone-reason: #A48BE0; /* 5.80 on --fill */
+    --tone-fail: #F28B8F;   /* 6.13 on the red chip */
+    --tone-done: #5BC877;   /* 6.71 on the green chip */
     --line: rgba(191, 214, 255, 0.12);
     --fill: rgba(191, 214, 255, 0.08);
     --glass-bg: rgba(11, 36, 64, 0.55);
@@ -112,6 +128,13 @@ body {
   50% { opacity: 0.35; }
 }
 .dot-pulse { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+/* Reduced motion is an accessibility answer, not a nicety: the ambient
+ * loops (status dot, ocean drift, stream caret) never carry meaning on
+ * their own, so they simply stop (HIG accessibility › Cognitive). */
+@media (prefers-reduced-motion: reduce) {
+  .dot-pulse { animation: none; }
+}
 
 /* ---- safe areas -------------------------------------------------------- */
 
