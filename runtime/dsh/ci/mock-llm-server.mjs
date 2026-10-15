@@ -20,6 +20,38 @@
  * AUTH diagnosis). The bearer key must match the adapter's authorization
  * header (wire evidence that the credential path is exercised).
  *
+ * CHAOS PROFILES (test-hardening row 1, doc/test-coverage.md): DSH_MOCK_CHAOS
+ * names a hostile preset. A profile is ONLY a parameterization of the
+ * VENDORED mock's own script vocabulary — the SSE bytes on the wire stay the
+ * vendored server's (the one invariant: wire shape identical to the real
+ * backend; the hostile behavior is the only difference, and it lives only
+ * here, never in the transport or gateway code):
+ *
+ *   truncation     'stream_eof'        — 200 + one SSE frame, then a clean
+ *                                      close WITHOUT [DONE]; the transport's
+ *                                      parser must answer STREAM_CLOSED
+ *                                      (a truncated stream cannot be trusted)
+ *   slow-drip      'slow_success'      — the success stream paced at
+ *                                      DSH_MOCK_CHUNK_DELAY_MS; with the gap
+ *                                      over the reader's read-idle budget the
+ *                                      attempt dies TIMEOUT mid-drip
+ *   malformed-sse  'malformed_json'    — one non-JSON `data:` payload; the
+ *                                      parser must answer MALFORMED_RESPONSE
+ *   oversized      'success' with a    — ONE SSE frame whose delta carries
+ *                  2 MiB single delta   the whole text; the byte bridge and
+ *                                      parser must carry it and the turn
+ *                                      completes
+ *   no-headers     'connection_reset'  — accept, then destroy the socket with
+ *                                      ZERO response bytes (no status line,
+ *                                      no headers); the call fails fast →
+ *                                      TRANSPORT → the retry-pacing seam
+ *
+ * The presets ride the mock's public options (sequence / chunkDelayMs /
+ * successText / chunkSize) — never an edit of the vendored package (D6).
+ * DSH_MOCK_SUCCESS_TEXT / DSH_MOCK_CHUNK_SIZE expose the same two knobs for
+ * drivers that want them without a named profile. An unknown profile name is
+ * a defect now (rule 5), not a silently normal mock.
+ *
  * usage: node mock-llm-server.mjs
  */
 import { startMockLlmServer } from '../../../external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js';
@@ -30,7 +62,7 @@ import { startMockLlmServer } from '../../../external/dsh/llm-mock-server@0.1.6-
 // DSH_MOCK_TOOL_NAME / DSH_MOCK_TOOL_ARGS shape the `tool_call_success`
 // behavior's scripted tool call (the parity drive points it at todo_write
 // with schema-valid arguments); defaults keep the upstream mock's own.
-const sequence = (process.env.DSH_MOCK_SEQUENCE ?? 'success auth_error').split(/\s+/);
+let sequence = (process.env.DSH_MOCK_SEQUENCE ?? 'success auth_error').split(/\s+/);
 const repeatLast = process.env.DSH_MOCK_REPEAT_LAST === '1';
 // DSH_MOCK_CHUNK_DELAY_MS paces the success stream's deltas (0 = the default
 // instant wire): the mid-turn kill leg (session-persist-midturn) needs the
@@ -44,13 +76,48 @@ const chunkDelayMs = Number(process.env.DSH_MOCK_CHUNK_DELAY_MS ?? 0);
 // existing leg byte-compatible.
 const apiKey = process.env.DSH_MOCK_LLM_KEY ?? 'mock-key-0001';
 
+// ---- chaos profiles (preset table above) ----------------------------------
+// Each entry only picks vendored script behaviors and content knobs; the
+// `chaos` announce line tells the runner which preset actually armed.
+const CHAOS_PROFILES = {
+  'truncation': { sequence: ['stream_eof'] },
+  'slow-drip': { sequence: ['slow_success'] },
+  'malformed-sse': { sequence: ['malformed_json'] },
+  // 2 MiB of text in ONE delta: splitText(text, chunkSize) yields exactly one
+  // frame, so the wire carries one oversized SSE payload end to end.
+  'oversized': {
+    sequence: ['success'],
+    successText: 'x'.repeat(2 * 1024 * 1024),
+    chunkSize: 2 * 1024 * 1024,
+  },
+  'no-headers': { sequence: ['connection_reset'] },
+};
+const chaosName = process.env.DSH_MOCK_CHAOS;
+const chaosPreset = chaosName === undefined ? undefined : CHAOS_PROFILES[chaosName];
+if (chaosName !== undefined && chaosPreset === undefined) {
+  throw new Error(
+    `mock-llm-server: unknown DSH_MOCK_CHAOS profile ${JSON.stringify(chaosName)} `
+    + `(want one of ${Object.keys(CHAOS_PROFILES).join('|')})`);
+}
+if (chaosPreset !== undefined && process.env.DSH_MOCK_SEQUENCE === undefined) {
+  // Explicit DSH_MOCK_SEQUENCE wins over the preset (a driver that needs a
+  // longer script keeps working); the preset fills what the env leaves open.
+  sequence = chaosPreset.sequence;
+}
+let successText = process.env.DSH_MOCK_SUCCESS_TEXT ?? 'Hello from upstream';
+let chunkSize = Number(process.env.DSH_MOCK_CHUNK_SIZE ?? 5);
+if (chaosPreset?.successText !== undefined) {
+  successText = chaosPreset.successText;
+  chunkSize = chaosPreset.chunkSize;
+}
+
 const handle = await startMockLlmServer({
   host: '127.0.0.1',
   port: 0, // OS-assigned; announced below (no fixed port races)
   sequence,
   repeatLast,
-  successText: 'Hello from upstream',
-  chunkSize: 5,
+  successText,
+  chunkSize,
   chunkDelayMs,
   apiKey,
   requestId: 'mock-req-1',
@@ -59,6 +126,7 @@ const handle = await startMockLlmServer({
   onEvent: (event) => console.log(JSON.stringify(event)),
 });
 console.log(`MOCK_BASE_URL=${handle.baseURL}`);
+if (chaosName !== undefined) console.log(JSON.stringify({ type: 'chaos', profile: chaosName, sequence }));
 
 const close = () => {
   handle.close().then(() => process.exit(0));
