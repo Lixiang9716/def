@@ -128,14 +128,19 @@ describe('validatePublisherToken — malformed envelopes and claims (fail loud, 
     const bad = Buffer.from('not json').toString('base64url');
     expect(run(`dshpub-v1.${bad}.sig`)).toEqual({ ok: false, reason: 'malformed claims payload' });
   });
-  it('rejects missing or wrongly-typed required claims', () => {
-    for (const [key, value] of [
-      ['iss', ''],
-      ['sub', 'acme'], // wrong shape: must be publisher:<name>
-      ['scope', ''],
-      ['jti', ''],
-      ['iat', 'yesterday'],
-      ['exp', null],
+  it('rejects missing or wrongly-typed required claims, each naming its claim', () => {
+    // Minted with the real signer: the pilot (test/mutation/) caught the
+    // first cut minting with the VERIFIER (whose non-string guard returns
+    // false), so every row died at `bad signature` and never reached the
+    // claim rules — the pins were vacuous. The reason is asserted per row
+    // so a dropped rule reopens a named failure (rules.md rule 6).
+    for (const [key, value, reason] of [
+      ['iss', '', 'missing claim iss'],
+      ['sub', 'acme', 'claim sub is not a publisher subject'], // wrong shape: must be publisher:<name>
+      ['scope', '', 'missing claim scope'],
+      ['jti', '', 'missing claim jti'],
+      ['iat', 'yesterday', 'missing claim iat'],
+      ['exp', null, 'missing claim exp'],
     ]) {
       const claims = {
         iss: 'https://idp.dsh.example',
@@ -147,12 +152,96 @@ describe('validatePublisherToken — malformed envelopes and claims (fail loud, 
         jti: 'tok-1',
         [key]: value,
       };
-      const t = encodePublisherToken(claims, verifier);
-      expect(run(t).ok).toBe(false);
+      const t = encodePublisherToken(claims, hmacSigner(SECRET));
+      expect(run(t)).toEqual({ ok: false, reason });
     }
   });
+});
+
+describe('validatePublisherToken — the sub shape and payload guards (rule C1/C2 inputs)', () => {
+  const run = (t) => validatePublisherToken(t, { now: NOW, verifySignature: verifier });
+
   it('rejects a claims payload whose sub names no publisher', () => {
     const t = sampleToken({ sub: 'user:someone' });
-    expect(run(t).ok).toBe(false);
+    expect(run(t)).toEqual({ ok: false, reason: 'claim sub is not a publisher subject' });
+  });
+  it('rejects a sub that merely contains a publisher subject (both anchors hold)', () => {
+    // Without ^ a trailing `publisher:acme` would pass; without $ any
+    // suffix would. Each anchor gets its own violator.
+    expect(run(sampleToken({ sub: 'xpublisher:acme' })))
+      .toEqual({ ok: false, reason: 'claim sub is not a publisher subject' });
+    expect(run(sampleToken({ sub: 'publisher:acme/evil' })))
+      .toEqual({ ok: false, reason: 'claim sub is not a publisher subject' });
+  });
+  it('rejects a claims payload that is JSON but not an object', () => {
+    // The F2 shape guard: null, an array, and a bare string are each
+    // refused as malformed payloads — never flowed into the claim rules
+    // (a null claims would throw inside claimDefect).
+    for (const raw of ['null', '[1,2]', '"str"']) {
+      const bad = Buffer.from(raw).toString('base64url');
+      expect(run(`dshpub-v1.${bad}.sig`)).toEqual({ ok: false, reason: 'malformed claims payload' });
+    }
+  });
+  it('rejects a non-finite numeric claim (JSON exponents overflow to Infinity)', () => {
+    // JSON.parse('1e400') is Infinity — typeof number, not finite. The
+    // wire can carry it (hand-rolled payload; JSON.stringify would emit
+    // null, so the raw token is spliced in past the sentinel), so the
+    // finite guard is pinned on both time claims.
+    const payloadWithRaw = (key) => {
+      const text = JSON.stringify({
+        iss: 'https://idp.dsh.example',
+        sub: 'publisher:acme',
+        aud: 'dsh-marketplace-publish',
+        scope: 'publish',
+        jti: 'tok-1',
+        iat: NOW - 60,
+        exp: NOW + 60,
+        [key]: '@@RAW@@',
+      }).replace('"@@RAW@@"', '1e400');
+      expect(JSON.parse(text)[key]).toBe(Infinity); // the overflow is real
+      return Buffer.from(text).toString('base64url');
+    };
+    expect(run(`dshpub-v1.${payloadWithRaw('iat')}.sig`))
+      .toEqual({ ok: false, reason: 'missing claim iat' });
+    expect(run(`dshpub-v1.${payloadWithRaw('exp')}.sig`))
+      .toEqual({ ok: false, reason: 'missing claim exp' });
+  });
+});
+
+describe('validatePublisherToken — the time boundaries (the rules are inclusive/exclusive on purpose)', () => {
+  const run = (t, opts = {}) => validatePublisherToken(t, { now: NOW, verifySignature: verifier, ...opts });
+
+  it('accepts iat === now (iat <= now is the rule)', () => {
+    const r = run(sampleToken({ iat: NOW }));
+    expect(r.ok).toBe(true);
+  });
+  it('rejects exp === now (exp > now is the rule: expiry at the instant)', () => {
+    const t = sampleToken({ exp: NOW });
+    expect(run(t)).toEqual({ ok: false, reason: 'token expired' });
+  });
+  it('accepts a lifetime of exactly MAX_TTL_SECONDS (the ceiling is inclusive)', () => {
+    const t = sampleToken({ iat: NOW, exp: NOW + MAX_TTL_SECONDS });
+    expect(run(t).ok).toBe(true);
+  });
+});
+
+describe('validatePublisherToken — the verifier seam contract', () => {
+  it('refuses to run without a verifier instead of throwing', () => {
+    const r = validatePublisherToken(sampleToken(), { now: NOW });
+    expect(r).toEqual({ ok: false, reason: 'no signature verifier supplied' });
+  });
+  it('hmacVerifier returns a strict boolean false for non-string signatures', () => {
+    const payload = Buffer.from('{}').toString('base64url');
+    expect(hmacVerifier(SECRET)(payload, undefined)).toBe(false);
+    expect(hmacVerifier(SECRET)(payload, 123)).toBe(false);
+  });
+  it('never throws on attacker bytes: a wrong-length signature is a rejection', () => {
+    // The length pre-check exists so timingSafeEqual (equal lengths only)
+    // never sees a short signature — a validator that throws on attacker
+    // bytes is its own vuln (validator docstring).
+    const t = `${sampleToken().split('.').slice(0, 2).join('.')}.shortsig`;
+    const r = validatePublisherToken(t, { now: NOW, verifySignature: verifier });
+    expect(r).toEqual({ ok: false, reason: 'bad signature' });
+    expect(hmacVerifier(SECRET)('e30', 'short')).toBe(false);
   });
 });

@@ -249,6 +249,57 @@ describe('shell-js: the wild refusals the standing loop pinned', () => {
 });
 
 // ---------------------------------------------------------------------------
+// The argv face (DECISION §4.2's by-name refusal table, plus the '--' and
+// '-' word rules). splitFlags semantics pinned through real applets — the
+// mutation pilot (test/mutation/) found these refusal shapes unasserted.
+// ---------------------------------------------------------------------------
+describe('shell-js: the argv face', () => {
+  it('a long option is refused BY NAME, with the implemented-flag hint', async () => {
+    const result = await run('ls --all');
+    expect(result.exitCode).toBe(2);
+    expect(result.stderr).toContain("long option '--all' is not implemented");
+    expect(result.stderr).toContain('implemented flags: -a -A -R -d');
+  });
+
+  it('an unknown short flag inside a cluster is refused by its own name', async () => {
+    // ls knows -a: the cluster walk must reach -l first and name IT.
+    const result = await run('ls -la');
+    expect(result.exitCode).toBe(2);
+    expect(result.stderr).toContain('-l is not implemented');
+    expect(result.stderr).toContain('implemented flags: -a -A -R -d');
+  });
+
+  it('a multi-character known flag whole-matches before the per-char walk', async () => {
+    putDir('tree');
+    putFile('tree/a.c', 'x');
+    const result = await run("find tree -name '*.c'");
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe('tree/a.c\n');
+  });
+
+  it('-- ends flag parsing; the rest are words, even flag-shaped ones', async () => {
+    // echo carries the words verbatim (pristine bodies re-parse their own
+    // options, so the file-reading applets cannot take a dash-led word).
+    const result = await run('echo -- -x');
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe('-x\n');
+  });
+
+  it('a lone - is a word, never a flag cluster', async () => {
+    putFile('-', 'DASH');
+    const result = await run('cat -');
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toBe('DASH');
+  });
+
+  it('a value flag at the end of the line refuses: it needs a value', async () => {
+    const result = await run('find . -name');
+    expect(result.exitCode).toBe(2);
+    expect(result.stderr).toContain('-name needs a value');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // The plugin shape (the wasm sibling's registration/description checks).
 // ---------------------------------------------------------------------------
 describe('shell-js: the plugin shape', () => {

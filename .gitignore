@@ -240,6 +240,7 @@ node_modules/
 out/
 package-lock.json
 !test/panel/package-lock.json
+!test/mutation/package-lock.json
 # the two presentation test suites: committed lockfiles so CI installs
 # deterministically with npm ci (the edgesOut npm bug hit the lockfile-less
 # install on the runner — observed live, run 36717057763)
@@ -298,6 +299,14 @@ test/web-client-v2-suite/coverage/
 .gov/tasks/.reminders.json
 # the panel suite's staged vendored package (provision-vendor.mjs; untracked by design)
 test/panel/.vendored/
+
+# the scoped Stryker mutation pilot (test/mutation/, informational — never a
+# gate): the seat-root node_modules symlink the runbook creates so the sandbox
+# resolves the harness deps, the per-run scratch dirs, and the local reports
+# (the numbers live in the Agent Note, the raw JSON is a local artifact)
+/node_modules
+test/mutation/.stryker-tmp/
+test/mutation/reports/
 
 hosts/android/app/src/main/assets/dsh/vendor/dsh/plugin-manager@*/
 .gov/last-run/
