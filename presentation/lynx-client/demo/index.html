@@ -11,12 +11,21 @@
   same file that renders the Lynx bundle's typed style constants); this page
   carries no palette of its own. All paths relative: Pages serves project
   pages from a subpath (https://<owner>.github.io/<repo>/).
+  Layout: at >=760px a two-column grid (intro copy left, the glass client
+  frame sticky right, max-width 1060px centered); below that it degrades to
+  the single column (intro, frame, footer). The aurora backdrop is static —
+  the page ships no motion at all, so prefers-reduced-motion is satisfied by
+  absence, not by a media query.
 -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
+  <meta name="description" content="dsh-mobile carries the DeepSeek Harness agent onto phones — a single-threaded QuickJS runtime, a capability gateway, and a pluggable web client. This page renders its real client, live in your tab.">
+  <meta property="og:title" content="DSH — the mobile face of the DeepSeek Harness">
+  <meta property="og:description" content="The real dsh-mobile client, rendered live in your tab — a static preview: the UI shell runs; no session backend is connected.">
+  <meta property="og:type" content="website">
   <title>DSH — the mobile face of the DeepSeek Harness</title>
   <link rel="stylesheet" href="./web.tokens.css">
   <!-- The web-core platform stylesheet — the other half of the official
@@ -32,10 +41,10 @@
         "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
       background: var(--bg);
       color: var(--text);
-      overflow: hidden;
     }
     /* The aurora backdrop: the client's three translucent blobs over the deep
-       base — colors are the aurora tokens, geometry is this page's own. */
+       base — colors are the aurora tokens, geometry is this page's own.
+       Static by design: no animation exists to reduce. */
     .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .aurora i { position: absolute; display: block; border-radius: 50%; filter: blur(72px); }
     .aurora .ocean  { width: 64vmax; height: 64vmax; left: -20vmax; top: -24vmax;
@@ -46,38 +55,92 @@
                       background: radial-gradient(circle, var(--blob-purple), transparent 65%); }
     .shell {
       position: relative; z-index: 1;
-      height: 100%;
       max-width: 480px; margin: 0 auto;
-      display: flex; flex-direction: column; align-items: stretch;
-      gap: 12px; padding: 20px 16px 14px;
+      display: flex; flex-direction: column;
+      gap: 16px; padding: 24px 16px 20px;
     }
-    header { text-align: center; }
     h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 3px; }
-    #tagline { margin: 4px 0 0; font-size: 13.5px; color: var(--text2); }
-    #hint { margin: 3px 0 0; font-size: 11.5px; color: var(--text3); }
+    #pitch { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: var(--text2); }
+    .capabilities h2 { margin: 26px 0 10px; font-size: 13px; font-weight: 600; color: var(--text2); }
+    .capabilities ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .capabilities li { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text2); }
+    .capabilities strong { color: var(--text); font-weight: 600; }
+    .links { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+    .links a {
+      color: var(--text2); font-size: 13.5px;
+      text-decoration: underline; text-underline-offset: 3px;
+      text-decoration-color: var(--glass-stroke);
+    }
+    .links a:hover { color: var(--text); }
+    .links a:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; border-radius: 2px; }
+    .stage { display: flex; flex-direction: column; gap: 10px; }
     .frame {
-      flex: 1 1 auto; min-height: 0;
+      flex: none;
+      height: min(640px, 72vh); width: auto; max-width: 100%;
+      aspect-ratio: 390 / 844;
+      margin-inline: auto;
       border-radius: var(--r-composer);
       background: var(--glass-bg);
       border: 1px solid var(--glass-stroke);
       overflow: hidden;
     }
     lynx-view { display: block; width: 100%; height: 100%; }
+    #hint { margin: 0; font-size: 12px; color: var(--text2); text-align: center; }
     footer { text-align: center; }
-    footer p { margin: 0; font-size: 10.5px; color: var(--text3); }
+    footer p { margin: 0; font-size: 12px; color: var(--text2); }
+    @media (min-width: 760px) {
+      .shell {
+        --frame-h: min(760px, calc(100vh - 48px));
+        max-width: 1060px;
+        padding: 48px 32px 40px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: clamp(40px, 7vw, 96px);
+        align-items: start;
+      }
+      .intro { max-width: 560px; }
+      .stage {
+        position: sticky;
+        top: calc((100vh - var(--frame-h)) / 2);
+      }
+      .frame { height: var(--frame-h); }
+      footer { grid-column: 1 / -1; margin-top: 8px; }
+    }
   </style>
 </head>
 <body>
   <div class="aurora" aria-hidden="true"><i class="ocean"></i><i class="haze"></i><i class="purple"></i></div>
   <main class="shell">
-    <header>
-      <h1 id="brand">DSH</h1>
-      <p id="tagline">A mobile host for the DeepSeek Harness ecosystem — its client, rendered live.</p>
+    <div class="intro">
+      <header>
+        <h1 id="brand">DSH</h1>
+        <p id="pitch">dsh-mobile carries the DeepSeek Harness agent onto phones — a
+        single-threaded QuickJS runtime, a capability gateway, and a pluggable web
+        client. This page renders its real client, live in your tab.</p>
+      </header>
+      <section class="capabilities" aria-labelledby="cap-title">
+        <h2 id="cap-title">What works</h2>
+        <ul>
+          <li><strong>Agent sessions, on-device</strong> — tools, in-process shell
+          (dsh-shell-js), streaming answers</li>
+          <li><strong>Create with a real LLM</strong> — authored plugins live-mount
+          through the runtime</li>
+          <li><strong>Install &amp; persist</strong> — signed marketplace, receipts,
+          restart-safe sessions</li>
+        </ul>
+      </section>
+      <nav class="links" aria-label="Project links">
+        <a href="https://github.com/Lixiang9716/dsh-mobile#readme" target="_blank" rel="noopener">Read the docs</a>
+        <a href="https://github.com/Lixiang9716/dsh-mobile/blob/main/doc/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
+        <a href="https://github.com/Lixiang9716/dsh-mobile" target="_blank" rel="noopener">Source</a>
+      </nav>
+    </div>
+    <div class="stage">
+      <section class="frame" id="frame" aria-label="Live client render">
+        <lynx-view id="client" url="./main.web.bundle"></lynx-view>
+      </section>
       <p id="hint">Static preview: the UI shell runs; no session backend is connected.</p>
-    </header>
-    <section class="frame" id="frame" aria-label="Live client render">
-      <lynx-view id="client" url="./main.web.bundle"></lynx-view>
-    </section>
+    </div>
     <footer>
       <p>ReactLynx bundle (presentation/lynx-client) &middot; mounted by @lynx-js/web-core &middot; dark aurora tokens from theme/tokens.json</p>
     </footer>
