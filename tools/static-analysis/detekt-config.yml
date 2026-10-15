@@ -1,0 +1,23 @@
+# Detekt config — the static-analysis CI leg (test-hardening row 9).
+#
+# Loaded with --build-upon-default-config: everything below OVERRIDES
+# detekt's shipped default config; anything unspecified keeps detekt's
+# default activation. The gate's scope is defect-class findings —
+# potential-bugs / exceptions / performance / coroutines stay at detekt's
+# defaults. Style-class rulesets stay OFF: formatting, naming, file-size and
+# comment conventions are not this gate's job (and would flood a warn-level
+# baseline with churn). Enforcement is baseline-based (see
+# tools/static-analysis/detekt.sh); build.maxIssues: 0 is what makes any
+# finding outside the baseline fail the leg in check mode.
+build:
+  maxIssues: 0
+complexity:
+  active: false
+comments:
+  active: false
+empty-blocks:
+  active: false
+naming:
+  active: false
+style:
+  active: false

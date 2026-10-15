@@ -1,0 +1,21 @@
+# clang-tidy config — the static-analysis CI leg (test-hardening row 9).
+#
+# Defect-class checks only: the compiler's own diagnostics, the clang static
+# analyzer, and the bugprone/performance/portability groups. Style and
+# modernization (readability-*, modernize-*) stay OFF — formatting and API
+# conventions are not this gate's job. bugprone-easily-swappable-parameters is
+# an API-design opinion, excluded with the style class; the rest of bugprone-*
+# and clang-analyzer-* is exactly the "syntax/obvious-defect" surface the leg
+# exists for. Enforcement is warn-level with a baseline (see
+# tools/static-analysis/clang-tidy.sh) — this file only scopes the check set.
+#
+# Header scope is pinned at the invocation (--header-filter, anchored to
+# src/dsh_*.h): vendored engine trees are upstream, not ours to gate (D6).
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  portability-*,
+  -bugprone-easily-swappable-parameters
+FormatStyle: none
