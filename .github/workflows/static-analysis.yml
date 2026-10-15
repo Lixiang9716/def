@@ -1,0 +1,167 @@
+name: static-analysis
+# Test-hardening row 9 — the static-analysis CI legs over the two native
+# surfaces the platform CI compiles but never lints semantically:
+#
+#   clang-tidy — the C spine (src/*.c + its dsh_*.h), defect-class checks
+#                (compiler diagnostics + clang-analyzer + bugprone/
+#                performance/portability; no style — see .clang-tidy);
+#   detekt     — the Android host Kotlin (hosts/android/app/src), defect-class
+#                rulesets (potential-bugs/exceptions/performance/coroutines;
+#                style-class rulesets off — see tools/static-analysis/
+#                detekt-config.yml).
+#
+# Warn-level baseline discipline: existing findings live in baselines/
+# (clang-tidy.txt, detekt.xml) and are NEVER hand-edited — they are
+# regenerated in THIS workflow's pinned toolchain (the update_baselines
+# dispatch run, or the bootstrap-baselines job below) and committed from the
+# run's artifacts. The check legs go red only on findings absent from the
+# baseline — new violations, zero tolerance; existing debt stays visible in
+# the baseline instead of blocking every PR. A missing baseline file is a
+# fail-loud red, never a skip — the bootstrap job exists precisely so that
+# state still produces the baseline artifact in the right toolchain.
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'hosts/android/app/src/**/*.kt'
+      - '.github/workflows/static-analysis.yml'
+      - 'tools/static-analysis/**'
+      - 'baselines/clang-tidy.txt'
+      - 'baselines/detekt.xml'
+      - '.clang-tidy'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'hosts/android/app/src/**/*.kt'
+      - '.github/workflows/static-analysis.yml'
+      - 'tools/static-analysis/**'
+      - 'baselines/clang-tidy.txt'
+      - 'baselines/detekt.xml'
+      - '.clang-tidy'
+  workflow_dispatch:
+    inputs:
+      update_baselines:
+        description: 'Regenerate both baselines in the pinned CI toolchain and upload them as artifacts (download + commit to land the new baseline)'
+        type: boolean
+        default: false
+concurrency:
+  group: static-analysis-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned clang-tidy
+        # Ubuntu 24.04 ships clang-tidy-18 in the default apt set — a distro
+        # pin, no third-party apt source. Baselines are generated in this same
+        # major (update_baselines dispatch / bootstrap-baselines), so a
+        # toolchain bump is a deliberate pin change here, never silent drift
+        # between the version that produced the baseline and the one that gates.
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q clang-tidy-18
+      - name: Configure (compile_commands.json; materializes the vendored pins)
+        # Configure only — no build: clang-tidy reads the compile database and
+        # the (pin-materialized) headers; it does not need binaries. The
+        # configure-time vendor materialization is cmake/Vendor.cmake's job.
+        run: cmake -S . -B tmp/build-tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - name: clang-tidy (check, or gen on update_baselines)
+        env:
+          CLANG_TIDY: clang-tidy-18
+          UPDATE_BASELINES: ${{ inputs.update_baselines }}
+        run: |
+          if [ "$UPDATE_BASELINES" = "true" ]; then
+            sh tools/static-analysis/clang-tidy.sh gen
+          else
+            sh tools/static-analysis/clang-tidy.sh check
+          fi
+      - name: Upload the regenerated baseline
+        if: inputs.update_baselines == true
+        uses: actions/upload-artifact@v7
+        with:
+          name: static-analysis-baseline-clang-tidy
+          path: baselines/clang-tidy.txt
+          if-no-files-found: error
+  detekt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: detekt (check, or gen on update_baselines)
+        # The script fetches the sha256-pinned detekt-cli jar (verified every
+        # run) and runs the baseline gen/check against hosts/android/app/src.
+        env:
+          UPDATE_BASELINES: ${{ inputs.update_baselines }}
+        run: |
+          if [ "$UPDATE_BASELINES" = "true" ]; then
+            sh tools/static-analysis/detekt.sh gen
+          else
+            sh tools/static-analysis/detekt.sh check
+          fi
+      - name: Upload the regenerated baseline
+        if: inputs.update_baselines == true
+        uses: actions/upload-artifact@v7
+        with:
+          name: static-analysis-baseline-detekt
+          path: baselines/detekt.xml
+          if-no-files-found: error
+  bootstrap-baselines:
+    # First run on a baseline-less tree: generate both baselines in the
+    # pinned toolchain and upload them as artifacts, so the baseline can land
+    # as a commit — while the check legs above stay RED (a missing baseline
+    # is a fail-loud state, never a skip). The dispatch input cannot be used
+    # for this: workflow_dispatch only addresses workflows on the default
+    # branch, so the very first run always arrives as a pull_request. No-op
+    # once baselines/ carries both files.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - id: detect
+        run: |
+          if [ -f baselines/clang-tidy.txt ] && [ -f baselines/detekt.xml ]; then
+            echo "needed=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >>"$GITHUB_OUTPUT"
+          fi
+      - name: Install the pinned clang-tidy + configure
+        if: steps.detect.outputs.needed == 'true'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q clang-tidy-18
+          cmake -S . -B tmp/build-tidy -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - name: Generate the clang-tidy baseline
+        if: steps.detect.outputs.needed == 'true'
+        env:
+          CLANG_TIDY: clang-tidy-18
+        run: sh tools/static-analysis/clang-tidy.sh gen
+      - name: Set up the pinned JDK
+        if: steps.detect.outputs.needed == 'true'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Generate the detekt baseline
+        if: steps.detect.outputs.needed == 'true'
+        run: sh tools/static-analysis/detekt.sh gen
+      - name: Upload the clang-tidy baseline artifact
+        if: always() && steps.detect.outputs.needed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: static-analysis-baseline-clang-tidy
+          path: baselines/clang-tidy.txt
+          if-no-files-found: ignore
+      - name: Upload the detekt baseline artifact
+        if: always() && steps.detect.outputs.needed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: static-analysis-baseline-detekt
+          path: baselines/detekt.xml
+          if-no-files-found: ignore

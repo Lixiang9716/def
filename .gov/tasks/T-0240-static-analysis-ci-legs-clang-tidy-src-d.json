@@ -1,0 +1,22 @@
+{
+  "title": "Static-analysis CI legs: clang-tidy (src) + detekt (android), warn-level baselines (test-hardening row 9)",
+  "created": "2026-10-15T17:14:02+00:00",
+  "rules": {
+    "hash": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
+    }
+  },
+  "checklist": [
+    "[x] Seat cut from origin/main; tool conventions confirmed (checkout@v7, setup-java@v6 temurin 17)",
+    "[x] .github/workflows/static-analysis.yml with clang-tidy + detekt jobs, baseline-update dispatch mode",
+    "[x] tools/static-analysis/ scripts (clang-tidy gen/check, detekt gen/check w/ sha256-pinned jar) + detekt config",
+    "Baselines generated in the pinned CI toolchain via dispatch run and committed",
+    "[x] actionlint + shellcheck-warn + scoped gov run green; Agent Note landed",
+    "PR created, gates check green, squash-merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0240"
+}
