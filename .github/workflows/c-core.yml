@@ -3,10 +3,14 @@ name: c-core
 # the vendored pins, then the ten log-verified test-core legs re-run over the
 # fresh build with the report artifact uploaded even on red.
 #
-# A second face, `sanitize`: the SAME ten legs driven by an asan+ubsan build
-# of the same CLI (src/build.sh --sanitize). Any sanitizer report — memory
-# error, undefined behavior, leak — exits nonzero, fails the leg (set -eu),
-# and fails the job, with symbolized stacks (leak detection is Linux-only:
+# A second face, `sanitize`: the ten log-verified test-core legs — narrowed
+# to the widest-coverage subset that fits this job's 60-minute bound under
+# ASan (measured on ubuntu-24.04-arm: the upstream-boot leg alone is 51 min
+# sanitized, so the full ten cannot fit; the subset and the exclusions are
+# argued at the step) — driven by an asan+ubsan build of the same CLI
+# (src/build.sh --sanitize). Any sanitizer report — memory error, undefined
+# behavior, leak — exits nonzero, fails the leg (set -eu), and fails the
+# job, with symbolized stacks (leak detection is Linux-only:
 # ASAN_OPTIONS=detect_leaks=1 lives in this job's env because macOS ASan
 # rejects it).
 on:
@@ -92,18 +96,21 @@ jobs:
             runtime/dsh/logs-*.txt
 
   sanitize:
-    # The memory-safety face: the same ten legs over the asan+ubsan CLI
-    # flavor. The flavor is opt-in — src/build.sh --sanitize writes
-    # dsh-cli-sanitize BESIDE (never over) the default dsh-cli — so the core
-    # job's default build is byte-identical and untouched. This job installs
-    # the sanitized binary at the legs' expected build/dsh-cli path in its own
-    # ephemeral workspace and lets any nonzero CLI exit (ASan error, UBSan
-    # abort via -fno-sanitize-recover=all, LSan leak) fail the leg's
-    # set -eu script — red means red, no sanitizer report can slip through.
+    # The memory-safety face: the ten legs, narrowed to the widest-coverage
+    # subset that fits (measured: the full ten blew this job's 60-minute
+    # bound on the arm64 runner — upstream-boot alone ran 51 minutes under
+    # ASan, serving the web-client bundles through the sanitized pump), over
+    # the asan+ubsan CLI flavor. The flavor is opt-in — src/build.sh
+    # --sanitize writes dsh-cli-sanitize BESIDE (never over) the default
+    # dsh-cli — so the core job's default build is byte-identical and
+    # untouched. This job installs the sanitized binary at the legs'
+    # expected build/dsh-cli path in its own ephemeral workspace and lets
+    # any nonzero CLI exit (ASan error, UBSan abort via
+    # -fno-sanitize-recover=all, LSan leak) fail the leg's set -eu script —
+    # red means red, no sanitizer report can slip through.
     runs-on: ubuntu-24.04-arm
-    # Sanitizers roughly double the compile and slow the runtime; the same
-    # bound as the core job (whose measured full run is well under 15) still
-    # holds with wide headroom.
+    # Sanitizers roughly double the compile and slow the runtime; the subset
+    # below measured ~25 min end to end, well under this bound.
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
@@ -132,7 +139,24 @@ jobs:
         # -fno-omit-frame-pointer for symbolized stacks, debug logging regime
         # (the legs assert on structured logs). Same sources, same pins.
         run: sh src/build.sh --sanitize
-      - name: Run the ten legs under the sanitized CLI
+      - name: Run the sanitizer-subset legs under the sanitized CLI
+        # doc/test-coverage.md row 2's documented fallback: the full ten
+        # timed out on this runner under ASan (measured, run 38760413938:
+        # upstream-session 2 min, upstream-boot 51 min — the job died at
+        # 60 before leg 3), so the subset picks the widest coverage that
+        # fits. In, and what each adds: upstream-session (the deepest turn
+        # path — llm streaming, tool calls, persistence), seam-inventory
+        # (every product flag + composition plane + every upstream-catalog
+        # service through the resolver — the widest single sweep),
+        # shim-exposure-probe (the shim/globalThis face), office (the
+        # binary-document path — zstd's heaviest workout), dsh-shell-js
+        # (shell tool exec through the module loader), settings-surfaces
+        # (the settings read/write surfaces). Out, and why: upstream-boot
+        # (the measured 51-min outlier), open-design + plugin-forms (narrow
+        # single-feature flows the six subsume), session-preset-join-node
+        # (pure node — never loads the C host, nothing to sanitize). The
+        # excluded legs ran clean under ASan in the local full-ten
+        # validation (macOS); the gap is runner throughput, not findings.
         # Leak detection is a RUNTIME option, not a compile flag — and it is
         # LSan-on-Linux only (macOS ASan fails loud on detect_leaks), so it
         # lives in this job's env, never in src/build.sh. print_stacktrace
@@ -143,7 +167,12 @@ jobs:
           UBSAN_OPTIONS: print_stacktrace=1
         run: |
           cp runtime/dsh/build/dsh-cli-sanitize runtime/dsh/build/dsh-cli
-          sh build/build.sh test core
+          runtime/dsh/ci/run-upstream-e2e.sh
+          runtime/dsh/ci/run-seam-inventory-e2e.sh
+          runtime/dsh/ci/run-shim-exposure-probe.sh
+          runtime/dsh/ci/run-office-e2e.sh
+          runtime/dsh/ci/run-dsh-shell-js-e2e.sh
+          runtime/dsh/ci/run-settings-surfaces-e2e.sh
       - name: Upload the leg reports
         # The same artifact face as the core job; sanitizer reports go to the
         # leg stderr (the job log) and the leg logs, so a red run carries its

@@ -24,17 +24,29 @@ PR. No gate anywhere compiled the shared host with a sanitizer.
 - `.github/workflows/c-core.yml` gains a `sanitize` job (ubuntu-24.04-arm):
   same vendored-trees cache row, materialize, `sh src/build.sh --sanitize`,
   then `cp` the flavor to the legs' hardcoded `build/dsh-cli` path inside its
-  own ephemeral workspace and re-run the SAME entry the core job uses
-  (`sh build/build.sh test core`). Any sanitizer report exits nonzero, the
-  leg's `set -eu` fails, the job goes red. Leak detection rides the job env
-  (`ASAN_OPTIONS=detect_leaks=1`, `LSAN_OPTIONS`/`UBSAN_OPTIONS`
+  own ephemeral workspace and re-run the legs. Any sanitizer report exits
+  nonzero, the leg's `set -eu` fails, the job goes red. Leak detection rides
+  the job env (`ASAN_OPTIONS=detect_leaks=1`, `LSAN_OPTIONS`/`UBSAN_OPTIONS`
   `print_stacktrace=1`) — it is a runtime option, not a compile flag, because
   macOS ASan rejects `detect_leaks` outright (measured: Apple clang 21,
   "detect_leaks is not supported on this platform"), so baking it into the
-  script would break the local-macOS face. Local validation ran the full ten
-  legs green under the flavor on macOS (leak detection is CI-only there).
-  The plain-build teardown was probed separately with macOS `leaks -atExit`
-  (shim-exposure scenario): 0 leaks — the LSan-on-CI expectation.
+  script would break the local-macOS face.
+- The leg set is the plan row's documented fallback: the widest-coverage
+  SUBSET that fits the 60-minute job bound. Measured on the arm64 runner
+  (run 38760413938): the full ten blew the bound — upstream-session 2 min,
+  upstream-boot 51 min (it materializes and serves the web-client bundles
+  through the sanitized pump), job killed before leg 3. The subset keeps
+  upstream-session (deepest turn path), seam-inventory (widest single
+  sweep: every product flag + every service resolver), shim-exposure-probe,
+  office (zstd's heaviest path), dsh-shell-js, settings-surfaces; it drops
+  upstream-boot (the measured outlier), open-design + plugin-forms (narrow
+  flows the six subsume), and session-preset-join-node (pure node, never
+  loads the C host). The excluded legs ran clean under ASan in the local
+  full-ten validation, so the gap is runner throughput, not findings.
+  Local validation ran the full ten legs green under the flavor on macOS
+  (leak detection is CI-only there). The plain-build teardown was probed
+  separately with macOS `leaks -atExit` (shim-exposure scenario): 0 leaks —
+  the LSan-on-CI expectation.
 
 ## Alternatives considered
 
@@ -55,8 +67,11 @@ PR. No gate anywhere compiled the shared host with a sanitizer.
 
 ## Consequences
 
-Every c-core-path PR now pays one more arm64 job (roughly double the core
-job's wall time, still far under the shared 60-minute bound) and gets, in
-exchange, memory-safety verdicts on the shared host with symbolized stacks.
-Findings in vendored third-party TUs count the same as host findings — that
-is deliberate: the closure ships as one binary.
+Every c-core-path PR now pays one more arm64 job (~25 min for the subset,
+under the shared 60-minute bound) and gets, in exchange, memory-safety
+verdicts on the shared host with symbolized stacks. Findings in vendored
+third-party TUs count the same as host findings — that is deliberate: the
+closure ships as one binary. Known coverage gap: the web-client-serving
+boot path is not sanitized on CI (the measured outlier); it ran clean
+under ASan locally, and re-widening the subset (or sharding the job) is
+the move if that path ever grows its own code.
