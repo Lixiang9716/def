@@ -30,13 +30,34 @@ export class GatewayError extends Error {
  * directly; the starter writes land here too. */
 export const workspace = new Map();
 
+// The unavailable-fault table: a denied primitive answers the contract's
+// honest `unavailable` — the exact shape main_cli.c's smoke backend serves
+// for the primitives it does not implement (it supplies fsRead/fsWrite/
+// fsStat/fsRemove only). Tests deny primitives to model such hosts; the
+// shell's refusal family maps the answer to exit 2 by name.
+const deniedPrimitives = new Set();
+
+export const __denyPrimitives = (...names) => {
+  for (const name of names) deniedPrimitives.add(name);
+};
+
+export const __allowAllPrimitives = () => deniedPrimitives.clear();
+
+const denied = (name) => {
+  if (deniedPrimitives.has(name)) {
+    throw new GatewayError('unavailable', name, 'declared unavailable by the smoke backend');
+  }
+};
+
 export const fsRead = async (scope, path) => {
+  denied('fsRead');
   const bytes = workspace.get(`${scope}/${path}`);
   if (!bytes) throw new GatewayError('io', 'fsRead', `cannot read ${path}`);
   return { bytes, mtime: new Date(0).toISOString() };
 };
 
 export const fsWrite = async (scope, path, bytes, opts = {}) => {
+  denied('fsWrite');
   const key = `${scope}/${path}`;
   // A directory target is an io failure on every real host — the shell
   // suite's redirect-flush failure leg depends on this semantics.
@@ -58,6 +79,7 @@ export const fsWrite = async (scope, path, bytes, opts = {}) => {
 };
 
 export const fsRemove = async (scope, path, opts = {}) => {
+  denied('fsRemove');
   const prefix = `${scope}/${path}/`;
   let removed = 0;
   for (const key of [...workspace.keys()]) {
@@ -90,6 +112,7 @@ const childKeysOf = (key) => {
 };
 
 export const fsStat = async (scope, path) => {
+  denied('fsStat');
   const key = `${scope}/${path}`;
   const entry = workspace.get(key);
   if (entry === undefined) {
@@ -107,6 +130,7 @@ export const fsStat = async (scope, path) => {
 };
 
 export const fsList = async (scope, path) => {
+  denied('fsList');
   const base = `${scope}/${path}`;
   const names = new Set();
   for (const key of childKeysOf(base)) {
@@ -129,6 +153,7 @@ export const fsList = async (scope, path) => {
 };
 
 export const fsMkdir = async (scope, path, _opts = {}) => {
+  denied('fsMkdir');
   // Recursive with existing:"ok" is the default — parents are implicit in
   // the Map the same way ancestors are synthesized above.
   workspace.set(`${scope}/${path}`, { dir: true });
@@ -136,6 +161,7 @@ export const fsMkdir = async (scope, path, _opts = {}) => {
 };
 
 export const fsRename = async (scope, from, to) => {
+  denied('fsRename');
   const fromKey = `${scope}/${from}`;
   const toKey = `${scope}/${to}`;
   const entry = workspace.get(fromKey);

@@ -52,6 +52,20 @@ export const refusedPrimitive = (name, why) => {
   return e;
 };
 
+/** A gateway `unavailable` answer is a capability gap, not a runtime error
+ * (contract/primitives.md §4), so it belongs to the refusal family: exit 2
+ * with stderr naming what is missing — the same convention as every
+ * construct/flag refusal (exec.js's table: refusals are 2, unknown
+ * programs 127), never the generic exit-1 "pipeline member failed" a raw
+ * GatewayError would fall off as. The executor maps it at the member
+ * boundary (mkdir/find/ls/mv on a host whose backend supplies fewer than
+ * the seven primitives all ride this one shape). */
+export const unavailableRefusal = (error) => {
+  log.debug('unavailable refusal', { primitive: error?.primitive });
+  return new ShellRefusal(2, `dsh-shell-js: ${error?.primitive ?? 'a gateway primitive'} is not `
+    + `available on this host — ${error?.message ?? 'the capability is absent'}`);
+};
+
 // ---------------------------------------------------------------------------
 // Path model: the shell's world is the pinned profile workspace (the
 // dsh-shell-wasm convention — both roots are pinned globals the spine sets,

@@ -3,7 +3,7 @@
 // assertions live in the suites).
 import { apply, shellExecutor } from '../../runtime/dsh/system-plugins/dsh-shell-js/index.js';
 import { session } from '../../runtime/dsh/system-plugins/dsh-shell-js/applets.js';
-import { workspace } from './gateway-shim.js';
+import { workspace, __allowAllPrimitives } from './gateway-shim.js';
 
 /** The pinned profile container the executor maps the workspace through
  * (boot.js's pinProfileContainer globals) — the same seeding the
@@ -45,4 +45,5 @@ export const resetShell = () => {
   session.cwd = '';
   session.vars = {};
   session.oldpwd = null;
+  __allowAllPrimitives(); // a denied primitive is one test's scenario, never a leak
 };

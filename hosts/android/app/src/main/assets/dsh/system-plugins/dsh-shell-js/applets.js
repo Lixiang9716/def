@@ -79,7 +79,7 @@
 
 import {
   session, ShellRefusal, normalizeInternal, resolveAgainstCwd, toGateway,
-  wordHasGlobMagic,
+  wordHasGlobMagic, unavailableRefusal,
 } from './applets-support.js';
 import { ensureApplets, expandGlob } from './applets-shelljs.js';
 import {
@@ -145,6 +145,6 @@ export const REFUSED_COMMANDS = {
 
 export {
   session, ShellRefusal, normalizeInternal, resolveAgainstCwd, toGateway,
-  wordHasGlobMagic,
+  wordHasGlobMagic, unavailableRefusal,
 } from './applets-support.js';
 export { ensureApplets, expandGlob } from './applets-shelljs.js';

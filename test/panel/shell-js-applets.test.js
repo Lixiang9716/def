@@ -4,7 +4,7 @@ import { PIPE_WINDOW_BYTES } from '../../runtime/dsh/system-plugins/dsh-shell-js
 // these to runtime/dsh/ exactly the way the plugin's own imports go there.
 import { sha256Hex } from 'sha256.js';
 import { tarWrite, tarRead } from 'tar-mini.js';
-import { workspace } from './gateway-shim.js';
+import { workspace, __denyPrimitives } from './gateway-shim.js';
 import {
   encoder, putFile, putDir, putBytes, dumpFile, exists, run, resetShell,
 } from './shell-js-helpers.js';
@@ -38,6 +38,19 @@ describe('shell-js: applets — the navigation face', () => {
     putDir('stay');
     await run('cd stay');
     expect((await run('pwd')).stdout).toBe('/stay\n'); // no workdir default reset
+  });
+
+  it('cd to a missing path reports no-such-file; only a real file is not-a-directory', async () => {
+    // The contract's stat answers kind "other" for a missing path — that
+    // miss used to read as "not a directory" (issue #501); the honest
+    // wording is the read face's no-such-file, by-name held.
+    const missing = await run('cd nosuch');
+    expect(missing.exitCode).toBe(2);
+    expect(missing.stderr).toContain('no such file or directory: nosuch');
+    putFile('reg.txt', 'x');
+    const onFile = await run('cd reg.txt');
+    expect(onFile.exitCode).toBe(2);
+    expect(onFile.stderr).toContain('not a directory: reg.txt');
   });
 });
 
@@ -76,6 +89,7 @@ describe('shell-js: applets — grep/sed', () => {
     expect(miss.stdout).toBe('');
     const badFile = await run('grep zzz missing.txt');
     expect(badFile.exitCode).toBe(2);
+    expect(badFile.stdout).toBe(''); // the refusal family's stdout is empty (#501)
     expect(badFile.stderr).toContain('missing.txt');
   });
 
@@ -86,6 +100,23 @@ describe('shell-js: applets — grep/sed', () => {
     expect(dumpFile('code.js')).toBe('const a = 1;\n'); // untouched without -i
     expect((await run('sed -i "a" "b" code.js')).exitCode).toBe(0);
     expect(dumpFile('code.js')).toBe('const b = 1;\n');
+  });
+
+  it("an s///-shaped first argument is refused by naming the seat's dialect", async () => {
+    // `sed 's/beta/BETA/' notes.txt` (issue #501): without the shape probe
+    // the s/// string silently ate the file as the replacement and the
+    // "no files given" refusal contradicted reality — the file WAS given.
+    // The refusal boundary is the contract (T-0217): the wording names the
+    // dialect, the s/// form stays unsupported.
+    putFile('notes.txt', 'beta\n');
+    const refused = await run("sed 's/beta/BETA/' notes.txt");
+    expect(refused.exitCode).toBe(2);
+    expect(refused.stderr).toContain('s/// script');
+    expect(refused.stderr).toContain('<regex> <replacement> <file...>');
+    expect(dumpFile('notes.txt')).toBe('beta\n'); // never touched
+    const dialect = await run('sed beta BETA notes.txt'); // the seat's spelling works
+    expect(dialect.exitCode).toBe(0);
+    expect(dialect.stdout).toBe('BETA\n');
   });
 
 });
@@ -101,6 +132,17 @@ describe('shell-js: applets — the fd and order faces', () => {
     putFile('s.txt', 'b\na\nc\n');
     expect((await run('sort s.txt')).stdout).toBe('a\nb\nc\n');
     expect((await run('sort -r s.txt')).stdout).toBe('c\nb\na\n');
+  });
+
+  it('sort on a missing file refuses with empty stdout (no bare join newline)', async () => {
+    // The pristine body's `join('\n') + '\n'` over the zero lines the
+    // missing-file guard leaves used to surface a bare newline on stdout,
+    // where cat/head/tail/wc report empty (issue #501) — the artifact
+    // newline is formatting, not output.
+    const result = await run('sort missing.txt');
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain('missing.txt');
   });
 
   it('uniq collapses runs; -c uses the shelljs count format', async () => {
@@ -119,6 +161,24 @@ describe('shell-js: applets — the tree face', () => {
     const repeat = await run('mkdir x');
     expect(repeat.exitCode).not.toBe(0);
     expect(repeat.stderr).toContain('exists');
+  });
+
+  it('an unavailable primitive refuses by name with the family exit code 2', async () => {
+    // main_cli.c's smoke backend supplies fsRead/fsWrite/fsStat/fsRemove
+    // only; a mkdir/find there used to fall off the executor as the
+    // generic exit-1 "pipeline member failed" (issue #501). A capability
+    // gap is a refusal like every other: exit 2, stderr naming the missing
+    // primitive — the whole unavailable class's convention (ls/mv ride it
+    // through the same mapping).
+    __denyPrimitives('fsMkdir', 'fsList');
+    const made = await run('mkdir -p x/y');
+    expect(made.exitCode).toBe(2);
+    expect(made.stderr).toContain('fsMkdir');
+    expect(made.stderr).toContain('not available');
+    const found = await run('find .');
+    expect(found.exitCode).toBe(2);
+    expect(found.stderr).toContain('fsList');
+    expect(found.stderr).toContain('not available');
   });
 
   it('rm -r removes a tree; -f tolerates a missing path', async () => {

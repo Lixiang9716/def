@@ -24,8 +24,9 @@ import { parseCommandLine, ShellParseError } from './parser.js';
 import {
   APPLETS, APPLET_NAMES, REFUSED_COMMANDS, ensureApplets, expandGlob,
   wordHasGlobMagic, session, normalizeInternal, resolveAgainstCwd, toGateway,
-  ShellRefusal,
+  ShellRefusal, unavailableRefusal,
 } from './applets.js';
+import { GatewayError } from 'gateway.js';
 import { createPipe, CaptureWriter } from './stream.js';
 
 const log = createLogger('dsh.shell.js.exec');
@@ -313,6 +314,17 @@ const exitThrough = async (code, sinks, stdout, runOutput) => {
   return { exitCode: code };
 };
 
+/** The member's failure shaping: a gateway `unavailable` answer
+ * (mkdir/find/ls/mv on a host whose backend supplies fewer than the seven
+ * primitives) is a refusal, not a crash — the family table's exit code is
+ * 2, stderr naming the missing primitive, never the generic exit-1 member
+ * failure a raw GatewayError would fall off as. */
+const shapeMemberFailure = (error) => (
+  error instanceof GatewayError && error.code === 'unavailable'
+    ? unavailableRefusal(error)
+    : error
+);
+
 /** Execute one Command node as a pipeline member. `stdin` is the pipe from
  * the previous member (or null); `stdout` is where this member's stdout
  * goes (the next pipe, or the run capture). The member CLOSES what it owns
@@ -363,7 +375,7 @@ const runMember = async (node, { stdin, stdout, runOutput }) => {
     // The member already failed; closing is best-effort EOF/flush
     // bookkeeping and must not mask the original error.
     await closeOwnedSinks(sinks, stdout, runOutput)();
-    throw error;
+    throw shapeMemberFailure(error);
   }
 };
 

@@ -73,7 +73,15 @@ export const appletCd = async (argv) => {
   } catch {
     throw new ShellRefusal(2, `cd: no such file or directory: ${target ?? '/'}`);
   }
-  if (stat.kind !== 'dir') throw new ShellRefusal(2, `cd: not a directory: ${target}`);
+  // The contract's stat answers kind "other" for a missing path (the CLI
+  // smoke backend and the device hosts alike) — that miss must read as
+  // no-such-file (the read face's wording: cat/tar name it the same way),
+  // not "not a directory"; only a real FILE is not a directory.
+  if (stat.kind !== 'dir') {
+    throw new ShellRefusal(2, stat.kind === 'other'
+      ? `cd: no such file or directory: ${target}`
+      : `cd: not a directory: ${target}`);
+  }
   session.oldpwd = session.cwd;
   session.cwd = internal;
   return { stdout: '', stderr: '', code: 0 };
@@ -138,12 +146,27 @@ export const appletGrep = async (argv, ctx) => {
   return shellStringOutcome(result);
 };
 
+/** The s///-script SHAPE probe (wording only, NOT dialect support — the
+ * refusal boundary is the contract, T-0217's design declaration): s, any
+ * delimiter, content, the same delimiter, content, the delimiter again,
+ * optional letter flags. `s/beta/BETA/` matches; the seat's own regexes
+ * (plain words, dots, character classes) do not. */
+const S_SCRIPT_SHAPE = /^s(.).*\1.*\1[a-zA-Z]*$/;
+
 /** sed: the no-separator form (regex, replacement, files); -i via fsWrite
  * replay; patterns are JavaScript RegExp with no flags on string patterns
- * (the §6 disclosure). */
+ * (the §6 disclosure). An s///-shaped first argument is refused by name:
+ * without this probe it would silently eat the file argument as the
+ * replacement and the "no files given" refusal would contradict reality —
+ * the file WAS given. */
 export const appletSed = async (argv, ctx) => {
   log.debug('applet', { applet: 'sed' });
   const { flags, args } = splitFlags(argv, new Set('i'));
+  if (args.length > 0 && S_SCRIPT_SHAPE.test(args[0])) {
+    throw new ShellRefusal(2, `sed: '${args[0]}' looks like an s/// script — this seat's sed `
+      + 'takes <regex> <replacement> <file...> (the no-separator form; '
+      + 's/x/y/ strings are not implemented)');
+  }
   if (args.length < 2) {
     throw new ShellRefusal(2, 'sed: usage: sed [-i] <regex> <replacement> <file...> '
       + '(the no-separator form; s/x/y/ strings are not implemented)');
