@@ -15,11 +15,24 @@
 # args, `..`-ladder cds from a script) measurably misfires on MSYS bash 5.2 +
 # Node 24 (imported-as-module / URL scheme 'd:' / one-level-short cwd). New
 # suite files join the --test line below.
+#
+# The journal-migration leg runs in a SECOND, hook-less invocation: it drives
+# the vendored jsonl backend on real disk (the journal contract must hold on
+# node's own fs, not the workspace VFS the hooks serve), and the hooks remap
+# node:fs for every module under runtime/ — which is where the vendored
+# packages realpath. Its resolution layer lives in journal-resolution.mjs
+# (see there; the parity-node-modules.sh prerequisite it names joins
+# external/ensure-dsh.sh in the fresh-checkout list).
 set -eu
 ROOT=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 cd "$ROOT"
 node test/panel/spine/provision-modules.mjs
-exec node --import ./test/panel/spine/register.mjs \
+# The vendored graph's internal bare imports resolve through the REAL
+# ancestor chain of the vendored trees (node realpaths ESM entries) — one
+# external/node_modules, skip-loud for absent faces, idempotent.
+sh runtime/dsh/ci/parity-node-modules.sh
+node --import ./test/panel/spine/register.mjs \
   --test test/panel/spine/composer-journal.test.mjs \
   test/panel/spine/session-delete.test.mjs \
   test/panel/spine/watchdog-abort-wire.test.mjs
+exec node --test test/panel/spine/journal-migration.test.mjs
