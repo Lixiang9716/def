@@ -30,6 +30,12 @@
   from { transform: translate3d(-3%, -2%, 0) scale(1); }
   to { transform: translate3d(4%, 3%, 0) scale(1.12); }
 }
+/* The ambient loops stop under reduced motion (theme.css guards the
+ * status dot); none of them ever carries meaning on its own. */
+@media (prefers-reduced-motion: reduce) {
+  .ocean-backdrop::after { animation: none; }
+  .cursor-blink { animation: none; }
+}
 
 .home-header {
   display: flex;
@@ -120,8 +126,7 @@
   margin-top: 2px;
   font-size: 12px;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  color: var(--mist);
-  opacity: 0.75;
+  color: var(--mist); /* full mist: the old 0.75 opacity dipped to 4.35:1 on the backdrop's bright regions */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -146,8 +151,8 @@
   background: var(--bg);
 }
 .icon-btn {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: 12px;
   background: transparent;
@@ -172,7 +177,7 @@
   text-overflow: ellipsis;
 }
 .chat-status { font-size: 12px; color: var(--text-2); }
-.header-spacer { width: 38px; }
+.header-spacer { width: 44px; }
 
 .transcript-wrap { position: relative; flex: 1; min-height: 0; }
 .transcript {
@@ -186,8 +191,8 @@
   position: absolute;
   right: 16px;
   bottom: 16px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   font-size: 18px;
   color: var(--text);
@@ -250,7 +255,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-3);
+  color: var(--text-2); /* sits on --fill, where text-3 lands under 4.5:1 in light */
   display: block;
   margin-bottom: 2px;
 }
@@ -294,14 +299,23 @@
 }
 
 .reason-row { margin: 6px 0; }
+/* A real button: keyboard and VoiceOver can toggle the reasoning body
+ * (the old clickable div was pointer-only). */
 .reason-head {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  min-height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
   font-size: 12.5px;
   font-weight: 650;
-  color: var(--purple);
+  color: var(--tone-reason);
   cursor: pointer;
+  text-align: left;
 }
 .reason-text {
   margin-top: 4px;
@@ -321,19 +335,19 @@
   gap: 7px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--orange);
+  color: var(--tone-tool);
 }
 .tool-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tool-chip {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   padding: 1px 7px;
   border-radius: 999px;
   flex: none;
 }
-.chip-wait { background: rgba(240, 125, 20, 0.14); color: var(--orange); }
-.chip-fail { background: rgba(229, 72, 77, 0.14); color: var(--red); }
-.chip-done { background: rgba(46, 184, 92, 0.14); color: var(--green); }
+.chip-wait { background: rgba(240, 125, 20, 0.14); color: var(--tone-tool); }
+.chip-fail { background: rgba(229, 72, 77, 0.14); color: var(--tone-fail); }
+.chip-done { background: rgba(46, 184, 92, 0.14); color: var(--tone-done); }
 .tool-args {
   margin: 4px 0 0;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
@@ -359,8 +373,8 @@
   overflow-y: auto;
 }
 .tool-output-label {
-  font-size: 9.5px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text-3);
   display: block;
@@ -374,7 +388,7 @@
 .tail-reason {
   margin: 4px 0 0;
   font-size: 13px;
-  color: var(--purple);
+  color: var(--tone-reason);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-height: 132px;
@@ -394,7 +408,8 @@
   background: transparent;
   color: var(--text-3);
   font-size: 12px;
-  padding: 3px 6px;
+  padding: 4px 10px;
+  min-height: 28px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -417,7 +432,7 @@
   color: var(--text-2);
 }
 .md hr { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
-.md a { color: var(--ocean); text-decoration: none; }
+.md a { color: var(--link); text-decoration: none; }
 .md a:active { opacity: 0.7; }
 .md code, .inline-code {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
@@ -436,8 +451,8 @@
 .code-lang {
   display: block;
   padding: 5px 10px 0;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
@@ -475,8 +490,8 @@
 }
 #composer-input::placeholder { color: var(--text-3); }
 .send-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: none;
   border-radius: 50%;
   flex: none;
@@ -548,7 +563,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.creation-open { color: var(--ocean); font-weight: 650; font-size: 13px; }
+.creation-open { color: var(--link); font-weight: 650; font-size: 13px; }
 
 /* fullscreen creation viewer */
 #creation-view {
@@ -640,7 +655,9 @@
   background: var(--bg);
   color: inherit;
   font: inherit;
-  font-size: 14px;
+  /* 16px, not 14px: a smaller field zooms the whole page on focus in
+   * WKWebView/ArkWeb — the classic mobile-webview trap. */
+  font-size: 16px;
 }
 .onboarding-key-row { display: flex; gap: 6px; align-items: center; }
 .onboarding-toggle {
