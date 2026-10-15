@@ -13,19 +13,18 @@ name: pages/demo
 # a scratch prefix and copied verbatim into the artifact; it never enters the
 # product dependency set of presentation/lynx-client.
 #
-# KNOWN FIRST-RUN FAILURE: GitHub Pages is OFF until the owner flips
-# Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
-# Until that lands, configure-pages/deploy-pages fails ("Pages not enabled") —
-# expected and documented, not a workflow defect. The build steps before it
-# prove the pipeline green either way.
+# Job split (measured 2026-10-15, after Pages was enabled): the job declaring
+# `environment: github-pages` becomes a DEPLOYMENT REQUEST at job start, and
+# the github-pages environment's branch protection rejects PR merge refs —
+# the whole PR leg died in 2s before any step. So the chain is split the
+# canonical way: `build` runs the full install->build->pin->stage chain for
+# every event with no environment; `deploy` (main/dispatch only) owns the
+# environment and the three Pages steps.
 #
-# Triggers genuinely mirror the dev-* workflows (review round on #277: the
-# first draft claimed the mirror but shipped no pull_request leg, so the
-# install->build->stage chain would have first executed on a GitHub runner
-# only after merge): pull_request with the same path filter validates that
-# chain BEFORE landing, with the three Pages steps guarded off (they are the
-# only ones that touch the Pages deployment); workflow_dispatch + main-push
-# with the same paths deploy.
+# KNOWN FIRST-RUN FAILURE (historical): GitHub Pages was OFF until the owner
+# flipped Settings -> Pages -> Build and deployment -> Source: "GitHub
+# Actions" (done 2026-10-15). Until then configure-pages/deploy-pages failed
+# ("Pages not enabled") — expected and documented, not a workflow defect.
 
 on:
   workflow_dispatch:
@@ -53,13 +52,10 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
-    name: pages-demo
+  build:
+    name: pages-demo (build & validate)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -88,20 +84,27 @@ jobs:
       - name: Stage the Pages artifact (same script locally and in CI)
         run: sh presentation/lynx-client/demo/stage-pages.sh "$GITHUB_WORKSPACE" pages-dist
 
-      # The three Pages steps are deploy-only: on pull_request the leg proves
-      # the install->build->pin->stage chain and stops — no deployment is
-      # created, nothing touches the (owner-gated) Pages integration.
-      - name: Setup Pages
-        if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v6
-
       - name: Upload the Pages artifact
-        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: pages-dist
 
+  deploy:
+    name: pages-demo (deploy)
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # The three Pages steps are deploy-only: on pull_request the leg proves
+      # the install->build->pin->stage chain and stops — no deployment is
+      # created, nothing touches the (owner-gated) Pages integration.
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
       - name: Deploy to GitHub Pages
-        if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v5
