@@ -9,6 +9,18 @@
 # as a GAP on a blocking host, restores byte-identically, and proves the
 # same run goes green.
 #
+# #443 hardening: the old script judged its fixture BEFORE arming its EXIT
+# trap, so a 10s-budget SIGKILL mid-window leaked BOTH the mutated Index.ets
+# and the pristine .case-tmp backup PERMANENTLY (replayed: the mutation
+# survived reruns as a tracked-file edit no case ever restored). Now: the
+# trap is armed before any early exit; a leaked .case-tmp is recovered
+# before the fixture judgment; the pristine backup is taken INSIDE the lock
+# (a pre-acquire cp could snapshot a concurrent window's mutated bytes and
+# later "restore" them, cementing the leak); a preflight asserts the tree
+# green BEFORE the mutation; and both failure messages carry the gate's
+# residual output inline (govrail's report quotes only the first output
+# line, so the evidence rides ON that line).
+#
 # The mutation window holds the live-tree case lock: self-test runs project
 # cases on a ThreadPoolExecutor (CONCURRENCY=4, no mutex), and this case's
 # window (Index.ets row gone) turns case-bundle-files' green leg red — the
@@ -18,24 +30,9 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 IDX="$REPO/hosts/harmony/entry/src/main/ets/pages/Index.ets"
-[ -f "$IDX" ] || { echo "case-staging-check: FAIL — Index.ets absent" >&2; exit 1; }
-grep -q "^\s*'upstream/boot\.js',$" "$IDX" || {
-  echo "case-staging-check: FAIL — fixture row 'upstream/boot.js' absent from BUNDLE_FILES" >&2
-  exit 1
-}
+CHECKER="$REPO/tools/check-staging.mjs"
 
-# --- the live-tree case lock (shared with case-bundle-files.sh) -----------
-# Repo-scoped: the mutated tree (Index.ets) is THIS worktree's, so the
-# serialization window is per-worktree too — a global /tmp lock made
-# parallel fleet agents' cases contend (and the 10s case budget SIGKILL
-# leaks the lock, cascading timeouts; measured 2026-09-30, T-0078).
-# Worktree-scoped: the mutated tree (Index.ets) is THIS worktree's, so the
-# serialization window is per-worktree too — a global /tmp lock made parallel
-# fleet agents' cases contend (and the 10s case budget SIGKILL leaks the
-# lock, cascading timeouts; measured 2026-09-30, T-0078). The per-worktree
-# git dir is the one per-worktree, always-writable, never-tracked home (a
-# linked worktree's .git is a FILE — measured: mkdir .git/... fails fast and
-# the acquire loop burned its whole deadline).
+# Worktree-scoped lock (see case-bundle-files.sh for the measured rationale).
 GITDIR="$(git -C "$REPO" rev-parse --git-dir 2>/dev/null || true)"
 case "$GITDIR" in
   /*) ;;                       # already absolute
@@ -67,32 +64,67 @@ release_tree_lock() {
 }
 # --------------------------------------------------------------------------
 
-cp "$IDX" "$IDX.case-tmp"
 restore() { mv "$IDX.case-tmp" "$IDX" 2>/dev/null || true; }
 OUT="$(mktemp)"
 trap 'release_tree_lock; rm -f "$OUT"; restore' EXIT
 
+# 443: recover a killed prior instance's leak BEFORE judging the fixture.
+if [ -e "$IDX.case-tmp" ]; then
+  restore
+  echo "case-staging-check: recovered Index.ets.case-tmp leaked by a killed prior instance" >&2
+fi
+rm -f "$IDX.case-tmp.2"   # a strangled mid-splice sed twin has no pristine value
+[ -f "$IDX" ] || { echo "case-staging-check: FAIL — Index.ets absent" >&2; exit 1; }
+grep -q "^\s*'upstream/boot\.js',$" "$IDX" || {
+  echo "case-staging-check: FAIL — fixture row 'upstream/boot.js' absent from BUNDLE_FILES" >&2
+  exit 1
+}
+
 acquire_tree_lock
-grep -v "^\s*'upstream/boot\.js',$" "$IDX" > "$IDX.case-tmp.2" && mv "$IDX.case-tmp.2" "$IDX"
 
 # Harmony-only: the case's assertion lives entirely on harmony's
 # BUNDLE_FILES (the vehicle row IS harmony's), and under the full DAG's
 # gate concurrency the three-host walk stretched the case past its 10s
 # budget (measured 2026-09-30, T-0078). One host, same proof.
-if node "$REPO/tools/check-staging.mjs" --json --block harmony > "$OUT" 2>&1; then
+#
+# 443: preflight — the tree must be green BEFORE this case mutates it (this
+# pins the red leg's red on OUR row removal). A red here is someone else's
+# pollution: one bounded settle-retry gives a same-batch sibling's recovery a
+# beat to land; a persistent red fails loud with the full gate output.
+preflight_green() {
+  local attempt out="$1"
+  for attempt in 1 2; do
+    if node "$CHECKER" --json --block harmony > "$out" 2>&1; then return 0; fi
+    [ "$attempt" -eq 1 ] || break
+    sleep 2
+  done
+  return 1
+}
+if ! preflight_green "$OUT"; then
+  echo "case-staging-check: FAIL — the tree was red BEFORE this case mutated anything (persistent across one settle-retry); residual gate output: $(head -2 "$OUT" | tr '\n' ' | ')" >&2
+  cat "$OUT" >&2
+  exit 1
+fi
+
+cp "$IDX" "$IDX.case-tmp"     # INSIDE the lock: never snapshot a concurrent window
+grep -v "^\s*'upstream/boot\.js',$" "$IDX" > "$IDX.case-tmp.2" && mv "$IDX.case-tmp.2" "$IDX"
+
+# --json mode: the gap surfaces as a structured row of the harmony result,
+# not the human "GAP … NOT staged" line — assert on the payload itself.
+if node "$CHECKER" --json --block harmony > "$OUT" 2>&1; then
   echo "case-staging-check: FAIL — a boot entry missing from BUNDLE_FILES passed the gate" >&2
   exit 1
 fi
-# --json mode: the gap surfaces as a structured row of the harmony result,
-# not the human "GAP … NOT staged" line — assert on the payload itself.
 grep -q '"file": "upstream/boot.js"' "$OUT" || {
-  echo "case-staging-check: red but not about the unstaged boot entry" >&2
+  echo "case-staging-check: red but not about the unstaged boot entry; residual gate output: $(head -2 "$OUT" | tr '\n' ' | ')" >&2
+  cat "$OUT" >&2
   exit 1
 }
 
 restore
-if ! node "$REPO/tools/check-staging.mjs" --json --block harmony >/dev/null 2>&1; then
-  echo "case-staging-check: FAIL — the restored tree still fails" >&2
+if ! node "$CHECKER" --json --block harmony > "$OUT" 2>&1; then
+  echo "case-staging-check: FAIL — the restored tree still fails; residual gate output: $(head -2 "$OUT" | tr '\n' ' | ')" >&2
+  cat "$OUT" >&2
   exit 1
 fi
 release_tree_lock
