@@ -112,13 +112,21 @@ export const runShelljs = async (prefetch, invoke) => {
 
 /** ShellString (or plain value) → the executor outcome shape. shelljs
  * errors are return values (config.fatal stays false), so `code`/`stderr`
- * carry them (DECISION §2.3 piece 4). */
+ * carry them (DECISION §2.3 piece 4). One family-wide normalization: a
+ * refused body (code !== 0) never carries stdout content — grep/sort's
+ * `join('\n') + '\n'` over the zero lines a missing-file guard leaves
+ * would surface a bare newline on stdout, where the rest of the refusal
+ * family (cat/head/tail/wc, and every throwing body) reports empty. The
+ * artifact newline is formatting, not output: real partial output with a
+ * non-zero code (e.g. one existing file matched, another missing) is not
+ * a bare newline and passes through untouched. */
 export const shellStringOutcome = (result) => {
   log.debug('shell outcome', { code: result?.code });
-  const stdout = result === undefined || result === null ? ''
+  let stdout = result === undefined || result === null ? ''
     : typeof result === 'string' ? result
       : Array.isArray(result) ? result.join('\n') + (result.length > 0 ? '\n' : '')
         : String(result.stdout ?? '');
+  if (typeof result?.code === 'number' && result.code !== 0 && stdout === '\n') stdout = '';
   const stderr = typeof result?.stderr === 'string' ? result.stderr : '';
   const code = typeof result?.code === 'number' ? result.code : 0;
   return { stdout, stderr, code };
