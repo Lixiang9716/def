@@ -78,3 +78,30 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 3. 跑一次 runner,读真实数字,把 `tools/test/coverage-floors.json` 的地板
    设为实测 − 5。
 4. 门已经盯着每个注册面——不需要改 gates.json。
+
+## 测试加固计划（2026-10-15）
+
+16 项加固计划，已经 owner 批准：分三波，每项方法作为独立的腿/座落地并附证据；
+行的状态在落地它的 PR 里翻转。它是对上方地板的补充而非替代——覆盖面回答
+"表面测了没有"，下列方法回答"断言够不够硬"以及"边界上会发生什么"。
+
+| # | 方法 | 波次 | 状态 | 落地形态 |
+|---|------|------|------|----------|
+| 1 | 敌意 LLM mock 画像（畸形 SSE、截断、slow-drip、超大块） | 1 | planned | mock-llm-server.mjs 画像 + 传输守卫腿 |
+| 2 | C 宿主 ASan/UBSan CI 腿 | 1 | planned | c-core sanitizer 构建 |
+| 3 | axe-core 可访问性回归（web-client-v2，接 #519 手工审查） | 1 | planned | 套件腿 |
+| 4 | 视觉回归 diff（dev-carrier 截图；warn 级，绝不做 CI 日志断言） | 1 | planned | ui-sweep 像素 diff |
+| 5 | 收窄变异试点（Stryker：shell-js 拒绝词汇、lynx fold/surface-core、publisher-token） | 1 | planned | 信息性分数 + 存活体分诊 |
+| 6 | bash 差分测试（POSIX 子集，dsh-shell-js 对真 bash，Linux CI） | 2 | planned | c-core Linux 腿 |
+| 7 | 属性测试解析器（fast-check：parser-syntax、path、semver-range） | 2 | planned | panel 套件族 |
+| 8 | 持久化 journal schema 迁移测试（跨版本重放） | 2 | planned | 迁移腿 |
+| 9 | 静态分析：clang-tidy（src）、detekt（Kotlin） | 2 | planned | CI 腿 |
+| 10 | vendored npm 闭包供应链审计（CVE + license） | 2 | planned | vendoring 步骤 |
+| 11 | 老化 soak 腿（1-2 小时：堆/fd/journal 完整性） | 3 | planned | CLI/模拟器 runner |
+| 12 | gateway 线/SSE 解析器的结构感知生成式 fuzz | 3 | planned | fuzz 基建 |
+| 13 | Provider cassette 重放（LLM 契约怪癖离线化） | 3 | planned | 录制 fixtures |
+| 14 | 宿主队列边界并发压测（D2 派发缝） | 3 | planned | 派发压测 harness |
+| 15 | App 升级矩阵（跨版本 install -r；AssetSync stamp） | 3 | planned | 升级腿 |
+| 16 | 资源饥饿行为（journal 写满盘、低内存） | 3 | planned | 饥饿腿 |
+
+行不得静默回退：已落地的行其腿消失即为 finding（与覆盖地板同一精神）。
