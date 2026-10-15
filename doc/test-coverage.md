@@ -103,10 +103,10 @@ enough" and "what happens at the edges".
 
 | # | Method | Wave | Status | Lands as |
 |---|--------|------|--------|----------|
-| 1 | Chaos LLM mock profiles (malformed SSE, truncation, slow-drip, oversized chunks) | 1 | planned | mock-llm-server.mjs profiles + transport-guard legs |
+| 1 | Chaos LLM mock profiles (malformed SSE, truncation, slow-drip, oversized chunks) | 1 | **landed** (#528) | mock-llm-server.mjs profiles + transport-guard legs |
 | 2 | C host ASan/UBSan CI leg | 1 | planned | c-core sanitizer build |
-| 3 | axe-core a11y regression (web-client-v2, after the #519 manual pass) | 1 | planned | suite leg |
-| 4 | Visual regression diff (dev-carrier screenshots; warn-tier, never a CI log assertion) | 1 | planned | ui-sweep pixel diff |
+| 3 | axe-core a11y regression (web-client-v2, after the #519 manual pass) | 1 | **landed** (#527) | suite leg |
+| 4 | Visual regression diff (dev-carrier screenshots; warn-tier, never a CI log assertion) | 1 | **landed** (#527) | ui-sweep pixel diff |
 | 5 | Scoped mutation pilot (Stryker: shell-js refusal vocab, lynx fold/surface-core, publisher-token) | 1 | planned | informational score + survivor triage |
 | 6 | bash differential harness (POSIX subset, dsh-shell-js vs real bash on Linux CI) | 2 | planned | c-core Linux leg |
 | 7 | Property-based parser tests (fast-check: parser-syntax, path, semver-range) | 2 | planned | panel suite families |
