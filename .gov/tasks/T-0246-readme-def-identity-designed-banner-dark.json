@@ -12,9 +12,14 @@
     "[x] banner SVGs (dark+light, neutral law, no green) in doc/assets, wired via <picture> in both READMEs with a centered hero block",
     "[x] stale post-#562 site claims fixed in \u00b1zh (live Lynx render lines)",
     "[x] typography/layout pass mirrored in README.zh.md; gov verify pairing --write README green",
-    "local visual check of banner + PR landed"
+    "[x] local visual check of banner + PR landed"
   ],
-  "status": "open",
+  "status": "voided",
   "receipt": null,
-  "id": "T-0246"
+  "id": "T-0246",
+  "void": {
+    "ts": "2026-10-16T16:12:54+00:00",
+    "by": "lixiang@192.168.21.11",
+    "reason": "close is environment-blocked: the clean-env DAG replay times out on the heavy-gate family after the hardening rows landed (see the surprise recorded this session); the authoritative gate proof for the card's work is PR #565's CI gates check (green, merged bb022dcd) \u2014 deferring to the precedent that card bookkeeping rides the next chore PR"
+  }
 }
