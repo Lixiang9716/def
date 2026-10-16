@@ -6,6 +6,14 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-16 — the checker on this tree counts **127 evidence dirs /
+> 246 green verdicts / 245 pngs**, with 1 accepted owned gap (unchanged: the iOS b4
+> receipt, #65). Growth since the previous note rode the #517–#544 landing wave —
+> the create-card family on all three hosts, the session-persist restart and
+> mid-turn legs, card-player, shell-turn, the bash differential harness, the
+> toolargs chaos and multi-session stress legs, and their receipts. Counts are a
+> checker run, not a claim: `node test/e2e/matrix.mjs` re-counts.
+
 > **Currency**: this matrix reflects the harmony matrix leg going real
 > (2026-10-12): `run-simulator-matrix.sh --platform harmony` runs the REAL
 > legs when an hdc target is up — the harness ladder (`run-host-e2e.sh`: 8/8

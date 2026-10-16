@@ -6,6 +6,12 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-16——本树校验计数 **127 个证据目录 / 246 条绿色 verdict / 245 png**，
+> 1 项已被接受的 owned gap（未变：iOS b4 回执，#65）。自上一条记录以来的增长随 #517–#544
+> 落地潮而来——三宿主 create-card 家族、session-persist 重启与中途杀腿、card-player、
+> shell-turn、bash 差分 harness、toolargs chaos 与多会话压力腿及其回执。计数是校验器的
+> 一次实跑，不是断言：`node test/e2e/matrix.mjs` 随时可重数。
+
 > **时效性**：本矩阵反映 harmony 矩阵腿转正（2026-10-12）：
 > `run-simulator-matrix.sh --platform harmony` 在 hdc 目标在场时运行**真实**
 > 腿——harness 阶梯（`run-host-e2e.sh`：8/8 verdict + 绿路 receipt 落入
