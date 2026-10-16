@@ -1,0 +1,9 @@
+{
+  "scenario": "soak.aging",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "soak.aging.begin", "match": {} },
+    { "event": "soak.aging.heartbeat", "match": {}, "repeat": true },
+    { "event": "soak.aging.verdict", "match": { "status": "pass" } }
+  ]
+}
