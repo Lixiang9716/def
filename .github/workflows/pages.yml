@@ -1,25 +1,25 @@
 name: pages/demo
-# GitHub Pages: the ONLINE DEMO of the lynx-client web render — what the
-# product looks like, for early reviewers, before any install.
+# GitHub Pages: the landing page for def — the app you define. The page is
+# a PURE STATIC single page: the lynx-view client mount was removed by
+# owner decision (2026-10-16, correction 3), so the former install ->
+# build:web -> pin web-core chain is gone and staging copies only the
+# page plus its self-hosted display face. staging is demo/stage-pages.sh —
+# the same script verified locally is what deploys.
 #
-# The recipe is the #248 acceptance probe, productized:
-#   npm ci (committed lockfile) -> npm run build:web -> dist-web/main.web.bundle,
-#   mounted by <lynx-view> on a static landing page via @lynx-js/web-core's
-#   static client (the package README's official recipe: client.js +
-#   client.css + <lynx-view url=...>). staging is demo/stage-pages.sh — the
-#   same script verified locally is what deploys.
-#
-# The web runtime (@lynx-js/web-core) is a BUILD-TIME-ONLY pin: installed into
-# a scratch prefix and copied verbatim into the artifact; it never enters the
-# product dependency set of presentation/lynx-client.
+# HISTORY (for anyone archaeology-ing the bundle out of this file): the
+# page used to mount the real ReactLynx client render (the #248 acceptance
+# probe productized: npm ci -> npm run build:web -> dist-web/main.web.bundle
+# mounted by <lynx-view> via @lynx-js/web-core's static client). The mount
+# left the landing on 2026-10-16; the client's demo home is the repo, not
+# this page.
 #
 # Job split (measured 2026-10-15, after Pages was enabled): the job declaring
 # `environment: github-pages` becomes a DEPLOYMENT REQUEST at job start, and
 # the github-pages environment's branch protection rejects PR merge refs —
 # the whole PR leg died in 2s before any step. So the chain is split the
-# canonical way: `build` runs the full install->build->pin->stage chain for
-# every event with no environment; `deploy` (main/dispatch only) owns the
-# environment and the three Pages steps.
+# canonical way: `build` stages the artifact for every event with no
+# environment; `deploy` (main/dispatch only) owns the environment and the
+# three Pages steps.
 #
 # KNOWN FIRST-RUN FAILURE (historical): GitHub Pages was OFF until the owner
 # flipped Settings -> Pages -> Build and deployment -> Source: "GitHub
@@ -55,31 +55,9 @@ jobs:
   build:
     name: pages-demo (build & validate)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-
-      - name: Install the client bundle (pinned lockfile; npmmirror fallback)
-        run: |
-          npm ci --prefix presentation/lynx-client/bundle --no-fund --no-audit \
-            || npm ci --prefix presentation/lynx-client/bundle --no-fund --no-audit \
-                 --registry=https://registry.npmmirror.com
-
-      - name: Build the web-target bundle
-        run: npm run build:web --prefix presentation/lynx-client/bundle
-
-      - name: Pin the Lynx web runtime (build-time only, never a product dep)
-        run: |
-          npm install --prefix .pages-runtime --no-fund --no-audit \
-            @lynx-js/web-core@0.26.2 \
-            || npm install --prefix .pages-runtime --no-fund --no-audit \
-                 @lynx-js/web-core@0.26.2 --registry=https://registry.npmmirror.com
-          test -f .pages-runtime/node_modules/@lynx-js/web-core/dist/client_prod/static/js/client.js \
-            || { echo "::error::web-core static client missing after install"; exit 1; }
 
       - name: Stage the Pages artifact (same script locally and in CI)
         run: sh presentation/lynx-client/demo/stage-pages.sh "$GITHUB_WORKSPACE" pages-dist
@@ -100,8 +78,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       # The three Pages steps are deploy-only: on pull_request the leg proves
-      # the install->build->pin->stage chain and stops — no deployment is
-      # created, nothing touches the (owner-gated) Pages integration.
+      # the stage chain and stops — no deployment is created, nothing touches
+      # the (owner-gated) Pages integration.
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
