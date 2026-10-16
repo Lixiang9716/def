@@ -1,0 +1,21 @@
+{
+  "name": "openai-usage-before-done",
+  "provenance": "authored from the OpenAI chat.completions documented stream contract",
+  "quirk": "a usage-carrying chunk with an EMPTY choices array precedes [DONE]; it must fold to nothing",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"a\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"b\"}}]}\n\n",
+    "data: {\"choices\":[],\"usage\":{\"prompt_tokens\":3,\"completion_tokens\":2,\"total_tokens\":5}}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "ab",
+    "reasoning": "",
+    "deltas": 2,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}

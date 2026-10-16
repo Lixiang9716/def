@@ -1,0 +1,18 @@
+{
+  "name": "connection-close-no-done",
+  "provenance": "authored from observed proxy behavior on this repo's live legs",
+  "quirk": "the body ends WITHOUT a [DONE] terminator — the run must still resolve with the finish_reason captured",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"tail\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n"
+  ],
+  "expect": {
+    "text": "tail",
+    "reasoning": "",
+    "deltas": 1,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}

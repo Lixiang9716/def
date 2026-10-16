@@ -1,0 +1,20 @@
+{
+  "name": "crlf-terminators",
+  "provenance": "authored from the SSE wire contract as some proxies emit it",
+  "quirk": "CRLF line terminators throughout, including the [DONE] line",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"win\"}}]}\r\n\r\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"dows\"}}]}\r\n\r\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\r\n\r\n",
+    "data: [DONE]\r\n\r\n"
+  ],
+  "expect": {
+    "text": "windows",
+    "reasoning": "",
+    "deltas": 2,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "null-and-empty-deltas",
+  "provenance": "authored from observed provider chunk vocabulary",
+  "quirk": "delta:null, empty choices arrays, and empty-string content chunks all fold to nothing — no events, no chars",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":null}]}\n\n",
+    "data: {\"choices\":[]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"real\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "real",
+    "reasoning": "",
+    "deltas": 1,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}

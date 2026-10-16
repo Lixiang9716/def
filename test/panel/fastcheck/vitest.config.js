@@ -11,7 +11,7 @@ import panel from '../vitest.config.js';
 // vendored packages provision-vendor.mjs stages.
 export default defineConfig({
   test: {
-    include: ['*.test.js'],
+    include: ['*.test.js', '*.test.mjs'],
     environment: 'node',
   },
   resolve: { alias: panel.resolve.alias },

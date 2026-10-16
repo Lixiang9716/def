@@ -1,0 +1,18 @@
+{
+  "name": "delta-split-midline",
+  "provenance": "recorded cut from the fastcheck counterexample class: a byte boundary inside a data line's JSON",
+  "quirk": "one SSE data line's JSON is split MID-TOKEN across two recorded chunks; reassembly must fold it as one",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":{\"content\":\"he",
+    "llo\"}}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "hello",
+    "reasoning": "",
+    "deltas": 1,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}
