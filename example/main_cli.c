@@ -1736,6 +1736,7 @@ static int spike_run_main(int argc, char **argv) {
     }
     dsh_runtime_free(b.rt);
     free(b.tmpdir);
+    free(b.audit_map); /* the §6 per-call table outlives no call */
     return exit_code;
 }
 
