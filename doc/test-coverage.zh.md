@@ -101,7 +101,7 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 | 11 | 老化 soak 腿（1-2 小时：堆/fd/journal 完整性） | 3 | planned | CLI/模拟器 runner |
 | 12 | gateway 线/SSE 解析器的结构感知生成式 fuzz | 3 | **已落**（信息性，2026-10-16） | fast-check SSE fuzz 经真实 `streamChat` 缝：任意字节切块下的重组、不可解析行的类型化失败、[DONE] 后静默（`test/panel/fastcheck/llm-sse-fuzz.test.js`）；裸线路半边归 21 例网关 fuzz 电池 |
 | 13 | Provider cassette 重放（LLM 契约怪癖离线化） | 3 | planned | 录制 fixtures |
-| 14 | 宿主队列边界并发压测（D2 派发缝） | 3 | planned | 派发压测 harness |
+| 14 | 宿主队列边界并发压测（D2 派发缝） | 3 | **已落**（spine 套件，2026-10-16） | queue-boundary-stress spine 腿：4 会话×4 排队轮次一次性突发、SSE 抖动节奏，真 spine 上全部 drain，逐会话 journal 归因 + wire 级 journal 连续性（`test/panel/spine/run.sh`）；派发缝变更时重跑，不作门禁 |
 | 15 | App 升级矩阵（跨版本 install -r；AssetSync stamp） | 3 | planned | 升级腿 |
 | 16 | 资源饥饿行为（journal 写满盘、低内存） | 3 | planned | 饥饿腿 |
 | 17 | 网关审计完备性不变量（每个 v1.x 调用对宿主审计流配对、有序、零载荷——契约 §6） | 2 | planned（#537 仍 OPEN） | gateway-audit-invariant e2e 腿 |
