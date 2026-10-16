@@ -1,5 +1,6 @@
 # Pages landing: the def identity, matte page / glowing client
 
+Status: implemented
 Date: 2026-10-16
 Class: feature
 Supersedes: the #524-era landing hierarchy (product-page-first with a
