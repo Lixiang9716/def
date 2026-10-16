@@ -34,5 +34,6 @@ sh runtime/dsh/ci/parity-node-modules.sh
 node --import ./test/panel/spine/register.mjs \
   --test test/panel/spine/composer-journal.test.mjs \
   test/panel/spine/session-delete.test.mjs \
+  test/panel/spine/queue-boundary-stress.test.mjs \
   test/panel/spine/watchdog-abort-wire.test.mjs
 exec node --test test/panel/spine/journal-migration.test.mjs
