@@ -50,10 +50,16 @@ cmp -s "$OUT/web.tokens.css" "$THEME/web.tokens.css" \
   || echo "stage-pages: web.tokens.css staged as the dark face (light media block dropped)"
 cp "$BUNDLE/dist-web/main.web.bundle" "$OUT/"
 cp -R "$RUNTIME/." "$OUT/web-core/"
+# The landing page's self-hosted display face (SIL OFL 1.1; the license
+# ships beside the font, so the artifact carries it too).
+cp "$DEMO/SchibstedGrotesk-latin.woff2" "$OUT/"
+cp "$DEMO/OFL.txt" "$OUT/"
 
-# Fail loud on the two load-bearing files (the page is dead without either).
+# Fail loud on the load-bearing files (the page is dead without the runtime
+# pair, and mute without its display face).
 test -f "$OUT/web-core/static/js/client.js"
 test -f "$OUT/web-core/static/css/client.css"
 test -f "$OUT/index.html"
 test -f "$OUT/web.tokens.css"
+test -f "$OUT/SchibstedGrotesk-latin.woff2"
 echo "stage-pages: staged $(find "$OUT" -type f | wc -l | tr -d ' ') files into $OUT"
