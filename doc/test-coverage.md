@@ -115,7 +115,7 @@ answer "are the assertions strong enough" and "what happens at the edges".
 | 9 | Static analysis: clang-tidy (src), detekt (Kotlin) | 2 | **landed** (#536) | CI legs |
 | 10 | Supply-chain audit of the vendored npm closure (CVE + license) | 2 | **landed** (#535) | vendoring step |
 | 11 | Soak/aging leg (1-2h: heap/fd/journal integrity) | 3 | planned | CLI/emulator runner |
-| 12 | Generative structure-aware fuzz of the gateway wire / SSE parser | 3 | planned | fuzz harness (needs infra) |
+| 12 | Generative structure-aware fuzz of the gateway wire / SSE parser | 3 | **landed** (informational, 2026-10-16) | fast-check SSE fuzz through the real `streamChat` seam: reassembly under arbitrary byte chunking, typed unparsable-line failure, post-[DONE] silence (`test/panel/fastcheck/llm-sse-fuzz.test.js`); the raw-wire half stays with the 21-case gateway-fuzz battery |
 | 13 | Provider cassette replay (LLM contract quirks offline) | 3 | planned | recorded fixtures |
 | 14 | Host queue-boundary concurrency stress (the D2 dispatch seam) | 3 | planned | dispatch stress harness |
 | 15 | App upgrade matrix (install -r across builds; AssetSync stamps) | 3 | planned | upgrade legs |
