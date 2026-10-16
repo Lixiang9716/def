@@ -101,10 +101,10 @@
       "event": "settings.plugin.inventory",
       "match": {
         "managementAvailable": false,
-        "entries": 74,
+        "entries": 78,
         "clientEntries": 49,
         "presets": 5,
-        "presetRows": 121,
+        "presetRows": 125,
         "spineSample": [
           {
             "id": "agent-loop",
@@ -127,9 +127,10 @@
     {
       "event": "settings.pluginManager.readonly",
       "match": {
-        "bundles": 2,
-        "bundleRows": 75,
-        "readOnlyReason": "management-required"
+        "bundles": 3,
+        "bundleRows": 78,
+        "plugins": 78,
+        "workspaceRows": 0
       }
     },
     {
@@ -175,7 +176,7 @@
       "event": "rpc.observed",
       "match": {
         "endpoint": "dynamicCordisRunner/syncInspectManifest",
-        "answered": "unavailable"
+        "answered": "forwarded"
       },
       "order": "any"
     },
@@ -183,7 +184,7 @@
       "event": "rpc.observed",
       "match": {
         "endpoint": "dynamicCordisRunner/inventory",
-        "answered": "unavailable"
+        "answered": "forwarded"
       },
       "order": "any"
     },
@@ -336,7 +337,7 @@
         "provider": "mock",
         "model": "mock-1",
         "messages": 2,
-        "tools": 16,
+        "tools": 17,
         "path": "/chat/completions",
         "method": "POST",
         "agentLoopMarked": true,
