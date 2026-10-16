@@ -39,12 +39,26 @@ A three-file leg lands the invariant as machine assertions:
   markers ride every payload-bearing argument).
 
 The pairing gate's rejection classes are self-tested against fixtures
-(clean → pass; order, orphan, leak, bad-key each named). On today's CLI
-seat the leg runs green through the JS gate (53/53) and the pairing gate
-fails naming 44 unpaired calls: the desktop embedder audits the socket
-seam only, so the 30 non-socket primitives carry no §6 records — the red
-output IS the finding, and the leg flips green the day the host audits
-every call. File names are distinct from the existing audit legs
+(clean → pass; order, orphan, leak, bad-key each named). The leg first ran
+on the un-fixed host and the pairing gate named 44 unpaired calls — the
+red output WAS the finding (the desktop embedder audited the socket seam
+only). This change completes the invariant on the host side, and the leg
+runs green: 49 calls, 49 paired records, zero orphans.
+
+The host half (`example/main_cli.c`): the smoke backend now emits one
+metadata-only `{"audit":"<name>","outcome":"<code>"}` record per gateway
+call at its settle — the point where every call's outcome lands. The
+socket listen/connect calls arm skip=1 (the seam's depth layer and the
+serve-layer denial sites already emit their richer records; doubling them
+would orphan), the fire-and-forget abort face emits its own accepted-record
+inline (it never settles), and dispatch names are clamped to the audit
+alphabet so attacker-controlled names never reach a record (an unspellable
+name lands as `unknown.primitive` — an unaudited call is the violation, not
+a leak). The three exact-count audit gates that grep the stream
+(`run-socket-seam.sh`, `run-security-jail.sh`,
+`run-security-gateway-fuzz.sh`) hold unchanged: their socket-plane counts
+are untouched by the non-socket records, re-run green on the fixed host.
+File names are distinct from the existing audit legs
 (`gateway-audit.json` is the iOS manifest; the fuzz and socket-seam
 runners keep their names).
 

@@ -190,7 +190,7 @@ cat > "$ART/receipt.json" <<EOF
    "id": "gateway.audit-invariant",
    "checker": "test/e2e/scenarios/gateway-audit-invariant.json",
    "result": "pass",
-   "note": "the 48-call ledger (31 contract primitives + the socket connection face + the abort control face) matched one-to-one in order by check.mjs"
+   "note": "the 49-call ledger (31 contract primitives + the socket connection faces + the abort control face) matched one-to-one in order by check.mjs"
   }
  ],
  "audit": "counts quoted FROM THIS RUN's gate above, generated not hardcoded: audit records=$N_AUDITS, pairing gate=$PAIRING — unpaired calls, orphan records, order and payload-leak violations are named by the gate (artifacts/macos-cli-gateway-audit-invariant/gateway-audit.jsonl)",
