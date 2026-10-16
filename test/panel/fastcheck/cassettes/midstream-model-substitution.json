@@ -1,0 +1,21 @@
+{
+  "name": "midstream-model-substitution",
+  "provenance": "authored from the served-model contract in runtime/dsh/llm.js (servers may substitute mid-stream)",
+  "quirk": "the provider swaps the served model name mid-stream; each distinct served name fires exactly one model event, the last one wins the result",
+  "chunks": [
+    "data: {\"model\":\"glm-5.3-flash\",\"choices\":[{\"delta\":{\"content\":\"one\"}}]}\n\n",
+    "data: {\"model\":\"glm-5.3-flash\",\"choices\":[{\"delta\":{\"content\":\" two\"}}]}\n\n",
+    "data: {\"model\":\"glm-5.3-flash-turbo\",\"choices\":[{\"delta\":{\"content\":\"!\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "one two!",
+    "reasoning": "",
+    "deltas": 3,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": "glm-5.3-flash-turbo",
+    "modelEvents": 2
+  }
+}

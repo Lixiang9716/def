@@ -1,0 +1,22 @@
+{
+  "name": "glm-reasoning-model-substitution",
+  "provenance": "authored from the bigmodel GLM chat.completions stream contract as exercised by this repo's live llm.live-stream legs",
+  "quirk": "reasoning_content deltas precede content deltas; the served-model field rides every chunk and may differ from the requested model; finish_reason arrives in its own empty-delta chunk",
+  "chunks": [
+    "data: {\"model\":\"glm-5.3-flash\",\"choices\":[{\"delta\":{\"role\":\"assistant\",\"reasoning_content\":\"Let me\"}}]}\n\n",
+    "data: {\"model\":\"glm-5.3-flash\",\"choices\":[{\"delta\":{\"reasoning_content\":\" think.\\n\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"Hello\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\" world\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "Hello world",
+    "reasoning": "Let me think.\n",
+    "deltas": 2,
+    "reasoningDeltas": 2,
+    "finishReason": "stop",
+    "served": "glm-5.3-flash",
+    "modelEvents": 1
+  }
+}

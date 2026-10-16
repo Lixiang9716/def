@@ -1,0 +1,23 @@
+{
+  "name": "proxy-keepalive-comments",
+  "provenance": "authored from the SSE wire contract as reverse-proxied endpoints emit them",
+  "quirk": "comment (:), event:, and id: lines interleave between data chunks and must be ignored; blank SSE lines between events",
+  "chunks": [
+    ": keep-alive\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"x\"}}]}\n\n",
+    ": keep-alive\nevent: ping\nid: 7\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"y\"}}]}\n\n",
+    "\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "xy",
+    "reasoning": "",
+    "deltas": 2,
+    "reasoningDeltas": 0,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}

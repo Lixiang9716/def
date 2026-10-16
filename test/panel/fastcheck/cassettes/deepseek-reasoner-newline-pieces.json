@@ -1,0 +1,22 @@
+{
+  "name": "deepseek-reasoner-newline-pieces",
+  "provenance": "authored from the DeepSeek reasoner documented stream shape",
+  "quirk": "reasoning pieces carry their own trailing newlines; the last reasoning delta and the first content delta share one chunk",
+  "chunks": [
+    "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"step one\\n\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"step two\\n\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"done.\\n\"}},{\"ghost_index\":1}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{\"content\":\"Answer\"}}]}\n\n",
+    "data: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "expect": {
+    "text": "Answer",
+    "reasoning": "step one\nstep two\ndone.\n",
+    "deltas": 1,
+    "reasoningDeltas": 3,
+    "finishReason": "stop",
+    "served": null,
+    "modelEvents": 0
+  }
+}
