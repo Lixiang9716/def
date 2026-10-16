@@ -1,0 +1,15 @@
+{
+ "host": "macOS arm64 (the desktop CLI, no simulator)",
+ "phase": "gateway audit-completeness invariant (contract §6) — every v1.x primitive driven success/rejection/unavailable over the raw seam, each call paired against the host's audit stream",
+ "launchConfiguration": "./build/dsh-cli . scenario/gateway-audit-invariant.js --http --env DSH_MOCK_HTTP_URL=<loopback mock>",
+ "scenarios": [
+  {
+   "id": "gateway.audit-invariant",
+   "checker": "test/e2e/scenarios/gateway-audit-invariant.json",
+   "result": "pass",
+   "note": "the 48-call ledger (31 contract primitives + the socket connection face + the abort control face) matched one-to-one in order by check.mjs"
+  }
+ ],
+ "audit": "counts quoted FROM THIS RUN's gate above, generated not hardcoded: audit records=49, pairing gate=pass — unpaired calls, orphan records, order and payload-leak violations are named by the gate (artifacts/macos-cli-gateway-audit-invariant/gateway-audit.jsonl)",
+ "notes": "The pairing gate is the invariant: an unaudited call is a §6 violation even when the call succeeds, so this leg stays red until the host audits every call."
+}

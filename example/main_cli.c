@@ -105,6 +105,19 @@ typedef struct smoke_backend {
         long long fire_at_ms; /* CLOCK_MONOTONIC milliseconds */
     } timers[256];
     size_t n_timers;
+    /* The §6 per-call audit plane: one metadata-only record per gateway
+     * call, emitted at its settle. audit_map holds the record name per
+     * in-flight call_id; entries the depth layer or a handler already
+     * audit (the socket family and the abort face) arm with skip=1 so
+     * exactly one record lands per call. audit_outcome carries the §3
+     * code from smoke_reject into the settle (one serial thread — D2). */
+    struct smoke_audit_entry {
+        int call_id;
+        char name[64];
+        int skip;
+    } *audit_map;
+    int audit_n, audit_cap;
+    char audit_outcome[16];
     int next_timer_id;
 } smoke_backend;
 
@@ -779,6 +792,24 @@ done:
 
 static void smoke_settle(smoke_backend *b, int call_id, int ok,
                          const char *payload) {
+    /* The §6 record: emitted here, where every call's outcome lands —
+     * primitive name plus outcome code, never payload contents. Socket
+     * listen/connect records come from the seam's depth layer (granted)
+     * or the serve-layer denial sites (denied), so their entries are
+     * armed skip=1 and consumed silently. */
+    for (int i = 0; i < b->audit_n; i++) {
+        if (b->audit_map[i].call_id != call_id) continue;
+        if (!b->audit_map[i].skip) {
+            fprintf(stderr, "{\"audit\":\"%s\",\"outcome\":\"%s\"}\n",
+                    b->audit_map[i].name,
+                    ok ? "ok" : (b->audit_outcome[0] ? b->audit_outcome : "io"));
+        }
+        memmove(&b->audit_map[i], &b->audit_map[i + 1],
+                (size_t)(b->audit_n - i - 1) * sizeof(b->audit_map[0]));
+        b->audit_n--;
+        break;
+    }
+    b->audit_outcome[0] = 0;
     if (dsh_runtime_gateway_settle(b->rt, call_id, ok, payload) == 0) return;
     b->failed = 1;
     fprintf(stderr, "smoke: settle failed: %s\n", dsh_runtime_error(b->rt));
@@ -790,7 +821,59 @@ static void smoke_reject(smoke_backend *b, int call_id, const char *primitive,
     snprintf(payload, sizeof(payload),
              "{\"code\":\"%s\",\"primitive\":\"%s\",\"message\":\"%s\"}",
              code, primitive, message);
+    snprintf(b->audit_outcome, sizeof(b->audit_outcome), "%s", code);
     smoke_settle(b, call_id, 0, payload);
+}
+
+/* The audit record name for a dispatch name: the socket data-face verbs
+ * speak the repository's dotted socket-audit vocabulary, the abort face
+ * is already named in it, everything else audits under its verbatim
+ * primitive name. NULL marks the two primitives the depth layer (or the
+ * serve-layer denial sites) audit themselves. */
+static const char *smoke_audit_name(const char *name, int *skip) {
+    *skip = 0;
+    if (strcmp(name, "socketListen") == 0) { *skip = 1; return NULL; }
+    if (strcmp(name, "socketConnect") == 0) { *skip = 1; return NULL; }
+    if (strcmp(name, "socketWrite") == 0) return "socket.write";
+    if (strcmp(name, "socketEnd") == 0) return "socket.end";
+    if (strcmp(name, "socketClose") == 0) return "socket.close";
+    if (strcmp(name, "httpFetch.abort") == 0) {
+        *skip = 1; /* the abort branch emits its own accepted-record */
+        return "httpFetch.abort";
+    }
+    return name;
+}
+
+/* Arm the §6 record for a call: the sanitized record name rides the map
+ * until the settle consumes it. Names are clamped to the audit alphabet —
+ * attacker-controlled dispatch names never reach a record (§6). */
+static void smoke_audit_arm(smoke_backend *b, int call_id, const char *name) {
+    int skip = 0;
+    const char *audit = smoke_audit_name(name, &skip);
+    if (b->audit_n == b->audit_cap) {
+        int cap = b->audit_cap ? b->audit_cap * 2 : 16;
+        struct smoke_audit_entry *grown = realloc(b->audit_map, (size_t)cap * sizeof(*grown));
+        if (!grown) { b->failed = 1; return; }
+        b->audit_map = grown;
+        b->audit_cap = cap;
+    }
+    struct smoke_audit_entry *e = &b->audit_map[b->audit_n++];
+    e->call_id = call_id;
+    e->skip = skip;
+    if (!audit) audit = name; /* skip=1: never emitted, name is bookkeeping */
+    size_t n = 0;
+    for (const char *p = audit; *p && n < sizeof(e->name) - 1; p++) {
+        if ((*p >= 'A' && *p <= 'Z') || (*p >= 'a' && *p <= 'z')
+            || (*p >= '0' && *p <= '9') || *p == '.' || *p == '_') {
+            e->name[n++] = *p;
+        }
+    }
+    e->name[n] = 0;
+    if (strcmp(e->name, audit) != 0) {
+        /* a name needed clamping: the record still lands, honestly
+         * anonymous — an unaudited call is the violation, not a leak */
+        snprintf(e->name, sizeof(e->name), "unknown.primitive");
+    }
 }
 
 /* Scope-root escape check (contract §3: such a path is "invalid"). */
@@ -1191,6 +1274,7 @@ static void smoke_wasm_run(smoke_backend *b, int call_id, const char *args) {
 
 static void smoke_serve(smoke_backend *b, int call_id, const char *name,
                         const char *args) {
+    smoke_audit_arm(b, call_id, name);
     if (strcmp(name, "fsWrite") == 0) return smoke_fs_write(b, call_id, args);
     if (strcmp(name, "fsStat") == 0) return smoke_fs_stat(b, call_id, args);
     if (strcmp(name, "ishRun") == 0) return smoke_ish_run(b, call_id, args);
@@ -1200,7 +1284,17 @@ static void smoke_serve(smoke_backend *b, int call_id, const char *name,
     if (strcmp(name, "httpFetch.abort") == 0 && b->http) {
         /* loopback requests complete synchronously inside one drain pass, so
          * there is never an in-flight call left to cancel by the time JS
-         * aborts — the shim's local cancelled-error path covers it. */
+         * aborts — the shim's local cancelled-error path covers it. The
+         * abort never settles (fire-and-forget, call_id 0), so its §6
+         * record is emitted here instead of at a settle. */
+        fprintf(stderr, "{\"audit\":\"httpFetch.abort\",\"outcome\":\"ok\"}\n");
+        for (int i = 0; i < b->audit_n; i++) {
+            if (b->audit_map[i].call_id != call_id) continue;
+            memmove(&b->audit_map[i], &b->audit_map[i + 1],
+                    (size_t)(b->audit_n - i - 1) * sizeof(b->audit_map[0]));
+            b->audit_n--;
+            break;
+        }
         return;
     }
     if (strcmp(name, "fsScope.persist") == 0) {
@@ -1642,6 +1736,7 @@ static int spike_run_main(int argc, char **argv) {
     }
     dsh_runtime_free(b.rt);
     free(b.tmpdir);
+    free(b.audit_map); /* the §6 per-call table outlives no call */
     return exit_code;
 }
 
