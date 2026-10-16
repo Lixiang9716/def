@@ -5,6 +5,7 @@ import { PIPE_WINDOW_BYTES } from '../../runtime/dsh/system-plugins/dsh-shell-js
 import { sha256Hex } from 'sha256.js';
 import { tarWrite, tarRead } from 'tar-mini.js';
 import { workspace, __denyPrimitives } from './gateway-shim.js';
+import { P } from '../../runtime/dsh/system-plugins/dsh-shell-js/applets-support.js';
 import {
   encoder, putFile, putDir, putBytes, dumpFile, exists, run, resetShell,
 } from './shell-js-helpers.js';
@@ -241,8 +242,33 @@ describe('shell-js: applets — the hand-written face', () => {
     expect((await run('basename a/b/c.txt .txt')).stdout).toBe('c\n');
   });
 
+  // Edge pins from the Stryker triage (2026-10-16): the no-slash and
+  // suffix-guard branches of the path face had no test reaching them.
+  it('basename edge branches: bare name, whole-name suffix guard', async () => {
+    expect((await run('basename file.txt')).stdout).toBe('file.txt\n');
+    expect((await run('basename file.txt .txt')).stdout).toBe('file\n');
+    expect((await run('basename .txt .txt')).stdout).toBe('.txt\n');
+  });
+
   it('dirname prints the directory part', async () => {
     expect((await run('dirname a/b/c.txt')).stdout).toBe('a/b\n');
+  });
+
+  it('dirname edge branches: bare name has no directory part', async () => {
+    expect((await run('dirname file.txt')).stdout).toBe('.\n');
+    expect((await run('dirname a')).stdout).toBe('.\n');
+  });
+
+  // Stryker triage (2026-10-16): the path face's own edge branches, pinned
+  // directly — the dirname/basename applets ride the node:path shim, so the
+  // command pins above never touch this implementation.
+  it('path face edges: dirname/basename/relativePathFrom directly', () => {
+    expect(P.dirname('file.txt')).toBe('.');
+    expect(P.basename('file.txt', '.txt')).toBe('file');
+    expect(P.basename('.txt', '.txt')).toBe('.txt');
+    expect(P.basename('a/b/c.txt')).toBe('c.txt');
+    expect(P.relative('a/b', 'a/c')).toBe('../c');
+    expect(P.relative('a/b/c', 'a/d')).toBe('../../d');
   });
 
   it('env prints the shell variable table (not a host environment)', async () => {

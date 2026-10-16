@@ -92,7 +92,7 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 | 2 | C 宿主 ASan/UBSan CI 腿 | 1 | **已落**（#526） | c-core sanitizer 构建 |
 | 3 | axe-core 可访问性回归（web-client-v2，接 #519 手工审查） | 1 | **已落**（#527） | 套件腿 |
 | 4 | 视觉回归 diff（dev-carrier 截图；warn 级，绝不做 CI 日志断言） | 1 | **已落**（#527） | ui-sweep 像素 diff |
-| 5 | 收窄变异试点（Stryker：shell-js 拒绝词汇、lynx fold/surface-core、publisher-token） | 1 | **已落**（信息性，2026-10-16） | 分数 shell-js 83.45% / lynx-fold 95.42% / publisher-token 98.29%（报告在 `test/mutation/reports/`）；节奏：家族变更时重跑，永不作门禁 |
+| 5 | 收窄变异试点（Stryker：shell-js 拒绝词汇、lynx fold/surface-core、publisher-token） | 1 | **已落**（信息性，2026-10-16） | 分数 shell-js 83.45% / lynx-fold 95.42% / publisher-token 98.29%（`test/mutation/reports/`）；分诊：存活体=scope 守卫等价 + 措辞 + 嵌套工作区 toGateway 族（需 fixture）；节奏：家族变更时重跑，永不作门禁 |
 | 6 | bash 差分测试（POSIX 子集，dsh-shell-js 对真 bash，Linux CI） | 2 | **已落**（#540） | c-core Linux 腿 |
 | 7 | 属性测试解析器（fast-check：parser-syntax、path、semver-range） | 2 | **已落**（#541） | panel 套件族 |
 | 8 | 持久化 journal schema 迁移测试（跨版本重放） | 2 | **已落**（#538） | 迁移腿 |
