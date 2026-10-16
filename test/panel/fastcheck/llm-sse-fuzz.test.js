@@ -79,70 +79,64 @@ const runStream = (chunks) =>
     messages: [{ role: 'user', content: 'hi' }],
   });
 
+// P1: reassembly under arbitrary byte chunking (multi-byte UTF-8 cuts).
+const p1Reassembly = async () => {
+  await fc.assert(
+    fc.asyncProperty(
+      sseTextArb,
+      fc.array(fc.nat(400), { maxLength: 24 }),
+      async (stream, cuts) => {
+        const chunks = chunkBytes(stream.text, cuts);
+        const res = await runStream(chunks);
+        expect(res.text).toBe(stream.contents.join(''));
+        expect(res.reasoning).toBe(stream.reasonings.join(''));
+        expect(res.deltas).toBe(stream.contents.length);
+        expect(res.reasoningDeltas).toBe(stream.reasonings.length);
+        expect(res.finishReason).toBe('stop');
+        expect(res.served).toBe('gen-1');
+      }
+    ),
+    { numRuns: 40, timeout: 60000 }
+  );
+};
+
 describe('llm-sse fuzz (row 12): the real streamChat against generated SSE byte streams', () => {
-  it(
-    'P1 reassembly: text/reasoning/counters survive any byte chunking',
-    { timeout: 90000 },
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(
-          sseTextArb,
-          fc.array(fc.nat(400), { maxLength: 24 }),
-          async (stream, cuts) => {
-            const chunks = chunkBytes(stream.text, cuts);
-            const res = await runStream(chunks);
-            expect(res.text).toBe(stream.contents.join(''));
-            expect(res.reasoning).toBe(stream.reasonings.join(''));
-            expect(res.deltas).toBe(stream.contents.length);
-            expect(res.reasoningDeltas).toBe(stream.reasonings.length);
-            expect(res.finishReason).toBe('stop');
-            expect(res.served).toBe('gen-1');
-          }
-        ),
-        { numRuns: 40, timeout: 60000 }
-      );
-    }
-  );
+  it('P1 reassembly: text/reasoning/counters survive any byte chunking', { timeout: 90000 }, p1Reassembly);
 
-  it(
-    'P2 typed failure: an unparsable data line rejects LlmError invalid',
-    { timeout: 60000 },
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(
-          fc.string({ minLength: 0, maxLength: 40 }).filter((s) => !s.includes('\n')),
-          async (junk) => {
-            const text = `data: {oo${junk}\ndata: [DONE]\n`;
-            await expect(runStream(chunkBytes(text, [3, 9]))).rejects.toThrow(LlmError);
-          }
-        ),
-        { numRuns: 30, timeout: 60000 }
-      );
-      await expect(runStream(chunkBytes('data: {oo\n', []))).rejects.toMatchObject({
-        code: 'invalid',
-      });
-    },
-    { timeout: 90000 }
-  );
-
-  it(
-    'P3 post-[DONE] silence: trailing garbage after [DONE] is drained, not folded',
-    { timeout: 60000 },
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(
-          fc.string({ minLength: 0, maxLength: 60 }).filter((s) => !s.includes('\n')),
-          pieceArb,
-          async (junk, piece) => {
-            const text = `data: ${JSON.stringify({ choices: [{ delta: { content: piece } }] })}\n` +
-              'data: [DONE]\n' +
-              `data: {oo${junk}\n`;
-            const res = await runStream(chunkBytes(text, [5, 30]));
-            expect(res.text).toBe(piece);
-          }
-        ),
-        { numRuns: 30, timeout: 60000 }
-      );
-    }
-  );
+  it('P2 typed failure: an unparsable data line rejects LlmError invalid', { timeout: 60000 }, p2TypedFailure);
 });
+
+// P2: an unparsable data line rejects typed LlmError('invalid') — rule 5.
+const p2TypedFailure = async () => {
+  await fc.assert(
+    fc.asyncProperty(
+      fc.string({ minLength: 0, maxLength: 40 }).filter((s) => !s.includes('\n')),
+      async (junk) => {
+        const text = `data: {oo${junk}\ndata: [DONE]\n`;
+        await expect(runStream(chunkBytes(text, [3, 9]))).rejects.toThrow(LlmError);
+      }
+    ),
+    { numRuns: 30, timeout: 60000 }
+  );
+  await expect(runStream(chunkBytes('data: {oo\n', []))).rejects.toMatchObject({
+    code: 'invalid',
+  });
+};
+
+// P3: bytes after [DONE] are drained, not folded — even unparsable ones.
+const p3PostDoneSilence = async () => {
+  await fc.assert(
+    fc.asyncProperty(
+      fc.string({ minLength: 0, maxLength: 60 }).filter((s) => !s.includes('\n')),
+      pieceArb,
+      async (junk, piece) => {
+        const text = `data: ${JSON.stringify({ choices: [{ delta: { content: piece } }] })}\n` +
+          'data: [DONE]\n' +
+          `data: {oo${junk}\n`;
+        const res = await runStream(chunkBytes(text, [5, 30]));
+        expect(res.text).toBe(piece);
+      }
+    ),
+    { numRuns: 30, timeout: 60000 }
+  );
+};
