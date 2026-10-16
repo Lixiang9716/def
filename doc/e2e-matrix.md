@@ -7,8 +7,10 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
 > **Currency**: 2026-10-16 — the checker on this tree counts **127 evidence dirs /
-> 246 green verdicts / 245 pngs**, with 1 accepted owned gap (unchanged: the iOS b4
-> receipt, #65). Growth since the previous note rode the #517–#544 landing wave —
+> 247 green verdicts / 245 pngs**, zero known gaps — the last one (the iOS b4
+> receipt) closed 2026-10-16 with a real simulator run that also exposed five
+> manifest rows drifted behind the tree (re-pinned from the green run). Growth
+> since the previous note rode the #517–#544 landing wave —
 > the create-card family on all three hosts, the session-persist restart and
 > mid-turn legs, card-player, shell-turn, the bash differential harness, the
 > toolargs chaos and multi-session stress legs, and their receipts. Counts are a
@@ -302,7 +304,7 @@ following hold:
 | Verdicts committed (206 green) | 206 |
 | Scenarios with at least one committed evidence dir | 80 of 80 distinct scenario ids (73 manifests) |
 | Screenshots verified PNG | 213 |
-| Acceptance-bar findings | 1 — every one owned in the [known-gaps register](#known-gaps-honest-list); 0 block the gate |
+| Acceptance-bar findings | 0 — the register is empty; the last row (the iOS b4 receipt) closed 2026-10-16 |
 
 ## Coverage matrix — scenario × platform
 
@@ -454,7 +456,7 @@ present. `shots` = PNG count (all magic-verified except where noted).
 | `hosts/harmony/artifacts/m5-primitives` | HarmonyOS | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m5.host-binding 27/27, b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, b-harmony.session.live 43/43, b-harmony.write.live 33/33 | ✓ | ✓ | ✓ | 9 |
 | `hosts/ios/artifacts/b1-official-web` | iOS | b1.official-web.mount 14/14 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/b3-session-live` | iOS | b3.session.live 46/46 | ✓ | ✓ | ✓ | 2 |
-| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✗ (gap 1) | 3 |
+| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✓ | 4 |
 | `hosts/ios/artifacts/m1-carrier` | iOS | m1.carrier.loopback 7/7 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m1-spike` | iOS | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m2-gateway` | iOS | m1.spike.boot 7/7, m1.carrier.loopback 7/7, m2.gateway.audit 16/16, m2.gateway.binding 19/19 | ✓ | ✓ | ✓ | 9 |
@@ -534,20 +536,23 @@ missing or malformed is a finding of its own, never a silent pass.
 
 | code | file | owner | closes with |
 | --- | --- | --- | --- |
-| MISSING_DELIVERABLE | hosts/ios/artifacts/b4-write-live/receipt.json | iOS b4 work stream (#65) | run-ios-live-write.sh --art-dir hosts/ios/artifacts/b4-write-live green run + that runner's receipt step |
 
-### Why the remaining one is not closed here (the honest reason)
+### The last row closed 2026-10-16 (the honest record)
 
-It needs a `receipt.json` only the owning host work stream's next run can
-produce. (The three Android receipt rows closed 2026-10-05 — a real full
-`run-android-full.sh` run on a local Windows-host emulator. The THREE HARMONY
-receipt rows also closed 2026-10-05: after the Windows-side toolchain landed
-(CLT 26.0.0.851 + the HarmonyOS 7.0.0(26.0.0) image, see
-doc/windows-test-plan.md), the full `run-host-e2e.sh` suite ran GREEN on
-that emulator and each d9 dir was refreshed by its own real run, receipt
-included. The camera-audit verdict gap was closed by the v0.0.2 release
-regression, 2026-09-30.) Writing the remaining receipt from this branch
-would mean inventing it:
+The last row — the iOS b4 receipt — closed 2026-10-16: a real green
+`run-ios-live-write.sh` run on the local iOS simulator landed
+`hosts/ios/artifacts/b4-write-live/receipt.json` (composer.live-write 46/46,
+in order). The run also surfaced five manifest rows drifted behind the tree
+(two coverage-plane endpoints now answered `forwarded` by
+`runtime/dsh/upstream/web-write-cordis.js`, the plugin inventory 74→78
+entries / presetRows 121→125, the manager-readonly record's new shape, the
+spine's 17th tool) — re-pinned from the green run in the same change.
+(Earlier closures: the three Android receipt rows and the three Harmony rows
+closed 2026-10-05 — a real full `run-android-full.sh` run and the first
+green `run-host-e2e.sh` suite on the Windows-side toolchain, see
+doc/windows-test-plan.md; the camera-audit verdict gap closed with the
+v0.0.2 release regression, 2026-09-30.) The bullets below stay as the
+standing rules they encode:
 
 - **The receipt certifies a run, and the run's device belongs in it.**
   `host` names the machine a run happened on — the iOS simulator UDID and
@@ -555,9 +560,8 @@ would mean inventing it:
   harmony hdc target. The runners read it at run time (`xcrun simctl` on
   iOS, `adb` on android, `hdc` on harmony). The Android and harmony rows
   closed when their runners started emitting that line on the green path
-  and real runs landed it. The one remaining row (iOS b4) keeps the
-  `write-receipt.sh` green-path emission — one green `run-ios-b4.sh`
-  invocation on an iOS toolchain host closes it.
+  and real runs landed it. The iOS b4 row closed exactly that way
+  (2026-10-16, `run-ios-live-write.sh`).
 - **A receipt can never exist without a real green run.** Every runner now
   emits its receipt on the green path only, reachable after every checker
   passed — a receipt is never synthesized.

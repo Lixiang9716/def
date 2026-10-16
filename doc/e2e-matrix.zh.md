@@ -6,8 +6,9 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
-> **时效性**：2026-10-16——本树校验计数 **127 个证据目录 / 246 条绿色 verdict / 245 png**，
-> 1 项已被接受的 owned gap（未变：iOS b4 回执，#65）。自上一条记录以来的增长随 #517–#544
+> **时效性**：2026-10-16——本树校验计数 **127 个证据目录 / 247 条绿色 verdict / 245 png**，
+> 已知缺口清零——最后一项（iOS b4 回执）已于 2026-10-16 以一次真实模拟器运行闭合，
+> 该运行同时暴露了五条漂移于树后的 manifest 行（已按绿色运行重新钉定）。自上一条记录以来的增长随 #517–#544
 > 落地潮而来——三宿主 create-card 家族、session-persist 重启与中途杀腿、card-player、
 > shell-turn、bash 差分 harness、toolargs chaos 与多会话压力腿及其回执。计数是校验器的
 > 一次实跑，不是断言：`node test/e2e/matrix.mjs` 随时可重数。
@@ -229,7 +230,7 @@
 | 已提交 verdict（206 绿） | 206 |
 | 至少有一份已提交证据的 scenario | 80 / 80 个不同的 scenario id（73 个 manifest） |
 | 已验证 PNG 的截图 | 213 |
-| 验收标准缺口 | 1 —— 全部在[已知缺口登记表](#已知缺口如实列出)中有主；0 项阻塞门禁 |
+| 验收标准缺口 | 0 —— 登记表已清空；最后一行（iOS b4 回执）已于 2026-10-16 闭合 |
 
 ## 覆盖矩阵 —— scenario × 平台
 
@@ -376,7 +377,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | `hosts/harmony/artifacts/m5-primitives` | HarmonyOS | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m5.host-binding 27/27, b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, b-harmony.session.live 43/43, b-harmony.write.live 33/33 | ✓ | ✓ | ✓ | 9 |
 | `hosts/ios/artifacts/b1-official-web` | iOS | b1.official-web.mount 14/14 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/b3-session-live` | iOS | b3.session.live 46/46 | ✓ | ✓ | ✓ | 2 |
-| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✗（缺口 1） | 3 |
+| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✓ | 4 |
 | `hosts/ios/artifacts/m1-carrier` | iOS | m1.carrier.loopback 7/7 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m1-spike` | iOS | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m2-gateway` | iOS | m1.spike.boot 7/7, m1.carrier.loopback 7/7, m2.gateway.audit 16/16, m2.gateway.binding 19/19 | ✓ | ✓ | ✓ | 9 |
@@ -456,29 +457,31 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 
 | code | file | owner | closes with |
 | --- | --- | --- | --- |
-| MISSING_DELIVERABLE | hosts/ios/artifacts/b4-write-live/receipt.json | iOS b4 工作流（#65） | run-ios-live-write.sh --art-dir hosts/ios/artifacts/b4-write-live 绿色运行 ＋ 该 runner 的 receipt 步骤 |
 
 （检查器读的是英文侧 `doc/e2e-matrix.md` 中的同一张表——配对规则里英文
 是源；本表为读者保留等价的中文渲染。）
 
-### 为什么剩余一项不在本分支闭合（如实说明）
+### 最后一行已于 2026-10-16 闭合（如实记录）
 
-它需要一份 `receipt.json`，而它只能由其主机工作流下一次运行产出。
-（三个 android receipt 行与三个 harmony receipt 行均已于 2026-10-05 闭合：android 由一次真实的完整
-`run-android-full.sh` 本地 Windows 宿主模拟器运行闭合；harmony 在 Windows 侧工具链就位后（CLT 26.0.0.851
-＋ HarmonyOS 7.0.0(26.0.0) 镜像，见 doc/windows-test-plan.md）由完整
-`run-host-e2e.sh` 套件在该模拟器上绿色跑通、三个 d9 目录各自以真实运行刷新并携带 receipt。
-第八项——Android 相机审计的自相矛盾 verdict——已由 v0.0.2 发布回归闭合，
-2026-09-30；见下方闭合小节。）
-在本分支里补写这份 receipt 就等于凭空编造：
+最后一行——iOS b4 回执——已于 2026-10-16 闭合：本地 iOS 模拟器上一次真实的
+`run-ios-live-write.sh` 绿色运行落盘了
+`hosts/ios/artifacts/b4-write-live/receipt.json`（composer.live-write 46/46，
+按序）。这次运行还暴露了五条漂移于树后的 manifest 行（两个覆盖面端点现由
+`runtime/dsh/upstream/web-write-cordis.js` 如实 `forwarded`、插件清单 74→78
+条 / presetRows 121→125、manager-readonly 记录的新形状、spine 的第 17 把
+工具）——已随本次变更按绿色运行重新钉定。（更早的闭合：三个 android 与三个
+harmony receipt 行于 2026-10-05 闭合——一次真实的完整 `run-android-full.sh`
+与 Windows 侧工具链就位后的首次全绿 `run-host-e2e.sh`，见
+doc/windows-test-plan.md；相机审计 verdict 缺口随 v0.0.2 发布回归闭合，
+2026-09-30。）下方要点保留，它们是仍然成立的规则：
 
 - **receipt 证明的是一次运行，而该运行的设备本就属于它。** `host`
   字段记的是运行发生在哪台机器上——iOS 模拟器 UDID 与运行时版本、android
   模拟器实例及其 AVD 与 API 级别、harmony 的 hdc 目标。各 runner 在运行时
   读取它（iOS 用 `xcrun simctl`，android 用 `adb`，harmony 用 `hdc`）。
   android 与 harmony 各行都在其 runner 开始于绿色路径撰写该行、且有真实
-  运行落盘之后闭合。剩余唯一一行（iOS b4）沿用 `write-receipt.sh` 的
-  绿色路径落盘——一次 iOS 工具链宿主上的绿色 `run-ios-b4.sh` 即闭合。
+  运行落盘之后闭合。iOS b4 行正是这样闭合的
+  （2026-10-16，`run-ios-live-write.sh`）。
 - **没有一次真实绿色运行，receipt 就不可能存在。** 每个 runner 现在都只在
   绿色路径上落盘 receipt，且仅在全部 checker 通过后可达——receipt 绝不
   凭空合成。
