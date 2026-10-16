@@ -98,7 +98,7 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 | 8 | 持久化 journal schema 迁移测试（跨版本重放） | 2 | **已落**（#538） | 迁移腿 |
 | 9 | 静态分析：clang-tidy（src）、detekt（Kotlin） | 2 | **已落**（#536） | CI 腿 |
 | 10 | vendored npm 闭包供应链审计（CVE + license） | 2 | **已落**（#535） | vendoring 步骤 |
-| 11 | 老化 soak 腿（1-2 小时：堆/fd/journal 完整性） | 3 | planned | CLI/模拟器 runner |
+| 11 | 老化 soak 腿（1-2 小时：堆/fd/journal 完整性） | 3 | **已落**（soak runner，2026-10-16） | soak-aging CLI 腿：单个长命会话承受持续 mock 轮次 `DSH_SOAK_MINUTES`（默认 90——owner 仪式，不作门禁），逐心跳采样堆（gc 收集括号 + 逐轮预算），journal 阶梯每心跳与收官全量连续，宿主 fd 由 runner 采样并按爬升设门（`runtime/dsh/ci/run-soak-aging.sh`） |
 | 12 | gateway 线/SSE 解析器的结构感知生成式 fuzz | 3 | **已落**（信息性，2026-10-16） | fast-check SSE fuzz 经真实 `streamChat` 缝：任意字节切块下的重组、不可解析行的类型化失败、[DONE] 后静默（`test/panel/fastcheck/llm-sse-fuzz.test.js`）；裸线路半边归 21 例网关 fuzz 电池 |
 | 13 | Provider cassette 重放（LLM 契约怪癖离线化） | 3 | **已落**（信息性，2026-10-16） | provider-cassettes 套件：九段录制线形（reasoning 约定、DONE 前 usage、中途换 model、CRLF、keep-alive 注释、无 [DONE] 关闭、中行录制切点）经真实 `streamChat` 缝回放（`test/panel/fastcheck/`，fixtures 带出处）；传输层变更时重跑，不作门禁 |
 | 14 | 宿主队列边界并发压测（D2 派发缝） | 3 | **已落**（spine 套件，2026-10-16） | queue-boundary-stress spine 腿：4 会话×4 排队轮次一次性突发、SSE 抖动节奏，真 spine 上全部 drain，逐会话 journal 归因 + wire 级 journal 连续性（`test/panel/spine/run.sh`）；派发缝变更时重跑，不作门禁 |

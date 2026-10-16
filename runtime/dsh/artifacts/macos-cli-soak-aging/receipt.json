@@ -1,0 +1,14 @@
+{
+ "host": "macOS arm64 (the desktop CLI, no simulator)",
+ "phase": "soak/aging (row 11) — one long-lived spine under sustained mock rounds; heap sampled every heartbeat (gc-collected brackets), journal ladder contiguous at every heartbeat and in full at the close, host fds sampled by the runner",
+ "launchConfiguration": "./build/dsh-cli . scenario/soak-aging.js --http --env DSH_MOCK_LLM_URL=<loopback mock> --env DSH_SOAK_MINUTES=0.5",
+ "scenarios": [
+  {
+   "id": "soak.aging",
+   "checker": "test/e2e/scenarios/soak-aging.json",
+   "result": "pass",
+   "note": "the soak held: 7 rounds answered, journal contiguous end to end, per-round heap growth 32124 bytes inside the budget"
+  }
+ ],
+ "notes": "DSH_SOAK_MINUTES scales the wall-clock budget; the 90-minute ritual is owner-invocable, never a gate. fd samples live beside this receipt (fd-samples.jsonl)."
+}
