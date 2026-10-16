@@ -1,10 +1,23 @@
-# dsh-mobile
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="doc/assets/banner-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="doc/assets/banner-light.svg" />
+    <img src="doc/assets/banner-dark.svg" alt="def — it starts undefined. You define it." width="100%" />
+  </picture>
+
+  <p><strong>def</strong> — the app you define.<br>
+  This repo, <strong>dsh-mobile</strong>, is the open-source mobile host behind it:
+  one core, three phones, everything on-device.</p>
+
+  <p>
+    <a href="https://lixiang9716.github.io/dsh-mobile/">Project site</a> ·
+    <a href="#what-works-today">What works today</a> ·
+    <a href="#quickstart">Quickstart</a> ·
+    <a href="README.zh.md">简体中文</a>
+  </p>
+</div>
 
 English | [简体中文](README.zh.md)
-
-**See it in the browser first:** the [project site](https://lixiang9716.github.io/dsh-mobile/)
-— what & why, capability cards, and the real Lynx render-surface client rendering live
-(static shell, no session).
 
 ## What is this?
 
@@ -47,7 +60,7 @@ Every claim here is backed by committed evidence — the receipts live in
 - **A plugin marketplace** — browse and install signed plugins; every install rides the
   same verified, transactional pipeline.
 - **The UI is a plugin** — the whole interface is swappable: the official client, a
-  compact one, or the Lynx-rendered experimental face demoed live on the project site.
+  compact one, or the Lynx-rendered experimental face from the render-surface pilot.
 
 Honest limits: no host has real subprocesses or a Linux userland (an emulated one was
 tried and retired); simulators have no radio, so camera, microphone, and Bluetooth
@@ -68,8 +81,8 @@ build/build.sh android         # sync → compile → log-verified e2e on the em
   toolchain fails loud, naming the tool and how to get it.
 - No mobile toolchain at hand? The core CLI is the cheapest proof vehicle:
   `build/build.sh compile core` builds the C host the platforms embed. No toolchain at
-  all? The [project site](https://lixiang9716.github.io/dsh-mobile/) shows the client
-  face in the browser.
+  all? The [project site](https://lixiang9716.github.io/dsh-mobile/) tells you what the
+  project is — in one honest page.
 - Launch the built app on its simulator/emulator and it boots into the interactive
   seat — the official Web Client served on the loopback carrier.
 
