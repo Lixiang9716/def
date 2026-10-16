@@ -108,7 +108,7 @@ answer "are the assertions strong enough" and "what happens at the edges".
 | 2 | C host ASan/UBSan CI leg | 1 | **landed** (#526) | c-core sanitizer build |
 | 3 | axe-core a11y regression (web-client-v2, after the #519 manual pass) | 1 | **landed** (#527) | suite leg |
 | 4 | Visual regression diff (dev-carrier screenshots; warn-tier, never a CI log assertion) | 1 | **landed** (#527) | ui-sweep pixel diff |
-| 5 | Scoped mutation pilot (Stryker: shell-js refusal vocab, lynx fold/surface-core, publisher-token) | 1 | **landed** (informational, 2026-10-16) | scores shell-js 83.45% / lynx-fold 95.42% / publisher-token 98.29% (reports `test/mutation/reports/`); cadence: rerun when a family changes, never a gate |
+| 5 | Scoped mutation pilot (Stryker: shell-js refusal vocab, lynx fold/surface-core, publisher-token) | 1 | **landed** (informational, 2026-10-16) | scores shell-js 83.45% / lynx-fold 95.42% / publisher-token 98.29% (`test/mutation/reports/`); triage: survivors are scope-guard equivalents + wording + the nested-workspace toGateway family (needs a fixture); cadence: rerun on family change, never a gate |
 | 6 | bash differential harness (POSIX subset, dsh-shell-js vs real bash on Linux CI) | 2 | **landed** (#540) | c-core Linux leg |
 | 7 | Property-based parser tests (fast-check: parser-syntax, path, semver-range) | 2 | **landed** (#541) | panel suite families |
 | 8 | Persistence journal schema-migration tests (cross-version replay) | 2 | **landed** (#538) | migration legs |
