@@ -2,6 +2,9 @@
 
 [English](README.md) | 简体中文
 
+**先在浏览器里看：**[项目主页](https://lixiang9716.github.io/dsh-mobile/)——是什么与为什么、
+能力卡片，以及真实 Lynx 渲染面客户端的实时呈现（静态壳，无会话）。
+
 ## 这是什么？
 
 dsh-mobile 是 DSH（DeepSeek Harness）生态的**移动宿主**：把上游 DSH agent——桌面端的
@@ -30,17 +33,23 @@ Harness 运行时——完整搬上手机，覆盖三个移动平台（Android�
 - **真正的应用内 shell**——`dsh-shell-js`，一个三宿主共用的 bash 子集执行器（管道、重定向、
   coreutils 表面）架在冻结的 fs 原语上；如实声明这是 shell 模拟——无内核身份、无 ELF 执行、
   无包管理器（#457；CLI 腿 35/35，`runtime/dsh/artifacts/macos-cli-dsh-shell-js/`）。
+  它在 Linux CI 上被一份对照真实 bash 的差分契约约束着
+  （`runtime/dsh/artifacts/shell-diff/`，#540）。
 - **创建模式**——一句话变成一个真插件：agent 写出插件包、你批准、热挂载、卡片实时渲染
   （`create.card` 三宿主回执，`hosts/{ios,android,harmony}/artifacts/create-card/`）；
   凭暂存或 BYOK 凭据时，创作回合打真实 LLM。
 - **三宿主的真实 LLM 流式**——`llm.live-stream` 腿对 OpenAI 兼容后端，逐字记录服务端报告的
-  模型名，并对每条日志行断言 API 密钥零泄漏（`hosts/{ios,android,harmony}/artifacts/`）。
+  模型名，并对每条日志行断言 API 密钥零泄漏（`hosts/{ios,android,harmony}/artifacts/`）；
+  敌意线缆 chaos 腿进一步锤炼传输层——畸形 SSE、截断、超限增量——可重试与致命的裁决逐条
+  断言（`runtime/dsh/artifacts/macos-cli-llm-chaos/`，#528）。
 - **插件市场**——签名目录（ed25519）经同一条验证 + receipt 提交的安装流水线安装
   （`runtime/dsh/artifacts/macos-cli-marketplace-install/`）。
 - **BYOK**——你的密钥存放在宿主 keychain；多协议家族（OpenAI 兼容 + anthropic-messages）
   拨打用户声明的端点（#467，`runtime/dsh/artifacts/macos-cli-byok-piai-anthropic/`）。
 - **会话扛住重启**——force-stop 之后日志重载、会话续聊
-  （`hosts/{ios,android,harmony}/artifacts/session-persist-restart/`）。
+  （`hosts/{ios,android,harmony}/artifacts/session-persist-restart/`）；一条压力腿在单
+  spine 上并发驱动四个会话，并逐一独立恢复
+  （`runtime/dsh/artifacts/macos-cli-session-multi-stress/`，#543）。
 - **UI 即插件**——整客户端替换与组件 slot 均在设备端验证（`ui.client-swap` 7/7），另有
   Lynx 渲染面客户端试点第二张脸。
 
@@ -60,7 +69,8 @@ build/build.sh android         # sync → compile → 模拟器上的日志验�
 - 一份门面驱动所有平台："build" 永远是 **sync → compile → test**——与该平台 CI 完全相同的
   三步。iOS 只能在 macOS 上编译；工具链缺失时响亮失败，点名缺什么、去哪装。
 - 手头没有移动端工具链？core CLI 是最便宜的验证载体：`build/build.sh compile core` 构建出
-  各平台内嵌的那个 C 宿主。
+  各平台内嵌的那个 C 宿主。完全没有工具链？[项目主页](https://lixiang9716.github.io/dsh-mobile/)
+  在浏览器里展示客户端面孔。
 - 在对应模拟器/仿真器上启动构建出的应用，它会进入交互席——官方 Web Client 由回环 carrier
   服务。
 
@@ -106,6 +116,7 @@ build/build.sh android         # sync → compile → 模拟器上的日志验�
 | 应用内 shell（`dsh-shell-js`） | 一个 JS shell 服务三宿主：bash 子集执行器（管道、重定向、coreutils 表面）架在冻结的 fs 原语上——进程内、无内核身份、无 ELF 执行、无包管理器；如实声明这是 shell 模拟（ARCHITECTURE.md §12） | 完成（CLI 腿 `dsh-shell-js` 35/35，随行 pin 好的 33 包 parser 闭包——`runtime/dsh/artifacts/macos-cli-dsh-shell-js/`，#457；随后是设备端 shell 回合——经交互席 composer 线路的真实提示驱动 shell 工具、官方 UI 渲染工具卡、执行器的 fsWrite 在容器磁盘上逐字节落定——三宿主 pass 回执 `hosts/{ios,android,harmony}/artifacts/shell-turn/`，#491/#492） |
 | iSH userland 退场 | 契约 v1.3.0 的 `ishRun` 模拟 Linux userland（iSH-arm64 引擎，D16）离开仓库——引擎、guest userland、缝、最后一个宿主实现全部移除；冻结的契约条目保留（D5：major v1 存续期内形态不可变），因此每个宿主都以契约如实的 `unavailable` 应答 `ishRun`，且没有描述符将其列为可用 | 完成（三个 PR：`dsh-shell-ish` JS 面及其场景家族与市场挂 listing #496、iOS 宿主面 #497、引擎与 CI 逃生门 #498；退场附录见 [doc/decisions.md](doc/decisions.md)；GPL-3.0 分发问题与"guest 在审计边界之外"的披露随 guest 一并消失） |
 | 鸿蒙矩阵腿转真 | 有 hdc 目标在线时，`tools/test/run-simulator-matrix.sh --platform harmony` 跑真腿——harness 阶梯（`run-host-e2e.sh`：8/8 verdict + 绿路径回执）与 release 腿（release HAP 朴素启动即服务官方 UI，在 socket 层证明——经 `hdc fport` 探测 serve 的 LISTEN；零 drive 编排记录；按名拒绝 drive）——无在线目标的机器仍出具诚实 skip 回执 | 完成（2026-10-12，#475，dsh_phone 仿真器；证据 `hosts/harmony/artifacts/simulator-matrix/{harness,release}/` 含 `release-proof.json`；首批真跑清出了腿死亡期间无人能看见的四处置钉漂移） |
+| 测试加固计划 | 一份 20 行加固计划（[doc/test-coverage.md](doc/test-coverage.md)）：敌意线缆 chaos + 畸形工具参数腿、把 `dsh-shell-js` 按方言契约对照真实 bash 的差分 harness、运行时解析器的 property 套件、日志 schema 迁移测试、ASan/UBSan + clang-tidy/detekt CI 腿、vendored 闭包的供应链审计、安装 zip-slip 钉、多会话压力 | 完成——20 行中 12 行已落地（逐行状态以文档为准）：chaos 画像 #528（`runtime/dsh/artifacts/macos-cli-llm-chaos/`）、sanitizer #526、axe 无障碍 + 视觉 diff #527、bash 差分 `runtime/dsh/artifacts/shell-diff/` #540、fast-check property 套件 #541、日志迁移 #538、静态分析 #536、供应链审计 #535、安装路径穿越钉 #539、toolargs chaos #542（`runtime/dsh/artifacts/macos-cli-llm-toolargs/`）、多会话压力 #543（`runtime/dsh/artifacts/macos-cli-session-multi-stress/`） |
 
 ### 上游移植（D9）
 
@@ -115,8 +126,8 @@ build/build.sh android         # sync → compile → 模拟器上的日志验�
 @ 0.1.6-alpha.2 + 5 个 pinned npm 依赖），自研代码只留胶水（垫层、适配器、契约 carrier）。
 经 carrier 在 iOS / Android / 鸿蒙上已点亮：官方 client-modules web 启动、官方 App 壳
 （#61 的 58 包 application 层）、真实 `session.list`/日志，以及 composer 写入路径。汇总
-数字与逐目录清单见 [doc/e2e-matrix.md](doc/e2e-matrix.md)——118 个证据目录、237 条绿色
-verdict——位于 `hosts/{ios,android,harmony}/artifacts/`（`b1-official-web`、
+数字与逐目录清单见 [doc/e2e-matrix.md](doc/e2e-matrix.md)——本树 127 个证据目录、246 条绿色
+verdict（2026-10-16 checker 实跑）——位于 `hosts/{ios,android,harmony}/artifacts/`（`b1-official-web`、
 `session-live-read`、`composer-live-write`、`android-upstream`、`android-session-live`、
 `d9-official-web`、`d9-session-live`、`d9-write-live`）。
 
@@ -139,7 +150,7 @@ verdict——位于 `hosts/{ios,android,harmony}/artifacts/`（`b1-official-web`
 本仓库由 [govrail](https://github.com/Lixiang9716/govrail) 门禁管理：pre-commit 内容门、
 推送前 `gov run` 门 DAG、CI 强制（`.github/workflows/gov.yml`），并采用其 `agent-heavy`
 preset 所描述的多 agent 并行开发实践（`parallel-workers` skill + `verify-decisions` 门）。
-安装方式 `pip install govrail`，入口命令为 `gov`。
+安装方式 `uv tool install govrail`（或 `pip install govrail`），入口命令为 `gov`。
 
 `main` 受保护：变更经 pull request 落地、`gates` 检查绿后方可合并；提交信息遵循 Angular
 Conventional Commits（`type(scope): subject`）。

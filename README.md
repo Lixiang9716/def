@@ -2,6 +2,10 @@
 
 English | [简体中文](README.zh.md)
 
+**See it in the browser first:** the [project site](https://lixiang9716.github.io/dsh-mobile/)
+— what & why, capability cards, and the real Lynx render-surface client rendering live
+(static shell, no session).
+
 ## What is this?
 
 dsh-mobile is a **mobile host** for the DSH (DeepSeek Harness) ecosystem: it runs an
@@ -38,13 +42,18 @@ Every line below is backed by committed evidence — receipts under
   redirects, a coreutils surface) over the frozen fs primitives, shared by all three
   hosts; shell emulation stated as such — no kernel identity, no ELF execution, no
   package manager (#457; CLI leg 35/35 in `runtime/dsh/artifacts/macos-cli-dsh-shell-js/`).
+  It is held to a differential contract against real bash on Linux CI
+  (`runtime/dsh/artifacts/shell-diff/`, #540).
 - **Creation mode** — a prompt becomes a real plugin: the agent writes the package, you
   approve it, it hot-mounts and its card renders live (`create.card` receipts on all
   three hosts, `hosts/{ios,android,harmony}/artifacts/create-card/`); with a staged or
   BYOK credential the creation turns run against the real LLM.
 - **Real LLM streaming on all three hosts** — the `llm.live-stream` legs against
   OpenAI-compatible backends, with the served model logged verbatim and a key-leak audit
-  asserted on every log line (`hosts/{ios,android,harmony}/artifacts/`).
+  asserted on every log line (`hosts/{ios,android,harmony}/artifacts/`); hostile-wire
+  chaos legs drill the transport — malformed SSE, truncation, oversized deltas — with
+  retryable-vs-fatal verdicts asserted one-to-one
+  (`runtime/dsh/artifacts/macos-cli-llm-chaos/`, #528).
 - **A plugin marketplace** — a signed catalog (ed25519) installs through the same
   verified, receipt-committed install pipeline
   (`runtime/dsh/artifacts/macos-cli-marketplace-install/`).
@@ -52,7 +61,9 @@ Every line below is backed by committed evidence — receipts under
   (OpenAI-compatible + anthropic-messages) dials user-declared endpoints (#467,
   `runtime/dsh/artifacts/macos-cli-byok-piai-anthropic/`).
 - **Sessions survive restarts** — the journal reloads and the conversation resumes after
-  a force-stop (`hosts/{ios,android,harmony}/artifacts/session-persist-restart/`).
+  a force-stop (`hosts/{ios,android,harmony}/artifacts/session-persist-restart/`); a
+  stress leg drives four concurrent sessions on one spine and recovers each independently
+  (`runtime/dsh/artifacts/macos-cli-session-multi-stress/`, #543).
 - **The UI is a plugin** — whole-client swap and component slots verified on device
   (`ui.client-swap` 7/7), with a Lynx render-surface client piloting a second face.
 
@@ -75,7 +86,9 @@ build/build.sh android         # sync → compile → log-verified e2e on the em
   same three things the platform's CI does. iOS compiles only on macOS; a missing
   toolchain fails loud, naming the tool and how to get it.
 - No mobile toolchain at hand? The core CLI is the cheapest proof vehicle:
-  `build/build.sh compile core` builds the C host the platforms embed.
+  `build/build.sh compile core` builds the C host the platforms embed. No toolchain at
+  all? The [project site](https://lixiang9716.github.io/dsh-mobile/) shows the client
+  face in the browser.
 - Launch the built app on its simulator/emulator and it boots into the interactive
   seat — the official Web Client served on the loopback carrier.
 
@@ -127,6 +140,7 @@ ids and artifact paths are quoted verbatim on purpose — they cite records on d
 | In-app shell (`dsh-shell-js`) | One JS shell for all three hosts: a bash-subset executor (pipelines, redirects, a coreutils surface) over the frozen fs primitives — in-process, no kernel identity, no ELF execution, no package manager; a shell emulation, stated as such (ARCHITECTURE.md §12) | Done (CLI leg `dsh-shell-js` 35/35 with the pinned 33-package parser closure — `runtime/dsh/artifacts/macos-cli-dsh-shell-js/`, #457; then the on-device shell turn — a real prompt through the interactive seat's composer wire drives the shell tool, the official UI renders the tool card, and the executor's fsWrite lands on the container disk byte-exact — pass receipts on all three hosts `hosts/{ios,android,harmony}/artifacts/shell-turn/`, #491/#492) |
 | iSH userland retirement | The contract v1.3.0 `ishRun` emulated Linux userland (the iSH-arm64 engine, D16) leaves the repository — engine, guest userland, seam, and the last host implementation; the frozen contract entry stays (D5: shapes immutable for the life of major v1), so every host answers `ishRun` with the contract's honest `unavailable` and no descriptor lists it available | Done (three PRs: the `dsh-shell-ish` JS face with its scenario family and marketplace listing #496, the iOS host face #497, the engine and the CI escape hatches #498; the retirement addendum in [doc/decisions.md](doc/decisions.md); the GPL-3.0 distribution question and the guest-outside-the-audit disclosure retire with the guest) |
 | Harmony matrix leg goes real | `tools/test/run-simulator-matrix.sh --platform harmony` runs the REAL legs when an hdc target is up — the harness ladder (`run-host-e2e.sh`: 8/8 verdicts + the green-path receipt) and the release leg (the release HAP's plain launch serves the official UI, proven at the socket level — the serve's LISTEN probed through an `hdc fport`; zero drive-machinery records; the drive refusal by name) — with the honest skip receipt kept for machines without a live target | Done (2026-10-12, #475 on the dsh_phone emulator; evidence `hosts/harmony/artifacts/simulator-matrix/{harness,release}/` incl. `release-proof.json`; the first real runs swept four accumulated pin drifts nothing could see while the leg was dead) |
+| Test hardening program | A 20-row hardening plan ([doc/test-coverage.md](doc/test-coverage.md)): hostile-wire chaos + malformed-tool-argument legs, a bash differential harness holding `dsh-shell-js` to its dialect contract, property suites over the runtime parsers, journal schema-migration tests, ASan/UBSan + clang-tidy/detekt CI legs, a supply-chain audit of the vendored closure, install zip-slip pins, multi-session stress | Done — 12 of 20 rows landed (per-row status lives in the doc): chaos profiles #528 (`runtime/dsh/artifacts/macos-cli-llm-chaos/`), sanitizer #526, axe a11y + visual-diff #527, bash differential `runtime/dsh/artifacts/shell-diff/` #540, fast-check property suites #541, journal migration #538, static analysis #536, supply audit #535, install path-traversal pins #539, toolargs chaos #542 (`runtime/dsh/artifacts/macos-cli-llm-toolargs/`), multi-session stress #543 (`runtime/dsh/artifacts/macos-cli-session-multi-stress/`) |
 
 ### Upstream port (D9)
 
@@ -138,7 +152,8 @@ npm deps), with in-house code reduced to glue (shims, adapters, the contract car
 through the carrier on iOS / Android / HarmonyOS: the official client-modules web boot, the
 official app shell (the 58-package application tier, #61), real `session.list`/journal, and
 the composer write path. The consolidated numbers and per-dir inventory:
-[doc/e2e-matrix.md](doc/e2e-matrix.md) — 118 evidence dirs, 237 green verdicts — under
+[doc/e2e-matrix.md](doc/e2e-matrix.md) — 127 evidence dirs, 246 green verdicts on this
+tree (checker run 2026-10-16) — under
 `hosts/{ios,android,harmony}/artifacts/` (`b1-official-web`, `session-live-read`,
 `composer-live-write`, `android-upstream`, `android-session-live`, `d9-official-web`,
 `d9-session-live`, `d9-write-live`).
@@ -163,7 +178,8 @@ This repository is gated by [govrail](https://github.com/Lixiang9716/govrail): p
 content gates, a `gov run` gate DAG before push, CI enforcement
 (`.github/workflows/gov.yml`), and the multi-agent development practice its `agent-heavy`
 preset describes (`parallel-workers` skill + the `verify-decisions` gate). Run
-`gov --help` (installed via `pip install govrail`; entry point is `gov`).
+`gov --help` (installed via `uv tool install govrail` or `pip install govrail`; entry
+point is `gov`).
 
 `main` is protected: changes land through a pull request with the `gates` check green,
 and commits follow Angular Conventional Commits (`type(scope): subject`).
