@@ -77,3 +77,32 @@ idea — the page is matte, the product is the only light:
   swapping it means re-checking the OFL file beside it.
 - `stage-pages.sh` now fails loud on the font file, so a lost asset breaks
   staging at the right place instead of silently degrading typography.
+
+## Correction (same day, before the ink dried)
+
+The full owner-correction record (five rounds, 2026-10-16 morning session)
+superseded two choices this landing made when it first shipped (#558):
+
+- **The live client mount is gone.** Correction 3 had already removed the
+  phone/client section from every approved mockup, with the implementation
+  note that the real page drops the lynx-view mount, the web-core scripts,
+  and the staged bundle — a pure static single page. #558 kept the mount;
+  this correction removes it. `stage-pages.sh` stages page + font + license
+  only, and `pages.yml` loses the npm/build/pin steps (its header records
+  the bundle's history).
+- **The INIT PALETTE law.** Correction 4: the page renders in pure neutral
+  grayscale — neutral IS the undefined state — and the only color it may
+  ever carry is verification green, only on verified facts (a PASS stamp,
+  counted evidence). #558 used the product's ocean blue as its living
+  accent; this correction replaces every chromatic value with the page's
+  own neutral scale (`:root` in the page header), inverts the primary CTA
+  to solid ink, and reserves `--verified: #4ADE80` as the documented,
+  currently-unused contract. The page no longer consumes
+  theme/tokens.json, so the old "every color is a theme token" footer
+  claim is replaced by the law itself.
+
+What survives from #558 unchanged: the hero line, the def wordmark, the
+debossed UNDEFINED seal (now gray by law — grayscale is the undefined
+state), the six honest seats and the UNDEFINED→PASS flip mechanism, the
+material language (recess, engraving, grain), the self-hosted display
+face, and the no-motion stance.
