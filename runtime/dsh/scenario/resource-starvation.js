@@ -239,7 +239,7 @@ const heapLeg = async (env) => {
   const limitMb = Number(env.DSH_HEAP_LIMIT_MB ?? 0);
   demand(Number.isFinite(limitMb) && limitMb > 0,
     `DSH_HEAP_LIMIT_MB must reach the scenario through the launch env, got ${env.DSH_HEAP_LIMIT_MB}`);
-  emit('heap.starve.begin', { limitMb });
+  emit('heap.starve.begin', { leg: 'heap', limitMb });
   let caught = null;
   let rounds = 0;
   try {
@@ -269,7 +269,7 @@ const main = async () => {
   const leg = env.DSH_STARVATION_LEG;
   demand(typeof leg === 'string' && ['grow', 'recover', 'heap'].includes(leg),
     `DSH_STARVATION_LEG must be grow|recover|heap, got ${JSON.stringify(leg)}`);
-  emit('journal.starve.begin', { leg });
+  if (leg !== 'heap') emit('journal.starve.begin', { leg }); // the heap leg names its own begin
   if (leg === 'grow') return preLeg(env);
   if (leg === 'recover') return recoverLeg(env);
   return heapLeg(env);
