@@ -36,6 +36,33 @@ const composer = createComposer($('composer'), toast);
 setupAppshell();
 const mux = new Mux();
 
+/** The app-shell action loop-back: wait out the authoring turn's drain
+ * window, then submit the tagged turn — retrying if the host answers
+ * session/busy (dev carrier) instead of silently dropping the action. */
+const submitAppshellAction = async (action, label) => {
+  const text = `[appshell:${action}] ${label || '界面交互'}`;
+  const deadline = Date.now() + 15000;
+  while (composer.isGenerating() && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+  let accepted = await composer.submitText(text);
+  while (!accepted && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    accepted = await composer.submitText(text);
+  }
+  if (accepted) toast(`动作已回流：${label || action}`);
+  else toast(`动作未能回传（${action}）`);
+};
+
+/** Deploys the presented surface for an appshell_render result. */
+const onOpenAppshell = (payload) => {
+  openAppshell({
+    title: payload.title || 'App',
+    spec: payload.spec,
+    onAction: (action, label) => submitAppshellAction(action, label),
+  });
+};
+
 let connState = 'connecting';
 let activeSessionId = null;
 let timeline = null;
@@ -130,20 +157,7 @@ const openSession = (sessionId) => {
     else renderer.renderTail(timeline);
     refreshChrome();
   });
-  renderer = createChatRenderer($('transcript'), $('jump-latest'), {
-    onOpenAppshell: (payload) => {
-      openAppshell({
-        title: payload.title || 'App',
-        spec: payload.spec,
-        // The action loop-back seam: app-shell actions enter the session as
-        // tagged user turns (M3 formalizes the wording; the path is live).
-        onAction: (action, label) => {
-          composer.submitText(`[appshell:${action}] ${label || '界面交互'}`);
-          toast(`动作已回流：${label || action}`);
-        },
-      });
-    },
-  });
+  renderer = createChatRenderer($('transcript'), $('jump-latest'), { onOpenAppshell });
   renderer.renderStructure(timeline);
   composer.bind(sessionId);
   showView('chat');

@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure mapping layer; logging stays in the caller.
 /**
  * appshell-to-a2ui.js — converts an app-shell/0.9 expanded primitive tree
  * into the A2UI v0.9 `updateComponents` message format that @lynx-js/genui's
