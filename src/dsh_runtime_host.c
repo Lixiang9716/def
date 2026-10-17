@@ -3914,6 +3914,23 @@ dsh_runtime_t *dsh_runtime_new(const char *bundle_root, const dsh_runtime_sink *
      * tests Node runs in its ~1 MB default). 8 MB ≈ Node's --stack-size
      * headroom; the mobile hosts raise the same knob. */
     JS_SetMaxStackSize(s->rt, 400 * 1024 * 1024);
+    /* The resource-starvation face's low-memory knob (test-hardening row
+     * 16): DSH_HEAP_LIMIT_MB caps the engine heap so allocation failure is
+     * exercisable honestly — quickjs turns the cap into a catchable
+     * out-of-memory inside JS, never a process kill. Test infrastructure
+     * like the stack knob above: unset, the heap is uncapped. Read from
+     * the PROCESS env (the runner exports it; it is not part of the
+     * launch-env snapshot the spine sees). */
+    {
+        const char *heap_mb = getenv("DSH_HEAP_LIMIT_MB");
+        if (heap_mb && *heap_mb) {
+            char *end = NULL;
+            long mb = strtol(heap_mb, &end, 10);
+            if (end && *end == 0 && mb > 0 && mb <= 65536) {
+                JS_SetMemoryLimit(s->rt, (size_t)mb * 1024 * 1024);
+            }
+        }
+    }
     JS_SetRuntimeOpaque(s->rt, s);
     JS_SetModuleLoaderFunc(s->rt, dsh_normalize, dsh_module_loader, s);
     s->ctx = JS_NewContext(s->rt);

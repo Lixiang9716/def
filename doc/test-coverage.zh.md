@@ -103,7 +103,7 @@ dash 必须能跑(数组与 `pipefail` 在那里是语法错误)。
 | 13 | Provider cassette 重放（LLM 契约怪癖离线化） | 3 | **已落**（信息性，2026-10-16） | provider-cassettes 套件：九段录制线形（reasoning 约定、DONE 前 usage、中途换 model、CRLF、keep-alive 注释、无 [DONE] 关闭、中行录制切点）经真实 `streamChat` 缝回放（`test/panel/fastcheck/`，fixtures 带出处）；传输层变更时重跑，不作门禁 |
 | 14 | 宿主队列边界并发压测（D2 派发缝） | 3 | **已落**（spine 套件，2026-10-16） | queue-boundary-stress spine 腿：4 会话×4 排队轮次一次性突发、SSE 抖动节奏，真 spine 上全部 drain，逐会话 journal 归因 + wire 级 journal 连续性（`test/panel/spine/run.sh`）；派发缝变更时重跑，不作门禁 |
 | 15 | App 升级矩阵（跨版本 install -r；AssetSync stamp） | 3 | planned | 升级腿 |
-| 16 | 资源饥饿行为（journal 写满盘、低内存） | 3 | planned | 饥饿腿 |
+| 16 | 资源饥饿行为（journal 写满盘、低内存） | 3 | **半落**（heap 面，2026-10-16；disk-full journal 面 WIP） | 低内存面已证：`DSH_HEAP_LIMIT_MB` C 宿主测试旋钮封顶引擎堆，OOM 可捕获、具名、宿主存活（`resource-starvation.js` heap 腿，绿）。disk-full journal 面 WIP：增长 fixture（journal 填满小卷直至写失败）与 CLI 宿主存储映射缠斗——草稿随分支，两项发现已立案（大报文 httpFetch 静默击杀；jsonl 满盘静默丢失） |
 | 17 | 网关审计完备性不变量（每个 v1.x 调用对宿主审计流配对、有序、零载荷——契约 §6） | 2 | **已落**（#537，2026-10-16） | gateway-audit-invariant CLI 腿（build.sh test core）：49 呼叫台账过裸缝，与宿主审计流一对一、有序、仅元数据配对；桌面宿主在 settle 点逐呼叫发审计记录 |
 | 18 | 安装管线路径穿越钉（zip-slip 类：敌意成员驱过真实 `installPackage`；REL_PATH 拒绝内部 `..`） | 2 | **已落**（#539） | install-path-traversal 面板钉（19 条） |
 | 21 | 多会话交错压测（单 spine 4 会话：journal 归属、投影、逐会话恢复） | 3 | **已落**（#543） | session-multi-stress e2e 腿 |
