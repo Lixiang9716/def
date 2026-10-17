@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure logic; logging stays in the caller (plugin index.js / scenarios).
 /**
  * VNode: the app-shell renderer's intermediate tree — pure data, zero DOM.
  *

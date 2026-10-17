@@ -153,7 +153,9 @@ describe('renderSpec — the eight primitives, direct render assertions', () => 
     expect(r.vnode.props.attrs['data-action']).toBe('a.open');
     expect(r.vnode.props.style.background).toBe('#1677FF'); // spec.theme.accent via ctx
   });
+});
 
+describe('renderSpec — the eight primitives, direct render assertions (layout & content)', () => {
   it('row: renders children in order under an ash-row container', () => {
     const r = renderSpec(okSpec({ type: 'row', children: [
       { type: 'text', text: '左' }, { type: 'text', text: '右' },

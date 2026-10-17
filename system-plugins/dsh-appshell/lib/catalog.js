@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure logic; logging stays in the caller (plugin index.js / scenarios).
 /**
  * app-shell/0.9 component catalog: the two-layer vocabulary contract.
  *

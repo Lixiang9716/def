@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure logic; logging stays in the caller (plugin index.js / scenarios).
 /**
  * Mock/real switch — the ONE place the data source is decided.
  *

@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure logic; logging stays in the caller (plugin index.js / scenarios).
 /**
  * app-shell/0.9 validator — the four gates, in order:
  *   gate 1  whitelist   node.type ∈ primitives ∪ templates

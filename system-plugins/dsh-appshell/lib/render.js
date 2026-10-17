@@ -1,3 +1,4 @@
+// dsh:logging-exempt — pure logic; logging stays in the caller (plugin index.js / scenarios).
 /**
  * Render pipeline: validate -> expand -> primitive renderers -> VNode.
  *

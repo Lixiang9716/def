@@ -138,8 +138,10 @@ describe('app-shell/0.9 — non-expandable pseudo-templates are rejected with EX
     expect(templates.has(name)).toBe(false);
   });
 
-  it('pseudo-template whose expand() returns null is rejected', () => {
-    const name = 'pseudo-returns-null';
+});
+
+describe('app-shell/0.9 — pseudo-template registry hygiene', () => {
+  it('pseudo-template whose expand() returns null is rejected', () => {    const name = 'pseudo-returns-null';
     expect(templates.has(name)).toBe(false);
     defineTemplate(name, { expand: () => null });
     try {
