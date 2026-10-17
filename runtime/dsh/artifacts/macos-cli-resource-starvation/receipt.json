@@ -1,6 +1,0 @@
-{
-  "host": "macOS arm64 (the desktop CLI, no simulator)",
-  "phase": "resource starvation (row 16) — disk-full journal (the sparse-capped volume refuses the journal's own growth with a NAMED failure; the journal stays line-complete; recovery frees space and resumes cleanly) + capped-heap OOM (catchable, host alive)",
-  "launchConfiguration": "./build/dsh-cli . scenario/resource-starvation.js --http --env DSH_STARVATION_LEG=<grow|recover|heap>; the journal face rides a runner-owned 5 MB sparse image",
-  "notes": "DSH_HEAP_LIMIT_MB is a C-host test knob (process env, uncapped when unset)."
-}
