@@ -1,0 +1,10 @@
+{
+  "scenario": "resource.starvation",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "journal.starve.begin", "match": { "leg": "grow" } },
+    { "event": "journal.starve.growth", "match": { "leg": "grow" }, "repeat": true },
+    { "event": "journal.starve.full", "match": { "leg": "grow" } },
+    { "event": "journal.starve.verdict", "match": { "leg": "grow", "status": "pass" } }
+  ]
+}

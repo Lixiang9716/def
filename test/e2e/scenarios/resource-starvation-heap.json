@@ -1,0 +1,9 @@
+{
+  "scenario": "resource.starvation",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    { "event": "heap.starve.begin", "match": { "leg": "heap" } },
+    { "event": "heap.starve.oom", "match": { "caught": true } },
+    { "event": "heap.starve.verdict", "match": { "leg": "heap", "status": "pass" } }
+  ]
+}
