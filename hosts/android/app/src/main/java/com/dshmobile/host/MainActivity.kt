@@ -468,6 +468,9 @@ class MainActivity : Activity() {
         collectAssetNames(assetPath, "", names)
         val desired = names.joinToString("\n")
         if (stamp.isFile && stamp.readText() == desired) return
+        // User state inside the tree (the session journal) survives the
+        // wipe — see JournalKeeper.
+        val kept = JournalKeeper.preserve(target)
         if (target.exists()) target.deleteRecursively()
         target.mkdirs()
         for (rel in names) {
@@ -475,6 +478,7 @@ class MainActivity : Activity() {
             out.parentFile?.mkdirs()
             copyAssetFile("$assetPath/$rel", out)
         }
+        JournalKeeper.restore(kept)
         stamp.writeText(desired)
     }
 

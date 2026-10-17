@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 336" role="img" aria-label="def — it starts undefined. You define it.">
+  <!-- def identity banner, light face. Same neutral law, inverted: paper
+       ground, ink type. No green — nothing here is a verified fact. -->
+  <defs>
+    <radialGradient id="sheen-l" cx="50%" cy="-12%" r="85%">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.045"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain-l">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="336" fill="#F6F7F8"/>
+  <rect width="1200" height="336" fill="url(#sheen-l)"/>
+  <rect width="1200" height="336" filter="url(#grain-l)" opacity="0.04"/>
+
+  <text x="72" y="86" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="30" font-weight="700" letter-spacing="0.5" fill="#17181B">def</text>
+  <text x="126" y="86" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="30" font-weight="700" fill="#9BA0A8">&#9612;</text>
+
+  <text x="72" y="184" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="58" font-weight="700" letter-spacing="-1" fill="#17181B">It starts undefined.</text>
+  <text x="72" y="252" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="58" font-weight="700" letter-spacing="-1" fill="#575C64">You define it.</text>
+
+  <g transform="rotate(-7 1030 172)">
+    <circle cx="1030" cy="172" r="84" fill="#EEF0F2" stroke="#A9AEB7" stroke-width="1.5"/>
+    <circle cx="1030" cy="172" r="74" fill="none" stroke="#C4C8CE" stroke-width="1"/>
+    <text x="1030" y="174" text-anchor="middle"
+          font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="15" font-weight="700" letter-spacing="5" fill="#FFFFFF"
+          dy="1">UNDEFINED</text>
+    <text x="1030" y="173" text-anchor="middle"
+          font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="15" font-weight="700" letter-spacing="5" fill="#9BA0A8">UNDEFINED</text>
+  </g>
+</svg>
