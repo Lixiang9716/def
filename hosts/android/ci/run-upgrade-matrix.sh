@@ -70,14 +70,12 @@ if [ "$SKIP_BUILD_A" = "1" ]; then
     # holds whatever built LAST (after a full prior run that is build B,
     # which ships no probe). The A bytes must carry the probe.
     [ -f "$OUT/upgrade-a.apk" ] || die "--skip-build-a needs a prior run's $OUT/upgrade-a.apk"
-    APK_A="$OUT/upgrade-a.apk"
 else
     printf 'upgrade-matrix probe: build A ships me, build B must wipe me\n' > "$PROBE"
     ( cd hosts/android && ./gradlew assembleDebug --console=plain -q >/dev/null ) \
         || die "gradle assembleDebug (A) failed"
     [ -f "$APK" ] || die "APK missing at $APK (build first)"
     cp "$APK" "$OUT/upgrade-a.apk"
-    APK_A="$OUT/upgrade-a.apk"
 fi
 
 # ---- 2. boot + FRESH install of A (uninstall is setup-only, never later) ----
