@@ -1,0 +1,20 @@
+{
+  "host": "android",
+  "udid": "emulator-5554",
+  "runner": "hosts/android/ci/run-upgrade-matrix.sh",
+  "phase": "app upgrade matrix (row 15) — install -r across builds; AssetSync stamps",
+  "launch": "emulator, build A (probe shipped) create leg → install -r build B (probe removed) resume leg on the SAME container",
+  "tree": "origin/main ade2b0930e68 (dirty working tree at receipt time)",
+  "engine": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
+  "upgrade": {
+    "apkA": "upgrade-a.apk",
+    "apkB": "upgrade-b.apk",
+    "assetReconciliation": "stale probe wiped by the stamp; canary in files/profiles/default untouched; stamp present after B's boot",
+    "dataSurvival": "the persist-restart resume leg continued the journal across the upgrade (checker manifest shared with the restart leg)"
+  },
+  "scenarios": [
+    { "manifest": "android-session-persist-restart", "verdict": "verdict-android-session-persist-restart.json", "pass": true }
+  ],
+  "screens": ["screens/01-a-create-settled.png", "screens/02-b-resume-settled.png"],
+  "producedAt": "2026-10-17T01:45:45Z"
+}

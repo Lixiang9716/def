@@ -468,6 +468,22 @@ class MainActivity : Activity() {
         collectAssetNames(assetPath, "", names)
         val desired = names.joinToString("\n")
         if (stamp.isFile && stamp.readText() == desired) return
+        // User state that lives INSIDE the tree survives the wipe: the
+        // session journal is <filesDir>/dsh/dsh/sessions (the persistence
+        // root rides the synced tree), and an `install -r` upgrade must
+        // never take it. Found live by the upgrade-matrix leg (row 15):
+        // the B boot's stamp mismatch wiped the journal and the resumed
+        // boot self-staged as a clean create. Rename aside OUTSIDE the
+        // wiped tree, re-materialize, rename back.
+        val kept = mutableListOf<Pair<File, File>>()
+        for (name in PRESERVED_SUBTREES) {
+            val dir = File(target, name)
+            if (dir.isDirectory) {
+                val aside = File(target.parentFile, "${target.name}-${name.replace('/', '_')}.asset-keep")
+                aside.deleteRecursively()
+                if (dir.renameTo(aside)) kept.add(Pair(aside, dir))
+            }
+        }
         if (target.exists()) target.deleteRecursively()
         target.mkdirs()
         for (rel in names) {
@@ -475,8 +491,16 @@ class MainActivity : Activity() {
             out.parentFile?.mkdirs()
             copyAssetFile("$assetPath/$rel", out)
         }
+        for ((aside, dir) in kept) {
+            dir.parentFile?.mkdirs()
+            if (!aside.renameTo(dir)) aside.deleteRecursively() // never wedge the boot on a restore miss
+        }
         stamp.writeText(desired)
     }
+
+    /** User-state subtrees preserved across a synced tree's wipe (relative
+     * to the tree): the session journal under dsh/sessions. */
+    private val PRESERVED_SUBTREES = setOf("dsh/sessions")
 
     private fun copyAssetFile(assetPath: String, target: File) {
         assets.open(assetPath).use { input ->
