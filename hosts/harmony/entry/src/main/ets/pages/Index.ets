@@ -1305,6 +1305,8 @@ const BUNDLE_FILES: string[] = [
   'webclient/dsh-web-client-v2/web/css/theme.css',
   'webclient/dsh-web-client-v2/web/index.html',
   'webclient/dsh-web-client-v2/web/js/api.js',
+  'webclient/dsh-web-client-v2/web/js/appshell-core.js',
+  'webclient/dsh-web-client-v2/web/js/appshell.js',
   'webclient/dsh-web-client-v2/web/js/composer.js',
   'webclient/dsh-web-client-v2/web/js/main.js',
   'webclient/dsh-web-client-v2/web/js/markdown.js',

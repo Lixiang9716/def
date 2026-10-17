@@ -78,7 +78,15 @@ export function openSurface({ title, spec, onAction }) {
   } else {
     const ctx = { accent: (spec.theme && spec.theme.accent) || '#1677ff', onAction: activeActionHandler };
     const tabs = el('div', 'ash-tabbar');
-    for (const [i, t] of (spec.tabs || []).entries()) tabs.appendChild(el('span', 'ash-tab' + (i === 0 ? ' active' : ''), t));
+    for (const [i, t] of (spec.tabs || []).entries()) {
+      const tab = el('span', 'ash-tab' + (i === 0 ? ' active' : ''), t);
+      // Local-only interaction: tab state never leaves the page (no turn).
+      tab.addEventListener('click', () => {
+        for (const other of tabs.children) other.classList.remove('active');
+        tab.classList.add('active');
+      });
+      tabs.appendChild(tab);
+    }
     root.appendChild(tabs);
     for (const c of check.screen.children || []) root.appendChild(renderPrimitive(c, ctx));
   }
