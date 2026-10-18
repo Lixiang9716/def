@@ -22,11 +22,40 @@ const MODEL = env.ZAI_MODEL || 'glm-4.6';
 
 if (!API_KEY) { console.error('L3: no ZAI_API_KEY in .env — cannot run real-model benchmark'); process.exit(1); }
 
-const SYSTEM = `You are a UI generator. Given a description, produce an app-shell/0.9 JSON spec.
-The spec object has: spec (always "${'app-shell/0.9'}"), theme: {accent: "#RRGGBB", mode: "light"|"dark"}, tabs: [2..5 strings], actions: [action ids], screen: a component tree.
-Component types (closed set): text, image, button, row, column, card, progressbar, badge, search-bar, tab-bar, chat-row, service-grid, banner-card, hcard-row, balance-card, mini-player.
-Every button.action must be declared in actions. Text fields are plain text (no markup).
-Respond with ONLY the JSON spec object — no markdown fences, no commentary.`;
+const SYSTEM = `You are a UI spec generator. Output ONLY a valid JSON object matching the app-shell/0.9 schema — no markdown, no commentary.
+
+Schema:
+{
+  "spec": "app-shell/0.9",
+  "theme": { "accent": "#RRGGBB", "mode": "light" },
+  "tabs": [2-5 strings],
+  "actions": ["dot.case.ids"],
+  "screen": { component tree }
+}
+
+Component types (closed set, use ONLY these):
+- text: { type, text, size?: "title"|"body"|"small", tone?: "default"|"muted"|"accent" }
+- image: { type, emoji, color }
+- button: { type, label, action } — action MUST be declared in actions[]
+- row: { type, children: [nodes] }
+- column: { type, children: [nodes] }
+- card: { type, children: [nodes] }
+- progressbar: { type, label, value: 0-100 }
+- badge: { type, text }
+- search-bar: { type, placeholder }
+- tab-bar: { type, tabs: [{ label }], active: index }
+- chat-row: { type, avatar: { emoji, color }, name, preview, time }
+- service-grid: { type, items: [{ icon, label }] (max 8) }
+- banner-card: { type, title, subtitle }
+- hcard-row: { type, items: [{ cover: { emoji, color }, title, sub }] (max 6) }
+- balance-card: { type, label, value, actionLabel?, action? }
+- mini-player: { type, cover: { emoji, color }, title, sub, action? }
+
+Rules:
+- action ids use dot.case: "player.toggle", "chat.open" — NEVER underscores
+- every action in a button.action or template action MUST appear in spec.actions[]
+- text fields are plain strings, no markup
+- children arrays have max 24 items`;
 
 const PROMPT = '做一个音乐播放器应用的首页：顶部搜索栏，中间是每日推荐的横幅卡片，下面是四个快捷入口（私人FM、每日推荐、歌单、排行榜），再下面是三个推荐歌单的横向卡片列表，最底下有一个正在播放的迷你播放条。主题色用红色。';
 
