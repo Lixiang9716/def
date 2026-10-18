@@ -14,7 +14,7 @@
     "Harmony: same script on device, log capture",
     "results appended to the PR and this card closed with receipt"
   ],
-  "status": "open",
+  "status": "voided",
   "receipt": null,
   "id": "T-0216",
   "repins": [
@@ -53,5 +53,10 @@
       "to": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
       "reason": "the project constitution moved again (PR-3 of T-0226: the integrity pass retires the webclient-staged-tree gate and extends the staging/asset-mirrors gates in gates.json); this card's brief is unchanged and its work remains as scoped"
     }
-  ]
+  ],
+  "void": {
+    "ts": "2026-10-18T05:31:12+00:00",
+    "by": "lixiang@192.168.21.11",
+    "reason": "the card's device legs landed in #491/#492 (trio: Android simulator, iOS+Harmony seats) and #494 (real-device light pass) without the card ever being closed; months later its rules pin went stale (this upgrade's rules.md change) and the remaining checklist step \u2014 close with a fresh receipt \u2014 cannot honestly be executed against the moved plane; voided rather than claimed"
+  }
 }
