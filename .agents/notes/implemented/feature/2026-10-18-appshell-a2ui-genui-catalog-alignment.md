@@ -1,5 +1,6 @@
 # appshell A2UI mapping aligned to the genui v0.7.0 catalog
 
+Status: implemented
 Date: 2026-10-18
 Class: feature
 Related: PR #574 (app-shell/0.9 contract + validator), PR #576 (web render surface), plan `.zcode/plans/appshell-morph-plan.md` §M5
