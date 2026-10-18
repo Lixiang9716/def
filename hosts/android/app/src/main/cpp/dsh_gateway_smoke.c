@@ -296,7 +296,11 @@ static void smoke_fs_publish_atomic(smoke_backend *b, int call_id,
                                          sizeof err) != 0) {
             char clean[256];
             size_t o = 0;
-            for (const char *p = err; p && *p && o + 1 < sizeof(clean); p++) {
+            /* bound well under smoke_reject's 256-byte payload: the failing-step
+ * reason embeds the FULL path, and an overlong message truncates the
+ * reject JSON mid-string — an unparsable settle that kills the call
+ * (measured live: ENOSPC on the ramdisk, the row-16 grow leg). */
+            for (const char *p = err; p && *p && o + 1 < 160; p++) {
                 if (*p != '"' && *p != '\\') clean[o++] = *p;
             }
             clean[o] = 0;
@@ -338,7 +342,11 @@ static void smoke_fs_sync(smoke_backend *b, int call_id, const char *args) {
         if (rc != 0) {
             char clean[256];
             size_t o = 0;
-            for (const char *p = err; p && *p && o + 1 < sizeof(clean); p++) {
+            /* bound well under smoke_reject's 256-byte payload: the failing-step
+ * reason embeds the FULL path, and an overlong message truncates the
+ * reject JSON mid-string — an unparsable settle that kills the call
+ * (measured live: ENOSPC on the ramdisk, the row-16 grow leg). */
+            for (const char *p = err; p && *p && o + 1 < 160; p++) {
                 if (*p != '"' && *p != '\\') clean[o++] = *p;
             }
             clean[o] = 0;
