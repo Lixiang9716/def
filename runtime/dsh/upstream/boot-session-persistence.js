@@ -43,7 +43,54 @@ export const mountSessionPersistence = async (ctx, config) => {
     root: config.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`,
     ...(config.compression === undefined ? {} : { compression: config.compression }),
   });
+  installDiskWatermarkGuard(ctx, config);
   installDiskFullSentinel(ctx);
+};
+
+/** The disk watermark guard (row 16 follow-up, #571): the sentinel names
+ * the loss AFTER the writes fail; the guard refuses the turn BEFORE it —
+ * when the journal's own volume is under the watermark (default 2 MiB),
+ * the followup that would journal more records is rejected with a named
+ * error instead of feeding a backend that will silently drop it. The
+ * measurement rides a probe write into the root's own directory (write,
+ * stat, remove): a volume too full to accept a probe byte is too full to
+ * accept a journal record. */
+export const installDiskWatermarkGuard = (ctx, config) => {
+  const watermark = Number(config?.diskWatermarkBytes ?? 2 * 1024 * 1024);
+  if (!Number.isFinite(watermark) || watermark <= 0) return;
+  const root = config?.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`;
+  const agents = ctx.agents;
+  if (!agents) return;
+  // Wrap each agent's followup: the guard checks headroom first and
+  // throws a named error (the turn-recovery boundary renders it) when
+  // the volume is under the watermark. Latched until a check passes.
+  const guarded = new WeakSet();
+  const probeFree = async () => {
+    const fsPromises = await import('node:fs/promises');
+    const probe = `${root}/.watermark-probe`;
+    await fsPromises.writeFile(probe, Buffer.alloc(Math.min(watermark, 64 * 1024)));
+    const st = await fsPromises.stat(probe);
+    await fsPromises.rm(probe, { force: true });
+    return { ok: true, probed: st.size };
+  };
+  ctx.on('session/event', (session, event) => {
+    if (event?.type !== 'turn/start' || !session?.id) return;
+    const agent = agents.get(session.id);
+    if (!agent?.followup || guarded.has(agent)) return;
+    guarded.add(agent);
+    const raw = agent.followup.bind(agent);
+    agent.followup = async (...args) => {
+      const head = await probeFree().catch((err) => ({ ok: false, err }));
+      if (!head.ok) {
+        throw new Error(
+          `session journal volume is nearly full (watermark ${watermark}B): `
+          + `the turn is refused rather than journaled into a dropping backend `
+          + `(${head.err instanceof Error ? head.err.message : String(head.err)})`,
+        );
+      }
+      return raw(...args);
+    };
+  });
 };
 
 /** The disk-full sentinel (row 16, #571): the vendored backend's appends
