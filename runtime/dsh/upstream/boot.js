@@ -181,6 +181,7 @@ export const spineInventory = (ctx) => {
     // The create-approve-hotmount loop's product face: chat-authored plugin
     // → native Approve → registry install → LIVE native card (PR-2/3).
     tool('tool-plugin-create', 'system-plugins/dsh-create', 'plugin_create'),
+    tool('appshell', 'system-plugins/dsh-appshell', 'appshell_render'),
     service('fs', '@deepseek-ai/dsh-fs-local', 'fs'),
     tool('tool-fs', '@deepseek-ai/dsh-tool-fs', 'read'),
     tool('tool-str-replace-editor', '@deepseek-ai/dsh-tool-str-replace-editor', 'str_replace_editor'),
@@ -308,6 +309,10 @@ const mountToolRows = async (ctx, cwd) => {
     await ctx.plugin(PluginManagerTools);
     await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
     await ctx.plugin(await import('system-plugins/dsh-office/index.js'));
+    // The app-shell surface plugin (owner decision 2026-10-18): the spine
+    // offers appshell_render/update/catalog on every seat — one-prompt app
+    // morphing is a product capability, not a scenario-mounted demo.
+    await ctx.plugin(await import('system-plugins/dsh-appshell/index.js'));
     await mountWebPlane(ctx);
   await mountFileTools(ctx, cwd);
 };
