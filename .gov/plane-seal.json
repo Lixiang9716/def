@@ -58,13 +58,13 @@
       "sha256": "aad8775c99eeec6ae9054050382db77411c9006333501d73cb3016276a1cc8b8"
     },
     "gates.json": {
-      "sha256": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
+      "sha256": "a9ce8f8f75a612c73e4c1ecafb3b382b6a700869b3365c55958a89a3054ca92b"
     }
   },
   "last_rebaseline": {
-    "ts": "2026-10-18T05:24:41+00:00",
+    "ts": "2026-10-18T06:01:58+00:00",
     "caller": "lixiang@192.168.21.11",
     "unattended": true,
-    "reason": "accept the reviewed govrail 0.52.0 template-drift merge (rules 6/9 amendments + local rule 12; rejections README re-adopted) \u2014 intermediate seal; the final re-seal follows with gov update --apply"
+    "reason": "accept gates.json self-test exclusive:true \u2014 the 0.52 rules-6 amendment applied to this repo's live-tree rejection cases; the DAG's concurrency-4 wave raced self-test's case mutations against sibling gates in the #402 cold-tree judge (three red pushes on a tree that is green gate-by-gate)"
   }
 }
