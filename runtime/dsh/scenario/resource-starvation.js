@@ -91,7 +91,12 @@ const bootJournal = async (env) => {
     // compression 'none' on purpose: the disk-full face's line-completeness
     // gate reads the journal bytes directly — the zstd default would make
     // that read a compression question, not a journal-integrity question.
-    sessionPersistence: { compression: 'none' },
+    // diskTotalBytes arms the watermark guard with the seat-owned volume's
+    // real capacity (the runner creates the ramdisk and knows its size).
+    sessionPersistence: {
+      compression: 'none',
+      ...(env.DSH_DISK_TOTAL_BYTES ? { diskTotalBytes: Number(env.DSH_DISK_TOTAL_BYTES) } : {}),
+    },
     listeners: {
       'agent/error': (info) => statuses.push(`error:${JSON.stringify(info)?.slice(0, 200)}`),
       'agent/status': (status) => statuses.push(typeof status === 'string' ? status : status?.status),
