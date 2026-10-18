@@ -80,15 +80,10 @@ export const installDiskFullSentinel = (ctx) => {
       // Two consecutive turn-ends with new events but a frozen durable
       // size: the writes are failing and nothing else will say so.
       if (prior.frozenTurns >= 2) {
+        const reason = `session journal is not durable (disk full?): ${events} events recorded but `
+          + `the journal froze at ${size}B — events since the freeze are lost until space is freed`;
         latched.add(session.id);
-        ctx.emit('agent/error', {
-          agent: session.id,
-          error: new Error(
-            `session journal is not durable (disk full?): ${events} events `
-            + `recorded but the journal froze at ${size}B — `
-            + 'events since the freeze are lost until space is freed',
-          ),
-        });
+        ctx.emit('agent/error', { agent: session.id, error: new Error(reason) });
       }
     })().catch(() => { /* the sentinel never throws into the event bus */ });
   });
