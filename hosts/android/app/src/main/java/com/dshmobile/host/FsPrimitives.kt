@@ -52,6 +52,8 @@ class FsPrimitives(private val context: Context) {
     fun register(on: GatewayCore) {
         on.register("fsRead") { call, done -> read(call, done) }
         on.register("fsWrite") { call, done -> write(call, done) }
+        on.register("fsPublishAtomic") { call, done -> publishAtomic(call, done) }
+        on.register("fsSync") { call, done -> sync(call, done) }
         on.register("fsScope.persist") { call, done -> persist(call, done) }
         on.register("fsScope.resolve") { call, done -> resolveRef(call, done) }
         on.register("fsStat") { call, done -> stat(call, done) }
@@ -141,6 +143,99 @@ class FsPrimitives(private val context: Context) {
             done.settle(null, e)
         } catch (e: Exception) {
             done.settle(null, io("fsWrite", "${e::class.java.simpleName}: ${e.message}"))
+        }
+    }
+
+    /** fsPublishAtomic (contract v1.11.0): ONE atomic durable publish —
+     * same-directory temp → write → fsync(file) → rename → fsync(directory)
+     * — RENAME-based by law of measurement: Android SELinux denies link(2)
+     * for app domains on their own files (M+, the #587 fs-port battery), so
+     * the dance never touches link. Serves the app scope (the profile
+     * container the journal rides); SAF tree scopes have no atomic-rename
+     * face and reject io by name — never a best-effort stand-in. The parent
+     * directory must exist (fsMkdir first). No temp residue on any exit. */
+    private fun publishAtomic(call: GatewayCore.GatewayCall, done: GatewayCore.Done) {
+        val (scope, rel) = target(call, "fsPublishAtomic", done) ?: return
+        val bytes = try {
+            java.util.Base64.getDecoder().decode(call.args.getString("bytesB64"))
+        } catch (_: Exception) {
+            return done.settle(null, invalid("fsPublishAtomic", "missing/malformed bytesB64"))
+        }
+        if (scope != "app") {
+            return done.settle(null, io("fsPublishAtomic", "tree scopes have no atomic publish face"))
+        }
+        try {
+            val dest = File(appRoot, rel)
+            val parent = dest.parentFile
+                ?: throw io("fsPublishAtomic", "publish has no parent directory")
+            if (!parent.isDirectory) {
+                throw io("fsPublishAtomic", "parent directory missing: fsMkdir first")
+            }
+            val tmp = File.createTempFile("dsh-publish-", ".tmp", parent)
+            try {
+                tmp.outputStream().use { out ->
+                    out.write(bytes)
+                    out.fd.sync()
+                }
+                if (!tmp.renameTo(dest)) throw io("fsPublishAtomic", "rename failed")
+                dirFsync(parent)
+            } catch (e: Exception) {
+                tmp.delete()
+                throw e
+            }
+            done.settle(JSONObject().put("written", bytes.size), null)
+        } catch (e: GatewayCore.GatewayError) {
+            done.settle(null, e)
+        } catch (e: Exception) {
+            done.settle(null, io("fsPublishAtomic", "${e::class.java.simpleName}: ${e.message}"))
+        }
+    }
+
+    /** fsSync (contract v1.11.0): one explicit durability barrier by path.
+     * `kind` must match what the path is — each kind opens with its own
+     * mode (dir via O_DIRECTORY, file via O_RDWR) so a mismatch fails the
+     * open itself, the contract's io rejection with no stat-guessing. */
+    private fun sync(call: GatewayCore.GatewayCall, done: GatewayCore.Done) {
+        val (scope, rel) = target(call, "fsSync", done) ?: return
+        val kind = call.string("kind")
+        if (kind != "file" && kind != "dir") {
+            return done.settle(null, invalid("fsSync", "kind must be file|dir"))
+        }
+        if (scope != "app") {
+            return done.settle(null, io("fsSync", "tree scopes have no barrier face"))
+        }
+        try {
+            val path = File(appRoot, rel).absolutePath
+            val flags = if (kind == "dir") {
+                android.system.OsConstants.O_RDONLY or android.system.OsConstants.O_DIRECTORY
+            } else {
+                android.system.OsConstants.O_RDWR
+            }
+            val fd = android.system.Os.open(path, flags)
+            try {
+                android.system.Os.fsync(fd)
+            } finally {
+                android.system.Os.close(fd)
+            }
+            done.settle(JSONObject(), null)
+        } catch (e: GatewayCore.GatewayError) {
+            done.settle(null, e)
+        } catch (e: Exception) {
+            done.settle(null, io("fsSync", "${e::class.java.simpleName}: ${e.message}"))
+        }
+    }
+
+    /** fsync one directory by path — the crash-durability of the rename
+     * itself, never omitted. Callers hold no fd across this (D2 serial). */
+    private fun dirFsync(dir: File) {
+        val fd = android.system.Os.open(
+            dir.absolutePath,
+            android.system.OsConstants.O_RDONLY or android.system.OsConstants.O_DIRECTORY,
+        )
+        try {
+            android.system.Os.fsync(fd)
+        } finally {
+            android.system.Os.close(fd)
         }
     }
 

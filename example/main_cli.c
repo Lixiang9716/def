@@ -23,6 +23,7 @@
 #include "dsh_runtime_host.h"
 #include "dsh_wasm.h" /* the wasm seam (contract v1.2.0): dsh_wasm_run */
 #include "dsh_socket.h" /* the loopback socket seam (contract v1.8.0) */
+#include "dsh_fs_port.h" /* the durable-fs portability layer (contract v1.11.0) */
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -149,7 +150,8 @@ typedef struct smoke_backend {
 #define SMOKE_WASM_AVAILABLE "\"wasmRun\""
 
 static const char *SMOKE_DESCRIPTOR =
-    "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"timerSchedule\",\"timerCancel\","
+    "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsPublishAtomic\",\"fsSync\","
+    "\"timerSchedule\",\"timerCancel\","
     SMOKE_SOCKET_AVAILABLE ","
     SMOKE_KEYCHAIN_AVAILABLE ","
     SMOKE_WASM_AVAILABLE "],"
@@ -962,6 +964,89 @@ static void smoke_fs_write(smoke_backend *b, int call_id, const char *args) {
     smoke_fs_args_free(&a);
 }
 
+/* fsPublishAtomic (contract v1.11.0): one atomic durable publish over the
+ * fs-port layer — same-directory temp, write, fsync, rename, DIRECTORY
+ * fsync, no temp residue on any failure (the reason string names the step).
+ * The scope/escape ladder mirrors fsWrite exactly; the parent directory
+ * must exist (fsMkdir first) — publish never creates parents. */
+static void smoke_fs_publish_atomic(smoke_backend *b, int call_id, const char *args) {
+    smoke_fs_args a = {
+        json_str_dup(args, "scope"), json_str_dup(args, "path"),
+        json_str_dup(args, "bytesB64"), 0, 1,
+    };
+    if (!a.scope || !a.path || !a.b64) {
+        smoke_reject(b, call_id, "fsPublishAtomic", "invalid", "missing scope/path/bytesB64");
+    } else if (strcmp(a.scope, "app") != 0) {
+        smoke_reject(b, call_id, "fsPublishAtomic", "denied", "scope not granted");
+    } else if (!smoke_path_ok(a.path)) {
+        smoke_reject(b, call_id, "fsPublishAtomic", "invalid", "path escapes its scope");
+    } else {
+        size_t n = 0;
+        unsigned char *bytes = b64_decode(a.b64, &n);
+        char *full = bytes ? smoke_path(b, a.path) : NULL;
+        char err[256];
+        err[0] = 0;
+        if (!bytes || !full) {
+            smoke_reject(b, call_id, "fsPublishAtomic", "invalid", "malformed bytes");
+        } else if (dsh_fs_publish_atomic(full, bytes, n, err, sizeof err) != 0) {
+            char clean[256];
+            size_t o = 0;
+            for (const char *p = err; p && *p && o + 1 < sizeof(clean); p++) {
+                if (*p != '"' && *p != '\\') clean[o++] = *p;
+            }
+            clean[o] = 0;
+            smoke_reject(b, call_id, "fsPublishAtomic", "io", clean);
+        } else {
+            char payload[64];
+            snprintf(payload, sizeof(payload), "{\"written\":%zu}", n);
+            smoke_settle(b, call_id, 1, payload);
+        }
+        free(full);
+        free(bytes);
+    }
+    smoke_fs_args_free(&a);
+}
+
+/* fsSync (contract v1.11.0): one explicit durability barrier by path over
+ * the fs-port layer (fsync_file / fsync_dir). `kind` must match what the
+ * path is — the dir open fails on a file and vice versa, which is the io
+ * rejection the contract prescribes (no stat-guessing). */
+static void smoke_fs_sync(smoke_backend *b, int call_id, const char *args) {
+    char *scope = json_str_dup(args, "scope");
+    char *path = json_str_dup(args, "path");
+    char *kind = json_str_dup(args, "kind");
+    if (!scope || !path || !kind
+        || (strcmp(kind, "file") != 0 && strcmp(kind, "dir") != 0)) {
+        smoke_reject(b, call_id, "fsSync", "invalid", "missing scope/path, or kind not file|dir");
+    } else if (strcmp(scope, "app") != 0) {
+        smoke_reject(b, call_id, "fsSync", "denied", "scope not granted");
+    } else if (!smoke_path_ok(path)) {
+        smoke_reject(b, call_id, "fsSync", "invalid", "path escapes its scope");
+    } else {
+        char *full = smoke_path(b, path);
+        char err[256];
+        err[0] = 0;
+        int rc = strcmp(kind, "dir") == 0
+            ? dsh_fs_fsync_dir(full, err, sizeof err)
+            : dsh_fs_fsync_file(full, err, sizeof err);
+        if (rc != 0) {
+            char clean[256];
+            size_t o = 0;
+            for (const char *p = err; p && *p && o + 1 < sizeof(clean); p++) {
+                if (*p != '"' && *p != '\\') clean[o++] = *p;
+            }
+            clean[o] = 0;
+            smoke_reject(b, call_id, "fsSync", "io", clean);
+        } else {
+            smoke_settle(b, call_id, 1, "{}");
+        }
+        free(full);
+    }
+    free(scope);
+    free(path);
+    free(kind);
+}
+
 static void smoke_fs_read(smoke_backend *b, int call_id, const char *args) {
     smoke_fs_args a = {
         json_str_dup(args, "scope"), json_str_dup(args, "path"),
@@ -1276,6 +1361,8 @@ static void smoke_serve(smoke_backend *b, int call_id, const char *name,
                         const char *args) {
     smoke_audit_arm(b, call_id, name);
     if (strcmp(name, "fsWrite") == 0) return smoke_fs_write(b, call_id, args);
+    if (strcmp(name, "fsPublishAtomic") == 0) return smoke_fs_publish_atomic(b, call_id, args);
+    if (strcmp(name, "fsSync") == 0) return smoke_fs_sync(b, call_id, args);
     if (strcmp(name, "fsStat") == 0) return smoke_fs_stat(b, call_id, args);
     if (strcmp(name, "ishRun") == 0) return smoke_ish_run(b, call_id, args);
     if (strcmp(name, "fsRead") == 0) return smoke_fs_read(b, call_id, args);
@@ -1619,7 +1706,8 @@ static int spike_run_main(int argc, char **argv) {
     b.http = http;
     dsh_runtime_set_gateway_dispatch(b.rt, smoke_on_call, &b);
     dsh_runtime_set_descriptor(b.rt, http
-        ? "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"httpFetch\","
+        ? "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsPublishAtomic\",\"fsSync\","
+          "\"httpFetch\","
           SMOKE_SOCKET_AVAILABLE ","
           SMOKE_KEYCHAIN_AVAILABLE "],"
           "\"unavailable\":[\"notify\",\"presentApproval\",\"presentPicker\","

@@ -98,6 +98,7 @@ const BUNDLE_FILES: string[] = [
   'ed25519.js',
   'fixtures/dsh-notes-source.js',
   'fixtures/dsh-notes.js',
+  'fs-durable.js',
   'gateway.js',
   'install-fetch.js',
   'install-pipeline.js',

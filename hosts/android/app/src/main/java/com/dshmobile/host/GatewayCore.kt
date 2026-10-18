@@ -22,11 +22,13 @@ class GatewayCore private constructor(val manifest: GatewayManifest) {
 
         /** The frozen primitive table (contract v1.4.0: nine + fs additions
          * + wasmRun + ishRun-unavailable-on-android + the timer seam; the
-         * capability plane adds the mic pair + cameraCapture, v1.10.0). */
+         * capability plane adds the mic pair + cameraCapture, v1.10.0; the
+         * durable-fs pair fsPublishAtomic/fsSync, v1.11.0). */
         val PRIMITIVES = listOf(
             "fsRead", "fsWrite", "fsScope", "httpFetch", "notify",
             "presentApproval", "presentPicker", "keychainGet", "keychainSet",
             "fsStat", "fsList", "fsMkdir", "fsRemove", "fsRename",
+            "fsPublishAtomic", "fsSync",
             "wasmRun", "timerSchedule", "timerCancel",
             "deviceInfo", "haptic", "clipboardRead", "clipboardWrite",
             "presentShare", "keepAwake",

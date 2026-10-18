@@ -75,7 +75,7 @@ if [ "$SANITIZE" -eq 1 ]; then
        -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer \
        -I"$SCRIPT_DIR" -I"$VENDOR" -I"$ZSTD" -I"$ZSTD/common" -I"$WASM3" \
        -o "$ROOT/runtime/dsh/build/dsh-cli-sanitize" \
-       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" \
+       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" "$SCRIPT_DIR/dsh_fs_port.c" \
        $WASM3_SRC \
        "$VENDOR/dtoa.c" "$VENDOR/libregexp.c" "$VENDOR/libunicode.c" "$VENDOR/quickjs.c" \
        $ZSTD_SRC \
@@ -88,7 +88,7 @@ elif [ "$RELEASE" -eq 1 ]; then
     cc -std=c11 -O1 -D_GNU_SOURCE -DDSH_RELEASE=1 -DZSTD_DISABLE_ASM=1 -DDSH_WITH_SQLITE=1 \
        -I"$SCRIPT_DIR" -I"$VENDOR" -I"$ZSTD" -I"$ZSTD/common" -I"$WASM3" \
        -o "$ROOT/runtime/dsh/build/dsh-cli-release" \
-       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" \
+       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" "$SCRIPT_DIR/dsh_fs_port.c" \
        $WASM3_SRC \
        "$VENDOR/dtoa.c" "$VENDOR/libregexp.c" "$VENDOR/libunicode.c" "$VENDOR/quickjs.c" \
        $ZSTD_SRC \
@@ -99,7 +99,7 @@ else
     cc -std=c11 -O1 -D_GNU_SOURCE -DZSTD_DISABLE_ASM=1 -DDSH_WITH_SQLITE=1 \
        -I"$SCRIPT_DIR" -I"$VENDOR" -I"$ZSTD" -I"$ZSTD/common" -I"$WASM3" \
        -o "$ROOT/runtime/dsh/build/dsh-cli" \
-       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" \
+       "$SCRIPT_DIR/dsh_runtime_host.c" "$ROOT/example/main_cli.c" "$SCRIPT_DIR/dsh_socket.c" "$SCRIPT_DIR/dsh_wasm.c" "$SCRIPT_DIR/dsh_fs_port.c" \
        $WASM3_SRC \
        "$VENDOR/dtoa.c" "$VENDOR/libregexp.c" "$VENDOR/libunicode.c" "$VENDOR/quickjs.c" \
        $ZSTD_SRC \

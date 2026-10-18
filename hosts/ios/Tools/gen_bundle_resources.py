@@ -100,6 +100,7 @@ RESOURCES = [
     ("scenario_b4_web_live_js", DSH / "web-live" / "composer-web-live.js"),
     ("scenario_session_persist_restart_web_live_js", DSH / "web-live" / "session-persist-restart.js"),
     ("scenario_manager_legs_probe_js", DSH / "web-live" / "manager-legs-probe.js"),
+    ("fs_durable_js", DSH / "fs-durable.js"),
     ("gateway_js", DSH / "gateway.js"),
     ("registry_js", DSH / "registry.js"),
     ("manifest_json", DSH / "manifest.json"),

@@ -124,7 +124,8 @@ final class GatewayCore {
     /// calls into dispatchKnown's no-handler fallback, which settles `denied`.
     static let primitives = [
         "fsRead", "fsWrite", "fsScope", "fsStat", "fsList", "fsMkdir",
-        "fsRemove", "fsRename", "wasmRun", "ishRun",
+        "fsRemove", "fsRename", "fsPublishAtomic", "fsSync",
+        "wasmRun", "ishRun",
         "httpFetch", "notify", "presentApproval", "presentPicker",
         "keychainGet", "keychainSet",
         "deviceInfo", "haptic", "clipboardRead", "clipboardWrite",

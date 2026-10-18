@@ -16,6 +16,7 @@
  * host under the SAME scenario id, so one manifest matches the whole flow.
  */
 import { createLogger } from '../logger.js';
+import { fsPublishAtomic, fsSync } from '../fs-durable.js';
 import {
   fsRead,
   fsScope,
@@ -96,6 +97,43 @@ globalThis.__dshBusPost?.(JSON.stringify({ type: 'bus.ready' }));
 
 const PROBE = 'dsh-gateway-probe'; // exactly 17 ASCII bytes
 const probeBytes = () => Uint8Array.from([...PROBE].map((c) => c.charCodeAt(0)));
+
+/** The durable-fs pair (v1.11.0): one atomic publish into a directory the
+ * leg materialized with an ordinary write (publish never creates parents —
+ * the missing-parent leg proves it), read back byte-exact — the roundtrip
+ * IS the durability claim — then both barrier kinds on what really exists,
+ * plus the contract's rejection ladder. The Kotlin FsPrimitives serves the
+ * pair rename-based over the app scope (never link(2) — the SELinux wall). */
+async function durableLeg(expected) {
+  log.debug('durable-fs leg', {});
+  await fsWrite('app', 'durable/.keep', expected);
+  const published = await fsPublishAtomic('app', 'durable/probe.txt', expected);
+  emit('fs.publish.ok', { written: published.written });
+  const pubRead = await fsRead('app', 'durable/probe.txt');
+  emit('fs.publish.readback.ok', { matches: bytesEqual(pubRead.bytes, expected) });
+  await fsSync('app', 'durable/probe.txt', { kind: 'file' });
+  emit('fs.sync.file.ok', {});
+  await fsSync('app', 'durable', { kind: 'dir' });
+  emit('fs.sync.dir.ok', {});
+  try {
+    await fsPublishAtomic('app', 'no-such-parent/x.txt', expected); // no parents
+    demand(false, 'missing parent should reject io');
+  } catch (err) {
+    emit('fs.publish.missing-parent', { code: err.code });
+  }
+  try {
+    await fsSync('app', 'durable/probe.txt', { kind: 'dir' }); // a file is not a dir barrier
+    demand(false, 'kind mismatch should reject io');
+  } catch (err) {
+    emit('fs.sync.kind-mismatch', { code: err.code });
+  }
+  try {
+    await fsPublishAtomic('app', '../escape.txt', expected); // escape must invalidate
+    demand(false, 'escaping publish should reject invalid');
+  } catch (err) {
+    emit('fs.publish.invalid', { code: err.code });
+  }
+}
 const bytesEqual = (a, b) => a.length === b.length && [...a].every((v, i) => v === b[i]);
 const SESSION_ID = 's-m4-0001';
 const TURN_ONE = ['Host', ' binding'];
@@ -195,6 +233,8 @@ async function bindingFsLeg(base) {
   } catch (err) {
     emit('fs.denied', { code: err.code });
   }
+
+  await durableLeg(expected);
 
   const bytesRes = await httpFetch(`${base}/gateway-e2e/bytes`);
   emit('http.status', { status: bytesRes.status, loopback: base.startsWith('http://127.0.0.1:') });

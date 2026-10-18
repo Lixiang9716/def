@@ -141,7 +141,8 @@ const ENTRY_STAGE: string = 'credential-stage.js';
  * wasmRun and ishRun this host serves nowhere. Keep in sync with the C
  * fallback in gateway_smoke.cpp. */
 export const BINDING_DESCRIPTOR: string =
-  '{"available":["fsRead","fsWrite","fsScope","httpFetch","notify",' +
+  '{"available":["fsRead","fsWrite","fsScope","fsPublishAtomic","fsSync",' +
+  '"httpFetch","notify",' +
   '"presentApproval","presentPicker","keychainGet","keychainSet",' +
   '"timerSchedule","timerCancel","presentSurface","surfaceDraw","closeSurface",' +
   '"deviceInfo","haptic","clipboardRead","clipboardWrite","presentShare",' +

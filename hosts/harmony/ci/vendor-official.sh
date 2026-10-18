@@ -179,7 +179,8 @@ fi
 # The web-boot closure (officialweb-web-live drive): the adapter, its shims, and the
 # vendored npm libs the client-modules composition imports — the exact
 # bundle-root relative paths the C loader's bare map resolves.
-CLOSURE="gateway.js
+CLOSURE="fs-durable.js
+gateway.js
 logger.js
 plugin-mount.js
 registry.js

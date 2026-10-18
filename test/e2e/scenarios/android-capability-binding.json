@@ -19,7 +19,7 @@
     {
       "event": "descriptor.declared",
       "match": {
-        "available": 34,
+        "available": 36,
         "unavailable": 3
       }
     },
@@ -146,6 +146,44 @@
       "event": "fs.denied",
       "match": {
         "code": "denied"
+      }
+    },
+    {
+      "event": "fs.publish.ok",
+      "match": {
+        "written": 17
+      }
+    },
+    {
+      "event": "fs.publish.readback.ok",
+      "match": {
+        "matches": true
+      }
+    },
+    {
+      "event": "fs.sync.file.ok",
+      "match": {}
+    },
+    {
+      "event": "fs.sync.dir.ok",
+      "match": {}
+    },
+    {
+      "event": "fs.publish.missing-parent",
+      "match": {
+        "code": "io"
+      }
+    },
+    {
+      "event": "fs.sync.kind-mismatch",
+      "match": {
+        "code": "io"
+      }
+    },
+    {
+      "event": "fs.publish.invalid",
+      "match": {
+        "code": "invalid"
       }
     },
     {
