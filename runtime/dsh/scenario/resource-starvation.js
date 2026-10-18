@@ -95,6 +95,11 @@ const bootJournal = async (env) => {
     // real capacity (the runner creates the ramdisk and knows its size).
     sessionPersistence: {
       compression: 'none',
+      // DSH_REALFS=1 arms the gated real-fs journal publisher (the #571
+      // root cure): each turn/end republishes the journal through
+      // fsPublishAtomic, so a full volume rejects with a NAMED error at the
+      // true write boundary instead of the mirror's swallowed ENOSPC.
+      ...(env.DSH_REALFS === '1' ? { realFs: true } : {}),
       ...(env.DSH_DISK_TOTAL_BYTES ? { diskTotalBytes: Number(env.DSH_DISK_TOTAL_BYTES) } : {}),
     },
     listeners: {
@@ -183,6 +188,7 @@ const growBallast = async (agent, backend, minBytes, journalSized, tripped) => {
  * named disk-full event). No synthetic filler, no floor guessing: the
  * cap on the image is the exhaustion condition. */
 const preLeg = async (env) => {
+  const realFs = env.DSH_REALFS === '1';
   const { ctx, statuses } = await bootJournal(env);
   const { agent, backend } = await waitConfigured(ctx);
   demand(eventCount(ctx.sessions.get(SESSION_ID)) === 0, 'a fresh configured session carried events at boot');
@@ -193,22 +199,30 @@ const preLeg = async (env) => {
   const minBytes = Number(env.DSH_JOURNAL_MIN_BYTES ?? 900 * 1024);
   // THE NAMED-SURFACE DEMAND (#571): the disk-full write failure must be
   // NAMED — either the backend surfaced ENOSPC through the turn (full) or
-  // the boot-row sentinel raised agent/error (frozen durable size). The
-  // old behavior — silence — is the defect this face exists to rule out.
+  // the boot-row surfaces raised agent/error (the sentinel's frozen-size
+  // heuristic; under realFs, the publisher's rejected publish — that
+  // rejection IS the cure doing its job). The old behavior — silence — is
+  // the defect this face exists to rule out.
   const sentinelTripped = () => statuses.some((st) => st.startsWith('error:'));
   const { full, turns, durableBytes } =
     await growBallast(agent, backend, minBytes, journalSized, sentinelTripped);
   const namedBy = full !== null ? 'write-error'
-    : (sentinelTripped() ? 'sentinel' : null);
+    : (sentinelTripped() ? (realFs ? 'durable-publish' : 'sentinel') : null);
   demand(namedBy !== null,
-    'the disk-full journal failure was silent: no write error and no sentinel agent/error');
+    'the disk-full journal failure was silent: no write error and no agent/error surface');
   emit('journal.starve.named', { turns, by: namedBy });
   emit('journal.starve.verdict', {
     leg: 'grow', status: 'pass', events: eventCount(ctx.sessions.get(SESSION_ID)),
     journalBytes: durableBytes, turns, namedBy,
   });
-  demand(statuses.filter((s) => s.startsWith('error:')).length === 0,
-    `the pre leg surfaced agent errors: ${statuses.join(';')}`);
+  // The zero-agent-error demand is the UNGATED posture's honesty check: the
+  // ungated cure stack names the loss without erroring the agent. Under
+  // realFs the publisher's agent/error at the full-volume boundary is the
+  // EXPECTED named surface, so it is not counted against the leg.
+  if (!realFs) {
+    demand(statuses.filter((s) => s.startsWith('error:')).length === 0,
+      `the pre leg surfaced agent errors: ${statuses.join(';')}`);
+  }
   globalThis.__dshComplete(true, 'ok');
 };
 

@@ -3,8 +3,11 @@
   "extract": { "prefix": "dsh.runtime.log:" },
   "expect": [
     { "event": "journal.starve.begin", "match": { "leg": "grow" } },
-    { "event": "journal.starve.growth", "match": { "leg": "grow" }, "repeat": true },
-    { "event": "journal.starve.named", "match": { "leg": "grow" } },
-    { "event": "journal.starve.verdict", "match": { "leg": "grow", "status": "pass" } }
+    { "event": "llm/runtime", "match": { "provider": "mock", "model": "mock-1" } },
+    { "event": "upstream/profile", "match": { "profile": "mobile" } },
+    { "event": "upstream/services", "match": {} },
+    { "event": "journal.starve.growth", "match": {}, "repeat": true },
+    { "event": "journal.starve.named", "match": { "by": "durable-publish" } },
+    { "event": "journal.starve.verdict", "match": { "leg": "grow", "status": "pass", "namedBy": "durable-publish" } }
   ]
 }

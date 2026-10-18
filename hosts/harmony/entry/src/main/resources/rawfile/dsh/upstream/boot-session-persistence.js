@@ -44,6 +44,12 @@ export const mountSessionPersistence = async (ctx, config) => {
     ...(config.compression === undefined ? {} : { compression: config.compression }),
   });
   installDiskFullSentinel(ctx);
+  // The real-fs write path (#571's root cure, gated): when armed, the
+  // journal's real-disk copy is republished ATOMICALLY at every turn
+  // boundary through the v1.11.0 gateway primitives — a full volume then
+  // rejects the publish with a named error instead of the shim mirror's
+  // swallowed ENOSPC. Default off; ungated boots evaluate one falsy check.
+  if (config.realFs) installRealFsJournalPublish(ctx);
 };
 
 /** The disk watermark guard (row 16 follow-up, #571): the sentinel names
@@ -150,4 +156,56 @@ export const installDiskFullSentinel = (ctx) => {
  * ungated boot evaluates to one undefined check and imports nothing. */
 export const maybeMountSessionPersistence = async (ctx, identity) => {
   if (identity?.sessionPersistence) await mountSessionPersistence(ctx, identity.sessionPersistence);
+};
+
+/** The REAL-FS journal publisher (#571's root cure, behind config.realFs):
+ * the vendored backend's writes ride the fs shims, whose real-disk mirror
+ * is best-effort BY DESIGN (wsMirrorWriteReal swallows ENOSPC — the silent
+ * truncation #571 pinned). The proposal's non-goals fix the shape: the
+ * shim/VFS world does not change and the backend stays verbatim, so the
+ * cure mounts at this row — at every turn boundary the journal's REAL copy
+ * is republished through fsPublishAtomic (same-directory temp → fsync →
+ * rename → directory fsync, ONE audited gateway step): success makes the
+ * on-disk journal atomic and crash-durable (no partial record, no 0-byte
+ * truncation), and a full volume REJECTS the publish with the failing
+ * step's name — the root-cause named surface, replacing the sentinel's
+ * freeze heuristic (which stays as defense-in-depth). Whole-artifact
+ * rewrite per boundary, per the frozen §4 ("the jsonl append path is
+ * served by whole-journal rewrite"). */
+export const installRealFsJournalPublish = (ctx) => {
+  const pending = new Set();
+  const latched = new Set();
+  ctx.on('session/event', (session, event) => {
+    if (event?.type !== 'turn/end' || !session?.id) return;
+    if (latched.has(session.id) || pending.has(session.id)) return;
+    pending.add(session.id);
+    (async () => {
+      const fsPromises = await import('node:fs/promises');
+      const { fsPublishAtomic } = await import('../fs-durable.js');
+      const { fsScope } = await import('gateway.js');
+      const resolved = await fsScope.resolve('scope://app/');
+      const root = resolved?.path;
+      if (typeof root !== 'string') throw new Error(`app scope unresolved: ${JSON.stringify(resolved)}`);
+      const base = `${globalThis.__dshProfileCwd}/dsh/sessions`;
+      const encoded = (await fsPromises.readdir(base))[0];
+      const dir = `${base}/${encoded}/${session.id}`;
+      const files = await fsPromises.readdir(dir).catch(() => []);
+      for (const file of files) {
+        if (!file.startsWith('session.v')) continue;
+        const bytes = new Uint8Array(await fsPromises.readFile(`${dir}/${file}`));
+        const abs = `${dir}/${file}`;
+        if (!abs.startsWith(root)) {
+          throw new Error(`journal ${abs} outside the app scope root ${root}`);
+        }
+        await fsPublishAtomic('app', abs.slice(root.length + 1), bytes);
+      }
+    })().then(() => {
+      pending.delete(session.id);
+    }).catch((err) => {
+      pending.delete(session.id);
+      latched.add(session.id);
+      const reason = `durable journal publish rejected (disk full?): ${err?.message ?? err}`;
+      ctx.emit('agent/error', { agent: session.id, error: new Error(reason) });
+    });
+  });
 };
