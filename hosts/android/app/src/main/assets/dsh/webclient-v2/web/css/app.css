@@ -790,6 +790,33 @@
 .ash-tabbar { display: flex; gap: 4px; padding: 8px 12px 16px; border-top: 1px solid rgba(0,0,0,.06); background: #fff; margin-top: auto; }
 .ash-tab { flex: 1; text-align: center; font-size: 11px; color: #9aa0a6; padding: 6px 0; border-radius: 8px; }
 .ash-tab.active { color: var(--p-accent, #1677ff); background: color-mix(in srgb, var(--p-accent, #1677ff) 10%, transparent); font-weight: 500; }
+
+/* ---- appshell beauty pass: the accent actually lands (phone-grade rhythm) ---- */
+#appshell-root { scrollbar-width: none; }
+#appshell-root::-webkit-scrollbar { display: none; }
+.ash-card { border-radius: 14px; padding: 14px; margin: 0 0 12px; border: 1px solid rgba(0,0,0,.045); box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+.ash-col { gap: 8px; }
+.ash-row { gap: 10px; margin: 0 0 12px; }
+/* hero: a card whose first child is a title (banner-card / balance-card shape) gets the accent wash */
+.ash-card:has(> .ash-text.ash-title) { background: color-mix(in srgb, var(--p-accent, #1677ff) 9%, #ffffff); border-color: color-mix(in srgb, var(--p-accent, #1677ff) 22%, transparent); }
+.ash-card:has(> .ash-text.ash-title) .ash-text.ash-title { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+/* image tiles: the emoji sits on its accent tint */
+.ash-image { width: 46px; height: 46px; min-width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 21px; margin: 0 0 8px; }
+.ash-card .ash-col .ash-image, .ash-card > .ash-image { margin: 0; }
+.ash-row > .ash-card { padding: 12px; }
+.ash-text.ash-title { font-size: 17px; font-weight: 650; }
+.ash-text.ash-body { font-size: 13.5px; line-height: 1.45; }
+.ash-text.ash-small { font-size: 11.5px; }
+.ash-text.ash-muted { color: #98A1AB; }
+.ash-text.ash-accent { font-weight: 600; }
+.ash-btn { border-radius: 18px; padding: 9px 18px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px color-mix(in srgb, var(--p-accent, #1677ff) 35%, transparent); }
+.ash-btn:active { transform: scale(.97); }
+.ash-progress-track { height: 10px; border-radius: 5px; }
+.ash-progress-bar { border-radius: 5px; line-height: 10px; padding: 0 8px; text-align: right; font-size: 9px; }
+.ash-tabbar { position: sticky; top: -5px; z-index: 5; margin: 0 -6px 12px; background: color-mix(in srgb, #ffffff 82%, transparent); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,.05); border-radius: 13px; padding: 4px; gap: 2px; }
+.ash-tab { border-radius: 9px; }
+.ash-tab.active { background: #fff; box-shadow: 0 1px 3px rgba(16,24,40,.10); }
+.ash-badge { background: rgba(16,24,40,.05); border-radius: 9px; }
 .appshell-preview { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 260px; overflow: hidden; border-radius: 10px; }
 .appshell-open-btn { border: 1px solid var(--link, #1677ff); background: transparent; color: var(--link, #1677ff); border-radius: 14px; padding: 4px 12px; font-size: 12px; cursor: pointer; margin-top: 6px; }
 

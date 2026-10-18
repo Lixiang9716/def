@@ -23,7 +23,7 @@ const el = (tag, className, text) => {
  * textContent — markup in model-authored strings is structurally inert. */
 const PRIMITIVE_RENDER = {
   text: (n) => el('div', 'ash-text ash-' + (n.size || 'body') + (n.tone ? ' ash-' + n.tone : ''), String(n.text ?? '')),
-  image: (n) => el('div', 'ash-image', String(n.emoji || '🖼')),
+  image: (n) => { const d = el('div', 'ash-image', String(n.emoji || '🖼')); if (n.color) d.style.background = 'color-mix(in srgb, ' + n.color + ' 14%, #ffffff)'; return d; },
   button: (n, ctx) => {
     const btn = el('button', 'ash-btn', String(n.label ?? ''));
     btn.type = 'button';
@@ -33,7 +33,7 @@ const PRIMITIVE_RENDER = {
   },
   row: (n, ctx) => { const d = el('div', 'ash-row'); for (const c of n.children || []) d.appendChild(renderPrimitive(c, ctx)); return d; },
   column: (n, ctx) => { const d = el('div', 'ash-col'); for (const c of n.children || []) d.appendChild(renderPrimitive(c, ctx)); return d; },
-  card: (n, ctx) => { const d = el('div', 'ash-card'); for (const c of n.children || []) d.appendChild(renderPrimitive(c, ctx)); return d; },
+  card: (n, ctx) => { const d = el('div', 'ash-card'); for (const k of ['borderRadius', 'padding']) { if (n.style && n.style[k]) d.style[k] = String(n.style[k]); } for (const c of n.children || []) d.appendChild(renderPrimitive(c, ctx)); return d; },
   progressbar: (n) => {
     const track = el('div', 'ash-progress-track');
     const bar = el('div', 'ash-progress-bar', String(n.label ?? ''));
