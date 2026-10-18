@@ -6,6 +6,21 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-19 (model swap) — the cost ledger goes dual-model:
+> `deepseek-v4-flash` (the owner's pick; the legacy alias routes to V4.1
+> Flash) lands **all five bars green** beside the GLM ledger — morph P50
+> **1532** ≤3k ✓ / P95 **1772** ≤5k ✓ / **4.5s** ≤20s ✓; update P50 **739**
+> ≤1.2k ✓ / **2.1s** ✓; streaming TTFT 2.4-3.8s, first component renderable
+> 2.8-4.1s. The glm-4.6 ledger keeps its honest morph-e2e miss (33.6s — the
+> thinking phase); on the flash tier the bar passes on model choice alone.
+> The 换模型 counterfactual (plan §3.5 design-success row 3) verifies at its
+> strongest: the seam is the schema+validator — swap the model, 10/10 first
+> pass, every bar green. Measurement traps fixed en route: latency now
+> samples after the BODY settles (DeepSeek headers arrive ~100ms before a
+> ~4s chunked body — header-time sampling under-reported 30×); the probe is
+> committed (`test/panel/ttft-probe.mjs`, provider-neutral LLM_* env).
+> Checker on this tree: **134 evidence dirs / 254 green verdicts / 247 pngs**.
+
 > **Currency**: 2026-10-18 (M4) — `appshell.m4` closes the M2-M4 program's
 > last rows: the browser text-safety spot-check (hostile fields render 100%
 > VERBATIM through preview AND surface, zero script/img/on-attr — the
