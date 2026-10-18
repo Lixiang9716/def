@@ -43,7 +43,6 @@ export const mountSessionPersistence = async (ctx, config) => {
     root: config.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`,
     ...(config.compression === undefined ? {} : { compression: config.compression }),
   });
-  installDiskWatermarkGuard(ctx, config);
   installDiskFullSentinel(ctx);
 };
 
