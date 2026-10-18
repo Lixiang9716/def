@@ -111,8 +111,13 @@ if [ "$LEG" = "journal" ] || [ "$LEG" = "all" ]; then
     STARVE_TMPDIR="$MOUNT/container"
     mkdir -p "$STARVE_TMPDIR"
 
-    echo "== 2a grow leg: the journal grows until the guard refuses =="
-    run_leg grow --env "DSH_DISK_TOTAL_BYTES=$((5 * 1024 * 1024))"
+    echo "== 2a grow leg: the journal grows under the REAL-FS mount until the volume refuses =="
+    # DSH_REALFS=1 arms the gated real-fs journal publisher (the #571 root
+    # cure, T-0255 item 3): every turn/end republishes the journal through
+    # fsPublishAtomic, so the disk-full boundary arrives as a NAMED publish
+    # rejection (agent/error from the boot row) — never the mirror's
+    # swallowed ENOSPC.
+    run_leg grow --env "DSH_REALFS=1" --env "DSH_DISK_TOTAL_BYTES=$((5 * 1024 * 1024))"
 
     # The volume is now truly full. The runner leaves recovery to the
     # host-plane fix landing (space freed => resume + clean flush); the
@@ -152,6 +157,11 @@ if [ "$LEG" = "heap" ] || [ "$LEG" = "all" ]; then
         --log "$ART/logs-heap.txt" --out "$ART/verdict-resource-starvation-heap.json" || FAIL=1
 fi
 [ "$FAIL" = "0" ] || { echo "run-starvation: checker red — evidence stays unreceipted" >&2; exit 1; }
+
+# The evidence inventory's deliverable name: one combined logs.txt (the
+# e2e-matrix gate audits this convention across every artifacts dir).
+cat "$ART"/logs-grow.txt "$ART"/logs-heap.txt > "$ART/logs.txt" 2>/dev/null \
+    || cat "$ART"/logs-*.txt > "$ART/logs.txt" 2>/dev/null || true
 
 cat > "$ART/receipt.json" <<EOF
 {
