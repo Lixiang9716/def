@@ -1,0 +1,17 @@
+{
+  "host": "darwin-dev-carrier (Darwin Darwin 27.0.0 arm64)",
+  "carrier": "tools/dev-web-carrier --client next (in-process, loopback)",
+  "browser": "machine Chrome via puppeteer-core (carrier-page.mjs discovery)",
+  "scenario": "appshell.m3",
+  "measured": {"localMaxMs":0.09999990463256836,"loopMs":421,"ratioPct":32.3,"postUpdateDom":{"expected":8,"actual":8,"stale":0}},
+  "budgets": { "localMs": 50, "loopMs": 15000, "ratioPct": 40 },
+  "proves": [
+    "row 1 local: the tab switch answers in-page, synchronous, ≤50ms (max sample, m3/local-latency)",
+    "row 2 loop: click → tagged user turn → appshell_update → auto-apply merge → the surface re-renders, ≤15s wall (m3/loop-closure; deterministic mock transport — the real-model tier is the M4 ledger)",
+    "row 3 incremental: the update payload ≤40% of the full re-render payload, bytes from the exported carrier sources (m3/incremental-ratio)",
+    "row 4 parity: the post-update DOM equals the MERGED spec's expanded tree with zero stale nodes (m3/dom-parity-after-update)"
+  ],
+  "checker": "tools/dev-web-carrier/appshell-m3.test.mjs (vitest thresholds) + milestone one-to-one vs test/e2e/scenarios/appshell-m3.json",
+  "events": 6,
+  "exitCode": 0
+}

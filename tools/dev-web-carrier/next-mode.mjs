@@ -55,13 +55,14 @@ const state = () => {
 /** The canned turn script: durable bookends, the live stream frames, and
  * the durable settle records (parameterized by turn so every echo is a
  * fresh attempt identity). */
-const echoScript = (turn, promptText) => {
-  const attemptId = `dev-a${turn}`;
+const echoScript = (turn, promptText, attemptId = `dev-a${turn}`, lastSurfaceId) => {
   const callId = `dev-c${turn}`;
   const step = 1;
 
   const appShell = appShellScriptFor(turn, promptText, attemptId);
   if (appShell) return appShell;
+  const appUpdate = appShellUpdateScriptFor(turn, promptText, attemptId, lastSurfaceId);
+  if (appUpdate) return appUpdate;
 
   const reply = [
     `**dev 回声** — 你说的是：${promptText}`,
@@ -105,7 +106,12 @@ const echoScript = (turn, promptText) => {
  * activeFrames so a re-open snapshot can resume the tail). */
 const runEchoTurn = (session, promptText, seq, done) => {
   const turn = (session.nextTurn = (session.nextTurn ?? 0) + 1);
-  const { steps, stream, settle } = echoScript(turn, promptText);
+  const { steps, stream, settle } = echoScript(turn, promptText, `dev-a${turn}`, session.lastAppSurfaceId);
+  // The render script mints dev-app-<turn> as its surfaceId — remember it so
+  // the NEXT [appshell:…] loop-back's update names the live surface.
+  if (settle.some((r) => r.type === 'tool/call' && r.data.name === 'appshell_render')) {
+    session.lastAppSurfaceId = `dev-app-${turn}`;
+  }
   const post = (record) => {
     session.journal.push(record);
     for (const follower of session.followers) follower.send(wireEvent(record));
@@ -429,6 +435,46 @@ export const appShellScriptFor = (turn, promptText, attemptId) => {
       { type: 'step/end', data: { turn, step: 1 } },
       { type: 'turn/end', data: { turn, reason: { kind: 'stop' } } },
       { type: 'session/title', data: { title: app.label + ' · 生成表面' } },
+    ],
+  };
+};
+
+/** The M3 action loop-back: a tagged [appshell:…] user turn is answered by
+ * an appshell_update tool call whose payload is INCREMENTAL — screen only,
+ * no theme/tabs (they stay from the render) — so the wire (and the model's
+ * output tokens, which this script stands in for) carries a fraction of a
+ * full re-render. Exported so the M3 leg measures the very payloads the
+ * wire carries, never a re-typed copy. */
+export const APP_SHELL_UPDATE_SPEC = {
+  spec: 'app-shell/0.9',
+  screen: { type: 'column', children: [
+    { type: 'balance-card', label: '已选歌单', value: '3 首 · 12 分钟' },
+    { type: 'hcard-row', items: [
+      { cover: { emoji: '🎧', color: '#5a7cd4' }, title: '增量更新' },
+    ] },
+  ] },
+};
+
+export const appShellUpdateScriptFor = (turn, promptText, attemptId, surfaceId = 'dev-app-1') => {
+  if (!/^\[appshell:/.test(promptText)) return null;
+  const callId = `dev-upd${turn}`;
+  const text = '已按你的动作更新表面（增量 screen 载荷 · app-shell/0.9）。';
+  return {
+    steps: [
+      { type: 'turn/start', data: { turn } },
+      { type: 'step/start', data: { turn, step: 1 } },
+    ],
+    stream: [
+      { type: 'start', attemptId, turn, step: 1 },
+      { type: 'chunk', attemptId, chunk: { type: 'text-delta', index: 0, text } },
+      { type: 'end', attemptId },
+    ],
+    settle: [
+      { type: 'assistant/message', data: { turn, step: 1, message: { role: 'assistant', content: [{ type: 'text', text }] } } },
+      { type: 'tool/call', data: { turn, step: 1, callId, name: 'appshell_update', arguments: JSON.stringify({ surfaceId, spec: APP_SHELL_UPDATE_SPEC }) } },
+      { type: 'tool/result', data: { turn, step: 1, message: { role: 'user', content: [{ type: 'tool-result', toolCallId: callId, isError: false, content: [{ type: 'text', text: JSON.stringify({ ok: true, surfaceId, spec: APP_SHELL_UPDATE_SPEC }) }] }] } } },
+      { type: 'step/end', data: { turn, step: 1 } },
+      { type: 'turn/end', data: { turn, reason: { kind: 'stop' } } },
     ],
   };
 };

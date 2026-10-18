@@ -10,6 +10,8 @@
 // The plugin's MODE is frozen at import from DSH_APPSHELL_MODE (mock.js), so
 // the mock-mode legs re-evaluate the module via vi.stubEnv + dynamic import().
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mergeUpdate as pluginMerge } from '../../system-plugins/dsh-appshell/lib/validate.js';
+import { mergeUpdate as clientMerge } from '../../presentation/web-client-v2/web/js/appshell-core.js';
 
 const PLUGIN = () => import('../../system-plugins/dsh-appshell/index.js');
 
@@ -91,11 +93,16 @@ describe('appshell_update — the sixth red-team category: forged surfaceId', ()
     }
   });
 
-  it('a LIVE surfaceId + valid spec updates; the same id + invalid spec gets the validator rejection', async () => {
-    const { tool } = await harness();
+  it('a LIVE surfaceId + valid spec updates and echoes the applied spec (the render-card shape); invalid spec still rejected', async () => {
+    const { defs, tool } = await harness();
     const rendered = await tool('appshell_render').execute({ spec: VALID_SPEC });
     const updated = await tool('appshell_update').execute({ surfaceId: rendered.surfaceId, spec: VALID_SPEC });
-    expect(updated).toMatchObject({ ok: true, surfaceId: rendered.surfaceId });
+    expect(updated).toMatchObject({ ok: true, surfaceId: rendered.surfaceId, spec: VALID_SPEC });
+    // The card text is the JSON echo — a client applies the update from it
+    // exactly like a render (the D-4 in-place replace).
+    const def = defs.get('appshell_update');
+    const blocks = def.output.render({}, updated);
+    expect(JSON.parse(blocks[0].text)).toMatchObject({ ok: true, surfaceId: rendered.surfaceId, spec: VALID_SPEC });
     await expect(tool('appshell_update').execute({ surfaceId: rendered.surfaceId, spec: INVALID_SPEC }))
       .rejects.toThrow('spec rejected:');
   });
@@ -144,5 +151,57 @@ describe('appshell_catalog serves the authoring rules', () => {
     expect(out.rules).toContain('app-shell/0.9');
     const blocks = defs.get('appshell_catalog').output.render({}, out);
     expect(blocks[0].text).toContain('app-shell/0.9');
+  });
+});
+
+const PARTIAL_SPEC = {
+  spec: 'app-shell/0.9',
+  screen: { type: 'column', children: [{ type: 'balance-card', label: '已选', value: '3 首' }] },
+};
+
+describe('appshell_update — the incremental payload (M3 token seam)', () => {
+  beforeEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
+
+  it('a screen-only partial updates: merged server-side against the render origin, echoed AS RECEIVED', async () => {
+    const { tool } = await harness();
+    const rendered = await tool('appshell_render').execute({ spec: VALID_SPEC });
+    const updated = await tool('appshell_update').execute({ surfaceId: rendered.surfaceId, spec: PARTIAL_SPEC });
+    expect(updated.ok).toBe(true);
+    expect(updated.spec).toEqual(PARTIAL_SPEC); // the wire payload, not the merged form
+  });
+
+  it('updates COMPOUND: the stored origin advances to the merged form', async () => {
+    const { tool } = await harness();
+    const rendered = await tool('appshell_render').execute({ spec: VALID_SPEC });
+    await tool('appshell_update').execute({ surfaceId: rendered.surfaceId, spec: PARTIAL_SPEC });
+    // A second update declaring a tab-set override merges over the ALREADY-updated
+    // origin: tabs from update 2, screen from update 2 — both validate.
+    const second = await tool('appshell_update').execute({
+      surfaceId: rendered.surfaceId,
+      spec: { spec: 'app-shell/0.9', tabs: ['甲', '乙'], screen: { type: 'text', text: '第二屏' } },
+    });
+    expect(second.ok).toBe(true);
+  });
+
+  it('a partial whose MERGED form is invalid gets the validator rejection (e.g. a bad screen subtree)', async () => {
+    const { tool } = await harness();
+    const rendered = await tool('appshell_render').execute({ spec: VALID_SPEC });
+    await expect(tool('appshell_update').execute({
+      surfaceId: rendered.surfaceId,
+      spec: { spec: 'app-shell/0.9', screen: { type: 'not-in-catalog' } },
+    })).rejects.toThrow('spec rejected:');
+  });
+
+  it('lockstep: the plugin and client mergeUpdate agree on shared inputs (full, partial, overrides)', () => {
+    const cases = [
+      [VALID_SPEC, PARTIAL_SPEC],
+      [VALID_SPEC, { spec: 'app-shell/0.9', tabs: ['x', 'y'], theme: { accent: '#000' }, screen: { type: 'text', text: 'hi' } }],
+      [VALID_SPEC, VALID_SPEC], // a full payload merges to itself
+    ];
+    for (const [current, partial] of cases) {
+      expect(clientMerge(current, partial)).toEqual(pluginMerge(current, partial));
+    }
+    expect(clientMerge(VALID_SPEC, null)).toBeNull();
+    expect(pluginMerge(VALID_SPEC, null)).toBeNull();
   });
 });

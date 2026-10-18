@@ -109,3 +109,18 @@ export function checkShallow(spec) {
   errors.push(...expanded.errors);
   return { ok: errors.length === 0 && expanded.screen !== null, errors, screen: expanded.screen };
 }
+
+/** Merge an INCREMENTAL update payload over the spec the open surface was
+ * rendered from — the client twin of the plugin's mergeUpdate (the two must
+ * stay in lockstep; the panel suite pins them equal on shared inputs).
+ * `screen` replaces the tree, the rest overrides only when present. */
+export function mergeUpdate(current, partial) {
+  if (!partial || typeof partial !== 'object') return null;
+  return {
+    ...current,
+    ...(partial.theme !== undefined ? { theme: partial.theme } : {}),
+    ...(partial.tabs !== undefined ? { tabs: partial.tabs } : {}),
+    ...(partial.actions !== undefined ? { actions: partial.actions } : {}),
+    screen: partial.screen,
+  };
+}

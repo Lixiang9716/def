@@ -6,6 +6,16 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-18（M3）——`appshell.m3` 落下动作回流数字腿
+> （`tools/dev-web-carrier/run-appshell-m3.sh`，证据在
+> `tools/dev-web-carrier/artifacts/appshell-m3/`）：本地 tab 切换 **0.1ms**
+> （预算 50ms）；闭环 点击→更新→重渲 **855ms**（确定性 mock 传输，预算 15s；
+> 真模型档归 M4 成本账）；增量 update 载荷占全量 re-render 的 **32.3%**
+> （预算 40%）；更新后 DOM **8/8 且零残留**。增量现在走的是真契约缝：
+> appshell_update 接受 screen-only 载荷，插件侧与渲染源合并校验、客户端侧
+> 与开着的表面合并渲染（两侧 mergeUpdate lockstep 已被钉住）。
+> 本树校验计数 **133 个证据目录 / 253 条绿色 verdict / 247 png**。
+
 > **时效性**：2026-10-18——appshell 家族落下两条证据腿：`appshell.spec`
 > （CLI c-core 腿，PR #582——dsh-appshell 插件第一次在真 spine 内执行的 e2e）
 > 与 `appshell.morph`（L4 浏览器腿：`tools/dev-web-carrier/run-appshell-morph.sh`
