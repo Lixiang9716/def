@@ -1,7 +1,9 @@
-# 数据协议 — Bundle 布局、Manifest、Receipt、签名目录(v1.2.0)
+# 数据协议 — Bundle 布局、Manifest、Receipt、签名目录(v1.3.0)
 
-> **状态:契约冻结阶段冻结**(2026-09-19,决策 D5);**以可加性方式扩展到 v1.1.0**
-> (2026-10-01:§7 签名目录——提案
+> **状态:契约冻结阶段冻结**(2026-09-19,决策 D5);**以可加性方式扩展到 v1.3.0**
+> (2026-10-19:§10 `a2ui.messages@0.9`——提案
+> [2026-10-17-a2ui-generative-ui.zh.md](proposals/2026-10-17-a2ui-generative-ui.zh.md),ADOPTED;
+> v1.2.0:§8–§9;v1.1.0:§7 签名目录——提案
 > [2026-10-01-plugin-marketplace.zh.md](proposals/2026-10-01-plugin-marketplace.zh.md),ADOPTED)。
 > 这是每个宿主、每个插件构建都必须遵守的四份数据协议。
 > 机器可读 schema 见 [schemas/](schemas/)。配套文档:[primitives.md](primitives.zh.md)。
@@ -203,3 +205,38 @@ v1.10.0 render 面 `surfaceDraw` 的封闭、版本化操作集([primitives.zh.m
 `strokePath` / `fillPath` 的子路径项(`d`):`{ c: "move", x, y }`、`{ c: "line", x, y }`、
 `{ c: "quad", cx, cy, x, y }`、`{ c: "arc", x, y, r, start, end, ccw? }`(角度为弧度)、
 `{ c: "close" }`。不以 `move` 开头的 `d` 按使整帧 `invalid` 拒绝。
+
+## 10. Agent-UI 消息（v1.3.0 —— `a2ui.messages@0.9`）
+
+声明式 agent-UI 格式：agent 以**会话内容**（与工具调用卡同层）发出的带版本
+UI 载荷，各宿主用自己的渲染器渲染。采纳自
+[proposals/2026-10-17-a2ui-generative-ui.md](proposals/2026-10-17-a2ui-generative-ui.md)
+（2026-10-19 ADOPTED）；本节冻结的正是已落地的 `dsh-appshell` 插件与 web
+客户端渲染器所实现的形态。零网关原语、零新通道（提案的非目标全部守住）。
+
+- **格式名与版本钉。** `a2ui.messages@0.9` 钉 A2UI 规范 **v0.9** ——所钉
+  Lynx 渲染器（`@lynx-js/genui` v0.7.0）所讲的版本。只有当新钉的渲染器
+  支持更新规范时才升版并重钉本节；版本写进格式名正是因为这个缺口存在。
+- **下行（agent → 客户端）。** UI 载荷随会话流走 SessionServe 线；三层
+  信封不动。宿主用自己的目录渲染：Lynx 面走 genui 的 MessageProcessor，
+  web 客户端走树内组件渲染器。渲染永不执行模型产的代码。
+- **上行（客户端 → agent）。** 渲染表面的 `onAction` 以**带组件路径标记的
+  用户轮**进入（已落地拼写：`[appshell:<action>] <label>`），过与任何用户
+  请求相同的审批缝（#441）。v0 没有 `ui.action` 通道。
+- **Profile。** 首个冻结 profile 为 **`app-shell/0.9`**——两层词汇表：
+  8 个原语（`text image button row column card progressbar badge`，唯一
+  渲染词汇）+ 8 个模板（编译为纯原语树；校验器强制验展开性）。一个
+  profile 声明组件目录、逐组件 props 与校验闸；四闸 = 白名单 / 文本纯度 /
+  尺寸帽 / 动作枚举。
+- **表面与增量。** render 铸造 echo 返回的 `surfaceId`；update 必须点名
+  活表面（伪造 id 在任何 spec 处理之前被拒——跨表面污染是授权失败而非
+  校验失败）。update 载荷可为**全量或增量**——`screen` 替换树、
+  `theme`/`tabs`/`actions` 在场则覆盖；线上载荷原样往返，两侧各自与渲染源
+  合并。
+- **安全规则。** 组件字符串字段是文本——永不是标记、永不自动抓取 URL；
+  v0 无 HTML 逃生门。逐消息预算：序列化 spec ≤32KB、展开树 ≤200 节点、
+  深度 ≤8、文本字段 ≤500 符文、children ≤24。输出可流式解析——敌意或
+  失控的模型输出被截断，永不卡死运行时。
+
+遗留的 `card.present` 总线词汇映射进 A2UI 目录（提取器是运行时闭包内的
+纯 JS）；弃用时间表另行决定——永不强制迁移。
