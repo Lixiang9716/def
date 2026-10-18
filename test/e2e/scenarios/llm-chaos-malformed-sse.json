@@ -1,165 +1,235 @@
 {
- "scenario": "llm.chaos.malformed-sse",
- "extract": {
-  "prefix": "dsh.runtime.log:"
- },
- "expect": [
-  {
-   "event": "llm/runtime",
-   "match": {
-    "provider": "mock",
-    "model": "mock-1",
-    "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
-    "transport": "gateway httpFetch → loopback chat-completions mock server",
-    "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
-   }
+  "scenario": "llm.chaos.malformed-sse",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
   },
-  {
-   "event": "upstream/profile",
-   "match": {
-    "profile": "mobile",
-    "root": "empty (patch layers compose over it)",
-    "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
-    "layers": ["session", "agent", "system-prompt", "tools", "session-projection", "settings", "agent-loop"]
-   }
-  },
-  {
-   "event": "upstream/services",
-   "match": {
-    "kernel": "@deepseek-ai/cordis@4.0.2",
-    "services": ["sessions", "agents", "systemPrompt", "tools", "sessionProjections", "settings", "agentLoop", "llm"],
-    "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
-   }
-  },
-  {
-   "event": "session/created",
-   "match": { "sessionId": "s-llm-chaos-0001" }
-  },
-  {
-   "event": "agent/created",
-   "match": { "id": "main", "sessionId": "s-llm-chaos-0001" }
-  },
-  {
-   "event": "chaos/profile",
-   "match": {
-    "profile": "malformed-sse",
-    "source": "ci/mock-llm-server.mjs DSH_MOCK_CHAOS preset (vendored dsh-llm-mock-server behaviors)"
-   }
-  },
-  {
-   "event": "llm/request/built",
-   "match": {
-    "provider": "mock",
-    "model": "mock-1",
-    "messages": 2,
-    "tools": 17,
-    "path": "/chat/completions",
-    "method": "POST",
-    "agentLoopMarked": true,
-    "stream": true,
-    "attempt": 1
-   }
-  },
-  {
-   "comment": "the malformed_json wire: the data payload is not JSON — the parse evidence names it verbatim",
-   "event": "llm/sse",
-   "match": { "malformed": "{not-json" }
-  },
-  {
-   "event": "agent/inbox/spliced",
-   "match": { "seq": 0 }
-  },
-  {
-   "event": "turn/start",
-   "match": { "turn": 1 }
-  },
-  {
-   "event": "agent/inbox/spliced",
-   "match": { "seq": 2 }
-  },
-  {
-   "event": "step/start",
-   "match": { "turn": 1, "step": 1 }
-  },
-  {
-   "event": "system/message",
-   "match": { "seq": 4, "plugin": "@deepseek-ai/dsh-system-prompt" }
-  },
-  {
-   "event": "user/message",
-   "match": { "seq": 5 }
-  },
-  {
-   "event": "request/header",
-   "match": { "seq": 6, "reason": "initial" }
-  },
-  {
-   "event": "request/context",
-   "match": { "seq": 7, "provider": "mock", "model": "mock-1" }
-  },
-  {
-   "comment": "the malformed payload settles as assistant/attempt — the parser threw before any block opened",
-   "event": "assistant/attempt",
-   "match": { "seq": 8, "turn": 1, "step": 1 }
-  },
-  {
-   "event": "step/end",
-   "match": { "turn": 1, "step": 1 }
-  },
-  {
-   "comment": "the parser payload contract: MALFORMED_RESPONSE, non-retryable (no llm/retry in the journal — pinned by session/log/asserted)",
-   "event": "turn/end",
-   "match": { "turn": 1, "reason": "error", "errorCode": "MALFORMED_RESPONSE", "cancelKind": null }
-  },
-  {
-   "comment": "loop-u's turn-failure supervisor records the failed turn durably",
-   "event": "system/message",
-   "match": { "seq": 11, "plugin": "dsh-turn-recovery" }
-  },
-  {
-   "event": "session/log/asserted",
-   "match": {
-    "count": 12,
-    "types": [
-     "agent/inbox/spliced",
-     "turn/start",
-     "agent/inbox/spliced",
-     "step/start",
-     "system/message",
-     "user/message",
-     "request/header",
-     "request/context",
-     "assistant/attempt",
-     "step/end",
-     "turn/end",
-     "system/message"
-    ]
-   }
-  },
-  {
-   "event": "chaos/malformed/asserted",
-   "match": { "code": "MALFORMED_RESPONSE", "retried": false, "wireRequests": 1 }
-  },
-  {
-   "event": "agent/status",
-   "match": { "status": "running" }
-  },
-  {
-   "event": "agent/status",
-   "match": { "status": "idle" }
-  },
-  {
-   "event": "projection/turn-boundary",
-   "match": { "lastTurn": 1 }
-  },
-  {
-   "event": "chaos/completed",
-   "match": {
-    "status": "pass",
-    "profile": "malformed-sse",
-    "guards": "parser payload contract (MALFORMED_RESPONSE, non-retryable)",
-    "upstream": "0.1.6-alpha.2"
-   }
-  }
- ]
+  "expect": [
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → loopback chat-completions mock server",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "session/created",
+      "match": {
+        "sessionId": "s-llm-chaos-0001"
+      }
+    },
+    {
+      "event": "agent/created",
+      "match": {
+        "id": "main",
+        "sessionId": "s-llm-chaos-0001"
+      }
+    },
+    {
+      "event": "chaos/profile",
+      "match": {
+        "profile": "malformed-sse",
+        "source": "ci/mock-llm-server.mjs DSH_MOCK_CHAOS preset (vendored dsh-llm-mock-server behaviors)"
+      }
+    },
+    {
+      "event": "llm/request/built",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "messages": 2,
+        "tools": 20,
+        "path": "/chat/completions",
+        "method": "POST",
+        "agentLoopMarked": true,
+        "stream": true,
+        "attempt": 1
+      }
+    },
+    {
+      "comment": "the malformed_json wire: the data payload is not JSON — the parse evidence names it verbatim",
+      "event": "llm/sse",
+      "match": {
+        "malformed": "{not-json"
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 0
+      }
+    },
+    {
+      "event": "turn/start",
+      "match": {
+        "turn": 1
+      }
+    },
+    {
+      "event": "agent/inbox/spliced",
+      "match": {
+        "seq": 2
+      }
+    },
+    {
+      "event": "step/start",
+      "match": {
+        "turn": 1,
+        "step": 1
+      }
+    },
+    {
+      "event": "system/message",
+      "match": {
+        "seq": 4,
+        "plugin": "@deepseek-ai/dsh-system-prompt"
+      }
+    },
+    {
+      "event": "user/message",
+      "match": {
+        "seq": 5
+      }
+    },
+    {
+      "event": "request/header",
+      "match": {
+        "seq": 6,
+        "reason": "initial"
+      }
+    },
+    {
+      "event": "request/context",
+      "match": {
+        "seq": 7,
+        "provider": "mock",
+        "model": "mock-1"
+      }
+    },
+    {
+      "comment": "the malformed payload settles as assistant/attempt — the parser threw before any block opened",
+      "event": "assistant/attempt",
+      "match": {
+        "seq": 8,
+        "turn": 1,
+        "step": 1
+      }
+    },
+    {
+      "event": "step/end",
+      "match": {
+        "turn": 1,
+        "step": 1
+      }
+    },
+    {
+      "comment": "the parser payload contract: MALFORMED_RESPONSE, non-retryable (no llm/retry in the journal — pinned by session/log/asserted)",
+      "event": "turn/end",
+      "match": {
+        "turn": 1,
+        "reason": "error",
+        "errorCode": "MALFORMED_RESPONSE",
+        "cancelKind": null
+      }
+    },
+    {
+      "comment": "loop-u's turn-failure supervisor records the failed turn durably",
+      "event": "system/message",
+      "match": {
+        "seq": 11,
+        "plugin": "dsh-turn-recovery"
+      }
+    },
+    {
+      "event": "session/log/asserted",
+      "match": {
+        "count": 12,
+        "types": [
+          "agent/inbox/spliced",
+          "turn/start",
+          "agent/inbox/spliced",
+          "step/start",
+          "system/message",
+          "user/message",
+          "request/header",
+          "request/context",
+          "assistant/attempt",
+          "step/end",
+          "turn/end",
+          "system/message"
+        ]
+      }
+    },
+    {
+      "event": "chaos/malformed/asserted",
+      "match": {
+        "code": "MALFORMED_RESPONSE",
+        "retried": false,
+        "wireRequests": 1
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "running"
+      }
+    },
+    {
+      "event": "agent/status",
+      "match": {
+        "status": "idle"
+      }
+    },
+    {
+      "event": "projection/turn-boundary",
+      "match": {
+        "lastTurn": 1
+      }
+    },
+    {
+      "event": "chaos/completed",
+      "match": {
+        "status": "pass",
+        "profile": "malformed-sse",
+        "guards": "parser payload contract (MALFORMED_RESPONSE, non-retryable)",
+        "upstream": "0.1.6-alpha.2"
+      }
+    }
+  ]
 }

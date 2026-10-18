@@ -417,6 +417,14 @@ scenario/upstream-suite-flatmap.js
 scenario/upstream-suite-leg.js
 scenario/upstream-suite-type-world.js
 scenario/upstream-test-harness.js
+system-plugins/dsh-appshell/index.js
+system-plugins/dsh-appshell/lib/appshell-to-a2ui.js
+system-plugins/dsh-appshell/lib/catalog.js
+system-plugins/dsh-appshell/lib/mock.js
+system-plugins/dsh-appshell/lib/render.js
+system-plugins/dsh-appshell/lib/validate.js
+system-plugins/dsh-appshell/lib/vnode.js
+system-plugins/dsh-appshell/manifest.json
 system-plugins/dsh-create/index.js
 system-plugins/dsh-create/manifest.json
 upstream/boot-compaction.js

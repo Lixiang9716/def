@@ -87,10 +87,10 @@ const bootPhase = async (env) => {
       model: 'mock-1',
     },
   });
-  // Scenario-side mount (office.js precedent): the plugin registers its three
-  // tools into the live ToolRuntime AFTER the spine boots — the same dynamic
-  // visibility every hotmounted workspace plugin's tools rely on.
-  await ctx.plugin(await import('system-plugins/dsh-appshell/index.js'));
+  // The plugin is BOOT-MOUNTED since the owner decision (2026-10-18): the
+  // spine supplies appshell_render/update/catalog on every seat. This leg
+  // used to mount it scenario-side; the offeredPhase below is now the proof
+  // the boot row actually registered.
   log.debug('boot phase done', { root });
   return ctx;
 };
