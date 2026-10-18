@@ -1,6 +1,11 @@
 # Proposal: the durable-fs primitives — fsPublishAtomic + fsSync (v1.11.0 candidate)
 
-> **Status: DRAFT (D5 proposal — nothing frozen, nothing implemented).**
+> **Status: ADOPTED 2026-10-19 — frozen into [primitives.md](../primitives.md)
+> v1.11.0 (§4, "the durable-fs primitives").** This file is the rationale
+> record. The fold's two shape deltas over this draft: the `bytesB64`
+> parameter froze as §3's `bytes: Uint8Array` (base64 is the bridge wire
+> encoding, not the contract shape), and the result is `{ written }` mirroring
+> `fsWrite` (the draft spelled it `{ bytes: n }`), with no empty `opts`.
 > English | [简体中文](2026-10-18-durable-fs-native.zh.md)
 
 ## Motivation

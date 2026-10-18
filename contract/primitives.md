@@ -1,4 +1,4 @@
-# Capability Gateway — Primitive Contract v1.10.0
+# Capability Gateway — Primitive Contract v1.11.0
 
 > **Status: FROZEN at the contract freeze** (2026-09-19, decision D5). Shapes in this document are immutable
 > for the life of major version 1. Evolution policy in [§8](#8-versioning--evolution).
@@ -96,6 +96,29 @@
 > ride the v1.9.0 seam. Same additive rule as v1.1.0–v1.9.0: a host without
 > the surface keeps negotiating `gateway@1`, answers each `unavailable`, and
 > the Web Client's creation viewer remains the negotiation floor.
+>
+> **v1.11.0 (additive, 2026-10-19)**: the durable-fs primitives —
+> `fsPublishAtomic` and `fsSync` (§4, "the durable-fs primitives"): POSIX-grade
+> durability for whole-artifact writes — one atomic publish (same-directory
+> temp → write → fsync(file) → rename → fsync(directory)) and one explicit
+> durability barrier, per the adopted proposal
+> `contract/proposals/2026-10-18-durable-fs-native.md`. The write path the
+> vendored jsonl session backend's durability contract rides on fails silently
+> once the volume is full (#571: the best-effort disk mirror swallowed ENOSPC
+> and the journal truncated to zero); the fix needs these two capabilities as
+> governed host steps. PUBLISH IS RENAME-BASED by measurement, not preference:
+> Android SELinux denies `link(2)` for app domains on their own files (Android
+> M+, measured live on the API-35 emulator — the fs-port battery, PR #587), so
+> the link-based publish dance is dead on a first-class host and a `link`
+> primitive is named dead in this contract. The directory fsync after rename is
+> the crash-durability of the rename itself — never omitted. Fold deltas over
+> the proposal draft, per the fold precedent: the draft's `bytesB64` parameter
+> is frozen as §3's `bytes: Uint8Array` (base64 is the bridge wire encoding
+> every bytes parameter already takes, not the contract shape), and the result
+> is `{ written }` mirroring `fsWrite` (the draft spelled it `{ bytes: n }`),
+> with no empty `opts` — optional request fields are a minor-version addition
+> away (§8). Same additive rule as v1.1.0–v1.10.0: a host without the pair
+> keeps negotiating `gateway@1` and answers each `unavailable`.
 >
 > **Status note (2026-10-15, no version change)**: `ishRun` (v1.3.0) has **no
 > in-service host** — the iSH engine left the repository in the 2026-10
@@ -218,6 +241,16 @@ approval (opening a surface is itself user-visible, the `presentApproval` postur
 | 29 | `presentSurface` | open one host-native fullscreen drawing surface | `surface` | no |
 | 30 | `surfaceDraw` | submit one atomic immediate-mode frame | `surface` | no |
 | 31 | `closeSurface` | end the surface (idempotent) | `surface` | no |
+
+**v1.11.0 additions (2)** — the durable-fs primitives; both reuse existing fs
+permission flags (the v1.1.0 rule — no new capability to negotiate): the
+publish is a write (`fsWrite`), and the barrier grants no power a path read
+doesn't already imply (`fsRead`):
+
+| # | Primitive | Purpose | Permission flag | Streams |
+| --- | --- | --- | --- | --- |
+| 32 | `fsPublishAtomic` | one atomic durable publish (temp → fsync → rename → dir-fsync) inside an authorized scope | `fsWrite` | no |
+| 33 | `fsSync` | explicit durability barrier for one file or directory by path | `fsRead` | no |
 
 ## 3. Signature conventions
 
@@ -571,6 +604,50 @@ flag; `unavailable` on a host without the surface (the Web Client's creation vie
 remains the floor). A host offering the surface states in its descriptor whether the
 frame pump is vsync-scheduled or interval-scheduled — never silently.
 
+### the durable-fs primitives (v1.11.0)
+
+Two primitives for POSIX-grade durability — the capabilities the vendored jsonl
+session backend's durability contract needs and the frozen table lacked (the
+#571 root cause: under a full volume the write path failed silently and the
+journal truncated to zero, because no governed surface existed for a durable
+publish or an explicit barrier). Paths follow the same scope-relative POSIX
+rule as every fs primitive, and a path escaping its scope root is rejected as
+`invalid` **before** any host call.
+
+- `fsPublishAtomic(scope, path, bytes) → { written }` — writes `bytes` to
+  `path` as ONE atomic durable publish: same-directory temp file → write →
+  fsync(file) → rename(temp, path) → fsync(directory). The whole dance runs
+  host-side as one step: the atomicity of the sequence is the point, which is
+  why it is NOT composed from smaller primitives across gateway round-trips.
+  On any failure the target is untouched and no temp residue remains, and the
+  rejection's reason names the failing step (write / fsync / rename /
+  fsync-dir). The parent directory must exist — publish does not create
+  parents (`fsMkdir` first); a missing parent rejects `io` before any byte is
+  written. Whole-artifact only in this version: the jsonl append path is
+  served by whole-journal rewrite, and an append-durable primitive is deferred
+  until a consumer proves the need (§8).
+- `fsSync(scope, path, opts { kind: "file" | "dir" }) → {}` — one explicit
+  durability barrier by path: fsync the file, or the directory. `kind` must
+  match what the path is — the barrier opens with the kind's own open mode and
+  a mismatch rejects `io` (no stat-guessing: the caller knows which it means).
+  The directory face uses the platform's directory-capable API
+  (`fsync(dirfd)` on the POSIX hosts; public platform APIs where the SDK
+  requires them).
+- **Publish is rename-based, by law of measurement**: Android SELinux policy
+  denies `link(2)` for app domains on their own files (Android M+; measured
+  live — the #587 fs-port battery), so the hardlink dance the vendored backend
+  performs is not portable, and this contract exposes no `link` primitive
+  (named dead, not deferred). `rename(2)` is allowed everywhere this contract
+  runs, and the trailing directory fsync makes the rename itself crash-durable
+  — the part every naive implementation forgets.
+
+Rejections in §3's vocabulary: `invalid` for a path escaping the scope root or
+malformed bytes (an artifact beyond the host's declared maximum file size, as
+`fsRead`); `denied` for a scope the caller has no grant on; `io` for any step
+failure, the reason naming the failing step; `unavailable` on a host without
+the primitives (a capability gap negotiation should have caught). Audit per
+§6: primitive name, verdict, and byte count — never payload bytes.
+
 ## 5. Event channels
 
 Delivered by the bridge onto the runtime queue — not per-call primitives, part of this
@@ -613,6 +690,12 @@ A host conforms to `gateway@1` when, and only when:
 4. platform-specific behavior lives behind the same table — a conforming host adds no
    primitives outside this contract and no conditionals above it.
 
+**v1.11.0 freeze note (2026-10-19):** at the freeze no host implements the
+durable-fs pair — every host answers both `unavailable`, exactly what #1
+prescribes; the per-host implementations are the immediate follow-ups of this
+fold. The HarmonyOS directory-fsync face is compile-verified through the C
+spine; a device-verified native face rides its host PR.
+
 Platform mapping notes belong to each host (`hosts/<platform>/`), not to this contract.
 
 ## 8. Versioning & evolution
@@ -627,5 +710,9 @@ Platform mapping notes belong to each host (`hosts/<platform>/`), not to this co
   geolocation, streamed fs read, fs watch — and, behind an OS-permission design round of
   their own: location, camera, microphone, sensors, contacts, full Photos-library access
   (the device plane's own curation rule, v1.5.0). v1.5.0 delivered two names this list
-  used to carry (clipboard, share sheet). Restraint is the point of a narrow table; each
-  addition must argue its necessity against negotiation data.
+  used to carry (clipboard, share sheet); v1.11.0 added one deferred name (append-durable
+  fs write — whole-artifact publish serves the known consumer) and killed one outright:
+  a `link` primitive is not deferred but **dead** — Android SELinux policy denies
+  `link(2)` for app domains (measured, #587), and a contract primitive a first-class
+  host cannot serve is a defect of the contract. Restraint is the point of a narrow
+  table; each addition must argue its necessity against negotiation data.
