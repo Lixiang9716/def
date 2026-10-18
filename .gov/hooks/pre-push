@@ -101,6 +101,12 @@ run_dag_at_pushed_tree() {   # $1 = the pushed sha, $2 = the scope base
             cp -Rc "$dsh_rf/." "$rf_dst/" 2>/dev/null \
                 || cp -R "$dsh_rf/." "$rf_dst/" 2>/dev/null
         fi
+        # runtime/dsh/vendor is an untracked SYMLINK to ../../external in a
+        # materialized tree — the import-graph walk (check-staging) reads
+        # the shim edges through it. Restore the link, don't copy 628M.
+        if [ -d "$pushed_tree_wt/external" ] && [ ! -e "$pushed_tree_wt/runtime/dsh/vendor" ]; then
+            ln -sfn ../../external "$pushed_tree_wt/runtime/dsh/vendor"
+        fi
         (
             cd "$pushed_tree_wt" || exit 97
             GOV_CHANGE_BASE="$2" GOV_CHANGE_ROOT="$pushed_tree_wt" run_dag --base "$2"

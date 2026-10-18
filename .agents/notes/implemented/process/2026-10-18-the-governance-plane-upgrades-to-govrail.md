@@ -44,11 +44,16 @@ The plane upgrades to govrail 0.52.0 with per-file dispositions from the
   row read "missing"; self-test's baseline probes named it
   environment-suspect). The hook now mirrors that materialization from
   the pushing tree into the judged tree (APFS clone, no network) before
-  judging — #402 keeps its semantics for the tracked content the push
-  carries. As with the retired #371 patch, re-apply after any
-  `gov update --apply` re-wires the hook; the general fix (a
-  repo-declared materialization seam for the cold-tree hook) is filed
-  upstream.
+  judging — `external/`, the harmony rawfile closure staging, and the
+  `runtime/dsh/vendor -> ../../external` symlink (an untracked link the
+  import-graph walk resolves through). A second lesson from the same
+  chase: the DAG's concurrency wave raced self-test's live-tree case
+  mutations against sibling gates — three red pushes on a tree that is
+  green gate-by-gate — fixed by the new rule 6 itself: the self-test
+  gate is now `"exclusive": true` in gates.json. As with the retired
+  #371 patch, re-apply both after any `gov update --apply` re-wires the
+  hook; the general fixes (a repo-declared materialization seam, and
+  per-gate exclusivity discovery) are filed upstream.
 - `gates.json` untouched: the 0.52 template made no shipped-gate change,
   and the repo's ~20 product gates stay as sealed. The new rule 6
   exclusive clause is satisfied by the existing per-worktree lock
