@@ -35,7 +35,20 @@ The plane upgrades to govrail 0.52.0 with per-file dispositions from the
 - `.gov/hooks/pre-push` re-wired from the 0.52 template by
   `gov update --apply` — **the 0.48-era local GOV_CHANGE_ROOT patch
   retires**; upstream #371 declares the new-branch fork-point root, which
-  is what the patch existed for.
+  is what the patch existed for. The template's #402 cold-tree judging
+  (the pushed sha materialized into a temporary detached worktree) then
+  needed **one new local adaptation**: this repo's gates depend on
+  untracked materialization (`external/` vendor trees, the harmony
+  rawfile closure staging) that CI builds in workflow steps before
+  `gov run`, so the cold judged tree was structurally red (every staging
+  row read "missing"; self-test's baseline probes named it
+  environment-suspect). The hook now mirrors that materialization from
+  the pushing tree into the judged tree (APFS clone, no network) before
+  judging — #402 keeps its semantics for the tracked content the push
+  carries. As with the retired #371 patch, re-apply after any
+  `gov update --apply` re-wires the hook; the general fix (a
+  repo-declared materialization seam for the cold-tree hook) is filed
+  upstream.
 - `gates.json` untouched: the 0.52 template made no shipped-gate change,
   and the repo's ~20 product gates stay as sealed. The new rule 6
   exclusive clause is satisfied by the existing per-worktree lock

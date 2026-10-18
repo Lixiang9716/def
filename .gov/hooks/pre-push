@@ -80,6 +80,27 @@ run_dag_at_pushed_tree() {   # $1 = the pushed sha, $2 = the scope base
     }
     if git worktree add --detach "$pushed_tree_wt" "$1" >/dev/null 2>&1; then
         echo "pre-push: judging the pushed tree $1 in a temporary worktree (#402)" >&2
+        # dsh-local adaptation: this repo's gates depend on untracked
+        # materialization (external/ vendor trees, the harmony rawfile
+        # closure staging) that CI builds in workflow steps BEFORE gov run;
+        # the cold judged tree has none, so every staging row reads
+        # "missing" and the DAG is structurally red. Mirror it from the
+        # pushing tree (APFS clone when possible — no re-materialization,
+        # no network); #402 keeps its semantics for the tracked content
+        # the push actually carries. Re-apply after gov update --apply
+        # re-wires this hook from the template.
+        if [ -d "$repo_root/external" ]; then
+            mkdir -p "$pushed_tree_wt/external"
+            cp -Rc "$repo_root/external/." "$pushed_tree_wt/external/" 2>/dev/null \
+                || cp -R "$repo_root/external/." "$pushed_tree_wt/external/" 2>/dev/null
+        fi
+        dsh_rf="$repo_root/hosts/harmony/entry/src/main/resources/rawfile/dsh"
+        if [ -d "$dsh_rf" ]; then
+            rf_dst="$pushed_tree_wt/hosts/harmony/entry/src/main/resources/rawfile/dsh"
+            mkdir -p "$rf_dst"
+            cp -Rc "$dsh_rf/." "$rf_dst/" 2>/dev/null \
+                || cp -R "$dsh_rf/." "$rf_dst/" 2>/dev/null
+        fi
         (
             cd "$pushed_tree_wt" || exit 97
             GOV_CHANGE_BASE="$2" GOV_CHANGE_ROOT="$pushed_tree_wt" run_dag --base "$2"
