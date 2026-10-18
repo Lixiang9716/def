@@ -1,0 +1,15 @@
+{
+  "host": "darwin-dev-carrier (Darwin Darwin 27.0.0 arm64)",
+  "carrier": "tools/dev-web-carrier --client next (in-process, loopback)",
+  "browser": "machine Chrome via puppeteer-core (carrier-page.mjs discovery)",
+  "scenario": "appshell.m4",
+  "costLedger": "morph 10/10 P50 2557 P95 4336; update 10/10 P50 1110; payload 340B (51.3% of full)",
+  "proves": [
+    "text safety: hostile fields (<script>, quote-break, onerror=) render 100% VERBATIM as text through the preview AND the fullscreen surface, zero script/img elements, zero on* attributes (m4/preview-inert + m4/surface-verbatim)",
+    "the hostile fixture is validator-clean ON PURPOSE — purity is the gate, not censorship; the rendering chain is what a hostile payload would ride",
+    "the cost ledger (cost-ledger.json): real glm-4.6 morph×10 + update×10 — token bars P50/P95 vs the plan budgets, latency recorded honestly (the morph tier rides the non-streaming physics)"
+  ],
+  "checker": "tools/dev-web-carrier/appshell-m4-safety.test.mjs (vitest) + milestone one-to-one vs test/e2e/scenarios/appshell-m4.json",
+  "events": 4,
+  "exitCode": 0
+}

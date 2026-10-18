@@ -6,6 +6,15 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-18（M4）——`appshell.m4` 合上 M2-M4 计划的最后几行：
+> 浏览器文本安全抽测（敌意字段在预览与全屏表面 100% 逐字渲染、零
+> script/img/on 属性——夹具故意过校验：纯度是闸不是审查）与真模型成本账
+> （`cost-ledger.json`，glm-4.6 ×10+×10）：**morph P50 2557 ≤3k ✓ / P95 4336
+> ≤5k ✓ · update P50 1110 ≤1.2k ✓（载荷 340B，为全量 spec 的 51%）· 端到端：
+> update 15.1s ≤20s ✓，morph 33.6s ✗**——morph 延迟是 L3 账已记过的非流式
+> 物理（流式 TTFT/压缩 spec 是指名候选）。本树校验计数
+> **134 个证据目录 / 254 条绿色 verdict / 247 png**。
+
 > **时效性**：2026-10-18（M3）——`appshell.m3` 落下动作回流数字腿
 > （`tools/dev-web-carrier/run-appshell-m3.sh`，证据在
 > `tools/dev-web-carrier/artifacts/appshell-m3/`）：本地 tab 切换 **0.1ms**

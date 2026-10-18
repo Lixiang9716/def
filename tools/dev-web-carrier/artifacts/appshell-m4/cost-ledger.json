@@ -1,0 +1,27 @@
+{
+  "model": "glm-4.6",
+  "runs": 10,
+  "date": "2026-10-18T14:22:06.962Z",
+  "morph": {
+    "okOf": 10,
+    "tokensP50": 2557,
+    "tokensP95": 4336,
+    "latencyP50": 33571
+  },
+  "update": {
+    "okOf": 10,
+    "tokensP50": 1110,
+    "tokensP95": 1353,
+    "latencyP50": 15109,
+    "payloadBytesP50": 340
+  },
+  "incrementalRatioPctVsCarrierFullSpec": 51.3,
+  "bars": {
+    "morphTokensP50_3000": true,
+    "morphTokensP95_5000": true,
+    "updateTokensP50_1200": true,
+    "e2eP50_20000_morph": false,
+    "e2eP50_20000_update": true
+  },
+  "barsNote": "Token bars are the M4 gates; the e2e ≤20s row is recorded honestly — the morph tier rides the non-streaming physics the L3 ledger already recorded as a miss (M1 item 4 partial: streaming TTFT or spec compression are the named candidates)."
+}

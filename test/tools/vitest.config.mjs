@@ -29,6 +29,11 @@ export default defineConfig({
     exclude: ['**/node_modules/**', 'tmp/**'],
     testTimeout: 30_000,
     passWithNoTests: false,
+    // The dev-web-carrier browser legs (axe-sweep, morph, m3, m4-safety)
+    // each boot an in-process carrier + a real Chrome; run in parallel they
+    // contend and the morph retry window flakes (measured: full-suite run
+    // red, every file green alone). Serial files is the honest posture.
+    fileParallelism: false,
   },
   coverage: {
     provider: 'v8',

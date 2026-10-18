@@ -6,6 +6,17 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-18 (M4) — `appshell.m4` closes the M2-M4 program's
+> last rows: the browser text-safety spot-check (hostile fields render 100%
+> VERBATIM through preview AND surface, zero script/img/on-attr — the
+> fixture is validator-clean on purpose) and the real-model cost ledger
+> (`cost-ledger.json`, glm-4.6 ×10+×10): **morph P50 2557 ≤3k ✓ / P95 4336
+> ≤5k ✓ · update P50 1110 ≤1.2k ✓ (payload 340B, 51% of the full spec) ·
+> e2e: update 15.1s ≤20s ✓, morph 33.6s ✗** — the morph latency rides the
+> non-streaming physics the L3 ledger already recorded as a miss (streaming
+> TTFT / spec compression are the named candidates). Checker on this tree:
+> **134 evidence dirs / 254 green verdicts / 247 pngs**.
+
 > **Currency**: 2026-10-18 (M3) — `appshell.m3` lands the action loop-back
 > numbers leg (`tools/dev-web-carrier/run-appshell-m3.sh`, evidence under
 > `tools/dev-web-carrier/artifacts/appshell-m3/`): local tab switch **0.1ms**
