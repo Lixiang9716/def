@@ -195,6 +195,7 @@ stage_test() {
             runtime/dsh/ci/run-session-preset-join-node.sh
             runtime/dsh/ci/run-open-design-e2e.sh
             runtime/dsh/ci/run-dsh-shell-js-e2e.sh
+            runtime/dsh/ci/run-appshell-spec-e2e.sh
             runtime/dsh/ci/run-office-e2e.sh
             runtime/dsh/ci/run-plugin-forms-e2e.sh
             runtime/dsh/ci/run-seam-inventory-e2e.sh

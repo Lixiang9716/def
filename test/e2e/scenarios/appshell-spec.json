@@ -1,0 +1,62 @@
+{
+  "scenario": "appshell.spec",
+  "extract": { "prefix": "dsh.runtime.log:" },
+  "expect": [
+    {
+      "event": "llm/runtime",
+      "match": { "provider": "mock", "model": "mock-1" }
+    },
+    {
+      "event": "upstream/profile",
+      "match": { "profile": "mobile" }
+    },
+    {
+      "event": "upstream/services",
+      "match": { "kernel": "@deepseek-ai/cordis@4.0.2" }
+    },
+    {
+      "event": "session/created",
+      "match": { "sessionId": "s-appshell-spec-0001" }
+    },
+    {
+      "event": "agent/created",
+      "match": { "id": "main", "sessionId": "s-appshell-spec-0001" }
+    },
+    {
+      "event": "appshell/offered",
+      "match": { "tools": 3 }
+    },
+    {
+      "event": "appshell/turn/submitted",
+      "match": { "input": "变成微信" }
+    },
+    {
+      "event": "appshell/render/tool-called",
+      "match": { "name": "appshell_render" }
+    },
+    {
+      "event": "appshell/render/echoed",
+      "match": { "ok": true, "title": "微信" }
+    },
+    {
+      "event": "appshell/turn/completed",
+      "match": { "text": "表面已就绪" }
+    },
+    {
+      "event": "appshell/update/forged-refused",
+      "match": { "ok": false, "error": "unknown-surface" }
+    },
+    {
+      "event": "appshell/update/accepted",
+      "match": { "ok": true }
+    },
+    {
+      "event": "appshell/catalog/served",
+      "match": { "vocabulary": true }
+    },
+    {
+      "event": "appshell/completed",
+      "match": { "status": "pass" }
+    }
+  ]
+}
