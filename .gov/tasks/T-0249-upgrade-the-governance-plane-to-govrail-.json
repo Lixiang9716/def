@@ -1,0 +1,22 @@
+{
+  "title": "upgrade the governance plane to govrail 0.52.0",
+  "created": "2026-10-18T05:20:09+00:00",
+  "rules": {
+    "hash": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "files": {
+      ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
+      "gates.json": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
+    }
+  },
+  "checklist": [
+    "[x] preview drift: gov init --upgrade",
+    "[x] align rules.md: adopt template amendments to rules 6 and 9, rule 12 coexists",
+    "[x] align gates.json shipped-gate definitions (additive-only)",
+    "gov update --apply --confirm-unattended: manifest 0.52.0 + re-seal + CI pin + hooks",
+    "gov self-test + scoped DAG green in the worktree",
+    "note + commit + push + PR gates green + squash merge"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0249"
+}
