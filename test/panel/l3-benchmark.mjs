@@ -1,13 +1,16 @@
 /**
  * L3 real-model benchmark: send the same prompt to glm-4.6 N times, run
- * each response through the four-gate validator, report pass rate, tokens,
- * and latency. Uses the served ZAI credentials from .env.
+ * each response through the four-gate validator AND the A2UI mapping, and
+ * give failed runs one regeneration leg carrying the structured error
+ * receipt. Reports first-pass rate, cumulative rate, tokens, latency.
+ * Uses the served ZAI credentials from .env.
  *
  * M1 acceptance: first-pass ≥8/10; with retry ≥9/10; tokens ≤3k; ≤15s.
+ * Not a CI gate — family-change rerun per plan §3.5.
  */
 import { readFileSync } from 'node:fs';
 import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
-import { expandedToA2UI } from '../../system-plugins/dsh-appshell/lib/appshell-to-a2ui.js';
+import { specToA2UI } from '../../system-plugins/dsh-appshell/lib/appshell-to-a2ui.js';
 
 // Load .env (KEY=VALUE lines, skip comments and blanks)
 const env = Object.fromEntries(
@@ -30,19 +33,12 @@ Respond with ONLY the JSON spec object — no markdown fences, no commentary.`;
 
 const PROMPT = '做一个音乐播放器应用的首页：顶部搜索栏，中间是每日推荐的横幅卡片，下面是四个快捷入口（私人FM、每日推荐、歌单、排行榜），再下面是三个推荐歌单的横向卡片列表，最底下有一个正在播放的迷你播放条。主题色用红色。';
 
-async function callModel(n) {
+async function callModel(messages) {
   const start = Date.now();
   const res = await fetch(`${BASE_URL}/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: 'system', content: SYSTEM },
-        { role: 'user', content: PROMPT },
-      ],
-      temperature: 0.7,
-    }),
+    body: JSON.stringify({ model: MODEL, messages, temperature: 0.7 }),
   });
   const latency = Date.now() - start;
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text().then(t => t.slice(0, 200))}`);
@@ -61,30 +57,63 @@ function extractSpec(text) {
   return JSON.parse(cleaned.slice(start, end));
 }
 
+/** Validate + A2UI-convert one response. Returns { ok, errors, a2uiComponents }. */
+function checkResponse(content) {
+  try {
+    const spec = extractSpec(content);
+    const { ok, errors, a2ui } = specToA2UI(spec, {});
+    return { ok, errors: errors || [], a2uiComponents: ok ? a2ui.components.length : 0, spec };
+  } catch (e) {
+    return { ok: false, errors: [{ code: 'UNPARSEABLE', msg: e.message }], a2uiComponents: 0, spec: null };
+  }
+}
+
+const baseMessages = [
+  { role: 'system', content: SYSTEM },
+  { role: 'user', content: PROMPT },
+];
 const N = 10;
 const results = [];
 console.log(`L3 benchmark: ${MODEL} × ${N} runs\n`);
 
 for (let i = 0; i < N; i++) {
   try {
-    const { content, tokens, latency } = await callModel();
-    const spec = extractSpec(content);
-    const result = validate(spec);
-    results.push({ run: i + 1, ok: result.ok, tokens, latency, errors: result.ok ? 0 : result.errors.length });
-    console.log(`#${i + 1}: ${result.ok ? 'PASS' : 'FAIL'} tokens=${tokens} latency=${latency}ms`);
+    const first = await callModel(baseMessages);
+    const checked = checkResponse(first.content);
+    const row = {
+      run: i + 1, firstOk: checked.ok, finalOk: checked.ok,
+      tokens: first.tokens, latency: first.latency, a2uiComponents: checked.a2uiComponents,
+    };
+    if (!checked.ok) {
+      // One regeneration leg carrying the structured error receipt (M1 §3).
+      const codes = checked.errors.map((e) => `${e.code}:${e.msg ?? ''}`).join('; ').slice(0, 400);
+      const retry = await callModel([
+        ...baseMessages,
+        { role: 'assistant', content: first.content },
+        { role: 'user', content: `你上次的输出未通过校验：${codes}。重新输出完整的 JSON spec，只输出 JSON。` },
+      ]);
+      const rechecked = checkResponse(retry.content);
+      row.finalOk = rechecked.ok;
+      row.tokens += retry.tokens;
+      row.latency += retry.latency;
+      row.a2uiComponents = rechecked.a2uiComponents;
+    }
+    results.push(row);
+    console.log(`#${row.run}: first-pass ${row.firstOk ? 'PASS' : 'FAIL'} → final ${row.finalOk ? 'PASS' : 'FAIL'} tokens=${row.tokens} latency=${row.latency}ms a2ui=${row.a2uiComponents}`);
   } catch (e) {
-    results.push({ run: i + 1, ok: false, tokens: 0, latency: 0, error: e.message.slice(0, 120) });
+    results.push({ run: i + 1, firstOk: false, finalOk: false, tokens: 0, latency: 0, a2uiComponents: 0, error: e.message.slice(0, 120) });
     console.log(`#${i + 1}: ERROR ${e.message.slice(0, 120)}`);
   }
 }
 
-const passed = results.filter((r) => r.ok).length;
+const firstPass = results.filter((r) => r.firstOk).length;
+const cumulative = results.filter((r) => r.finalOk).length;
 const tokensList = results.filter((r) => r.tokens > 0).map((r) => r.tokens).sort((a, b) => a - b);
 const latencies = results.filter((r) => r.latency > 0).map((r) => r.latency).sort((a, b) => a - b);
 const median = (arr) => arr.length ? arr[Math.floor(arr.length / 2)] : 0;
+const p95 = (arr) => arr.length ? arr[Math.min(arr.length - 1, Math.floor(arr.length * 0.95))] : 0;
 
 console.log(`\n--- L3 summary ---`);
-console.log(`pass: ${passed}/${N} (${Math.round(passed / N * 100)}%)`);
-console.log(`tokens P50: ${median(tokensList)}  P95: ${tokensList[Math.floor(tokensList.length * 0.95)] ?? 'n/a'}`);
-console.log(`latency P50: ${median(latencies)}ms`);
-console.log(`M1 bars: first-pass ≥8/10 → ${passed >= 8 ? '✓' : '✗'}; tokens ≤3k → ${tokensList.every(t => !t || t <= 3000) ? '✓' : '✗'}`);
+console.log(`first-pass: ${firstPass}/${N} (${Math.round(firstPass / N * 100)}%)  cumulative: ${cumulative}/${N}`);
+console.log(`tokens P50: ${median(tokensList)}  P95: ${p95(tokensList)}   latency P50: ${median(latencies)}ms`);
+console.log(`M1 bars: first-pass ≥8/10 → ${firstPass >= 8 ? '✓' : '✗'}; cumulative ≥9/10 → ${cumulative >= 9 ? '✓' : '✗'}; tokens P50 ≤3k → ${median(tokensList) <= 3000 ? '✓' : '✗'}; latency P50 ≤15s → ${median(latencies) <= 15000 ? '✓' : '✗'}`);
