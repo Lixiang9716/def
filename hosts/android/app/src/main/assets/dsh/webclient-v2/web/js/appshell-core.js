@@ -41,7 +41,7 @@ const TEMPLATES = {
     { type: 'text', text: String(n.subtitle || ''), size: 'small', tone: 'muted' },
   ] }),
   'hcard-row': (n) => ({ type: 'row', children: (n.items || []).slice(0, 6).map((it) => ({ type: 'card', children: [
-    { type: 'text', text: (it.cover && it.cover.emoji) || '🎵' },
+    { type: 'image', emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || '#1677ff' },
     { type: 'text', text: String(it.title || ''), size: 'small' },
     { type: 'text', text: String(it.sub || ''), size: 'small', tone: 'muted' },
   ] })) }),
@@ -55,7 +55,7 @@ const TEMPLATES = {
   },
   'mini-player': (n) => {
     const kids = [
-      { type: 'badge', text: (n.cover && n.cover.emoji) || '🎵' },
+      { type: 'image', emoji: (n.cover && n.cover.emoji) || '🎵', color: (n.cover && n.cover.color) || '#1677ff' },
       { type: 'column', children: [
         { type: 'text', text: String(n.title || ''), size: 'body' },
         { type: 'text', text: String(n.sub || ''), size: 'small', tone: 'muted' },

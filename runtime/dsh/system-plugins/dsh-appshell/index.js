@@ -29,7 +29,10 @@ export const inject = ['tools'];
 
 const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{accent},tabs:[2..5 strings],actions:[ids],screen:node}. ' +
   'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
-  'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules.';
+  'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
+  'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed thumb reach): ' +
+  '一屏克制 screen 顶层 children ≤8; 文案短 标题≤10字/副题≤24字/按钮 2-4 字动词; 移动模板优先 search-bar/tab-bar/mini-player/chat-row/service-grid/hcard-row 至少 2 种; tabs 2-5 个每个≤4字; 嵌套≤3 层, 重要信息在最上、操作元素靠下; theme.accent 单色贯穿且 mode=light, 不发明第二个强调色; 不做桌面形态. ' +
+  '视觉表达: 首屏第一块用 banner-card 做 hero(title=今天最重要的信息); 卡片与列表项配 image(emoji+color=theme.accent) 作视觉锚点, hcard-row 每项 cover 带 color; 文字三档 title/body/small+muted 都要出现; 数字用 title 档并配 small muted 单位; accent 只落在按钮/进度条/封面底色 3-5 个点位.';
 
 // The surface registry — the sixth red-team gate (forged-surfaceId update).
 // appshell_render mints the id; appshell_update must name a surface this
