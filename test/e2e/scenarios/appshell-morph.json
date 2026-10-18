@@ -1,0 +1,159 @@
+{
+  "scenario": "appshell.morph",
+  "extract": {
+    "prefix": "morph-event:"
+  },
+  "note": "The L4 browser leg (plan D-6/§3.5): dev-web-carrier + machine Chrome via puppeteer-core. The one-to-one record is the milestone stream DSH_MORPH_EVENTS_FILE captures from the vitest assertions (run-appshell-morph.sh lands it as scenario.jsonl); extract.prefix is nominal — this leg is never fed to check.mjs, the e2e-matrix reads the landed verdict.",
+  "expect": [
+    {
+      "event": "morph/boot",
+      "match": {
+        "client": "web-client-v2"
+      }
+    },
+    {
+      "event": "morph/turn-submitted",
+      "match": {
+        "label": "微信",
+        "input": "变成微信"
+      }
+    },
+    {
+      "event": "morph/card-rendered",
+      "match": {
+        "label": "微信"
+      }
+    },
+    {
+      "event": "morph/surface-opened",
+      "match": {
+        "label": "微信",
+        "accent": "#07C160"
+      }
+    },
+    {
+      "event": "morph/dom-parity",
+      "match": {
+        "label": "微信",
+        "expected": 32,
+        "actual": 32
+      }
+    },
+    {
+      "event": "morph/tab-local",
+      "match": {
+        "label": "微信"
+      }
+    },
+    {
+      "event": "morph/action-loopback",
+      "match": {
+        "label": "微信"
+      }
+    },
+    {
+      "event": "morph/surface-closed",
+      "match": {
+        "label": "微信"
+      }
+    },
+    {
+      "event": "morph/turn-submitted",
+      "match": {
+        "label": "网易云音乐",
+        "input": "变成网易云音乐"
+      }
+    },
+    {
+      "event": "morph/card-rendered",
+      "match": {
+        "label": "网易云音乐"
+      }
+    },
+    {
+      "event": "morph/surface-opened",
+      "match": {
+        "label": "网易云音乐",
+        "accent": "#ec4141"
+      }
+    },
+    {
+      "event": "morph/dom-parity",
+      "match": {
+        "label": "网易云音乐",
+        "expected": 32,
+        "actual": 32
+      }
+    },
+    {
+      "event": "morph/tab-local",
+      "match": {
+        "label": "网易云音乐"
+      }
+    },
+    {
+      "event": "morph/action-loopback",
+      "match": {
+        "label": "网易云音乐"
+      }
+    },
+    {
+      "event": "morph/surface-closed",
+      "match": {
+        "label": "网易云音乐"
+      }
+    },
+    {
+      "event": "morph/turn-submitted",
+      "match": {
+        "label": "支付宝",
+        "input": "变成支付宝"
+      }
+    },
+    {
+      "event": "morph/card-rendered",
+      "match": {
+        "label": "支付宝"
+      }
+    },
+    {
+      "event": "morph/surface-opened",
+      "match": {
+        "label": "支付宝",
+        "accent": "#1677FF"
+      }
+    },
+    {
+      "event": "morph/dom-parity",
+      "match": {
+        "label": "支付宝",
+        "expected": 32,
+        "actual": 32
+      }
+    },
+    {
+      "event": "morph/tab-local",
+      "match": {
+        "label": "支付宝"
+      }
+    },
+    {
+      "event": "morph/action-loopback",
+      "match": {
+        "label": "支付宝"
+      }
+    },
+    {
+      "event": "morph/surface-closed",
+      "match": {
+        "label": "支付宝"
+      }
+    },
+    {
+      "event": "morph/page-errors-zero",
+      "match": {
+        "errors": 0
+      }
+    }
+  ]
+}

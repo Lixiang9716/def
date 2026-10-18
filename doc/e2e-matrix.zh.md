@@ -6,6 +6,18 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-18——appshell 家族落下两条证据腿：`appshell.spec`
+> （CLI c-core 腿，PR #582——dsh-appshell 插件第一次在真 spine 内执行的 e2e）
+> 与 `appshell.morph`（L4 浏览器腿：`tools/dev-web-carrier/run-appshell-morph.sh`
+> 一条命令拉起 dev 载体 + 机器 Chrome（puppeteer-core），驱动三次一句话换壳
+> 微信 → 网易云音乐 → 支付宝，并把注册级证据集落在
+> `tools/dev-web-carrier/artifacts/appshell-morph/`）。morph 的判定行：DOM
+> 原语数 == 插件校验器展开树（逐主题 32/32/32，客户端展开器的 lockstep 在旁
+> 一并断言）+ 全程零页面错误；里程碑流由
+> `test/e2e/scenarios/appshell-morph.json` 一一钉住（23 行）。本树校验计数
+> **132 个证据目录 / 252 条绿色 verdict / 247 png**，已知缺口为零。
+> 计数是一次校验器运行而非口头声明：`node test/e2e/matrix.mjs` 可复算。
+
 > **时效性**：2026-10-16——本树校验计数 **127 个证据目录 / 247 条绿色 verdict / 245 png**，
 > 已知缺口清零——最后一项（iOS b4 回执）已于 2026-10-16 以一次真实模拟器运行闭合，
 > 该运行同时暴露了五条漂移于树后的 manifest 行（已按绿色运行重新钉定）。自上一条记录以来的增长随 #517–#544
