@@ -1,0 +1,17 @@
+{
+  "host": "darwin-cli (Darwin Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@deepseek-ai/dsh-* 0.1.6-alpha.2 (vendored verbatim, sha256-pinned by external/ensure-dsh.sh)",
+  "kernel": "@deepseek-ai/cordis@4.0.2",
+  "scenario": "appshell.spec",
+  "proves": [
+    "dsh-appshell mounts scenario-side beside the spine and offers its three tools (appshell/offered)",
+    "one real agent turn scripts an appshell_render call through the mock wire; the REAL ToolRuntime dispatches it; the four-gate validator passes the spec (appshell/render/tool-called + echoed with the minted surfaceId)",
+    "the sixth red-team category: a forged-surfaceId appshell_update is refused before any spec work (appshell/update/forged-refused)",
+    "the live surface updates in place and appshell_catalog serves the authoring rules (appshell/update/accepted + catalog/served)"
+  ],
+  "checker": "test/e2e/scenarios/appshell-spec.json",
+  "events": 168,
+  "exitCode": 0
+}
