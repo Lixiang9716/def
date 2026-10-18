@@ -1,0 +1,21 @@
+{
+  "title": "durable-fs landing chain: adopt #588, freeze contract v1.11.0, implement four hosts, mount real-fs, close row 16 + #571",
+  "created": "2026-10-18T16:33:39+00:00",
+  "rules": {
+    "hash": "72deb411426ed0b5f6594d2bb05d300b04a5142b9616c691f01290d5c2bb32c6",
+    "files": {
+      ".gov/rules.md": "aad8775c99eeec6ae9054050382db77411c9006333501d73cb3016276a1cc8b8",
+      "gates.json": "a9ce8f8f75a612c73e4c1ecafb3b382b6a700869b3365c55958a89a3054ca92b"
+    }
+  },
+  "checklist": [
+    "[x] freeze fsPublishAtomic+fsSync into contract v1.11.0 (primitives.md + primitives.d.ts + .zh.md pair + honest absence notes; pairing gate)",
+    "implement fsPublishAtomic+fsSync natively on iOS(Swift)/Android(Kotlin, rename-base, never link)/HarmonyOS(ArkTS)/CLI(#587 C layer) with audit + rejection tests",
+    "mount the real-fs write path behind a gate in boot-session-persistence.js (default off, ungated legs byte-identical)",
+    "row 16 grow leg green under real-fs mount + manifest pin + doc/test-coverage.md row16 half->full",
+    "close #571 (root-cure comment, mitigations become defense-in-depth) + AOCI closing maintain"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0255"
+}

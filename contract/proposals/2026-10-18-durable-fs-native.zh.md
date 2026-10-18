@@ -1,6 +1,10 @@
 # 提案：持久化 fs 原语 —— fsPublishAtomic + fsSync（v1.11.0 候选）
 
-> **状态：DRAFT（D5 提案——未冻结、未实现）。**
+> **状态：已采纳（2026-10-19）——冻结进 [primitives.md](../primitives.md)
+> v1.11.0（§4「the durable-fs primitives」）。** 本文件是理由记录。fold 对
+> 本草稿的两处形状修正：`bytesB64` 参数冻为 §3 的 `bytes: Uint8Array`
+> （base64 是过桥线缆编码，不是契约形状）；返回值取 `fsWrite` 的
+> `{ written }`（本草稿写作 `{ bytes: n }`），且不留空的 `opts`。
 > [English](2026-10-18-durable-fs-native.md) | 简体中文
 
 ## 动机

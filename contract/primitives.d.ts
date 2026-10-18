@@ -378,3 +378,34 @@ export type SurfaceInputEvent = {
   y?: number;
   key?: string;
 };
+
+/** ── v1.11.0: the durable-fs primitives (§4, "the durable-fs primitives") ── */
+
+// POSIX-grade durability for whole-artifact writes — the capabilities the
+// vendored jsonl session backend's durability contract rides on (#571: under
+// a full volume the best-effort disk mirror swallowed ENOSPC and the journal
+// truncated to zero). fsPublishAtomic is ONE host step — same-directory
+// temp → write → fsync(file) → rename(temp, path) → fsync(directory) —
+// because the atomicity of the sequence cannot be composed across gateway
+// round-trips. On any failure the target is untouched and no temp residue
+// remains; the rejection's reason names the failing step. The parent
+// directory must exist (fsMkdir first); publish does not create parents.
+// PUBLISH IS RENAME-BASED by measurement: Android SELinux denies link(2)
+// for app domains on their own files (measured live, #587), so no link
+// primitive exists in this contract. The trailing directory fsync is the
+// crash-durability of the rename itself — never omitted.
+export declare function fsPublishAtomic(
+  scope: ScopeHandle,
+  path: string,
+  bytes: Uint8Array,
+): Promise<{ written: number }>;
+
+// One explicit durability barrier by path: fsync the file, or the directory.
+// `kind` must match what the path is — the barrier opens with the kind's own
+// open mode and a mismatch rejects io (no stat-guessing). The directory face
+// uses the platform's directory-capable API (fsync(dirfd) on POSIX hosts).
+export declare function fsSync(
+  scope: ScopeHandle,
+  path: string,
+  opts: { kind: "file" | "dir" },
+): Promise<Record<string, never>>;
