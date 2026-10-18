@@ -41,6 +41,10 @@ add_library(druntime SHARED
   # so leaving it out is a link error, not a negotiation (the gateway still
   # decides what gets SERVED).
   ${DSH_SRC_DIR}/dsh_socket.c
+  # dsh_fs_port.c — the durable-fs portability layer (contract v1.11.0):
+  # rename-based atomic publish + fsync barriers; gateway_smoke.cpp serves
+  # fsPublishAtomic/fsSync (app scope) over it in BOTH serve modes.
+  ${DSH_SRC_DIR}/dsh_fs_port.c
   ${QJS_DIR}/dtoa.c
   ${QJS_DIR}/libregexp.c
   ${QJS_DIR}/libunicode.c

@@ -75,6 +75,11 @@ struct GatewayManifest {
     /// both clipboard rows; the capability plane's `microphone` gates the
     /// mic pair, v1.10.0 candidate).
     private static let familyFlags: [String: String] = [
+        // v1.11.0 durable-fs pair: the frozen table gates them under the
+        // existing fs flags (rows 32/33 — fsPublishAtomic rides fsWrite,
+        // fsSync rides fsRead), the same one-flag-two-primitives rule.
+        "fsPublishAtomic": "fsWrite",
+        "fsSync": "fsRead",
         "clipboardRead": "clipboard",
         "clipboardWrite": "clipboard",
         "presentShare": "share",
@@ -124,7 +129,8 @@ final class GatewayCore {
     /// calls into dispatchKnown's no-handler fallback, which settles `denied`.
     static let primitives = [
         "fsRead", "fsWrite", "fsScope", "fsStat", "fsList", "fsMkdir",
-        "fsRemove", "fsRename", "wasmRun", "ishRun",
+        "fsRemove", "fsRename", "fsPublishAtomic", "fsSync",
+        "wasmRun", "ishRun",
         "httpFetch", "notify", "presentApproval", "presentPicker",
         "keychainGet", "keychainSet",
         "deviceInfo", "haptic", "clipboardRead", "clipboardWrite",

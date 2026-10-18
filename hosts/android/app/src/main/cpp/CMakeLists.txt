@@ -32,6 +32,13 @@ add_library(dsh_runtime SHARED
         # gateway denial — the shell tool could not execute even its own
         # starter echo.wasm.
         ${DSH_SRC_DIR}/dsh_wasm.c
+        # dsh_fs_port.c — the durable-fs portability layer (contract
+        # v1.11.0): rename-based atomic publish + fsync barriers over the
+        # platform POSIX face; the C smoke backend serves fsPublishAtomic/
+        # fsSync through it (the Kotlin FsPrimitives carries its own
+        # rename-based dance for the product gateway — never link(2), the
+        # SELinux wall the #587 battery measured).
+        ${DSH_SRC_DIR}/dsh_fs_port.c
         "${DSH_WASM3_DIR}/m3_bind.c"
         "${DSH_WASM3_DIR}/m3_code.c"
         "${DSH_WASM3_DIR}/m3_compile.c"

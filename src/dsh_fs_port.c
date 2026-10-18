@@ -25,6 +25,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -217,7 +218,10 @@ int dsh_fs_mkdtemp(char *tmpl, char *err, size_t errcap) {
 
 int dsh_fs_realpath(const char *path, char *out, size_t outcap,
                     char *err, size_t errcap) {
-    char resolved[2048];
+    /* PATH_MAX-sized on purpose: Bionic's _FORTIFY_SOURCE=2 rejects a
+     * realpath() output buffer it cannot prove >= PATH_MAX (the APK's NDK
+     * compile hard-errors otherwise — measured on the android-e2e leg). */
+    char resolved[PATH_MAX];
     if (realpath(path, resolved) == NULL) {
         dsh_set_err(err, errcap, "realpath", path, errno);
         return -1;

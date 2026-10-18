@@ -97,6 +97,21 @@ const successCells = async (mockUrl) => {
   const removed = await raw('fs.remove.ok', 'fsRemove', 'fsRemove', 'ok',
     { scope: 'app', path: probePath, recursive: false, missing: 'error' });
   demand(removed.ok, 'fs.remove.ok failed');
+  // The durable pair (v1.11.0): publish into a directory fsWrite's mkdirs
+  // already created (publish never creates parents), read the artifact back
+  // byte-exact — the roundtrip IS the durability claim — then both barrier
+  // kinds on what really exists.
+  const pubPath = 'audit-inv/canary-fswrite/published.txt';
+  const published = await raw('fs.publish.ok', 'fsPublishAtomic', 'fsPublishAtomic', 'ok',
+    { scope: 'app', path: pubPath, bytesB64: CANARY_B64 });
+  demand(published.ok && published.res.written > 0, 'fs.publish.ok did not publish');
+  const pubRead = await raw('fs.publish.readback.ok', 'fsRead', 'fsRead', 'ok',
+    { scope: 'app', path: pubPath });
+  demand(pubRead.ok && pubRead.res.bytesB64 === CANARY_B64, 'fs.publish.readback.ok mismatch');
+  await raw('fs.sync.file.ok', 'fsSync', 'fsSync', 'ok',
+    { scope: 'app', path: pubPath, kind: 'file' });
+  await raw('fs.sync.dir.ok', 'fsSync', 'fsSync', 'ok',
+    { scope: 'app', path: 'audit-inv/canary-fswrite', kind: 'dir' });
   await raw('keychain.set.ok', 'keychainSet', 'keychainSet', 'ok',
     { ref: 'audit-inv/canary-cred', secretB64: CANARY_B64 });
   const got = await raw('keychain.get.ok', 'keychainGet', 'keychainGet', 'ok',
@@ -126,6 +141,22 @@ const rejectionCells = async () => {
       { scope: 'app', path: '../escape.txt', bytesB64: CANARY_B64 }, 'invalid'],
     ['fs.stat.invalid', 'fsStat', { scope: 'app', path: '../escape.txt' }, 'invalid'],
     ['fs.remove.invalid', 'fsRemove', { scope: 'app', path: '../escape.txt' }, 'invalid'],
+    ['fs.publish.invalid', 'fsPublishAtomic',
+      { scope: 'app', path: '../escape.txt', bytesB64: CANARY_B64 }, 'invalid'],
+    ['fs.publish.denied', 'fsPublishAtomic',
+      { scope: 'session', path: 'x.txt', bytesB64: CANARY_B64 }, 'denied'],
+    // publish creates no parents (fsMkdir first): the missing parent is the
+    // contract's own io ladder — mkstemp cannot open in a nonexistent dir.
+    ['fs.publish.missing-parent.io', 'fsPublishAtomic',
+      { scope: 'app', path: 'audit-inv/no-such-dir/x.txt', bytesB64: CANARY_B64 }, 'io'],
+    ['fs.sync.invalid.kind', 'fsSync', { scope: 'app', path: 'x.txt', kind: 'symlink' }, 'invalid'],
+    ['fs.sync.denied', 'fsSync', { scope: 'session', path: 'x.txt', kind: 'file' }, 'denied'],
+    ['fs.sync.missing.io', 'fsSync',
+      { scope: 'app', path: 'audit-inv/absent-sync.txt', kind: 'file' }, 'io'],
+    // kind must match what the path is: published.txt exists as a FILE (the
+    // success quadrant made it), so a dir barrier on it rejects io.
+    ['fs.sync.kind-mismatch.io', 'fsSync',
+      { scope: 'app', path: 'audit-inv/canary-fswrite/published.txt', kind: 'dir' }, 'io'],
     ['keychain.get.invalid', 'keychainGet', { ref: 'k'.repeat(4096) }, 'invalid'],
     ['keychain.set.invalid', 'keychainSet',
       { ref: 'k'.repeat(4096), secretB64: CANARY_B64 }, 'invalid'],

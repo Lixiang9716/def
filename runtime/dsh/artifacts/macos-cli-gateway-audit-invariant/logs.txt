@@ -1,5 +1,5 @@
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.started","leg":"full-matrix"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.descriptor","available":8,"unavailable":9}]}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.descriptor","available":10,"unavailable":9}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.write.ok","primitive":"fsWrite","state":"ok"}]}
 {"audit":"fsWrite","outcome":"ok"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.write.ok","primitive":"fsWrite","audit":"fsWrite","state":"ok","code":null}]}
@@ -18,6 +18,18 @@ dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.remove.ok","primitive":"fsRemove","state":"ok"}]}
 {"audit":"fsRemove","outcome":"ok"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.remove.ok","primitive":"fsRemove","audit":"fsRemove","state":"ok","code":null}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.publish.ok","primitive":"fsPublishAtomic","state":"ok"}]}
+{"audit":"fsPublishAtomic","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.publish.ok","primitive":"fsPublishAtomic","audit":"fsPublishAtomic","state":"ok","code":null}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.publish.readback.ok","primitive":"fsRead","state":"ok"}]}
+{"audit":"fsRead","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.publish.readback.ok","primitive":"fsRead","audit":"fsRead","state":"ok","code":null}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.file.ok","primitive":"fsSync","state":"ok"}]}
+{"audit":"fsSync","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.file.ok","primitive":"fsSync","audit":"fsSync","state":"ok","code":null}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.dir.ok","primitive":"fsSync","state":"ok"}]}
+{"audit":"fsSync","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.dir.ok","primitive":"fsSync","audit":"fsSync","state":"ok","code":null}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"keychain.set.ok","primitive":"keychainSet","state":"ok"}]}
 {"audit":"keychainSet","outcome":"ok"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"keychain.set.ok","primitive":"keychainSet","audit":"keychainSet","state":"ok","code":null}]}
@@ -54,6 +66,27 @@ dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.remove.invalid","primitive":"fsRemove","state":"rejected"}]}
 {"audit":"fsRemove","outcome":"invalid"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.remove.invalid","primitive":"fsRemove","audit":"fsRemove","state":"rejected","code":"invalid"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.publish.invalid","primitive":"fsPublishAtomic","state":"rejected"}]}
+{"audit":"fsPublishAtomic","outcome":"invalid"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.publish.invalid","primitive":"fsPublishAtomic","audit":"fsPublishAtomic","state":"rejected","code":"invalid"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.publish.denied","primitive":"fsPublishAtomic","state":"rejected"}]}
+{"audit":"fsPublishAtomic","outcome":"denied"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.publish.denied","primitive":"fsPublishAtomic","audit":"fsPublishAtomic","state":"rejected","code":"denied"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.publish.missing-parent.io","primitive":"fsPublishAtomic","state":"rejected"}]}
+{"audit":"fsPublishAtomic","outcome":"io"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.publish.missing-parent.io","primitive":"fsPublishAtomic","audit":"fsPublishAtomic","state":"rejected","code":"io"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.invalid.kind","primitive":"fsSync","state":"rejected"}]}
+{"audit":"fsSync","outcome":"invalid"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.invalid.kind","primitive":"fsSync","audit":"fsSync","state":"rejected","code":"invalid"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.denied","primitive":"fsSync","state":"rejected"}]}
+{"audit":"fsSync","outcome":"denied"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.denied","primitive":"fsSync","audit":"fsSync","state":"rejected","code":"denied"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.missing.io","primitive":"fsSync","state":"rejected"}]}
+{"audit":"fsSync","outcome":"io"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.missing.io","primitive":"fsSync","audit":"fsSync","state":"rejected","code":"io"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"fs.sync.kind-mismatch.io","primitive":"fsSync","state":"rejected"}]}
+{"audit":"fsSync","outcome":"io"}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"fs.sync.kind-mismatch.io","primitive":"fsSync","audit":"fsSync","state":"rejected","code":"io"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"keychain.get.invalid","primitive":"keychainGet","state":"rejected"}]}
 {"audit":"keychainGet","outcome":"invalid"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"keychain.get.invalid","primitive":"keychainGet","audit":"keychainGet","state":"rejected","code":"invalid"}]}
@@ -64,13 +97,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","messag
 {"audit":"timerSchedule","outcome":"invalid"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"timer.schedule.invalid","primitive":"timerSchedule","audit":"timerSchedule","state":"rejected","code":"invalid"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.listen.ok","primitive":"socketListen","state":"ok"}]}
-{"audit":"socket.listen","direction":"inbound","grant":"socket.listen.loopback","scope":"loopback","port":58525,"outcome":"granted"}
+{"audit":"socket.listen","direction":"inbound","grant":"socket.listen.loopback","scope":"loopback","port":50179,"outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"socket.listen.ok","primitive":"socketListen","audit":"socket.listen","state":"ok","code":null}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.connect.ok","primitive":"socketConnect","state":"ok"}]}
-{"audit":"socket.connect","direction":"outbound","grant":"socket.connect.loopback","peer":"127.0.0.1:58525","outcome":"granted"}
+{"audit":"socket.connect","direction":"outbound","grant":"socket.connect.loopback","peer":"127.0.0.1:50179","outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"socket.connect.ok","primitive":"socketConnect","audit":"socket.connect","state":"ok","code":null}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"poll for accept","data":[{"serverId":"srv:1"}]}
-{"audit":"socket.accept","direction":"inbound","grant":"socket.listen.loopback","serverId":"srv:1","connectionId":"conn:3","peer":"127.0.0.1:58526","outcome":"granted"}
+{"audit":"socket.accept","direction":"inbound","grant":"socket.listen.loopback","serverId":"srv:1","connectionId":"conn:3","peer":"127.0.0.1:50180","outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.host","cell":"socket.accept","audit":"socket.accept","hostInitiated":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.write.ok","primitive":"socketWrite","state":"ok"}]}
 {"audit":"socket.write","outcome":"ok"}
@@ -145,7 +178,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","messag
 {"audit":"closeSurface","outcome":"unavailable"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"unavailable.close.surface","primitive":"closeSurface","audit":"closeSurface","state":"unavailable","code":null}]}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"http.abort","primitive":"httpFetch.abort","audit":"httpFetch.abort","state":"accepted","code":null}]}
-dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.passed","calls":48}]}
+dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.passed","calls":59}]}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"scenario.complete","status":"pass"}]}
 {"audit":"httpFetch.abort","outcome":"ok"}
 rt: PASS (complete=1 pass=1)

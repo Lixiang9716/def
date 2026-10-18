@@ -46,6 +46,10 @@ final class FSPrimitives {
         core.register(name: "fsMkdir") { call, done in self.mkdir(call, done) }
         core.register(name: "fsRemove") { call, done in self.remove(call, done) }
         core.register(name: "fsRename") { call, done in self.rename(call, done) }
+        // Contract v1.11.0 durable-fs pair — split into the +Durable
+        // extension at the code-size gate (the AppDelegate+Drives
+        // precedent): one atomic durable publish and the explicit barrier.
+        registerDurable(on: core)
         // Contract v1.2.0: one export of one module, executed in-process.
         core.register(name: "wasmRun") { call, done in self.wasmRun(call, done) }
         // Contract v1.3.0 `ishRun`, post-retirement: the vendored iSH engine is
@@ -412,7 +416,8 @@ final class FSPrimitives {
 
     /// Resolves the scope handle and runs `body` with its root URL while the
     /// security-scoped access (if any) is held; `onDenied` for ungranted.
-    private func inScope(
+    /// Internal (not private): the +Durable extension rides the same bracket.
+    func inScope(
         _ scope: String,
         _ body: @escaping (URL) -> Void, onDenied: @escaping () -> Void
     ) {
@@ -483,11 +488,11 @@ final class FSPrimitives {
         }
     }
 
-    private static func invalid(_ primitive: String, _ message: String) -> GatewayError {
+    static func invalid(_ primitive: String, _ message: String) -> GatewayError {
         GatewayError(code: "invalid", primitive: primitive, message: message)
     }
 
-    private static func denied(_ primitive: String, _ scope: String) -> GatewayError {
+    static func denied(_ primitive: String, _ scope: String) -> GatewayError {
         GatewayError(code: "denied", primitive: primitive,
                      message: "scope not granted: \(scope)")
     }

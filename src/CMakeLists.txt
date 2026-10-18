@@ -27,9 +27,13 @@ add_library(dsh-core STATIC
   # plain POSIX/BSD sockets; every per-host build compiles it, and a host
   # whose gateway layer does not SERVE the socket primitives answers
   # `unavailable` (negotiation, not a branch).
+  # dsh_fs_port.c — the durable-fs portability layer (contract v1.11.0):
+  # rename-based atomic publish + fsync barriers; the CLI host serves the
+  # primitives over it and the HarmonyOS spine reuses it for the app scope.
   dsh_runtime_host.c
   dsh_wasm.c
   dsh_socket.c
+  dsh_fs_port.c
   # The quickjs-ng fork (pin: external/ensure.sh) — exactly the four TUs every
   # proven build compiles; quickjs-libc is deliberately excluded (the rt
   # host provides its own glue, runtime/dsh/README.md "Embedding contract").

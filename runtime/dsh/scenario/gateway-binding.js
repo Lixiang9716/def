@@ -6,13 +6,15 @@
  * tools/e2e/scenarios/gateway-binding.json.
  *
  * Drives the frozen 19-event list in order: descriptor conformance, fs
- * roundtrip + ungranted-scope denial, chunked httpFetch body + abort,
+ * roundtrip + ungranted-scope denial, the durable-fs pair (v1.11.0 publish
+ * + both barriers + the rejection ladder), chunked httpFetch body + abort,
  * picker grant → fsScope persist/resolve roundtrip, approval dialog,
  * keychain set/get/delete roundtrip, and the notification → background →
  * notify.response → foreground lifecycle (the embedder delivers those
  * bridge events in order through dsh_runtime_gateway_event).
  */
 import { createLogger } from '../logger.js';
+import { fsPublishAtomic, fsSync } from '../fs-durable.js';
 import {
   fsRead,
   fsScope,
@@ -125,6 +127,39 @@ if (!globalThis.__dshGatewayNegotiate('gateway@1')) {
     demand(false, 'ungranted scope should reject denied');
   } catch (err) {
     emit('fs.denied', { code: err.code });
+  }
+
+  // The durable-fs pair (v1.11.0): one atomic publish into a directory the
+  // leg materialized with an ordinary write (publish never creates parents
+  // — the missing-parent leg proves it), read back byte-exact — the
+  // roundtrip IS the durability claim — then both barrier kinds on what
+  // really exists, plus the contract's rejection ladder.
+  await fsWrite('app', 'durable/.keep', expected);
+  const published = await fsPublishAtomic('app', 'durable/probe.txt', expected);
+  emit('fs.publish.ok', { written: published.written });
+  const pubRead = await fsRead('app', 'durable/probe.txt');
+  emit('fs.publish.readback.ok', { matches: bytesEqual(pubRead.bytes, expected) });
+  await fsSync('app', 'durable/probe.txt', { kind: 'file' });
+  emit('fs.sync.file.ok', {});
+  await fsSync('app', 'durable', { kind: 'dir' });
+  emit('fs.sync.dir.ok', {});
+  try {
+    await fsPublishAtomic('app', 'no-such-parent/x.txt', expected); // no parents
+    demand(false, 'missing parent should reject io');
+  } catch (err) {
+    emit('fs.publish.missing-parent', { code: err.code });
+  }
+  try {
+    await fsSync('app', 'durable/probe.txt', { kind: 'dir' }); // a file is not a dir barrier
+    demand(false, 'kind mismatch should reject io');
+  } catch (err) {
+    emit('fs.sync.kind-mismatch', { code: err.code });
+  }
+  try {
+    await fsPublishAtomic('app', '../escape.txt', expected); // escape must invalidate
+    demand(false, 'escaping publish should reject invalid');
+  } catch (err) {
+    emit('fs.publish.invalid', { code: err.code });
   }
 
   const bytesRes = await httpFetch(`${base}/gateway-e2e/bytes`);
