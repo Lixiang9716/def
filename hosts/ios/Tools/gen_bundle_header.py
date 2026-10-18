@@ -108,6 +108,7 @@ TREES = [
     ("vendor/npm/@noble/hashes@2.3.0", DSH / ".." / ".." / "external" / "npm" / "@noble" / "hashes@2.3.0"),
     ("vendor/npm/@earendil-works/pi-ai@0.85.1", DSH / ".." / ".." / "external" / "npm" / "@earendil-works" / "pi-ai@0.85.1"),
     ("system-plugins/dsh-office", DSH / "system-plugins" / "dsh-office"),
+    ("system-plugins/dsh-appshell", DSH / "system-plugins" / "dsh-appshell"),
     ("system-plugins/dsh-ble", DSH / "system-plugins" / "dsh-ble"),
     ("system-plugins/dsh-device-plane", DSH / "system-plugins" / "dsh-device-plane"),
     ("system-plugins/dsh-plugin-manager-tools", DSH / "system-plugins" / "dsh-plugin-manager-tools"),
