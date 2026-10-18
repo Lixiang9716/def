@@ -125,3 +125,22 @@ export function validate(spec) {
   expanded = errors.length ? null : expandedRoot;
   return { ok: errors.length === 0, errors, expanded };
 }
+
+/**
+ * Merge an INCREMENTAL update payload over the spec a surface was rendered
+ * from (M3's token-savings seam): the wire carries only what changes —
+ * `screen` replaces the tree, `theme`/`tabs`/`actions` override when
+ * present, everything else stays from the render. A full spec still merges
+ * to itself, so full-spec updates remain legal. Pure: the caller validates
+ * the merged form with validate().
+ */
+export function mergeUpdate(current, partial) {
+  if (!partial || typeof partial !== 'object') return null;
+  return {
+    ...current,
+    ...(partial.theme !== undefined ? { theme: partial.theme } : {}),
+    ...(partial.tabs !== undefined ? { tabs: partial.tabs } : {}),
+    ...(partial.actions !== undefined ? { actions: partial.actions } : {}),
+    screen: partial.screen,
+  };
+}

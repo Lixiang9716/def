@@ -1,0 +1,49 @@
+{
+  "scenario": "appshell.m3",
+  "extract": {
+    "prefix": "m3-event:"
+  },
+  "note": "The M3 numbers leg: the four plan verdict rows measured on the dev carrier (deterministic mock transport — the plumbing ceiling; the real-model tier lands with the M4 cost ledger). Measured values (ms, bytes, counts) ride the milestone stream into scenario.jsonl; the manifest pins only deterministic fields, the in-test threshold assertions are the judgment. extract.prefix is nominal — this leg is never fed to check.mjs.",
+  "expect": [
+    {
+      "event": "m3/boot",
+      "match": {
+        "label": "微信"
+      }
+    },
+    {
+      "event": "m3/local-latency",
+      "match": {
+        "tabs": 4,
+        "budgetMs": 50
+      }
+    },
+    {
+      "event": "m3/incremental-ratio",
+      "match": {
+        "fullBytes": 663,
+        "updateBytes": 214
+      }
+    },
+    {
+      "event": "m3/loop-closure",
+      "match": {
+        "budgetMs": 15000,
+        "transport": "carrier mock (deterministic)"
+      }
+    },
+    {
+      "event": "m3/dom-parity-after-update",
+      "match": {
+        "expected": 8,
+        "stale": 0
+      }
+    },
+    {
+      "event": "m3/page-errors-zero",
+      "match": {
+        "errors": 0
+      }
+    }
+  ]
+}

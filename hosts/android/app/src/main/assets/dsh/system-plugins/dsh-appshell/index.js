@@ -19,7 +19,7 @@
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import { MODE, modeAnnounce, mockSpec, fixtureKeys } from './lib/mock.js';
-import { validate } from './lib/validate.js';
+import { validate, mergeUpdate } from './lib/validate.js';
 import { SPEC_VERSION } from './lib/catalog.js';
 
 const log = createLogger('dsh.appshell');
@@ -36,12 +36,12 @@ const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{a
 // process actually rendered. A forged id is refused BEFORE any spec work:
 // cross-surface pollution is an authorization failure, not a validation one.
 let surfaceSeq = 0;
-const liveSurfaces = new Set();
+const liveSurfaces = new Map();
 
-const mintSurfaceId = () => {
+const mintSurfaceId = (spec) => {
   surfaceSeq += 1;
   const id = 'appshell-' + surfaceSeq;
-  liveSurfaces.add(id);
+  liveSurfaces.set(id, spec);
   return id;
 };
 
@@ -83,7 +83,7 @@ const renderTool = () => defineTool({
       log.info({ event: 'appshell.render', mode: MODE, ok: false, errors: result.errors.length });
       throw new Error('spec rejected: ' + JSON.stringify(result.errors));
     }
-    const surfaceId = mintSurfaceId();
+    const surfaceId = mintSurfaceId(spec);
     log.info({ event: 'appshell.render', mode: MODE, ok: true, errors: 0, surfaceId });
     const title = MODE === 'mock' ? (args.fixture || 'wechat') : (spec.title || 'app');
     return { ok: true, title, surfaceId, spec };
@@ -92,7 +92,7 @@ const renderTool = () => defineTool({
 
 const updateTool = () => defineTool({
   name: 'appshell_update',
-  description: 'Update a subtree of an already-rendered app surface. surfaceId must be the one a prior appshell_render returned. Same spec rules.',
+  description: 'Update an already-rendered app surface in place. surfaceId must be the one a prior appshell_render returned. The spec may be FULL or INCREMENTAL (only screen [+theme/tabs/actions] — the rest stays from the render); the echo returns the payload as received.',
   parameters: {
     surfaceId: { type: 'string', description: 'the surface to update (as returned by appshell_render)' },
     spec: { type: 'object', description: 'the new app-shell spec', additionalProperties: true },
@@ -104,9 +104,13 @@ const updateTool = () => defineTool({
       properties: {
         ok: { type: 'boolean', required: true },
         surfaceId: { type: 'string', required: true },
+        spec: { type: 'object', required: true, additionalProperties: true },
       },
     },
-    render: (_args, value) => [{ type: 'text', text: value.ok ? 'surface updated' : JSON.stringify(value) }],
+    // The echo carries the applied spec — the same card shape appshell_render
+    // emits, so a client applies the update to the open surface in place
+    // (the D-4 single-surface replace) instead of re-asking for a render.
+    render: echoText,
   },
   async execute(args) {
     const surfaceId = String(args?.surfaceId ?? '').slice(0, 64);
@@ -114,13 +118,21 @@ const updateTool = () => defineTool({
       log.warn({ event: 'appshell.update', mode: MODE, surfaceId, ok: false, reason: 'unknown-surface' });
       throw new Error('unknown-surface: ' + surfaceId);
     }
-    const result = validate(args.spec);
-    if (!result.ok) {
+    // The wire may carry an INCREMENTAL payload (screen [+theme/tabs]) —
+    // merged over the spec this surface was rendered from before the four
+    // gates judge it; the echo returns the payload AS RECEIVED so the wire
+    // (and the model's output tokens) stay small. A full spec merges to
+    // itself. The stored origin advances to the merged form: the next
+    // update compounds over the current truth.
+    const merged = mergeUpdate(liveSurfaces.get(surfaceId), args?.spec);
+    const result = merged === null ? null : validate(merged);
+    if (result === null || !result.ok) {
       log.info({ event: 'appshell.update', mode: MODE, surfaceId, ok: false });
-      throw new Error('spec rejected: ' + JSON.stringify(result.errors));
+      throw new Error('spec rejected: ' + JSON.stringify(result === null ? [{ code: 'BAD_FIELD', path: '$', msg: 'spec must be an object' }] : result.errors));
     }
+    liveSurfaces.set(surfaceId, merged);
     log.info({ event: 'appshell.update', mode: MODE, surfaceId, ok: true });
-    return { ok: true, surfaceId };
+    return { ok: true, surfaceId, spec: args.spec };
   },
 });
 

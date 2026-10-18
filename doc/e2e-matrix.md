@@ -6,6 +6,18 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-18 (M3) — `appshell.m3` lands the action loop-back
+> numbers leg (`tools/dev-web-carrier/run-appshell-m3.sh`, evidence under
+> `tools/dev-web-carrier/artifacts/appshell-m3/`): local tab switch **0.1ms**
+> (budget 50ms), loop closure click→update→re-render **855ms** on the
+> deterministic mock transport (budget 15s; the real-model tier belongs to
+> the M4 cost ledger), incremental update payload **32.3%** of the full
+> re-render (budget 40%), post-update DOM **8/8 with zero stale nodes**.
+> The increment rides a real contract seam now: appshell_update accepts
+> screen-only payloads, merged over the render origin server-side and over
+> the open surface client-side (plugin/client mergeUpdate lockstep pinned).
+> Checker on this tree: **133 evidence dirs / 253 green verdicts / 247 pngs**.
+
 > **Currency**: 2026-10-18 — the appshell family lands its two evidence legs:
 > `appshell.spec` (the CLI c-core leg, PR #582 — the first e2e where the
 > dsh-appshell plugin itself executes inside a real spine) and `appshell.morph`

@@ -15,7 +15,8 @@ import { renderConnection, renderSessionList } from './render-home.js';
 import { createComposer } from './composer.js';
 import { setupOnboarding } from './onboarding.js';
 import { setupMarketplace } from './marketplace.js';
-import { setupAppshell, openSurface as openAppshell } from './appshell.js';
+import { setupAppshell, openSurface as openAppshell, surfaceSpec } from './appshell.js';
+import { mergeUpdate } from './appshell-core.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -61,6 +62,38 @@ const onOpenAppshell = (payload) => {
     spec: payload.spec,
     onAction: (action, label) => submitAppshellAction(action, label),
   });
+};
+
+// The appshell_update auto-apply (D-4's single-surface in-place replace): a
+// completed update whose echo carries a spec re-renders the OPEN surface
+// without a click — the loop-back's user-visible end. Once per callId (the
+// fold re-renders items on structure bumps); the update card's own open
+// button stays for surfaces opened later.
+const appliedAppshellUpdates = new Set();
+
+const maybeAutoApplyAppshellUpdate = () => {
+  if (timeline === null) return;
+  const view = document.getElementById('appshell-view');
+  if (!view || view.hidden) return; // no open surface: the card button covers it
+  for (const item of timeline.items) {
+    if (item?.kind !== 'tool' || item.name !== 'appshell_update' || item.status !== 'ok') continue;
+    if (appliedAppshellUpdates.has(item.callId)) continue;
+    let payload = null;
+    try { payload = JSON.parse(item.output || ''); } catch { continue; }
+    if (payload?.ok !== true || !payload.spec) continue;
+    appliedAppshellUpdates.add(item.callId);
+    // The payload may be INCREMENTAL (screen [+theme/tabs]) — merged over
+    // the open surface's spec, the plugin's own merge semantics, before the
+    // surface re-renders in place. A full payload merges to itself.
+    const base = surfaceSpec();
+    const merged = mergeUpdate(base, payload.spec);
+    if (merged === null) continue;
+    openAppshell({
+      title: document.getElementById('appshell-title-text')?.textContent || payload.title || 'App',
+      spec: merged,
+      onAction: (action, label) => submitAppshellAction(action, label),
+    });
+  }
 };
 
 let connState = 'connecting';
@@ -155,6 +188,7 @@ const openSession = (sessionId) => {
     // that), and the frame cadence here is human-paced anyway.
     if (kind === 'structure') renderer.renderStructure(timeline);
     else renderer.renderTail(timeline);
+    maybeAutoApplyAppshellUpdate();
     refreshChrome();
   });
   renderer = createChatRenderer($('transcript'), $('jump-latest'), { onOpenAppshell });

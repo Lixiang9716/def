@@ -1,7 +1,7 @@
 // appshell-core tests: two-layer expansion, defensive re-check, and the
 // security posture (markup inert by construction) — plain node, no DOM.
 import { describe, it, expect } from 'vitest';
-import { expandSpec, checkShallow } from '../../../presentation/web-client-v2/web/js/appshell-core.js';
+import { expandSpec, checkShallow, mergeUpdate } from '../../../presentation/web-client-v2/web/js/appshell-core.js';
 
 const V = 'app-shell/0.9';
 const base = (screen, tabs) => ({
@@ -86,5 +86,24 @@ describe('M4 red-team — hostile text survives verbatim in the expanded tree', 
       'utf8');
     expect(source.includes('innerHTML')).toBe(false);
     expect(source.includes('document.write')).toBe(false);
+  });
+});
+
+describe('mergeUpdate — the incremental update seam (M3)', () => {
+  it('a screen-only partial keeps the render origin theme/tabs/actions', () => {
+    const current = base({ type: 'text', text: 'x' });
+    const merged = mergeUpdate(current, { spec: V, screen: { type: 'text', text: 'y' } });
+    expect(merged.theme).toEqual(current.theme);
+    expect(merged.tabs).toEqual(current.tabs);
+    expect(merged.actions).toEqual(current.actions);
+    expect(merged.screen).toEqual({ type: 'text', text: 'y' });
+    expect(checkShallow(merged).ok).toBe(true);
+  });
+
+  it('present overrides win; a full payload merges to itself; a non-object is null', () => {
+    const current = base({ type: 'text', text: 'x' });
+    expect(mergeUpdate(current, { spec: V, tabs: ['甲', '乙'], screen: { type: 'text', text: 'z' } }).tabs).toEqual(['甲', '乙']);
+    expect(mergeUpdate(current, current)).toEqual(current);
+    expect(mergeUpdate(current, null)).toBeNull();
   });
 });

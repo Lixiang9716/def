@@ -10,6 +10,7 @@
 import { checkShallow } from './appshell-core.js';
 
 let activeActionHandler = null;
+let currentSurfaceSpec = null;
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -68,6 +69,7 @@ export function openSurface({ title, spec, onAction }) {
   const view = document.getElementById('appshell-view');
   if (!view) return false;
   activeActionHandler = onAction || null;
+  currentSurfaceSpec = spec;
   view.style.setProperty('--p-accent', (spec.theme && spec.theme.accent) || '#1677ff');
   const root = document.getElementById('appshell-root');
   root.replaceChildren();
@@ -94,10 +96,15 @@ export function openSurface({ title, spec, onAction }) {
   return true;
 }
 
+/** The spec the open surface was rendered from — the merge base for
+ * incremental appshell_update payloads (null when no surface is open). */
+export const surfaceSpec = () => currentSurfaceSpec;
+
 export function closeSurface() {
   const view = document.getElementById('appshell-view');
   if (view) view.hidden = true;
   activeActionHandler = null;
+  currentSurfaceSpec = null;
 }
 
 /** Wire the static chrome (close button). Call once from main.js. */
