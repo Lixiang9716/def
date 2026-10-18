@@ -27,9 +27,14 @@ const env = Object.fromEntries(
     .split('\n').filter((l) => l.includes('=') && !l.startsWith('#'))
     .map((l) => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; })
 );
-const BASE_URL = env.ZAI_BASE_URL || 'https://open.bigmodel.cn/api/paas/v4';
-const API_KEY = env.ZAI_API_KEY;
-const MODEL = env.ZAI_MODEL || 'glm-4.6';
+// Provider-neutral (the 换模型 counterfactual row): the process env wins
+// over the .env file — LLM_BASE_URL/LLM_API_KEY/LLM_MODEL point the SAME
+// harness at any OpenAI-compatible endpoint (measured: DeepSeek V4 Flash
+// via DSH_LLM_*); ZAI_* stays the GLM default.
+const BASE_URL = process.env.LLM_BASE_URL || env.ZAI_BASE_URL || 'https://open.bigmodel.cn/api/paas/v4';
+const API_KEY = process.env.LLM_API_KEY || env.ZAI_API_KEY;
+const MODEL = process.env.LLM_MODEL || env.ZAI_MODEL || 'glm-4.6';
+const LEDGER_STEM = process.env.LEDGER_STEM || 'cost-ledger';
 if (!API_KEY) { console.error('M4: no ZAI_API_KEY in .env — cannot run the cost ledger'); process.exit(1); }
 
 const OUT_DIR = new URL('../../tools/dev-web-carrier/artifacts/appshell-m4/', import.meta.url);
@@ -105,9 +110,13 @@ async function callModel(messages) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}` },
     body: JSON.stringify({ model: MODEL, messages, temperature: 0.7 }),
   });
-  const latency = Date.now() - start;
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text().then((t) => t.slice(0, 200))}`);
   const body = await res.json();
+  // Latency is measured after the BODY settles, not at header arrival —
+  // DeepSeek sends headers immediately and streams even non-streaming
+  // responses chunked (measured: ~100ms headers, ~4s body), so a
+  // header-time sample under-reported GLM-vs-DeepSeek by 30x.
+  const latency = Date.now() - start;
   return { content: body.choices?.[0]?.message?.content ?? '', tokens: body.usage?.total_tokens ?? 0, latency };
 }
 
@@ -191,7 +200,7 @@ const bars = {
 // always its own measurement.
 if (ONLY) {
   try {
-    const prev = JSON.parse(readFileSync(new URL('cost-ledger.json', OUT_DIR), 'utf8'));
+    const prev = JSON.parse(readFileSync(new URL(`${LEDGER_STEM}.json`, OUT_DIR), 'utf8'));
     if (ONLY === 'update') {
       Object.assign(morph, prev.morph, { runs: prev.morph.runs ?? [] });
       bars.morphTokensP50_3000 = prev.bars?.morphTokensP50_3000 ?? bars.morphTokensP50_3000;
@@ -216,9 +225,9 @@ const ledger = {
   barsNote: 'Token bars are the M4 gates; the e2e ≤20s row is recorded honestly — the morph tier rides the non-streaming physics the L3 ledger already recorded as a miss (M1 item 4 partial: streaming TTFT or spec compression are the named candidates).',
 };
 mkdirSync(OUT_DIR, { recursive: true });
-writeFileSync(new URL('cost-ledger.json', OUT_DIR), JSON.stringify(ledger, null, 2) + '\n');
+writeFileSync(new URL(`${LEDGER_STEM}.json`, OUT_DIR), JSON.stringify(ledger, null, 2) + '\n');
 
 console.log('\n--- M4 cost ledger ---');
 console.log(`morph : ok ${morph.okOf}/${N}  tokens P50 ${morph.tokensP50} (≤3000 ${bars.morphTokensP50_3000 ? '✓' : '✗'})  P95 ${morph.tokensP95} (≤5000 ${bars.morphTokensP95_5000 ? '✓' : '✗'})  latency P50 ${morph.latencyP50}ms (≤20000 ${bars.e2eP50_20000_morph ? '✓' : '✗'})`);
 console.log(`update: ok ${update.okOf}/${N}  tokens P50 ${update.tokensP50} (≤1200 ${bars.updateTokensP50_1200 ? '✓' : '✗'})  latency P50 ${update.latencyP50}ms (≤20000 ${bars.e2eP50_20000_update ? '✓' : '✗'})  payload P50 ${update.payloadBytesP50}B (${ratioPct}% of the ${FULL_BYTES}B full spec)`);
-console.log(`receipt → tools/dev-web-carrier/artifacts/appshell-m4/cost-ledger.json`);
+console.log(`receipt → tools/dev-web-carrier/artifacts/appshell-m4/${LEDGER_STEM}.json`);
