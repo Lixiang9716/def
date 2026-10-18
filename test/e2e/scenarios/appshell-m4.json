@@ -1,0 +1,39 @@
+{
+  "scenario": "appshell.m4",
+  "extract": {
+    "prefix": "m4-event:"
+  },
+  "note": "The M4 text-safety row: hostile fields (<, quote-break, onerror=, script tag) render 100% as literal text through the whole carrier stack — the timeline preview AND the fullscreen surface — with zero script/img elements and zero on* attributes. The fixture is validator-clean ON PURPOSE (purity, not censorship). The cost ledger (real-model morph/update tokens) rides the same evidence dir as cost-ledger.json. extract.prefix is nominal — never fed to check.mjs.",
+  "expect": [
+    {
+      "event": "m4/boot",
+      "match": {
+        "fixture": "validator-clean hostile spec"
+      }
+    },
+    {
+      "event": "m4/preview-inert",
+      "match": {
+        "scripts": 0,
+        "imgs": 0,
+        "onAttrs": 0
+      }
+    },
+    {
+      "event": "m4/surface-verbatim",
+      "match": {
+        "verbatim": 3,
+        "hostile": 3,
+        "scripts": 0,
+        "imgs": 0,
+        "onAttrs": 0
+      }
+    },
+    {
+      "event": "m4/page-errors-zero",
+      "match": {
+        "errors": 0
+      }
+    }
+  ]
+}
