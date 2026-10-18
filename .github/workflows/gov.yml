@@ -34,7 +34,7 @@ jobs:
       - name: Install govrail
         # Pinned to the plane version (see .gov/manifest.json) — migrated
         # 0.37.1 → 0.45.0 deliberately: plane re-sealed, new templates adopted.
-        run: pip install govrail==0.48.0
+        run: pip install govrail==0.52.0
       - name: Cache the vendored closure
         # The closures gate byte-verifies the committed host copies against
         # the canonical runtime/dsh closure; the closure's vendored source

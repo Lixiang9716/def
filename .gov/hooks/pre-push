@@ -16,22 +16,117 @@
 # self-test's scratch repositories) must resolve repositories by cwd,
 # not by inherited environment (#20).
 
+# #440: CI owns the full matrix — a path-scoped green here says nothing
+# about the gates this push's diff scoped out. Say so once, where the
+# author decides to push, so a cross-cutting PR's extra CI red is not
+# the first place the gap surfaces (gov run's scope line names the
+# out-of-scope ids above).
+ci_note() {
+    echo "pre-push: CI additionally runs the FULL gate matrix — gates \
+out of this push's scope (see the scope line above) still run there" >&2
+}
+
 # Resolve gov robustly (D29): explicit override, then PATH, then module.
 # $GOV_BIN is an argv STRING and is word-split by design — it may carry
 # interpreter arguments ("python -m gov"); a path containing spaces is
 # not a supported form.
 gov_cmd() {
+    # Plain invocation, not exec (#394): the hook must be able to react
+    # to a red DAG (it points at the evidence directory) and still exit
+    # with the run's own code.
     if [ -n "$GOV_BIN" ]; then
-        exec $GOV_BIN "$@"
+        $GOV_BIN "$@"
+        return $?
     fi
     if command -v gov >/dev/null 2>&1; then
         GOV_BIN="gov"          # propagate the resolution: gate commands
         export GOV_BIN         # that name `gov` inherit it (#250)
-        exec gov "$@"
+        gov "$@"
+        return $?
     fi
     GOV_BIN="python3 -m gov"
     export GOV_BIN
-    exec python3 -m gov "$@"
+    python3 -m gov "$@"
+}
+
+# Every DAG invocation funnels here (#394): on red, the hook names where
+# the full per-gate evidence lives — a crashing gate's scene (and the
+# generation before it, *.log.prev) survives the diagnostic rerun.
+run_dag() {
+    gov_cmd run "$@"
+    hook_rc=$?
+    if [ "$hook_rc" -ne 0 ]; then
+        echo "pre-push: the gate DAG is red — per-gate evidence: \
+.gov/last-run/<gate>.log (previous generation: *.log.prev)" >&2
+    else
+        ci_note
+    fi
+    return $hook_rc
+}
+
+# #402: judge WHAT THE PUSH DELIVERS, not the incidental working tree.
+# An existing branch with unrelated uncommitted state used to gate the
+# WORKING TREE — a foreign scratch file could block a push that never
+# carried it. Materializing the pushed sha into a detached temporary
+# worktree (the same shape CI uses) makes the scoped DAG read only the
+# committed tree; on red, the judged evidence is copied back so the
+# .gov/last-run pointers outlive the worktree. Falls back to the
+# working tree (the old behavior) if the worktree cannot be created.
+run_dag_at_pushed_tree() {   # $1 = the pushed sha, $2 = the scope base
+    pushed_tree_wt=$(mktemp -d "${TMPDIR:-/tmp}/gov-prepush.XXXXXX") || {
+        echo "pre-push: cannot create a temp dir — judging the working tree" >&2
+        GOV_CHANGE_BASE="$2" GOV_CHANGE_ROOT="$repo_root" run_dag --base "$2"
+        return $?
+    }
+    if git worktree add --detach "$pushed_tree_wt" "$1" >/dev/null 2>&1; then
+        echo "pre-push: judging the pushed tree $1 in a temporary worktree (#402)" >&2
+        # dsh-local adaptation: this repo's gates depend on untracked
+        # materialization (external/ vendor trees, the harmony rawfile
+        # closure staging) that CI builds in workflow steps BEFORE gov run;
+        # the cold judged tree has none, so every staging row reads
+        # "missing" and the DAG is structurally red. Mirror it from the
+        # pushing tree (APFS clone when possible — no re-materialization,
+        # no network); #402 keeps its semantics for the tracked content
+        # the push actually carries. Re-apply after gov update --apply
+        # re-wires this hook from the template.
+        if [ -d "$repo_root/external" ]; then
+            mkdir -p "$pushed_tree_wt/external"
+            cp -Rc "$repo_root/external/." "$pushed_tree_wt/external/" 2>/dev/null \
+                || cp -R "$repo_root/external/." "$pushed_tree_wt/external/" 2>/dev/null
+        fi
+        dsh_rf="$repo_root/hosts/harmony/entry/src/main/resources/rawfile/dsh"
+        if [ -d "$dsh_rf" ]; then
+            rf_dst="$pushed_tree_wt/hosts/harmony/entry/src/main/resources/rawfile/dsh"
+            mkdir -p "$rf_dst"
+            cp -Rc "$dsh_rf/." "$rf_dst/" 2>/dev/null \
+                || cp -R "$dsh_rf/." "$rf_dst/" 2>/dev/null
+        fi
+        # runtime/dsh/vendor is an untracked SYMLINK to ../../external in a
+        # materialized tree — the import-graph walk (check-staging) reads
+        # the shim edges through it. Restore the link, don't copy 628M.
+        if [ -d "$pushed_tree_wt/external" ] && [ ! -e "$pushed_tree_wt/runtime/dsh/vendor" ]; then
+            ln -sfn ../../external "$pushed_tree_wt/runtime/dsh/vendor"
+        fi
+        (
+            cd "$pushed_tree_wt" || exit 97
+            GOV_CHANGE_BASE="$2" GOV_CHANGE_ROOT="$pushed_tree_wt" run_dag --base "$2"
+        )
+        hook_rc=$?
+        if [ "$hook_rc" -ne 0 ] && [ -n "$repo_root" ] \
+                && [ -d "$pushed_tree_wt/.gov/last-run" ]; then
+            # The judged tree's evidence outlives the worktree it ran in:
+            # a red scene must not vanish with the cleanup below.
+            mkdir -p "$repo_root/.gov/last-run"
+            cp -RPp "$pushed_tree_wt/.gov/last-run/." "$repo_root/.gov/last-run/" 2>/dev/null
+        fi
+        git worktree remove --force "$pushed_tree_wt" >/dev/null 2>&1
+        rm -rf "$pushed_tree_wt"
+        git worktree prune >/dev/null 2>&1
+        return $hook_rc
+    fi
+    echo "pre-push: could not materialize the pushed tree — judging the \
+working tree (commit, stash or remove unrelated files for an exact verdict)" >&2
+    GOV_CHANGE_BASE="$2" GOV_CHANGE_ROOT="$repo_root" run_dag --base "$2"
 }
 
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_QUARANTINE_PATH \
@@ -114,19 +209,11 @@ if [ "$full" = 1 ] && [ "$bases" = 0 ] && [ "$updates" = 1 ] \
     done
     if [ -n "$fork" ]; then
         echo "pre-push: new branch — scoping to the fork point $fork" >&2
-        # LOCAL PATCH (govrail #371, filed 2026-09-22): the 0.48.0 template
-        # exports GOV_CHANGE_BASE here WITHOUT GOV_CHANGE_ROOT — the very
-        # guard its own comment above `repo_root` describes — so a scratch
-        # repo spawned by `gov self-test` diffs against a sha from THIS
-        # repository, `fatal: bad object`, and the gate refuses every
-        # new-branch push. Two variables, as the ranged branch below does;
-        # drop this patch when the template is fixed.
-        GOV_CHANGE_BASE="$fork" GOV_CHANGE_ROOT="$repo_root" \
-            gov_cmd run --base "$fork"
+        run_dag_at_pushed_tree "$pushed_sha" "$fork"
     else
         echo "pre-push: new branch with no shared ancestor (no @{upstream}, \
 no origin/HEAD) — running the full matrix" >&2
-        gov_cmd run
+        run_dag
     fi
 elif [ "$full" = 1 ] || [ "$bases" -gt 1 ]; then
     # Several push ranges — or a brand-new branch with nothing to merge
@@ -134,12 +221,15 @@ elif [ "$full" = 1 ] || [ "$bases" -gt 1 ]; then
     # range would let a second branch's diff skip its gates, turning
     # "smallest sufficient set" into an insufficient set. Full matrix:
     # always sufficient.
-    gov_cmd run
+    run_dag
 else
     # GOV_CHANGE_BASE tells change-scoped TOOLS (gov check, a project's
     # own size/logging gates that read it) which range this run is about;
     # without it they fall back to their own cascade, which on a dirty
     # tree means the working tree. See the pre-push-checks skill.
-    GOV_CHANGE_BASE="$base" GOV_CHANGE_ROOT="$repo_root" \
-        gov_cmd run --base "$base"
+    # #402: the DAG itself judges the PUSHED TREE in a temporary
+    # worktree — the developer's incidental working-tree state (an
+    # unrelated parallel workstream's uncommitted files) never blocks a
+    # push that does not carry it.
+    run_dag_at_pushed_tree "$pushed_sha" "$base"
 fi

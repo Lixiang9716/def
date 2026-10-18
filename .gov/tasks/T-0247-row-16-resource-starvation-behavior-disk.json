@@ -2,7 +2,7 @@
   "title": "row 16: resource-starvation behavior \u2014 disk-full journal, low memory",
   "created": "2026-10-16T15:20:10+00:00",
   "rules": {
-    "hash": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+    "hash": "72deb411426ed0b5f6594d2bb05d300b04a5142b9616c691f01290d5c2bb32c6",
     "files": {
       ".gov/rules.md": "7ca765cc6080350b0fec7b4a4a5f363ae42379861e3f987a2c64d27a0f7d72c9",
       "gates.json": "d58ba07b0b16aefd8826a87efd0a809de8d65968c26c88b081f8f5fbdacb70bb"
@@ -15,5 +15,21 @@
   ],
   "status": "open",
   "receipt": null,
-  "id": "T-0247"
+  "id": "T-0247",
+  "repins": [
+    {
+      "ts": "2026-10-18T05:33:15+00:00",
+      "by": "lixiang@192.168.21.11",
+      "from": "0dca47ea5e899c8796b2f6707a9d81ac3c62215813e12c585a93a83c60f444c3",
+      "to": "30f103e98ddbb9a4e0f4881abbd00b52f26f8a2891a3249ba08af95ad075f1d7",
+      "reason": "live work on another seat (the disk-full sentinel landed #580; the low-memory and journal faces continue) \u2014 the pin went stale only because this same PR's rules.md adoption moved the constitution under it; the brief still describes open work"
+    },
+    {
+      "ts": "2026-10-18T06:11:50+00:00",
+      "by": "lixiang@192.168.21.11",
+      "from": "30f103e98ddbb9a4e0f4881abbd00b52f26f8a2891a3249ba08af95ad075f1d7",
+      "to": "72deb411426ed0b5f6594d2bb05d300b04a5142b9616c691f01290d5c2bb32c6",
+      "reason": "live work on another seat continues (row 16 journal/heap faces); this upgrade's gates.json change (self-test exclusive) moved the constitution hash under it again"
+    }
+  ]
 }
