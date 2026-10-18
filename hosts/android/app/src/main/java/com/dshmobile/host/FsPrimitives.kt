@@ -25,6 +25,10 @@ class FsPrimitives(private val context: Context) {
         const val MAX_READ_BYTES = 8 * 1024 * 1024
         const val BOOKMARK_PREFIX = "bkm:"
 
+        /* O_DIRECTORY is not exposed through android.system.OsConstants —
+         * the Linux asm-generic value every Android ABI shares (0200000). */
+        private const val O_DIRECTORY = 0x10000
+
         private fun invalid(primitive: String, message: String) =
             GatewayCore.GatewayError("invalid", primitive, message)
 
@@ -207,11 +211,11 @@ class FsPrimitives(private val context: Context) {
         try {
             val path = File(appRoot, rel).absolutePath
             val flags = if (kind == "dir") {
-                android.system.OsConstants.O_RDONLY or android.system.OsConstants.O_DIRECTORY
+                android.system.OsConstants.O_RDONLY or O_DIRECTORY
             } else {
                 android.system.OsConstants.O_RDWR
             }
-            val fd = android.system.Os.open(path, flags)
+            val fd = android.system.Os.open(path, flags, 0)
             try {
                 android.system.Os.fsync(fd)
             } finally {
@@ -230,7 +234,8 @@ class FsPrimitives(private val context: Context) {
     private fun dirFsync(dir: File) {
         val fd = android.system.Os.open(
             dir.absolutePath,
-            android.system.OsConstants.O_RDONLY or android.system.OsConstants.O_DIRECTORY,
+            android.system.OsConstants.O_RDONLY or O_DIRECTORY,
+            0,
         )
         try {
             android.system.Os.fsync(fd)
