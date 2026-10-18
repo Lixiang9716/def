@@ -1,88 +1,105 @@
 // dsh:logging-exempt — pure mapping layer; logging stays in the caller.
 /**
- * appshell-to-a2ui.js — converts an app-shell/0.9 expanded primitive tree
- * into the A2UI v0.9 `updateComponents` message format that @lynx-js/genui's
- * createMessageStore accepts. The conversion is mechanical: each primitive
- * becomes one A2UI component in a flat array, containers reference children
- * by id.
+ * appshell-to-a2ui.js — converts an expanded app-shell/0.9 primitive tree
+ * (the `expanded` output from validate()) into the A2UI v0.9
+ * `updateComponents` message that @lynx-js/genui's createMessageStore
+ * accepts. This is the cross-renderer bridge: the SAME spec drives both
+ * the web DOM renderer and the Lynx A2UI renderer.
  *
- * This is the M5 deliverable: proves that the SAME spec drives both our web
- * renderer (appshell.js DOM) and the Lynx renderer (genui A2UI components).
+ * A2UI component format (genui v0.7.0):
+ *   Flat array of { id, component: "TypeName", ...props }, containers
+ *   reference children by id. Props are plain values — text rides `text`,
+ *   never markup.
  */
 
-let _uid = 0;
-const mint = () => `as-${++_uid}`;
+let _n = 0;
+const uid = (prefix) => `${prefix}-${++_n}`;
 
-/** Map an expanded app-shell primitive node to an A2UI component object.
- * Returns { component, children } where children are already-converted
- * A2UI component objects. */
-function convert(node, ctx) {
-  const id = mint();
-  switch (node.type) {
-    case 'text': {
-      const comp = { id, component: 'Text', text: String(node.text ?? '') };
-      if (node.size === 'title') comp.style = { fontSize: '16px', fontWeight: '500' };
-      if (node.tone === 'muted') comp.style = { ...comp.style, color: '#8a9199' };
-      if (node.tone === 'accent') comp.style = { ...comp.style, color: ctx.accent };
-      return { component: comp, children: [] };
-    }
-    case 'image':
-      return { component: { id, component: 'Image', src: String(node.emoji || ''), style: { background: node.color || ctx.accent } }, children: [] };
-    case 'button': {
-      const comp = { id, component: 'Button', label: String(node.label ?? ''), action: { event: node.action || 'tap' } };
-      comp.style = { background: ctx.accent, color: '#fff' };
-      return { component: comp, children: [] };
-    }
-    case 'row':
-    case 'column': {
-      const comp = { id, component: node.type === 'row' ? 'Row' : 'Column', children: [] };
-      const kids = (node.children || []).map((c) => convert(c, ctx));
-      comp.children = kids.map((k) => k.component.id);
-      return { component: comp, children: kids.flatMap((k) => [k.component, ...k.children]) };
-    }
-    case 'card': {
-      const comp = { id, component: 'Card', children: [] };
-      const kids = (node.children || []).map((c) => convert(c, ctx));
-      comp.children = kids.map((k) => k.component.id);
-      return { component: comp, children: kids.flatMap((k) => [k.component, ...k.children]) };
-    }
-    case 'progressbar':
-      return { component: { id, component: 'Progress', value: Math.min(100, Math.max(0, node.value || 0)) }, children: [] };
-    case 'badge':
-      return { component: { id, component: 'Text', text: String(node.text ?? ''), style: { fontSize: '11px', background: 'rgba(0,0,0,.06)', borderRadius: '8px', padding: '3px 9px' } }, children: [] };
-    default:
-      return { component: { id, component: 'Text', text: `[${node.type}]` }, children: [] };
+/** app-shell primitive → A2UI component type. */
+const TYPE_MAP = {
+  text: 'Text',
+  image: 'Image',
+  button: 'Button',
+  row: 'Row',
+  column: 'Column',
+  card: 'Card',
+  progressbar: 'Slider',
+  badge: 'Text',
+};
+
+/** Convert one primitive node (and recursively its children) into A2UI
+ * component entries appended to `out`. Returns the entry's id. */
+function convertNode(node, out, ctx) {
+  const id = uid(node.type);
+  const entry = { id, component: TYPE_MAP[node.type] || 'Text' };
+
+  // Map scalar props
+  for (const key of ['text', 'label', 'emoji', 'color', 'value', 'placeholder',
+    'title', 'subtitle', 'name', 'preview', 'time', 'icon', 'sub',
+    'size', 'tone', 'src']) {
+    if (node[key] !== undefined) entry[key] = node[key];
   }
+
+  // Action reference
+  if (node.action !== undefined) {
+    entry.action = { event: node.action };
+  }
+
+  // Container: recurse children, reference by id
+  if (Array.isArray(node.children)) {
+    entry.children = node.children.map((child) => convertNode(child, out, ctx));
+  }
+
+  // Theme accent on leaf text
+  if (node.type === 'text' && node.tone === 'accent') {
+    entry.style = { color: ctx.accent };
+  }
+  if ((node.type === 'button' || node.type === 'image') && ctx.accent) {
+    entry.style = { ...entry.style, background: ctx.accent };
+  }
+
+  out.push(entry);
+  return id;
 }
 
-/** Convert an expanded primitive tree to the A2UI updateComponents payload.
+/**
+ * Convert a validated + expanded app-shell spec to A2UI updateComponents.
+ *
  * @param {object} expandedScreen — the `expanded` tree from validate()
+ * @param {{ accent: string, onAction?: (action: string) => void }} ctx
+ * @returns {{ surfaceId: string, components: object[] }}
+ */
+export function expandedToA2UI(expandedScreen, ctx) {
+  _n = 0;
+  const components = [];
+  convertNode(expandedScreen, components, ctx);
+  return { surfaceId: 'appshell', components };
+}
+
+/**
+ * Full pipeline: expand a spec (calls template expanders), then convert to
+ * A2UI updateComponents. The caller must have validated the spec first.
+ *
+ * @param {object} spec — the raw app-shell/0.9 spec (pre-expansion)
  * @param {{ accent: string }} ctx
  * @returns {{ surfaceId: string, components: object[] }}
  */
-export function toA2UIComponents(expandedScreen, ctx) {
-  _uid = 0;
-  const result = convert(expandedScreen, ctx);
-  return {
-    surfaceId: 'appshell',
-    components: [result.component, ...result.children],
-  };
+export function specToA2UIMessages(spec, ctx) {
+  _n = 0;
+  const components = [];
+  convertNode(spec.screen, components, ctx);
+  return { surfaceId: 'appshell', components };
 }
 
-/** Full pipeline: validate → expand → convert to A2UI updateComponents.
- * Returns { ok, errors?, a2ui? } — a2ui is ready for genui's store.push(). */
-export function specToA2UI(spec, ctx) {
-  // Lazy import to avoid circular — caller supplies validate+expand.
-  throw new Error('use specToA2UIFromExpanded(expanded, ctx) with the expanded tree from validate()');
-}
-
-/** Convenience: takes the already-validated+expanded tree. */
-export function expandedToA2UI(expandedScreen, accent) {
-  _uid = 0;
-  const ctx = { accent: accent || '#1677ff' };
-  const result = convert(expandedScreen, ctx);
-  return {
-    surfaceId: 'appshell',
-    components: [result.component, ...result.children],
-  };
+/**
+ * Build a complete genui MessageStore ingest sequence.
+ *
+ * @param {object[]} a2uiComponents — from expandedToA2UI() or specToA2UIMessages()
+ * @returns {object[]} — [createSurface, updateComponents] ready for store.push()
+ */
+export function toGenuiMessages(a2uiComponents) {
+  return [
+    { createSurface: { surfaceId: 'appshell', catalogId: 'appshell' } },
+    { updateComponents: { surfaceId: 'appshell', components: a2uiComponents } },
+  ];
 }
