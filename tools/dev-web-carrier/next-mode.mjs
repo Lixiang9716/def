@@ -385,7 +385,11 @@ const APP_SHELL_THEMES = {
     tabs: ['首页', '理财', '生活', '我的'] },
 };
 
-const appShellScriptFor = (turn, promptText, attemptId) => {
+/** Exported for the morph e2e leg: the deterministic script one prompt will
+ * play (the SAME function the carrier's turn machine consumes — the test
+ * derives its DOM-parity expectations from the very spec the wire carried,
+ * never a re-typed copy). */
+export const appShellScriptFor = (turn, promptText, attemptId) => {
   const appKey = Object.keys(APP_SHELL_THEMES).find(
     (k) => APP_SHELL_THEMES[k].re.test(promptText));
   if (!appKey) return null;
@@ -421,7 +425,7 @@ const appShellScriptFor = (turn, promptText, attemptId) => {
     settle: [
       { type: 'assistant/message', data: { turn, step: 1, message: { role: 'assistant', content: [{ type: 'text', text: appText }] } } },
       { type: 'tool/call', data: { turn, step: 1, callId: appCallId, name: 'appshell_render', arguments: JSON.stringify({ fixture: appKey }) } },
-      { type: 'tool/result', data: { turn, step: 1, message: { role: 'user', content: [{ type: 'tool-result', toolCallId: appCallId, isError: false, content: [{ type: 'text', text: JSON.stringify({ ok: true, title: app.label, spec }) }] }] } } },
+      { type: 'tool/result', data: { turn, step: 1, message: { role: 'user', content: [{ type: 'tool-result', toolCallId: appCallId, isError: false, content: [{ type: 'text', text: JSON.stringify({ ok: true, title: app.label, surfaceId: `dev-app-${turn}`, spec }) }] }] } } },
       { type: 'step/end', data: { turn, step: 1 } },
       { type: 'turn/end', data: { turn, reason: { kind: 'stop' } } },
       { type: 'session/title', data: { title: app.label + ' · 生成表面' } },

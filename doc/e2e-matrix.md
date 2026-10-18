@@ -6,6 +6,20 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-18 — the appshell family lands its two evidence legs:
+> `appshell.spec` (the CLI c-core leg, PR #582 — the first e2e where the
+> dsh-appshell plugin itself executes inside a real spine) and `appshell.morph`
+> (the L4 browser leg: `tools/dev-web-carrier/run-appshell-morph.sh` — one
+> command boots the dev carrier + the machine's Chrome via puppeteer-core,
+> drives the three one-prompt morphs 微信 → 网易云音乐 → 支付宝, and lands the
+> registered evidence set under `tools/dev-web-carrier/artifacts/appshell-morph/`).
+> The morph verdict rows: DOM primitive count == the plugin validator's expanded
+> tree per theme (32/32/32, the client expander's lockstep asserted beside it)
+> and zero page errors; its milestone stream is pinned one-to-one by
+> `test/e2e/scenarios/appshell-morph.json` (23 rows). The checker on this tree
+> counts **132 evidence dirs / 252 green verdicts / 247 pngs**, zero known gaps.
+> Counts are a checker run, not a claim: `node test/e2e/matrix.mjs` re-counts.
+
 > **Currency**: 2026-10-16 — the checker on this tree counts **127 evidence dirs /
 > 247 green verdicts / 245 pngs**, zero known gaps — the last one (the iOS b4
 > receipt) closed 2026-10-16 with a real simulator run that also exposed five

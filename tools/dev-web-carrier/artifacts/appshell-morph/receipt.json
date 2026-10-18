@@ -1,0 +1,15 @@
+{
+  "host": "darwin-dev-carrier (Darwin Darwin 27.0.0 arm64)",
+  "carrier": "tools/dev-web-carrier --client next (in-process, loopback)",
+  "browser": "machine Chrome via puppeteer-core (carrier-page.mjs discovery)",
+  "scenario": "appshell.morph",
+  "proves": [
+    "three one-prompt morphs (微信 → 网易云音乐 → 支付宝), zero renderer edits between them (the fourth-app counterfactual at the e2e layer)",
+    "L4 verdict row 1: DOM primitive count == the plugin validator's expanded tree, per theme (32/32/32), with the client expander's lockstep asserted beside it (morph/dom-parity)",
+    "L4 verdict row 2: zero page errors across the whole run (morph/page-errors-zero)",
+    "the fullscreen surface lifecycle per theme: card → open → accent → DOM parity → local tab switch → action loopback as a tagged user turn → close (milestones one-to-one with the manifest)"
+  ],
+  "checker": "tools/dev-web-carrier/appshell-morph.test.mjs (vitest) + milestone one-to-one vs test/e2e/scenarios/appshell-morph.json",
+  "events": 23,
+  "exitCode": 0
+}
