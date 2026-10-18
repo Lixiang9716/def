@@ -124,3 +124,89 @@ export function mergeUpdate(current, partial) {
     screen: partial.screen,
   };
 }
+
+// ---- swarm: staged spec arrival ---------------------------------------------
+
+const CLOSERS = { '{': '}', '[': ']' };
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3,8}$/;
+
+/** The lenient-JSON scan: walks a streamed tool-arguments prefix and returns
+ * {certain, stack} — `certain` is the length of the longest slice that
+ * closes into valid JSON built from COMPLETE values only. A value counts
+ * as complete when its terminator has arrived (closing quote, closing
+ * bracket, or a number/literal followed by a delimiter); a number at EOF
+ * might still grow digits, so it is dropped. Everything after `certain` is
+ * still in flight — a half-arrived child never surfaces as if it were
+ * closed. This is the ghost-tree half of the progressive render. */
+function scanCertainEnd(text) {
+  const stack = [];
+  let marked = []; // the stack AS OF the last certain point — repairs close THIS
+  let certain = 0;
+  let last = ''; // last significant char: ':' marks the next string a VALUE, not a key
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i];
+    if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r') { i += 1; continue; }
+    if (ch === '{' || ch === '[') { stack.push(ch); last = ch; i += 1; continue; }
+    if ((ch === '}' || ch === ']') && stack.length > 0) {
+      stack.pop(); i += 1; certain = i; marked = [...stack]; continue;
+    }
+    if (ch === ',' || ch === ':') { last = ch; i += 1; continue; }
+    if (ch === '"') {
+      let j = i + 1;
+      while (j < text.length && text[j] !== '"') j += text[j] === '\\' ? 2 : 1;
+      if (j >= text.length) return { certain, stack: marked }; // string still open
+      i = j + 1;
+      if (last !== ':' && stack[stack.length - 1] === '{') continue; // object key
+      certain = i; last = '"'; marked = [...stack]; continue; // complete string value
+    }
+    let j = i; // number / literal run: complete only under a delimiter
+    while (j < text.length && /[0-9a-zA-Z+.\-]/.test(text[j])) j += 1;
+    if (j === i) return { certain, stack: marked }; // unrecognized char: stop honestly
+    let k = j;
+    while (k < text.length && ' \t\n\r'.includes(text[k])) k += 1;
+    const next = text[k];
+    if (next !== ',' && next !== '}' && next !== ']') return { certain, stack: marked };
+    i = j; last = text[i - 1];
+    if (next === ',') { certain = i; marked = [...stack]; } // '}' / ']' commit via the close branch next loop
+  }
+  return { certain, stack: marked };
+}
+
+/** Lenient JSON-prefix parse: the maximal certainly-complete value of a
+ * streamed JSON document, or null when nothing complete has arrived. Never
+ * throws on partial or hostile input — the worst case is a dropped tail. */
+export function parseJsonPrefix(text) {
+  if (typeof text !== 'string' || text === '') return null;
+  const { certain, stack } = scanCertainEnd(text);
+  if (certain === 0) return null;
+  const closers = [...stack].reverse().map((open) => CLOSERS[open]).join('');
+  const candidate = text.slice(0, certain) + closers;
+  try { return JSON.parse(candidate); } catch { /* fall through */ }
+  try { return JSON.parse(candidate.replace(/,\s*([}\]])/g, '$1')); } catch { return null; }
+}
+
+/** One swarm variant's card model, folded from its ACCUMULATED tool
+ * arguments (the staged stream): pen identity, the certainly-closed
+ * top-level children, and the ghost slots still to come (the opener
+ * announces `slots` — the plan; ghosts = slots − closed). Pure — the DOM
+ * half (appshell.js) renders this; the webclient suite pins the cuts.
+ * Non-swarm arguments (the theme fixture's {"fixture":…}) answer null. */
+export function swarmCardModel(argsText) {
+  const doc = parseJsonPrefix(argsText);
+  const meta = doc && doc.swarm;
+  if (!meta || typeof meta !== 'object' || typeof meta.pen !== 'string' || meta.pen === '') return null;
+  const children = doc?.spec?.screen?.children;
+  const closed = (Array.isArray(children) ? children : []).slice(0, CAPS.CHILDREN);
+  const slots = Math.max(0, Math.min(CAPS.CHILDREN, Math.floor(Number(meta.slots) || 0)));
+  return {
+    pen: meta.pen.slice(0, 40),
+    accent: typeof meta.accent === 'string' && HEX_COLOR_RE.test(meta.accent) ? meta.accent : '#8a8f98',
+    slot: Math.floor(Number(meta.slot) || 0),
+    of: Math.floor(Number(meta.of) || 0),
+    slots,
+    closed,
+    ghosts: Math.max(0, slots - closed.length),
+    growth: Math.min(closed.length, slots),
+  };
+}

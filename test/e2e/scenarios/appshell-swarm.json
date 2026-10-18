@@ -1,0 +1,105 @@
+{
+  "scenario": "appshell.swarm",
+  "extract": {
+    "prefix": "swarm-event:"
+  },
+  "note": "The swarm-visual leg: one swarm prompt grows three pen-identity variant cards side by side in the strip (certainly-closed components render immediately over STAGED spec arrival, pending slots ghost as translucent dashed boxes, pen cursors rest on the growth points; prefers-reduced-motion renders everything instantly without animation). Completion judges each card's DOM against its spec's expanded tree at the L4 bar (one ash-* element per primitive, plugin + client expandSpec in lockstep); promoting a card reuses the SAME openSurface seam and the others stay selectable; the conversation flow keeps its normal timeline cards; zero page errors. The staged PNG shots under tools/dev-web-carrier/artifacts/appshell-swarm/shots/ are local visual evidence only — DOM assertions are the verdict. extract.prefix is nominal — this leg is never fed to check.mjs; the e2e-matrix reads the landed verdict.",
+  "expect": [
+    {
+      "event": "swarm/boot",
+      "match": {
+        "client": "web-client-v2"
+      }
+    },
+    {
+      "event": "swarm/turn-submitted",
+      "match": {
+        "input": "画三个音乐 app 方案"
+      }
+    },
+    {
+      "event": "swarm/strip-growing",
+      "match": {
+        "cards": 3,
+        "ghostsSeen": true,
+        "cursors": 3
+      }
+    },
+    {
+      "event": "swarm/pen-identity",
+      "match": {
+        "pens": "青笔|赤笔|紫笔",
+        "accents": 3
+      }
+    },
+    {
+      "event": "swarm/card-parity",
+      "match": {
+        "pen": "青笔",
+        "expected": 32,
+        "actual": 32
+      }
+    },
+    {
+      "event": "swarm/card-parity",
+      "match": {
+        "pen": "赤笔",
+        "expected": 22,
+        "actual": 22
+      }
+    },
+    {
+      "event": "swarm/card-parity",
+      "match": {
+        "pen": "紫笔",
+        "expected": 35,
+        "actual": 35
+      }
+    },
+    {
+      "event": "swarm/all-complete",
+      "match": {
+        "cards": 3,
+        "ghosts": 0
+      }
+    },
+    {
+      "event": "swarm/timeline-intact",
+      "match": {
+        "promptIntact": true,
+        "toolCards": 3
+      }
+    },
+    {
+      "event": "swarm/promoted-fullscreen",
+      "match": {
+        "pen": "赤笔",
+        "accent": "#e05537"
+      }
+    },
+    {
+      "event": "swarm/surface-parity",
+      "match": {
+        "expected": 22,
+        "actual": 22
+      }
+    },
+    {
+      "event": "swarm/others-selectable",
+      "match": {
+        "reselected": "青笔",
+        "cardsRemaining": 3
+      }
+    },
+    {
+      "event": "swarm/surface-closed",
+      "match": {}
+    },
+    {
+      "event": "swarm/page-errors-zero",
+      "match": {
+        "errors": 0
+      }
+    }
+  ]
+}

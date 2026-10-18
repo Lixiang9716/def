@@ -106,7 +106,12 @@ const echoScript = (turn, promptText, attemptId = `dev-a${turn}`, lastSurfaceId)
  * activeFrames so a re-open snapshot can resume the tail). */
 const runEchoTurn = (session, promptText, seq, done) => {
   const turn = (session.nextTurn = (session.nextTurn ?? 0) + 1);
-  const { steps, stream, settle } = echoScript(turn, promptText, `dev-a${turn}`, session.lastAppSurfaceId);
+  const script = echoScript(turn, promptText, `dev-a${turn}`, session.lastAppSurfaceId);
+  const { steps, stream, settle } = script;
+  // The swarm leg streams ~15 staged chunks; at the echo cadence (55ms) the
+  // progressive-render window would be humanly invisible. A script may pace
+  // its own stream (frameGapMs) — the default stays exactly as it was.
+  const frameGapMs = script.frameGapMs ?? 55;
   // The render script mints dev-app-<turn> as its surfaceId — remember it so
   // the NEXT [appshell:…] loop-back's update names the live surface.
   if (settle.some((r) => r.type === 'tool/call' && r.data.name === 'appshell_render')) {
@@ -132,7 +137,7 @@ const runEchoTurn = (session, promptText, seq, done) => {
       }
       if (index < steps.length + stream.length) {
         stepFrame(session, stream[index++ - steps.length]);
-        return setTimeout(tick, 55);
+        return setTimeout(tick, frameGapMs);
       }
       if (index < steps.length + stream.length + settle.length) {
         post({ ...settle[index++ - steps.length - stream.length], seq: seq(), time: Date.now() / 1000 });
@@ -385,9 +390,13 @@ export const startNextCarrier = ({ repoRoot, port, sessionsFixture, journalPath 
  * never a re-typed copy). */
 import {
   appShellScriptFor, appShellUpdateScriptFor, APP_SHELL_UPDATE_SPEC, APP_SHELL_HOSTILE_TEXTS,
+  swarmScriptFor, swarmVariants, SWARM_PENS,
 } from './appshell-scripts.mjs';
 
 // Re-exported for the e2e legs (the stable seam; the builders moved to
 // appshell-scripts.mjs at the code-size gate).
-export { appShellScriptFor, appShellUpdateScriptFor, APP_SHELL_UPDATE_SPEC, APP_SHELL_HOSTILE_TEXTS };
+export {
+  appShellScriptFor, appShellUpdateScriptFor, APP_SHELL_UPDATE_SPEC, APP_SHELL_HOSTILE_TEXTS,
+  swarmScriptFor, swarmVariants, SWARM_PENS,
+};
 

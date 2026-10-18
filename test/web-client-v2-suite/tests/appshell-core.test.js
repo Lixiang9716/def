@@ -107,3 +107,101 @@ describe('mergeUpdate — the incremental update seam (M3)', () => {
     expect(mergeUpdate(current, null)).toBeNull();
   });
 });
+
+// ---- swarm: lenient JSON-prefix parse + ghost-tree projection --------------
+
+import { parseJsonPrefix, swarmCardModel } from '../../../presentation/web-client-v2/web/js/appshell-core.js';
+
+const C1 = { type: 'banner-card', title: '节奏', subtitle: '方案一' };
+const C2 = { type: 'text', text: '每周复原一张母带', size: 'small', tone: 'muted' };
+const C3 = { type: 'mini-player', cover: { emoji: '▶', color: '#e05537' }, title: 'A 面', action: 'demo.tap' };
+const swarmDoc = () => ({
+  swarm: { slot: 2, of: 3, pen: '赤笔', accent: '#e05537', slots: 3 },
+  spec: {
+    spec: 'app-shell/0.9', theme: { accent: '#e05537', mode: 'light' },
+    tabs: ['推荐', '黑胶', '乐库'], actions: ['demo.tap'],
+    screen: { type: 'column', children: [C1, C2, C3] },
+  },
+});
+
+describe('parseJsonPrefix — the certainly-complete prefix of a streamed doc', () => {
+  const full = JSON.stringify(swarmDoc());
+
+  it('parses the complete document to itself', () => {
+    expect(parseJsonPrefix(full)).toEqual(swarmDoc());
+  });
+  it('empty, key-only, and mid-string prefixes yield nothing complete', () => {
+    expect(parseJsonPrefix('')).toBeNull();
+    expect(parseJsonPrefix('   ')).toBeNull();
+    expect(parseJsonPrefix('{"swarm"')).toBeNull();
+    expect(parseJsonPrefix('{"swarm":')).toBeNull();
+    expect(parseJsonPrefix('{"swarm":{"pen":"赤')).toBeNull();
+  });
+  it('the pen meta lands the moment its object closes; a dangling comma is dropped', () => {
+    const cut = full.slice(0, full.indexOf(',"spec"'));
+    expect(parseJsonPrefix(cut)).toEqual({ swarm: swarmDoc().swarm });
+    expect(parseJsonPrefix(cut + ',')).toEqual({ swarm: swarmDoc().swarm });
+  });
+  it('a number at EOF is still growing — it is dropped, the string before it stays', () => {
+    expect(parseJsonPrefix('{"swarm":{"pen":"赤笔","slots":3')).toEqual({ swarm: { pen: '赤笔' } });
+    expect(parseJsonPrefix('{"swarm":{"pen":"赤笔","slots":3}')).toEqual({ swarm: { pen: '赤笔', slots: 3 } });
+  });
+  it('whitespace between tokens never blocks completion', () => {
+    expect(parseJsonPrefix('{ "swarm" : { "pen" : "赤笔" } ')).toEqual({ swarm: { pen: '赤笔' } });
+  });
+});
+
+describe('swarmCardModel — ghost-tree diff over the staged arrival', () => {
+  const full = JSON.stringify(swarmDoc());
+  const atChild = (n) => full.indexOf(JSON.stringify([C1, C2, C3].slice(0, n + 1)[n]));
+
+  it('nothing arrived: full plan as ghosts, growth at slot 0', () => {
+    const opener = full.slice(0, full.indexOf('"children":[') + '"children":['.length);
+    const model = swarmCardModel(opener);
+    expect(model.pen).toBe('赤笔');
+    expect(model.accent).toBe('#e05537');
+    expect(model.slots).toBe(3);
+    expect(model.closed).toEqual([]);
+    expect(model.ghosts).toBe(3);
+    expect(model.growth).toBe(0);
+  });
+  it('child 1 closed, child 2 half-arrived: the half is dropped, ghost stays', () => {
+    const after1 = swarmCardModel(full.slice(0, atChild(0) + JSON.stringify(C1).length) + ',');
+    expect(after1.closed).toEqual([C1]);
+    expect(after1.ghosts).toBe(2);
+    expect(after1.growth).toBe(1);
+    const mid2 = swarmCardModel(full.slice(0, atChild(1) + 4));
+    expect(mid2.closed).toEqual([C1]);
+    expect(mid2.ghosts).toBe(2);
+  });
+  it('all children closed but the document not yet sealed: zero ghosts', () => {
+    const trailing = full.slice(0, full.length - 3);
+    const model = swarmCardModel(trailing);
+    expect(model.closed).toEqual([C1, C2, C3]);
+    expect(model.ghosts).toBe(0);
+    expect(model.growth).toBe(3);
+  });
+  it('non-swarm arguments and hostile shapes answer null, never throw', () => {
+    expect(swarmCardModel('')).toBeNull();
+    expect(swarmCardModel('{"fixture":"wechat"}')).toBeNull();
+    expect(swarmCardModel('{"swarm":3')).toBeNull();
+    expect(swarmCardModel('<script>alert(1)</script>')).toBeNull();
+  });
+});
+
+describe('swarmCardModel — identity hardening', () => {
+  it('pen capped, non-hex accent falls back, hostile text survives as data', () => {
+    const hostile = JSON.stringify({
+      swarm: { pen: '笔'.repeat(60), accent: 'javascript:alert(1)', slots: 2 },
+      spec: { screen: { type: 'column', children: [
+        { type: 'text', text: '<script>alert(1)</script>' },
+      ] } },
+    });
+    const model = swarmCardModel(hostile);
+    expect(model.pen).toHaveLength(40);
+    expect(model.accent).toBe('#8a8f98');
+    expect(model.closed[0].text).toBe('<script>alert(1)</script>');
+    expect(model.slots).toBe(2);
+    expect(model.ghosts).toBe(1);
+  });
+});

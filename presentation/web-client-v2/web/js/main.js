@@ -15,7 +15,7 @@ import { renderConnection, renderSessionList } from './render-home.js';
 import { createComposer } from './composer.js';
 import { setupOnboarding } from './onboarding.js';
 import { setupMarketplace } from './marketplace.js';
-import { setupAppshell, openSurface as openAppshell, surfaceSpec } from './appshell.js';
+import { setupAppshell, openSurface as openAppshell, surfaceSpec, createSwarmStrip } from './appshell.js';
 import { mergeUpdate } from './appshell-core.js';
 
 const $ = (id) => document.getElementById(id);
@@ -63,6 +63,20 @@ const onOpenAppshell = (payload) => {
     onAction: (action, label) => submitAppshellAction(action, label),
   });
 };
+
+// The swarm strip: one prompt, three pen-identity variant cards growing
+// side-by-side above the composer (the conversation flow itself keeps its
+// normal timeline cards). Promoting a completed variant rides the SAME
+// presented-surface seam as onOpenAppshell — openSurface, nothing new.
+const swarmStrip = createSwarmStrip($('swarm-strip'), {
+  onPromote: ({ title, spec }) => {
+    openAppshell({
+      title,
+      spec,
+      onAction: (action, label) => submitAppshellAction(action, label),
+    });
+  },
+});
 
 // The appshell_update auto-apply (D-4's single-surface in-place replace): a
 // completed update whose echo carries a spec re-renders the OPEN surface
@@ -171,6 +185,7 @@ const leaveSession = () => {
     mux.cancel(followStream);
     followStream = null;
   }
+  swarmStrip.clear();
   timeline = null;
   renderer = null;
   activeSessionId = null;
@@ -188,6 +203,7 @@ const openSession = (sessionId) => {
     // that), and the frame cadence here is human-paced anyway.
     if (kind === 'structure') renderer.renderStructure(timeline);
     else renderer.renderTail(timeline);
+    swarmStrip.reconcile(timeline); // both tiers: the strip grows on tail bumps, settles on structure
     maybeAutoApplyAppshellUpdate();
     refreshChrome();
   });

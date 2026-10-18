@@ -60,6 +60,12 @@
         <button id="jump-latest" class="glass jump-latest" type="button"
           aria-label="跳到最新" hidden>↓</button>
       </div>
+      <!-- Swarm strip: the staged variant cards of a swarm prompt (three
+           pens growing side by side — closed components render, pending
+           slots ghost). Clicking a completed card promotes it through the
+           same presented-surface seam (openSurface) as the tool card's
+           open button; the others stay selectable. -->
+      <section id="swarm-strip" class="swarm-strip" hidden aria-label="方案变体"></section>
       <footer id="composer" class="composer">
         <div class="glass composer-card">
           <textarea id="composer-input" rows="1"
