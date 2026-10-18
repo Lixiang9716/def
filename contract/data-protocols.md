@@ -1,7 +1,9 @@
-# Data Protocols — Bundle Layout, Manifest, Receipt, Signed Catalog (v1.2.0)
+# Data Protocols — Bundle Layout, Manifest, Receipt, Signed Catalog (v1.3.0)
 
 > **Status: FROZEN at the contract freeze** (2026-09-19, decision D5); **additively extended to
-> v1.1.0** (2026-10-01: §7, the signed catalog — proposal
+> v1.3.0** (2026-10-19: §10, `a2ui.messages@0.9` — proposal
+> [2026-10-17-a2ui-generative-ui.md](proposals/2026-10-17-a2ui-generative-ui.md), ADOPTED;
+> v1.2.0: §8–§9; v1.1.0: §7, the signed catalog — proposal
 > [2026-10-01-plugin-marketplace.md](proposals/2026-10-01-plugin-marketplace.md), ADOPTED). These
 > are the four data protocols every host and every plugin build must honor. Machine-readable
 > schemas live in [schemas/](schemas/). Companion to [primitives.md](primitives.md).
@@ -228,3 +230,50 @@ Sub-path entries for `strokePath` / `fillPath` (`d`): `{ c: "move", x, y }`,
 `{ c: "line", x, y }`, `{ c: "quad", cx, cy, x, y }`, `{ c: "arc", x, y, r,
 start, end, ccw? }` (angles in radians), `{ c: "close" }`. A `d` that starts
 anywhere but `move` rejects the frame as `invalid`.
+
+## 10. Agent-UI messages (v1.3.0 — `a2ui.messages@0.9`)
+
+The declarative agent-UI format: versioned UI payloads the agent emits as
+**session content** — the same altitude as tool-call cards — and every host
+renders with its own renderer. Adopted from
+[proposals/2026-10-17-a2ui-generative-ui.md](proposals/2026-10-17-a2ui-generative-ui.md)
+(ADOPTED 2026-10-19); what this section freezes is exactly what the landed
+`dsh-appshell` plugin and the web-client renderer implement. Zero gateway
+primitives, zero new channels (proposal non-goals held).
+
+- **Format name and pin.** `a2ui.messages@0.9` names A2UI spec **v0.9** — the
+  version the pinned Lynx renderer (`@lynx-js/genui` v0.7.0) speaks. An
+  upgrade re-pins this section only when the renderer we pin supports the
+  newer spec; the version lives in the format name precisely because that
+  gap exists.
+- **Downlink (agent → client).** UI payloads ride the session stream over the
+  SessionServe wire; the three-layer envelope is unmoved. A host renders with
+  its own catalog: the Lynx face through genui's MessageProcessor, the web
+  client through its in-tree component renderer. Rendering never executes
+  model-authored code.
+- **Uplink (client → agent).** `onAction` from a rendered surface enters as a
+  **user turn tagged with the component path** (the shipped spelling:
+  `[appshell:<action>] <label>`), passing the same approval seams as any
+  user-originated request (#441). There is no `ui.action` channel in v0.
+- **Profiles.** The first frozen profile is **`app-shell/0.9`** — a two-layer
+  vocabulary: 8 primitives (`text image button row column card progressbar
+  badge`, the only rendering words) and 8 templates (compiled to pure
+  primitive trees; the validator enforces expandability). A profile names a
+  component catalog, its per-component props, and its validation gates; the
+  four gates are whitelist / text purity / size caps / action enum.
+- **Surfaces and increments.** A render mints a `surfaceId` the echo returns;
+  an update must name a live surface (a forged id is refused before any spec
+  work — cross-surface pollution is an authorization failure, not a
+  validation one). Update payloads may be **full or incremental** —
+  `screen` replaces the tree, `theme`/`tabs`/`actions` override when present;
+  the wire carries the payload as received and both sides merge over the
+  render origin.
+- **Security rules.** Component string fields are text — never markup, never
+  auto-fetched URLs; there is no HTML escape-hatch in v0. Per-message
+  budgets: serialized spec ≤32KB, expanded tree ≤200 nodes, depth ≤8, text
+  fields ≤500 runes, children ≤24. Output is stream-parseable so a hostile
+  or runaway model truncates; it never wedges the runtime.
+
+The legacy `card.present` bus vocabulary maps into the A2UI catalog (the
+extractor is pure JS in the runtime closure); a deprecation timeline is
+decided separately — never a forced migration.

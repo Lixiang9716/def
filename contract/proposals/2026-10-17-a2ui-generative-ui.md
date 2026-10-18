@@ -1,9 +1,9 @@
 # Proposal: the agent-UI seam — A2UI v0.9 as the declarative generative-UI format (format-only fold candidate)
 
-> **Status: DRAFT (filed for the owner to accept or reject; flips nothing, freezes
-> nothing, ships no code — this filing is the D5 artifact itself. The leanest
-> possible fold: a versioned message format in data-protocols.md, ZERO new
-> primitives, ZERO new channels).**
+> **Status: ADOPTED (2026-10-19) — folded as data-protocols.md §10 `a2ui.messages@0.9`
+> (v1.3.0). This file is the rationale record; the frozen seams live in the contract
+> doc. The owner adopted post-hoc: the seam had already shipped as the `dsh-appshell`
+> plugin and the web-client renderer, and the fold freezes the implemented shape.**
 > English | [简体中文](2026-10-17-a2ui-generative-ui.zh.md)
 
 ## Motivation
