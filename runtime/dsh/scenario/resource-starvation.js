@@ -147,12 +147,12 @@ const journalSized = async () => {
  * boundary) or the turn budget expires (full === null — the silent-loss
  * class; the caller pins its verdict). Growth events ride every 25th
  * turn. */
-const growBallast = async (agent, backend, minBytes, journalSized) => {
+const growBallast = async (agent, backend, minBytes, journalSized, tripped) => {
   let full = null;
   let turns = 1;
   let lastBytes = 0;
   let lastChangeTurn = 0;
-  while (turns < 4000) {
+  while (turns < 4000 && !tripped()) {
     try {
       await runTurn(agent, `ballast turn ${turns} ${'x'.repeat(4096)}`);
       await backend.flush();
@@ -186,23 +186,21 @@ const preLeg = async (env) => {
     'the mock turn did not answer');
   await backend.flush();
   const minBytes = Number(env.DSH_JOURNAL_MIN_BYTES ?? 900 * 1024);
-  const { full, turns, durableBytes } = await growBallast(agent, backend, minBytes, journalSized);
-  if (full === null) {
-    // FROZEN-GROWTH FINDING: the journal stopped growing while the turns
-    // kept succeeding — the backend swallowed the write failure in
-    // silence. Pinned as the leg's red verdict: silent disk-full loss.
-    emit('journal.starve.silent-loss', { turns, journalBytes: durableBytes });
-    emit('journal.starve.verdict', {
-      leg: 'grow', status: 'silent-loss', turns, journalBytes: durableBytes,
-    });
-    globalThis.__dshComplete(false, 'silent disk-full journal loss: '
-      + `frozen at ${durableBytes}B by turn ${turns}`);
-    return;
-  }
-  demand(full !== null, 'the journal grew past every turn budget without the volume refusing a write');
+  // THE NAMED-SURFACE DEMAND (#571): the disk-full write failure must be
+  // NAMED — either the backend surfaced ENOSPC through the turn (full) or
+  // the boot-row sentinel raised agent/error (frozen durable size). The
+  // old behavior — silence — is the defect this face exists to rule out.
+  const sentinelTripped = () => statuses.some((st) => st.startsWith('error:'));
+  const { full, turns, durableBytes } =
+    await growBallast(agent, backend, minBytes, journalSized, sentinelTripped);
+  const namedBy = full !== null ? 'write-error'
+    : (sentinelTripped() ? 'sentinel' : null);
+  demand(namedBy !== null,
+    'the disk-full journal failure was silent: no write error and no sentinel agent/error');
+  emit('journal.starve.named', { turns, by: namedBy });
   emit('journal.starve.verdict', {
     leg: 'grow', status: 'pass', events: eventCount(ctx.sessions.get(SESSION_ID)),
-    journalBytes: durableBytes, turns, fullNamed: full !== null,
+    journalBytes: durableBytes, turns, namedBy,
   });
   demand(statuses.filter((s) => s.startsWith('error:')).length === 0,
     `the pre leg surfaced agent errors: ${statuses.join(';')}`);
