@@ -93,6 +93,11 @@ class GatewayCore private constructor(val manifest: GatewayManifest) {
          * capability plane's `microphone` gates the mic pair and its
          * `camera` family gates the three camera rows (v1.10.0). */
         private val familyFlags = mapOf(
+            // v1.11.0 durable-fs pair: the frozen table gates them under the
+            // existing fs flags (rows 32/33 — fsPublishAtomic rides fsWrite,
+            // fsSync rides fsRead), the same one-flag-two-primitives rule.
+            "fsPublishAtomic" to "fsWrite",
+            "fsSync" to "fsRead",
             "clipboardRead" to "clipboard",
             "clipboardWrite" to "clipboard",
             "presentShare" to "share",
