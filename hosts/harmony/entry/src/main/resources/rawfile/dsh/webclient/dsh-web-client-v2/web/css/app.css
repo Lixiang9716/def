@@ -31,10 +31,15 @@
   to { transform: translate3d(4%, 3%, 0) scale(1.12); }
 }
 /* The ambient loops stop under reduced motion (theme.css guards the
- * status dot); none of them ever carries meaning on its own. */
+ * status dot); none of them ever carries meaning on its own. The swarm
+ * pen follows the same law: no glide, no pulse, no done-flash — the
+ * ghosts and the cursor still appear, instantly (they carry meaning). */
 @media (prefers-reduced-motion: reduce) {
   .ocean-backdrop::after { animation: none; }
   .cursor-blink { animation: none; }
+  .swm-cursor { transition: none; }
+  .swm-card--active { animation: none; }
+  .swm-card--done { animation: none; }
 }
 
 .home-header {
@@ -787,3 +792,146 @@
 .ash-tab.active { color: var(--p-accent, #1677ff); background: color-mix(in srgb, var(--p-accent, #1677ff) 10%, transparent); font-weight: 500; }
 .appshell-preview { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 260px; overflow: hidden; border-radius: 10px; }
 .appshell-open-btn { border: 1px solid var(--link, #1677ff); background: transparent; color: var(--link, #1677ff); border-radius: 14px; padding: 4px 12px; font-size: 12px; cursor: pointer; margin-top: 6px; }
+
+/* ==== swarm strip (staged variant cards) ================================= */
+
+.swarm-strip {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px 6px;
+  overflow-x: auto;
+  background: rgba(9, 20, 38, 0.6);
+  border-top: 0.7px solid rgba(191, 214, 255, 0.16);
+}
+.swarm-strip[hidden] { display: none; }
+
+.swm-card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 106px;
+  max-width: 138px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  border: 1.5px solid color-mix(in srgb, var(--swm-accent, #1677ff) 35%, transparent);
+}
+.swm-card--active {
+  border-color: color-mix(in srgb, var(--swm-accent, #1677ff) 70%, transparent);
+  animation: swm-pulse 1.5s ease-in-out infinite;
+}
+.swm-card--done { animation: swm-done 0.8s ease-out forwards; }
+.swm-card--selected {
+  border-color: var(--swm-accent, #1677ff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--swm-accent, #1677ff) 30%, transparent);
+}
+@keyframes swm-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--swm-accent, #1677ff) 30%, transparent); }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--swm-accent, #1677ff) 10%, transparent); }
+}
+@keyframes swm-done {
+  0% { box-shadow: 0 0 0 0 rgba(41, 186, 92, 0.55); }
+  30% { box-shadow: 0 0 0 6px rgba(41, 186, 92, 0.28); }
+  100% { box-shadow: 0 0 0 0 rgba(41, 186, 92, 0); }
+}
+
+.swm-head { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.swm-pen-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--swm-accent, #1677ff);
+  flex: none;
+}
+.swm-pen-name {
+  font-size: 10.5px;
+  font-weight: 650;
+  color: var(--swm-accent, #1677ff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.swm-chip {
+  margin-left: auto;
+  flex: none;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #8a9199;
+}
+.swm-card--active .swm-chip {
+  color: var(--swm-accent, #1677ff);
+  background: color-mix(in srgb, var(--swm-accent, #1677ff) 12%, transparent);
+}
+
+/* The card body reuses the surface's ash-* primitives, compacted. */
+.swm-body {
+  position: relative;
+  height: 216px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.swm-body .ash-card { padding: 5px 6px; margin: 0; border-radius: 8px; }
+.swm-body .ash-row { flex-wrap: wrap; gap: 4px; margin: 0; }
+.swm-body .ash-col { gap: 3px; }
+.swm-body .ash-text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.swm-body .ash-text.ash-title { font-size: 11px; }
+.swm-body .ash-text.ash-body { font-size: 9.5px; }
+.swm-body .ash-text.ash-small { font-size: 8.5px; }
+.swm-body .ash-badge { font-size: 8.5px; padding: 2px 5px; margin-right: 3px; }
+.swm-body .ash-btn { font-size: 9px; padding: 3px 8px; border-radius: 10px; }
+.swm-body .ash-progress-track { height: 8px; }
+
+/* The not-yet-arrived parts: translucent dashed outline boxes in the
+ * pen's own color — the plan's pending slots. */
+.swm-ghost {
+  flex: none;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px dashed color-mix(in srgb, var(--swm-accent, #1677ff) 55%, transparent);
+  background: color-mix(in srgb, var(--swm-accent, #1677ff) 7%, transparent);
+}
+
+/* The pen cursor: nib + name pill, resting on the card's growth point. */
+.swm-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 3px;
+  transition: transform 180ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+.swm-cursor[hidden] { display: none; }
+.swm-cursor-nib {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  margin-top: 2px;
+  background: var(--swm-accent, #1677ff);
+  border-radius: 2px 7px 2px 7px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.swm-cursor-label {
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 6px;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--swm-accent, #1677ff);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
