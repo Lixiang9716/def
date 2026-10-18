@@ -43,7 +43,65 @@ export const mountSessionPersistence = async (ctx, config) => {
     root: config.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`,
     ...(config.compression === undefined ? {} : { compression: config.compression }),
   });
+  installDiskWatermarkGuard(ctx, config);
   installDiskFullSentinel(ctx);
+};
+
+/** The disk watermark guard (row 16 follow-up, #571): the sentinel names
+ * the loss AFTER the writes fail; the guard refuses the turn BEFORE it.
+ * The mechanism-true rule: the jsonl flush is an ATOMIC temp+rename — it
+ * needs the WHOLE journal size in free bytes to publish. So the guard
+ * refuses a new turn once `2*journal + reserve > volume total` (the
+ * in-flight copy doubles the footprint), with the total supplied by the
+ * seat that owns the volume (DSH_DISK_TOTAL_BYTES; unset = no guard).
+ * Observed live on a 5MB ramdisk: without the guard the full volume
+ * TRUNCATES the journal to zero and the grow-truncate cycle repeats with
+ * zero named surfaces — the guard cuts the cycle at its first turn. */
+export const installDiskWatermarkGuard = (ctx, config) => {
+  const total = Number(config?.diskTotalBytes ?? 0);
+  const reserve = Number(config?.diskReserveBytes ?? 256 * 1024);
+  if (!Number.isFinite(total) || total <= 0) return;
+  const root = config?.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`;
+  const agents = ctx.agents;
+  if (!agents) return;
+  const fsPromises = () => import('node:fs/promises');
+  const journalSize = async () => {
+    const base = `${root}`;
+    const f = await fsPromises();
+    const encoded = (await f.readdir(base))[0];
+    const sessions = await f.readdir(`${base}/${encoded}`).catch(() => []);
+    let total = 0;
+    for (const sid of sessions) {
+      const dir = `${base}/${encoded}/${sid}`;
+      const files = await f.readdir(dir).catch(() => []);
+      for (const file of files) {
+        if (file.startsWith('session.v')) {
+          total += await f.stat(`${dir}/${file}`).then((s) => s.size).catch(() => 0);
+        }
+      }
+    }
+    return total;
+  };
+  const guarded = new WeakSet();
+  ctx.on('session/event', (session, event) => {
+    if (event?.type !== 'turn/start' || !session?.id) return;
+    const agent = agents.get(session.id);
+    if (!agent?.followup || guarded.has(agent)) return;
+    guarded.add(agent);
+    const raw = agent.followup.bind(agent);
+    agent.followup = async (...args) => {
+      const size = await journalSize().catch(() => 0);
+      if (2 * size + reserve > total) {
+        throw new Error(
+          `session journal volume headroom is gone: journal ${size}B on a `
+          + `${total}B volume — the atomic flush needs the whole journal free, `
+          + 'so this turn is refused rather than journaled into a backend '
+          + 'that would silently drop (and truncate) it',
+        );
+      }
+      return raw(...args);
+    };
+  });
 };
 
 /** The disk-full sentinel (row 16, #571): the vendored backend's appends

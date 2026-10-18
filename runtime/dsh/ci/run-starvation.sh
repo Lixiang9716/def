@@ -111,8 +111,8 @@ if [ "$LEG" = "journal" ] || [ "$LEG" = "all" ]; then
     STARVE_TMPDIR="$MOUNT/container"
     mkdir -p "$STARVE_TMPDIR"
 
-    echo "== 2a grow leg: the journal grows until the volume refuses =="
-    run_leg grow
+    echo "== 2a grow leg: the journal grows until the guard refuses =="
+    run_leg grow --env "DSH_DISK_TOTAL_BYTES=$((5 * 1024 * 1024))"
 
     # The volume is now truly full. The runner leaves recovery to the
     # host-plane fix landing (space freed => resume + clean flush); the
