@@ -157,6 +157,9 @@ describe('access answers the real mode on regular files (#259 fix 2, sync face)'
     expect(error.syscall).toBe('stat'); // access inherits stat's absence shape
   });
 
+});
+
+describe('access answers the tracked mode inside the workspace (the provider not-exe shape)', () => {
   it('X_OK answers the chmod-TRACKED mode on workspace files (the provider not-exe shape)', () => {
     // The lsp provider spec's absolute not-executable command is an
     // INSIDE-root workspace file: tracked 0644 must refuse X_OK, a chmod to
