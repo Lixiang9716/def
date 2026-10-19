@@ -6,18 +6,22 @@
  * prints one JSON line of structured facts for the vitest suite to assert:
  *
  *   (a) resolve+stat of an EXISTING outside-root directory — the 2026-10-05
- *       battery's /system/app case: pre-fix this answered {type:'directory'}
- *       and the tool's own is-regular-file pre-check turned it into the bare
- *       FS_NOT_REGULAR_FILE; the fix refuses INSIDE ctx.fs.stat with the
- *       #358 anchor.
- *   (b) resolve+stat of an ABSENT outside-root path — pre-fix the anchor
- *       rode the resolve; the fix keeps fs-local's ancestor walk and the
- *       stat lands absent (the FS_NOT_FOUND handoff to the tools).
+ *       battery's /system/app case. loop-v2 refused INSIDE ctx.fs.stat with
+ *       the #358 anchor; #259 (2026-10-19) re-drew the boundary by SURFACE —
+ *       stat is a metadata face and answers truthfully from everywhere — so
+ *       this fact now pins the VISIBILITY half: the stat answers, and the
+ *       anchor teaching moves to the data face (r).
+ *   (b) resolve+stat of an ABSENT outside-root path — the fix keeps fs-local's
+ *       ancestor walk and the stat lands absent (the FS_NOT_FOUND handoff).
  *   (c) a real INSIDE-root directory still answers and lists (unchanged).
+ *   (r) the DATA face keeps the loop-r boundary: a read of a real file in
+ *       the outside-root tree refuses with the #358 anchor — the #259 law
+ *       (visible ≠ accessible) in one fact.
  */
 import { mkdirSync, writeFileSync, rmSync, statSync as nodeStatSync, readdirSync as nodeReaddirSync } from 'node:fs';
 import { join } from 'node:path';
 import { mountWorkspace } from 'upstream/shims/fs-workspace.js';
+import { readFileSync } from 'upstream/shims/fs.js';
 import { mkdtempPosix } from './posix-fixture.mjs';
 
 // The simulation is the POSIX device seat: this runner already fakes the C
@@ -37,7 +41,9 @@ mountWorkspace(root);
 // (a)'s shape: a real directory OUTSIDE the root (the /system/app sibling).
 const systemApp = `/tmp/dsh-toolface-system-${process.pid}`;
 mkdirSync(systemApp, { recursive: true });
-writeFileSync(join(systemApp, 'BasicDreams.apk'), 'apk\n');
+// The marker byte-shape: the pin asserts the read refusal never carries the
+// CONTENT — spell it so no substring of the refused path can false-positive.
+writeFileSync(join(systemApp, 'BasicDreams.apk'), 'outside-bytes\n');
 
 // (c)'s control: a real INSIDE-root directory the served view never
 // registered — the loop-p "real child" shape that must keep answering.
@@ -105,6 +111,23 @@ const facts = { root, systemApp };
   const target = await fsService.resolve(systemApp);
   const outcome = await statOutcome(target);
   facts.a = { ...outcome, displayPath: target.displayPath };
+}
+
+// (r) the data face keeps the boundary: read a real file OUTSIDE the root
+// through the shim's read face — the #358 anchor refusal, never the bytes.
+{
+  try {
+    const bytes = readFileSync(join(systemApp, 'BasicDreams.apk'), 'utf8');
+    facts.r = { threw: false, bytes };
+  } catch (error) {
+    facts.r = {
+      threw: true,
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      syscall: error.syscall,
+    };
+  }
 }
 
 // (b) absent outside-root path.

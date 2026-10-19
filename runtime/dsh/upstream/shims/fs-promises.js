@@ -31,6 +31,7 @@ import {
   statSync,
   lstatSync,
   readdirSync,
+  accessSync,
   realpath as realpathCallback,
   readlinkSync,
   utimesSync,
@@ -396,13 +397,21 @@ export const realFileExists = (path) => {
 export const rmdir = async (path, options) => _wsRm(path, options);
 
 /** access() succeeds for existence checks on readable staged paths — the one
- * write-side name whose SEMANTICS are read-shaped. Mode bits are ignored: the
- * VFS has no permission model (contract/primitives.md §3 — paths are paths).
- * Real-disk fallback (W5-R, 2026-09-28): the subprocess seam's pre-spawn
- * executability check access(X_OK)s REAL binaries (the node running the
- * fixture servers); a mode-carrying probe consults the host's access(2)
- * when every VFS face missed. VFS-first precedence is preserved. */
+ * write-side name whose SEMANTICS are read-shaped. A mode-CARRYING probe is
+ * the metadata face instead (#259, 2026-10-19): it delegates to the sync
+ * access face's permission-bit logic over the tracked workspace modes and
+ * stat's real-disk fallback — the vendored pre-spawn executability check
+ * access(X_OK)s REAL binaries (the node running the fixture servers) AND
+ * must refuse a 0644 non-executable, which the old mode-blind "staged →
+ * resolve" answer could not express. F_OK stays the existence probe below;
+ * the __dshProcAccessReal arm keeps covering an explicit mode-0 call on an
+ * unstaged real path. */
 export const access = async (path, mode) => {
+  const requested = Number(mode) || 0;
+  if (requested !== 0) {
+    accessSync(path, requested);
+    return;
+  }
   let staged = true;
   try {
     staged = existsSync(path) || readdirSync(path) !== null;

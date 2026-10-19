@@ -17,7 +17,8 @@ import {
 import { underVFS, vfs, enoent, constants, readAnyBytes, asFsPath } from 'upstream/shims/fs.js';
 import { resolveWorkspaceSymlink, workspaceSymlinkTarget, vfsRealpath } from 'upstream/shims/fs-paths.js';
 import { vfsReaddir } from 'upstream/shims/fs-readdir.js';
-import { realSeamInsideRoot, wsOutsideRootError } from 'upstream/shims/fs-seam-gate.js';
+// The seam gate lives with the DATA faces now (fs.js/fs-promises.js/
+// fs-readdir.js) — stat left it at #259: metadata answers, data refuses.
 
 const statSeededVfs = (path, files, bigint) => {
   const seeded = files.get(path);
@@ -66,8 +67,15 @@ const statRealFallback = (path, options) => {
   const real = globalThis.__dshProcStatReal?.(typeof mapped === 'string' ? mapped : path);
   if (!real) return null;
   const bigint = options.bigint === true;
-  const isDir = real.isDirectory === true;
-  return statFace(isDir ? 'dir' : 'file', {
+  // The truthful kind (#259, 2026-10-19): the seam's booleans are
+  // S_ISREG/S_ISDIR, so a FIFO, device, or socket is NEITHER — the old
+  // `isDir ? 'dir' : 'file'` presented every special entry as a regular
+  // file and the vendored is-regular-file gates (fs-local statRegularFile,
+  // pathType's 'other') never fired; the lsp-stdio FIFO read sailed past
+  // its provider-owned gate and died in open instead. 'other' carries
+  // isFile/isDirectory false and the real permission bits.
+  const kind = real.isFile === true ? 'file' : real.isDirectory === true ? 'dir' : 'other';
+  return statFace(kind, {
     size: bigint ? BigInt(real.size) : real.size,
     dev: 1,
     ino: 0,
@@ -79,18 +87,20 @@ const statRealFallback = (path, options) => {
   });
 };
 
-/** statSync(path[, options]) — the world's stat face. loop-v2 (2026-10-05):
- * the real-disk stat holds the same boundary the read fallbacks drew
- * (loop-r) — an OUTSIDE-root path the host disk actually holds refuses with
- * the #358 anchor BEFORE the caller's own type checks, a miss stays
- * node-ENOENT, and inside the root the real answer stands unchanged (the
- * W6-V real-only children). The 2026-10-05 battery measured the gap on the
- * tool face: the model's read of the real directory /system/app got this
- * face's `directory` answer, fell through to tool-fs's own is-regular-file
- * pre-check (resolveRegularReadTarget, vendored tool-fs lib/index.js:273)
- * and answered the bare FS_NOT_REGULAR_FILE with no root, no maybe-you-mean
- * — while an absent outside path took the anchor at realpath (the seam-gate
- * precedent these two arms join). */
+/** statSync(path[, options]) — the world's stat face. loop-v2 (2026-10-05)
+ * held the #358 boundary on this face too; #259 (2026-10-19) re-drew it by
+ * SURFACE: stat is a METADATA face, and metadata is visible — a path the
+ * host disk actually holds now answers truthfully from EVERYWHERE (the
+ * existsSync precedent below: visible ≠ accessible). The vendored pre-spawn
+ * executability check stats the node that runs the fixture servers — a
+ * REAL binary outside the root the old loud refusal hid, so every
+ * lsp-stdio load rejected its own SubprocessExecutableNotFoundError with
+ * the anchor swallowed by the candidate loop. The DATA faces keep the
+ * boundary the read fallbacks drew (loop-r): open/read/readdir/write still
+ * refuse outside-root with the anchor (fs.js:364, fs-promises.js:86/112,
+ * fs-readdir.js), and a miss stays node-ENOENT (R3-G1 — the containment
+ * walk classifies absence itself). Inside the root the real answer stands
+ * unchanged (the W6-V real-only children). */
 export const statSync = (path, options = {}) => {
   const canonical = typeof path === 'string' && path.startsWith('/') ? lexical(path) : path;
   const bigint = options.bigint === true;
@@ -127,12 +137,9 @@ export const statSync = (path, options = {}) => {
   // containment walk stats candidate roots that were never staged and
   // classifies the ENOENT itself; the loud refusal broke that classification).
   const real = statRealFallback(path, options);
-  if (real !== null) {
-    // Outside every staged view the host's answer is a refusal (see the
-    // statSync docblock); inside the root it is the world's answer.
-    if (!realSeamInsideRoot(canonical)) throw wsOutsideRootError('stat', canonical);
-    return real;
-  }
+  // Metadata answers wherever the host holds it (the #259 surface law in
+  // the docblock); absence still falls through to the in-world ENOENT.
+  if (real !== null) return real;
   if (wsAt(canonical) !== null) throw enoent('stat', canonical);
   throw enoent('stat', typeof path === 'string' ? path : String(path));
 };
@@ -160,8 +167,11 @@ export const lstatSync = (path, options = {}) => {
  * writes and statSync reads). Consumers: dsh-sandbox root checks and the
  * directory-picker auto-probe's canExecute (chmod 0o755 → X_OK true, absent
  * → ENOENT false). Directory W_OK/X_OK answer true — the workspace is the
- * one writable, traversable root. Outside every staged view: ENOENT (the
- * in-world does-not-exist answer, matching the statSync note below). */
+ * one writable, traversable root. Outside every staged view: ENOENT when
+ * the host does not hold the path, and — since #259 made stat a metadata
+ * face — the REAL mode's answer when it does: the pre-spawn executability
+ * check needs access(X_OK) on the real node binary (outside root, 0755 →
+ * true) to see its candidate, and to refuse a 0644 non-executable. */
 export const accessSync = (path, mode = constants.F_OK) => {
   const requested = Number(mode) || 0;
   let shape;
