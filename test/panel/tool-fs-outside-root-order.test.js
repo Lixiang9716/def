@@ -82,21 +82,30 @@ afterAll(() => {
   rmSync(controlOutside, { recursive: true, force: true });
 });
 
-describe('the tool face answers outside-root reads in the seam order (loop-v2)', () => {
-  it('(a) an existing outside-root directory refuses with the anchor — never a type answer', () => {
-    // Pre-fix, ctx.fs.stat ANSWERED {type:'directory'} here and the tool's
-    // own is-regular-file pre-check produced the bare FS_NOT_REGULAR_FILE.
-    // The refusal must happen INSIDE ctx.fs.stat — before that pre-check.
-    expect(facts.a.threw).toBe(true);
-    expect(facts.a.message).toContain('outside the writable workspace root');
-    expect(facts.a.message).toContain(facts.root);
-    expect(facts.a.message).toContain('maybe you meant');
-    // The unified #373 shape rides raw (fs-local's probeStats rethrows
-    // non-ENOENT as-is): the node-complete fields the panel pins on the
-    // read faces.
-    expect(facts.a.code).toBe('EACCES');
-    expect(facts.a.errno).toBe(-13);
-    expect(facts.a.syscall).toBe('stat');
+describe('the tool face answers outside-root reads in the seam order (loop-v2, re-drawn by #259)', () => {
+  it('(a) an existing outside-root directory answers truthful metadata — the stat face is visible', () => {
+    // #259 (2026-10-19) re-drew loop-v2's boundary by SURFACE: stat is a
+    // metadata face, and metadata is visible from everywhere (the existsSync
+    // precedent). The refusal this assertion used to demand INSIDE
+    // ctx.fs.stat moved to the data face — pin (r) below holds it there.
+    expect(facts.a.threw).toBe(false);
+    expect(facts.a.info?.type).toBe('directory');
+    // The visibility is the real disk's answer, spelled through the root
+    // gate untouched: the display path is the outside tree itself.
+    expect(facts.a.displayPath).toBe(facts.systemApp);
+  });
+
+  it('(r) the data face keeps the loop-r boundary: an outside-root read refuses with the anchor', () => {
+    // The #259 law in one fact: visible ≠ accessible. The bytes never ride
+    // any answer; the refusal is the full #358 anchor the loop-v2 battery
+    // demanded, one face later than before.
+    expect(facts.r.threw).toBe(true);
+    expect(facts.r.message).toContain('outside the writable workspace root');
+    expect(facts.r.message).toContain(facts.root);
+    expect(facts.r.message).toContain('maybe you meant');
+    expect(facts.r.message).not.toContain('outside-bytes');
+    expect(facts.r.code).toBe('EACCES');
+    expect(facts.r.errno).toBe(-13);
   });
 
   it('(b) an absent outside-root path resolves and stats absent — the FS_NOT_FOUND handoff', () => {
@@ -117,21 +126,11 @@ describe('the tool face answers outside-root reads in the seam order (loop-v2)',
   });
 });
 
-describe('the stat face holds the seam boundary (loop-v2, shim-face controls)', () => {
-  it('refuses a real outside-root directory with the anchor, never a type answer', () => {
-    let error;
-    try {
-      shimStatSync(controlOutside);
-      expect.unreachable('the outside-root stat must refuse');
-    } catch (caught) {
-      error = caught;
-    }
-    expect(error.message).toContain('outside the writable workspace root');
-    expect(error.message).toContain(controlRoot);
-    expect(error.message).toContain('maybe you meant');
-    expect(error.code).toBe('EACCES');
-    expect(error.errno).toBe(-13);
-    expect(error.syscall).toBe('stat');
+describe('the stat face answers metadata wherever the host holds it (#259, shim-face controls)', () => {
+  it('answers a real outside-root directory with its truthful type, never a refusal', () => {
+    const shape = shimStatSync(controlOutside);
+    expect(shape.isDirectory()).toBe(true);
+    expect(shape.isFile()).toBe(false);
   });
 
   it('keeps node-absence (ENOENT) for an outside-root path the host does not hold', () => {
@@ -243,15 +242,19 @@ describe('the editor face answers relative spellings like the read face (loop-z3
   });
 });
 
-describe('the loop-v2 three forms hold through the tool face post-wrap (loop-z3)', () => {
-  it('(a) an existing outside-root directory refuses with the anchor', () => {
+describe('the loop-v2 three forms hold through the tool face post-wrap (loop-z3, re-drawn by #259)', () => {
+  it('(a) an existing outside-root directory refuses at its LISTING with the anchor', () => {
+    // #259 made stat a metadata face, so the anchor moved off it: the view
+    // now sees the truthful directory answer and the refusal happens one
+    // face later — at the readdir the listing needs (the #259 surface law:
+    // data faces keep the boundary). fs-local's IO arm wraps the codeless
+    // readdir refusal, so the anchor rides the MESSAGE, not raw errno.
     expect(z3.editorOutsideExisting.ok).toBe(false);
     expect(z3.editorOutsideExisting.message).toContain('outside the writable workspace root');
     expect(z3.editorOutsideExisting.message).toContain(z3.root);
     expect(z3.editorOutsideExisting.message).toContain('maybe you meant');
-    expect(z3.editorOutsideExisting.code).toBe('EACCES');
-    expect(z3.editorOutsideExisting.errno).toBe(-13);
-    expect(z3.editorOutsideExisting.syscall).toBe('stat');
+    expect(z3.editorOutsideExisting.message).toContain('cannot list');
+    expect(z3.editorOutsideExisting.code).toBe('FS_IO_ERROR');
   });
 
   it('(b) an absent outside-root path answers plain absence', () => {
@@ -265,9 +268,9 @@ describe('the loop-v2 three forms hold through the tool face post-wrap (loop-z3)
     expect(z3.editorInside.text).toContain('"version": 1');
   });
 
-  it('a relative spelling climbing OUT of the root refuses at the containment gate', () => {
+  it('a relative spelling climbing OUT of the root refuses with the anchor at its listing', () => {
     expect(z3.editorClimbOut.ok).toBe(false);
     expect(z3.editorClimbOut.message).toContain('outside the writable workspace root');
-    expect(z3.editorClimbOut.code).toBe('EACCES');
+    expect(z3.editorClimbOut.code).toBe('FS_IO_ERROR');
   });
 });

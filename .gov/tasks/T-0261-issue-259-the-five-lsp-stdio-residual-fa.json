@@ -9,10 +9,10 @@
     }
   },
   "checklist": [
-    "baseline: the four lsp-stdio specs reproduce (host 20/1 FIFO, lifecycle 1/30, provider 11/4 \u2014 all on outside-root executable stat; framing green; instance spec retired upstream)",
-    "stat face: real-disk fallback answers the true file kind (FIFO is not isFile) and outside-root absolute paths get real metadata (visibility not access; read/write seams stay gated)",
-    "access face: X_OK on outside-root regular files answers the real mode so vendored resolveExecutable and the non-executable rejection both flow",
-    "all four lsp-stdio specs failed:0 on the CLI leg + the stat-pinned upstream families stay green + scoped gates green"
+    "[x] baseline: the four lsp-stdio specs reproduce (host 20/1 FIFO, lifecycle 1/30, provider 11/4 \u2014 all on outside-root executable stat; framing green; instance spec retired upstream)",
+    "[x] stat face: real-disk fallback answers the true file kind (FIFO is not isFile) and outside-root absolute paths get real metadata (visibility not access; read/write seams stay gated)",
+    "[x] access face: X_OK on outside-root regular files answers the real mode so vendored resolveExecutable and the non-executable rejection both flow",
+    "[x] all four lsp-stdio specs failed:0 on the CLI leg + the stat-pinned upstream families stay green + scoped gates green"
   ],
   "status": "open",
   "receipt": null,
