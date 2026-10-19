@@ -49,14 +49,26 @@
 # walks these dirs: a dir with verdict*.json must carry the full
 # deliverable set, and it does or the run stays red.
 #
-# usage: run-simulator-matrix.sh [--platform ios|android|harmony|all]
+# usage: run-simulator-matrix.sh [--platform ios|android|harmony|all ...]
 #                                [--skip-release] [--skip-harness]
+#        --platform takes a space-separated LIST ("--platform android
+#        harmony" runs exactly those, in the order given); `all` (the
+#        no-argument default) expands to ios android harmony. A platform
+#        whose toolchain is absent on this machine is skipped with a loud
+#        per-platform SKIP record — `all` (and any list) never dies mid-run
+#        on the first missing toolchain (#301), so a no-Xcode machine runs
+#        android+harmony in one command.
 # env:   DSH_E2E_UDID        iOS simulator (default: dsh-iphone)
 #        DSH_ANDROID_SERIAL  emulator serial (default: emulator-5554)
 #        DSH_ANDROID_AVD     AVD to boot when no emulator is up (pixel)
 #        DSH_MATRIX_KEEP_GOING=1  run every requested leg instead of
 #                            stopping at the first failure (the summary
 #                            still exits non-zero)
+# Android requirement: the release leg's carrier probe reads the app uid's
+# socket rows in /proc/net/tcp{,6} through `adb shell` — on API 35 emulator
+# images a non-root shell sees only a 4-line table, so run `adb root` first
+# (or use a rootable image) or the leg dies "the WebView never fetched the
+# carrier origin" (the preflight checks adb/emulator presence, not root).
 set -euo pipefail
 # A bash guard BEFORE anything: under a POSIX sh this script's arrays and
 # pipefail are lies — fail loud instead of half-running (rule 5).
@@ -941,36 +953,128 @@ summary() {
     return "$OVERALL"
 }
 
+# usage — the --help face; usage_die redirects it to stderr with a reason.
+usage() {
+    cat <<'EOF'
+usage: run-simulator-matrix.sh [--platform ios|android|harmony|all ...]
+                               [--skip-release] [--skip-harness]
+
+  --platform takes ONE OR MORE platform words: "--platform android harmony"
+  runs exactly those, in the order given; `all` (the default) expands to
+  "ios android harmony". A platform whose toolchain is absent on this
+  machine is SKIPPED with a loud per-platform SKIP record — never a fake
+  pass, never a silent omission, never a mid-run death of the whole matrix
+  (the harmony honest-skip rule, generalized to every platform's toolchain).
+
+env:   DSH_E2E_UDID        iOS simulator (default: dsh-iphone)
+       DSH_ANDROID_SERIAL  emulator serial (default: emulator-5554)
+       DSH_ANDROID_AVD     AVD to boot when no emulator is up (pixel)
+       DSH_MATRIX_KEEP_GOING=1  run every requested leg instead of
+                            stopping at the first failure (the summary
+                            still exits non-zero)
+
+note:  android release leg — the carrier probe reads the app uid's rows in
+       /proc/net/tcp{,6} via `adb shell`; on API 35 emulator images a
+       non-root shell only sees a 4-line table, so run `adb root` first or
+       the leg dies "the WebView never fetched the carrier origin".
+EOF
+}
+
+# usage_die — arg-face errors: the invocation is broken, not a leg. Exit 2,
+# the same vocabulary as the run-me-with-bash guard at the top of the file;
+# leg failures keep mx_die's exit 1.
+usage_die() {
+    { echo "matrix: $*"; echo; usage; } >&2
+    exit 2
+}
+
+# platform_skip_reason PLATFORM — prints WHY the platform cannot run on this
+# machine, or nothing when it can. The probes MIRROR the hard mx_die guards
+# each *_platform still carries (ios_platform's xcodebuild + simulator-UDID
+# checks, android_preflight's adb / emulator-binary / AVD checks), upstreamed
+# so `all` — and any --platform list — skips an absent toolchain audibly
+# instead of the first missing one killing the run before the others start
+# (#301: ios_platform's "xcodebuild not on PATH" used to exit the whole
+# matrix, so a no-Xcode machine could never reach android+harmony). Harmony
+# needs no entry: the leg owns its own live-target probe and writes
+# matrix-skip-receipt.json (D-g).
+platform_skip_reason() {
+    case "$1" in
+        ios)
+            command -v xcodebuild >/dev/null 2>&1 \
+                || { echo "xcodebuild not on PATH (no Xcode toolchain)"; return 0; }
+            xcrun simctl list devices available 2>/dev/null | grep -q "$IOS_UDID" \
+                || { echo "simulator $IOS_UDID not available (DSH_E2E_UDID?)"; return 0; }
+            ;;
+        android)
+            command -v adb >/dev/null 2>&1 \
+                || { echo "adb not found (ANDROID_HOME=$ANDROID_HOME)"; return 0; }
+            if ! adb -s "$ADB_SERIAL" get-state >/dev/null 2>&1; then
+                [ -x "$ANDROID_HOME/emulator/emulator" ] \
+                    || { echo "emulator binary missing at $ANDROID_HOME/emulator/emulator"; return 0; }
+                emulator -list-avds 2>/dev/null | grep -qx "$ANDROID_AVD" \
+                    || { echo "AVD '$ANDROID_AVD' not found (have: $(emulator -list-avds 2>/dev/null | tr '\n' ' '))"; return 0; }
+            fi
+            ;;
+    esac
+    return 0
+}
+
 main() {
     # The no-argument default IS `all`: the default used to be the literal
-    # three-word list, which the validation case below rejects (only `all` or
-    # one platform word passes) — a bare `run-simulator-matrix.sh` died
-    # "unknown --platform value: ios android harmony" before booting anything
-    # (found by the v0.0.2 release regression's final run, 2026-09-30; every
-    # earlier run had passed --platform explicitly, so the default was never
-    # exercised).
-    local platforms="all"
+    # three-word list, which the old single-word validation rejected — a bare
+    # `run-simulator-matrix.sh` died "unknown --platform value: ios android
+    # harmony" before booting anything (found by the v0.0.2 release
+    # regression's final run, 2026-09-30). #301 generalized the face: the
+    # value is a validated, deduplicated LIST; `all` expands to the same
+    # three; and a platform whose toolchain is absent is skipped audibly
+    # (platform_skip_reason) instead of killing the whole run. --platform
+    # with no value used to die of set -u ("$2: unbound variable", rc 1);
+    # arg-face errors now exit 2 with the usage text (--help exits 0).
+    local platforms="all" p reason skips="" expanded=""
     while [ $# -gt 0 ]; do
         case "$1" in
-            --platform) platforms="$2"; shift 2 ;;
+            -h|--help) usage; exit 0 ;;
+            --platform)
+                shift
+                platforms=""
+                while [ $# -gt 0 ]; do
+                    case "$1" in --*) break ;; *) platforms="$platforms $1"; shift ;; esac
+                done
+                [ -n "$platforms" ] || usage_die \
+                    "--platform needs at least one platform word (ios|android|harmony|all — a space-separated list is accepted)"
+                ;;
             --skip-release) SKIP_RELEASE=1; shift ;;
             --skip-harness) SKIP_HARNESS=1; shift ;;
-            *) mx_die "usage: run-simulator-matrix.sh [--platform ios|android|harmony|all] [--skip-release] [--skip-harness]" ;;
+            *) usage_die "unknown argument: $1" ;;
         esac
     done
-    case "$platforms" in
-        all) platforms="ios android harmony" ;;
-        ios|android|harmony) ;;
-        *) mx_die "unknown --platform value: $platforms" ;;
-    esac
-    local p
     for p in $platforms; do
         case "$p" in
-            ios)     ios_platform || OVERALL=1 ;;
+            all) expanded="$expanded ios android harmony" ;;
+            ios|android|harmony) expanded="$expanded $p" ;;
+            *) usage_die "unknown --platform value: $p" ;;
+        esac
+    done
+    platforms=""
+    for p in $expanded; do   # collapse duplicates, keep first-occurrence order
+        case " $platforms " in *" $p "*) ;; *) platforms="$platforms $p" ;; esac
+    done
+    platforms="${platforms# }"
+    for p in $platforms; do
+        reason="$(platform_skip_reason "$p")"
+        if [ -n "$reason" ]; then
+            record "$p" platform SKIP "toolchain absent — $reason (honest skip; the other requested platforms still run)"
+            skips="$skips $p"
+            continue
+        fi
+        case "$p" in
+            ios)     ios_platform     || OVERALL=1 ;;
             android) android_platform || OVERALL=1 ;;
             harmony) harmony_platform || OVERALL=1 ;;
         esac
     done
+    [ -z "$skips" ] || mx "skipped before any leg, toolchain absent:$skips (SKIP rows in the table below)"
     summary
 }
 

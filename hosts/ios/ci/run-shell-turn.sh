@@ -94,8 +94,11 @@ if [ "$SKIP_MATERIALIZE" = "0" ]; then
     sh external/ensure.sh >/dev/null || die "external/ensure.sh failed"
     sh external/ensure-dsh.sh >/dev/null || die "external/ensure-dsh.sh failed"
     build/build.sh sync ios >/dev/null || die "build/build.sh sync ios failed"
-    sh test/e2e/ensure-official-dist.sh || die "ensure-official-dist.sh failed"
-    sh test/e2e/ensure-client-bundles.sh || die "ensure-client-bundles.sh failed"
+    # bash-only (set -o pipefail, BASH_SOURCE) — under dash `sh` dies at
+    # runtime on pipefail; macOS sh=bash masked it (#301, same fix as the
+    # matrix's materialize())
+    bash test/e2e/ensure-official-dist.sh || die "ensure-official-dist.sh failed"
+    bash test/e2e/ensure-client-bundles.sh || die "ensure-client-bundles.sh failed"
 else
     say "1/6 materialize skipped (--skip-materialize)"
 fi
@@ -109,7 +112,7 @@ if [ "$DO_BUILD" = "1" ]; then
     xcrun simctl install "$UDID" hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app \
         || die "simctl install failed"
 fi
-sh hosts/ios/Tools/sim-preflight.sh "$UDID" || die "simulator runtime preflight failed (the iOS 18.5 trap)"
+bash hosts/ios/Tools/sim-preflight.sh "$UDID" || die "simulator runtime preflight failed (the iOS 18.5 trap)"
 xcrun simctl bootstatus "$UDID" -b >/dev/null || die "simulator did not finish booting"
 APP_DATA="$(xcrun simctl get_app_container "$UDID" "$APP_BUNDLE_ID" data)" \
     || die "org.dsh.DSHHost is not installed on $UDID (install it first, or pass --build)"
