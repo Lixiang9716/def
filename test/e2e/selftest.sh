@@ -116,11 +116,6 @@ $PROBE --dump "$TMP/broken.xml" --scenario ui.occlusion >/dev/null 2>&1 &&
   { echo "selftest: FAIL  an unparsable dump must fail loud"; FAILURES=$((FAILURES + 1)); } ||
   echo "selftest: PASS  an unparsable dump fails loud (exit 2)"
 
-if [ "$FAILURES" -gt 0 ]; then
-  echo "selftest: $FAILURES failure(s)"; exit 1
-fi
-echo "selftest: all checker assertions hold"
-
 # "optional": true expectations (records the PAGE may or may not produce per
 # boot — the official composer's catalog probe fires skills/list on one boot
 # and commands/list on the next): either family member in position passes;
@@ -138,3 +133,132 @@ expect_fail_at "$OPT" "$TD/order-optional.negative-foreign.txt" 3
 AO=test/e2e/testdata/order-any-optional.json
 expect_pass "$AO" "$TD/order-any-optional.absent.txt"
 expect_pass "$AO" "$TD/order-any-optional.present-late.txt"
+
+# ---- #515: the m1 harness verdict — environment vs product (classify.mjs) --
+# The checker says WHICH expectations went unmet; the classifier says WHAT
+# CLASS of red it is, from the verdicts + the launch probes (both pure
+# functions, so fixtures suffice — no simulator on the test path). Faces:
+#   green fixture            -> exit 0, and NO receipt is written (a green
+#                               run carries no apology);
+#   zero-structured-lines    -> environment / app-never-ran (the old bare
+#                               "the app never ran" gate, now classified);
+#   boot-only capture        -> environment / scenario-silent (carrier's
+#                               factual start record never landed: 0/7);
+#   #514's attempt-1 shape   -> environment / tail-stall, AND the carrier
+#                               verdict is field-identical to run
+#                               38707261173 attempt 1 (pass:false 2/7,
+#                               failures idx 2-6 all logged:null, no
+#                               parseErrors) — the fixture IS that run;
+#   present-but-wrong record -> PRODUCT (exit 1): ws.echo logged
+#                               matched:false — a mis-answer no retry fixes;
+#   wrong record + rc!=0     -> still PRODUCT: crash evidence never masks a
+#                               mis-answer (product beats environment);
+#   zero-byte log + rc!=0    -> environment / launch-crash (the WebKit
+#                               dyld-abort class).
+# Every environment face also asserts the receipt: classification
+# environment, pass false, and the four fields matrix.mjs reads from any
+# verdict*.json present and type-true, so a committed receipt reads as an
+# honest red in the matrix gate, never a fake green.
+CLASSIFY="node test/e2e/classify.mjs"
+BOOTM=test/e2e/scenarios/boot-verification.json
+CARRM=test/e2e/scenarios/carrier-loopback.json
+GREEN=test/e2e/testdata/m1-green.txt
+
+# run_both <log>: both checkers on one capture, verdicts to $TMP/b.json and
+# $TMP/c.json — the m1 leg's one-launch-two-scenarios shape.
+run_both() {
+  node test/e2e/check.mjs --manifest "$BOOTM" --log "$1" --out "$TMP/b.json" >/dev/null 2>&1 || true
+  node test/e2e/check.mjs --manifest "$CARRM" --log "$1" --out "$TMP/c.json" >/dev/null 2>&1 || true
+}
+
+# expect_class <launch-rc> <runtime-lines> <want-rc> <want-classification> <want-shape>
+# A receipt exists ONLY on the environment face (exit 3) — green and product
+# carry their verdict in the verdicts, not in a receipt.
+expect_class() {
+  rm -f "$TMP/env.json"
+  local rc=0
+  $CLASSIFY --verdict "$TMP/b.json" --verdict "$TMP/c.json" \
+    --launch-rc "$1" --runtime-lines "$2" --ui-wait no --sequence no --attempt 1 \
+    --out "$TMP/env.json" >/dev/null 2>&1 || rc=$?
+  local got want
+  got=$(python3 -c 'import json,sys
+try:
+    v = json.load(open(sys.argv[1]))
+    print(v.get("classification", "?"), v.get("shape", "?"))
+except Exception:
+    print("no-receipt")' "$TMP/env.json" 2>/dev/null || echo "no-receipt")
+  want="$4 $5"
+  [ "$3" = "3" ] || want="no-receipt"
+  if [ "$rc" = "$3" ] && [ "$got" = "$want" ]; then
+    echo "selftest: PASS  classify -> $4/$5 (exit $rc, receipt: $got)"
+  else
+    echo "selftest: FAIL  classify expected $3/$4/$5, got exit $rc receipt=$got"; FAILURES=$((FAILURES + 1))
+  fi
+}
+
+# receipt_honest <want-pass>: the environment receipt names itself truthfully
+# and stays matrix-parseable (FIELD_TYPES: scenario string, pass boolean,
+# expected number, logged number — matrix.mjs:142).
+receipt_honest() {
+  if python3 -c 'import json,sys
+v = json.load(open(sys.argv[1]))
+ok = (v["classification"] == "environment" and v["status"] == "environment"
+      and v["pass"] is False and "reason" in v and "probes" in v
+      and isinstance(v["scenario"], str) and isinstance(v["pass"], bool)
+      and isinstance(v["expected"], int) and isinstance(v["logged"], int))
+sys.exit(0 if ok else 1)' "$TMP/env.json" 2>/dev/null; then
+    echo "selftest: PASS  environment receipt is honest and matrix-parseable"
+  else
+    echo "selftest: FAIL  environment receipt missing/malformed/dishonest"; FAILURES=$((FAILURES + 1))
+  fi
+}
+
+run_both "$GREEN"
+expect_pass "$BOOTM" "$GREEN"
+expect_pass "$CARRM" "$GREEN"
+expect_class 0 15 0 green all-scenarios-pass
+[ -f "$TMP/env.json" ] &&
+  { echo "selftest: FAIL  a green run wrote an environment receipt"; FAILURES=$((FAILURES + 1)); } ||
+  echo "selftest: PASS  a green run writes no environment receipt"
+
+run_both "$TD/m1-env-zerolines.txt"
+expect_class 0 0 3 environment app-never-ran
+receipt_honest
+
+run_both "$TD/m1-env-wrongscenario.txt"
+expect_class 0 8 3 environment scenario-silent
+receipt_honest
+
+run_both "$TD/m1-env-tail-stall.txt"
+expect_class 0 10 3 environment tail-stall
+receipt_honest
+# The fixture IS #514's attempt-1 (run 38707261173): the carrier verdict must
+# reproduce it field-for-field, or the shape's name is honest but its anchor
+# is not.
+if python3 -c 'import json,sys
+v = json.load(open(sys.argv[1]))
+f = v["failures"]
+ok = (v["pass"] is False and v["expected"] == 7 and v["logged"] == 2
+      and v["parseErrors"] == [] and [x["index"] for x in f] == [2, 3, 4, 5, 6]
+      and all(x["logged"] is None for x in f))
+sys.exit(0 if ok else 1)' "$TMP/c.json" 2>/dev/null; then
+  echo "selftest: PASS  tail-stall verdict reproduces run 38707261173 attempt-1 field-for-field"
+else
+  echo "selftest: FAIL  tail-stall verdict drifted from run 38707261173 attempt-1"; FAILURES=$((FAILURES + 1))
+fi
+
+run_both "$TD/m1-product-wrongvalue.txt"
+expect_class 0 15 1 product assertion-failure
+
+run_both "$TD/m1-product-wrongvalue.txt"
+expect_class 3 15 1 product assertion-failure
+
+: > "$TMP/empty.log"
+run_both "$TMP/empty.log"
+expect_class 3 0 3 environment app-never-ran
+receipt_honest
+
+if [ "$FAILURES" -gt 0 ]; then
+  echo "selftest: $FAILURES failure(s)"; exit 1
+fi
+echo "selftest: all checker + classifier assertions hold"
