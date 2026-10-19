@@ -60,21 +60,13 @@ Rules:
 - text fields are plain strings, no markup
 - children arrays have max 24 items
 
-Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed thumb reach):
-- 一屏克制：screen 顶层 children ≤8 块；宁可少而清楚，不做桌面式信息堆叠。
-- 文案短：标题 ≤10 字，正文/副题 ≤24 字，按钮标签 2-4 字动词；不写长句。
-- 移动模式优先：优先使用 search-bar / tab-bar / mini-player / chat-row / service-grid / hcard-row 这类移动模板，至少出现 2 种。
-- 导航简洁：tabs 2-5 个，每个标签 ≤4 字。
-- 层级浅：嵌套 ≤3 层；最重要的信息放最上面，操作类元素放靠下（拇指区）。
-- 颜色纪律：theme.accent 单色贯穿全屏（一色一义），mode 固定 light；不发明第二个强调色。
-- 不做桌面形态：无多栏密表、无长文段落、无 hover 依赖的交互。
-
-视觉表达（让它好看）：
-- 首屏第一块是 hero：banner-card 开场，title 放今天最重要的信息，subtitle 一句 muted 补充。
-- 视觉锚点：卡片与列表项配 image（emoji + color=theme.accent 的 RR GG BB）；歌单/内容列表用 hcard-row 且每个 cover 都带 color。
-- 文字三档：title / body / small+muted 三档层次都要出现。
-- 数字要大：金额、进度、计数用 title 档，配 small muted 的单位或说明。
-- 颜色节奏：accent 落在按钮、进度条、封面底色 3-5 个点位；其余保持白卡灰字，不贪多。`;
+Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed):
+- 一屏一主角：screen.children[0] 必须是 banner-card hero 或大封面 hcard-row；顶层 4-6 块，主角块视觉重量≥其余总和；嵌套≤3 层。
+- 色彩统治：第一屏大面积被彩色 hero 与封面占据；hero 用最深色混 accent 的浓色场；theme.accent 全屏 ≤2 点位（主 CTA+活动处）；音乐/夜间类 theme.mode="dark"。
+- 文案真实：具体数字与真实名目（"¥1,920"），禁占位词；标题≤10字、按钮 2-4 字动词；emoji 只做内容一屏≤4。
+- 字阶与数字主角：title 是海报，全屏 ≤3 处（hero 主标题+数字主角）；数字/金额/进度用 title 档放大。
+- 封面成套：hcard-row 每项 cover 带 color，4 色板逐项错开；卡片配 image(emoji+color) 锚点。
+- 移动模板 ≥2 种（search-bar/tab-bar/mini-player/chat-row/service-grid/hcard-row）；tabs 2-5 个每个≤4字；不做桌面形态。`;
 
 const PROMPT = '做一个音乐播放器应用的首页：顶部搜索栏，中间是每日推荐的横幅卡片，下面是四个快捷入口（私人FM、每日推荐、歌单、排行榜），再下面是三个推荐歌单的横向卡片列表，最底下有一个正在播放的迷你播放条。主题色用红色。';
 

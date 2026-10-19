@@ -817,6 +817,51 @@
 .ash-tab { border-radius: 9px; }
 .ash-tab.active { background: #fff; box-shadow: 0 1px 3px rgba(16,24,40,.10); }
 .ash-badge { background: rgba(16,24,40,.05); border-radius: 9px; }
+
+/* ---- appshell presence pass: color-field dominance, glass, motion, dark mode ---- */
+/* type scale: the title is a poster */
+.ash-text.ash-title { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.ash-text.ash-body { font-size: 15px; line-height: 1.5; }
+.ash-text.ash-small { font-size: 12.5px; }
+/* hero: the dominant color field, breathing */
+.ash-card:has(> .ash-text.ash-title) { min-height: 200px; padding: 26px 20px; justify-content: flex-end;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--p-accent, #1677ff) 30%, #ffffff) 0%, color-mix(in srgb, var(--p-accent, #1677ff) 10%, #ffffff) 60%, color-mix(in srgb, var(--p-accent, #1677ff) 20%, #ffffff) 100%);
+  background-size: 230% 230%; }
+.ash-card:has(> .ash-text.ash-title) .ash-text.ash-title { font-size: 28px; font-weight: 800; }
+/* covers: real artwork size; focus rows become snap carousels */
+.ash-image { width: 76px; height: 76px; min-width: 76px; border-radius: 18px; font-size: 34px; }
+#appshell-root .ash-row:has(> .ash-card) { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -16px 14px; padding: 0 16px; }
+#appshell-root .ash-row:has(> .ash-card)::-webkit-scrollbar { display: none; }
+#appshell-root .ash-row:has(> .ash-card) > .ash-card { scroll-snap-align: start; min-width: 164px; flex: 1 0 auto; }
+/* the accent wash breathes in from the top; light cards are glass over it */
+#appshell-view { background: linear-gradient(180deg, color-mix(in srgb, var(--p-accent, #1677ff) 16%, #FAFAF9) 0%, #FAFAF9 44%); }
+#appshell-view:not([data-mode="dark"]) .ash-card { background: rgba(255,255,255,.66); backdrop-filter: blur(18px) saturate(1.35); border: 1px solid rgba(255,255,255,.65); }
+/* dark mode: the renderer honors spec.theme.mode — the stage goes nocturnal */
+#appshell-view[data-mode="dark"] { color-scheme: dark; background: #101014; }
+#appshell-view[data-mode="dark"] .ash-card { background: rgba(255,255,255,.055); backdrop-filter: blur(20px) saturate(1.5); border: 1px solid rgba(255,255,255,.10); box-shadow: 0 10px 36px -14px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.09); }
+#appshell-view[data-mode="dark"] .ash-card:has(> .ash-text.ash-title) { background: linear-gradient(140deg, color-mix(in srgb, var(--p-accent, #1677ff) 38%, #141317) 0%, color-mix(in srgb, var(--p-accent, #1677ff) 14%, #100F13) 58%, color-mix(in srgb, var(--p-accent, #1677ff) 26%, #121014) 100%); background-size: 230% 230%; border-color: color-mix(in srgb, var(--p-accent, #1677ff) 32%, transparent); }
+#appshell-view[data-mode="dark"] .ash-text { color: #F8FAFC; }
+#appshell-view[data-mode="dark"] .ash-text.ash-muted { color: #94A3B8; }
+#appshell-view[data-mode="dark"] .ash-tabbar { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10); backdrop-filter: blur(20px) saturate(1.5); }
+#appshell-view[data-mode="dark"] .ash-tab.active { background: rgba(255,255,255,.10); }
+#appshell-view[data-mode="dark"] .ash-badge { background: rgba(255,255,255,.08); }
+/* motion: entrance cascade + hero glow + touch spring (all reduced-motion safe) */
+@keyframes ash-rise { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes ash-glow { 0%, 100% { background-position: 0% 40%; } 50% { background-position: 100% 60%; } }
+#appshell-root > * { animation: ash-rise .62s cubic-bezier(.22,.9,.28,1) both; }
+#appshell-root > *:nth-child(2) { animation-delay: .13s; }
+#appshell-root > *:nth-child(3) { animation-delay: .22s; }
+#appshell-root > *:nth-child(4) { animation-delay: .31s; }
+#appshell-root > *:nth-child(5) { animation-delay: .40s; }
+#appshell-root > *:nth-child(n+6) { animation-delay: .5s; }
+.ash-card:has(> .ash-text.ash-title) { animation: ash-rise .62s cubic-bezier(.22,.9,.28,1) both, ash-glow 16s ease-in-out infinite; }
+.ash-image { transition: transform .28s cubic-bezier(.34,1.4,.44,1); }
+.ash-image:active { transform: scale(.92); }
+.ash-btn { transition: transform .2s, box-shadow .2s; cursor: pointer; }
+.ash-btn:active { transform: scale(.95); }
+@media (prefers-reduced-motion: reduce) {
+  #appshell-root > *, .ash-card:has(> .ash-text.ash-title) { animation: none !important; }
+}
 .appshell-preview { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; max-height: 260px; overflow: hidden; border-radius: 10px; }
 .appshell-open-btn { border: 1px solid var(--link, #1677ff); background: transparent; color: var(--link, #1677ff); border-radius: 14px; padding: 4px 12px; font-size: 12px; cursor: pointer; margin-top: 6px; }
 
