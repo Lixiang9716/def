@@ -24,9 +24,14 @@ import { Mux, muxDiag } from './mux.js';
 const mintRequestId = () =>
   (globalThis.crypto?.randomUUID?.() ?? `req-${Date.now()}-${Math.random()}`);
 
-export const createSessionServe = ({ baseUrl }) => {
+/** `muxUrl` overrides the ws endpoint (transport-level, like baseUrl): the
+ * dev carrier's lynx face carries its `?token=` in the URL because a Node
+ * WebSocket sends no Cookie header — a token folded into `baseUrl` itself
+ * would corrupt the fetch path (`${baseUrl}/api/…` would land the API
+ * path inside the query string). Default stays the same-origin mux path. */
+export const createSessionServe = ({ baseUrl, muxUrl } = {}) => {
   const rpc = makeRpc(baseUrl);
-  const mux = new Mux(baseUrl.replace(/^http/, 'ws') + '/api/remote.mux');
+  const mux = new Mux(muxUrl ?? baseUrl.replace(/^http/, 'ws') + '/api/remote.mux');
 
   const list = () => rpc('session/list');
   const create = () => rpc('session/create', { args: { request: {} } });

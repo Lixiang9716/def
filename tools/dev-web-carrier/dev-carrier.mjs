@@ -33,6 +33,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { composeBootWire, serializeRows } from './compose-boot.mjs';
 import { startNextCarrier } from './next-mode.mjs';
+import { runLynxClient } from './lynx-mode.mjs';
 import { createOnboarding, onboardingOutcome } from './onboarding-route.mjs';
 import { PluginsRoute } from './plugins-route.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
@@ -141,7 +142,7 @@ const parseArgs = (argv) => {
     if (argv[i] === '--port') args.port = Number(argv[++i]);
     else if (argv[i] === '--client') {
       args.client = argv[++i];
-      if (args.client !== 'official' && args.client !== 'next') {
+      if (args.client !== 'official' && args.client !== 'next' && args.client !== 'lynx') {
         throw new Error(`dev-web-carrier: unknown --client '${args.client}'`);
       }
     } else throw new Error(`dev-web-carrier: unknown argument '${argv[i]}'`);
@@ -172,6 +173,7 @@ const main = async () => {
     .split('\n').filter((l) => l.trim().length > 0).map((l) => JSON.parse(l));
 
   if (args.client === 'next') return runNextClient(args, sessionsFixture);
+  if (args.client === 'lynx') return runLynxClient(args, sessionsFixture);
 
   console.log('[dev-web-carrier] composing the boot wire (vendored ClientModuleRegistry, Node host)…');
   const boot = await composeBootWire({ repoRoot: REPO_ROOT, stageDir: STAGE_DIR });
