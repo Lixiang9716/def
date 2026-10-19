@@ -40,8 +40,14 @@ TOOL="$REPO/tools/gen-staging-emit.mjs"
 # --- the live-tree case lock (the shared discipline of case-bundle-files.sh,
 # case-bundle-files-dotfile.sh, case-staging-check.sh, case-asset-mirrors.sh).
 # Worktree-scoped: the mutated tree is THIS worktree's product tree. The
-# deadline is 5s, not 60s — this window is sub-second and the case budget is
-# 10s; waiting longer only converts a lock contention into a timeout kill.
+# deadline used to be 5s ("this window is sub-second; waiting longer only
+# converts contention into a timeout kill") — but on a materialized tree the
+# lock-family siblings ahead of this case each hold the lock 1.2–4.7s
+# (measured 2026-10-19, solo), so a moderate queue pushed the wait past 5s
+# and the case failed on the LOCK while its own window still fit the 10s
+# budget. 60s, case-staging-check's deadline, defers to the real bound: the
+# runner's 10s SIGKILL kills an over-budget run no matter what this deadline
+# says; below it, patience is free.
 GITDIR="$(git -C "$REPO" rev-parse --git-dir 2>/dev/null || true)"
 case "$GITDIR" in
   /*) ;;                       # already absolute
@@ -52,7 +58,7 @@ esac
 LOCKDIR="$GITDIR/dsh-gov-live-tree-case.lock"
 TREE_LOCK_HELD=0
 acquire_tree_lock() {
-  local deadline=$(( SECONDS + 5 ))
+  local deadline=$(( SECONDS + 60 ))
   while ! mkdir "$LOCKDIR" 2>/dev/null; do
     if [ -n "$(find "$LOCKDIR" -maxdepth 0 -mmin +2 2>/dev/null)" ]; then
       rmdir "$LOCKDIR" 2>/dev/null || true   # stolen: a killed case left it
