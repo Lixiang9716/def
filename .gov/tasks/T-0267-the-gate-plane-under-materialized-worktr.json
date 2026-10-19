@@ -12,7 +12,7 @@
     "root cause verified in-source: self_test/_harness.py hardcodes REJECTION_TIMEOUT_S=10 + CONCURRENCY=4; the five live-tree cases serialize on one 5s-deadline lock sized for sub-second windows, blown by 2-5s x2 in-lock gate legs over the 1234-file rawfile closure",
     "case-staging-generated-webclient-leak lock deadline 5s->60s (family-consistent, measured) and case-transport-tokens joins the live-tree lock family (lock-free exemption falsified 3/3 DAG runs); plane re-sealed with notes as authority",
     "gov check exclude.json gains the 10 reasoned entries for untracked pinned trees (checks.py #348's intended use)",
-    "evidence matrix: all 27 gates green individually/in-DAG across runs; govrail upstream issue filed (budget knob / exclusive-honoring / staggered lock family)"
+    "[x] evidence matrix: all 27 gates green individually/in-DAG across runs; govrail upstream issue filed (budget knob / exclusive-honoring / staggered lock family)"
   ],
   "status": "open",
   "receipt": null,
