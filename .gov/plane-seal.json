@@ -49,7 +49,7 @@
       "sha256": "2ec94f6f2258c7ee149dd2fa7c309859bab65221064ea889d745b2bae2144834"
     },
     ".gov/rejections/case-staging-generated-webclient-leak.sh": {
-      "sha256": "4bec5f7fc9a21c5185b6d3fee5fb488b31e3c46f4cc99e132ebe0589c1c0a287"
+      "sha256": "896b4c956eacce7711bf847d167488776eb299c4bd26732c33e67d10f3033f9e"
     },
     ".gov/rejections/case-transport-tokens.sh": {
       "sha256": "6741cbfd8225ddd0451e85b33ee311c4eb8482c1c3a08e0b9f7bb3b4cd0dd6b1"
@@ -58,13 +58,13 @@
       "sha256": "aad8775c99eeec6ae9054050382db77411c9006333501d73cb3016276a1cc8b8"
     },
     "gates.json": {
-      "sha256": "a9ce8f8f75a612c73e4c1ecafb3b382b6a700869b3365c55958a89a3054ca92b"
+      "sha256": "f82fd8f701ede3670258f45639736b8983c22a18532bb368d1a5c4297a177c5d"
     }
   },
   "last_rebaseline": {
-    "ts": "2026-10-18T06:01:58+00:00",
+    "ts": "2026-10-19T08:05:52+00:00",
     "caller": "lixiang@192.168.21.11",
     "unattended": true,
-    "reason": "accept gates.json self-test exclusive:true \u2014 the 0.52 rules-6 amendment applied to this repo's live-tree rejection cases; the DAG's concurrency-4 wave raced self-test's case mutations against sibling gates in the #402 cold-tree judge (three red pushes on a tree that is green gate-by-gate)"
+    "reason": "T-0262 (#506): vendoring-repro gains its closure-honest paths scope (external/** + the parity/resolution/shim trio) per the surveyor's proposal; caller-mandated re-seal, recorded in .gov/tasks/T-0262-govrail-ci-hygiene-vendoring-repro-paths.json"
   }
 }
