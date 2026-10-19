@@ -27,9 +27,16 @@ const log = createLogger('dsh.appshell');
 export const name = 'dsh-appshell';
 export const inject = ['tools'];
 
-const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{accent},tabs:[2..5 strings],actions:[ids],screen:node}. ' +
+const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{accent,mode},tabs:[2..5 strings],actions:[ids],screen:node}. ' +
   'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
-  'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules.';
+  'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
+  'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed): ' +
+  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层. ' +
+  '色彩统治: 第一屏大面积被彩色 hero 与封面占据; hero 用最深色混 accent 的浓色场; theme.accent 全屏 ≤2 点位(主 CTA+活动处); 音乐/夜间类 theme.mode="dark". ' +
+  '文案真实: 具体数字与真实名目("¥1,920"), 禁占位词; 标题≤10字、按钮 2-4 字动词; emoji 只做内容一屏≤4. ' +
+  '字阶与数字主角: title 是海报, 全屏 ≤3 处(hero 主标题+数字主角); 数字/金额/进度用 title 档放大. ' +
+  '封面成套: hcard-row 每项 cover 带 color, 4 色板逐项错开; 卡片配 image(emoji+color) 锚点. ' +
+  '移动模板 ≥2 种; tabs 2-5 个每个≤4字; 不做桌面形态.';
 
 // The surface registry — the sixth red-team gate (forged-surfaceId update).
 // appshell_render mints the id; appshell_update must name a surface this
