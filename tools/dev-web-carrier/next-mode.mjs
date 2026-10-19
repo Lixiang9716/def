@@ -183,6 +183,25 @@ const seedFrom = (machine, sessionsFixture, journalPath) => {
   }
 };
 
+/** The fixture machine behind BOTH live-echo carrier clients (`--client
+ * next` and `--client lynx`): state + seedFrom + the BYOK keychain. One
+ * machine — the same wire, never a parallel copy (lynx-mode.mjs reuses
+ * everything here but the static seat). */
+export const createCarrierMachine = ({ sessionsFixture, journalPath }) => {
+  const machine = state();
+  seedFrom(machine, sessionsFixture, journalPath);
+  return machine;
+};
+
+/** The mux upgrade gate, shared by both live-echo modes: the cookie
+ * session, OR the `?token=` query — the same secret authLite mints
+ * cookies with (authGate's rule). The query form exists because the lynx
+ * wire's Node WebSocket sends no Cookie headers (mux.js keeps the browser
+ * API shape), so its token rides the ws URL instead. */
+export const muxUpgradeAllowed = (req, url, token, isAuthed) =>
+  url.pathname === '/api/remote.mux'
+  && (isAuthed(req) || url.searchParams.get('token') === token);
+
 /** The onboarding arm: the shared mock-keychain legs (onboarding-route.mjs);
  * an unknown onboarding verb stays the carrier's unimplemented business. */
 const serveOnboarding = (machine, endpoint, bodyText, respond) => {
@@ -261,7 +280,7 @@ const fail = (respond, bodyText, code, message) => respond(200, 'application/jso
     result: { ok: false, error: { code, message, details: {} } },
   }));
 
-const handleMux = (machine, ws, text) => {
+export const handleMux = (machine, ws, text) => {
   let msg;
   try { msg = JSON.parse(text); } catch { return; }
   if (msg.type !== 'open' || typeof msg.streamId !== 'string') return;
@@ -322,7 +341,7 @@ const buildHandler = (machine, webRoot, token, isAuthed) => (req, res) => {
   }
 };
 
-const serveApi = (machine, req, url, respond) => {
+export const serveApi = (machine, req, url, respond) => {
   if (req.method !== 'POST') return respond(405, 'text/plain', '');
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
@@ -363,8 +382,7 @@ const authReject = (respond, res, url, token) => {
 
 export const startNextCarrier = ({ repoRoot, port, sessionsFixture, journalPath }) => {
   const webRoot = join(repoRoot, 'presentation/web-client-v2/web');
-  const machine = state();
-  seedFrom(machine, sessionsFixture, journalPath);
+  const machine = createCarrierMachine({ sessionsFixture, journalPath });
   const token = randomBytes(16).toString('hex');
   const COOKIE = 'dsh-dev-carrier';
   const isAuthed = (req) => (req.headers.cookie ?? '').split(';')
@@ -372,7 +390,7 @@ export const startNextCarrier = ({ repoRoot, port, sessionsFixture, journalPath 
   const server = createServer(buildHandler(machine, webRoot, token, isAuthed));
   server.on('upgrade', (req, socket) => {
     const url = new URL(req.url ?? '/', 'http://127.0.0.1');
-    if (url.pathname !== '/api/remote.mux' || !isAuthed(req)) return socket.destroy();
+    if (!muxUpgradeAllowed(req, url, token, isAuthed)) return socket.destroy();
     console.log('[dev-web-carrier:next] mux upgrade accepted');
     socket.on('close', () => console.log('[dev-web-carrier:next] mux socket closed'));
     const ws = acceptUpgrade(req, socket);
