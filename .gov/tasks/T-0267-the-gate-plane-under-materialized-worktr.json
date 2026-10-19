@@ -1,0 +1,20 @@
+{
+  "title": "the gate plane under materialized worktrees \u2014 lock budgets meet the 1234-file closure (three-seat dossier)",
+  "created": "2026-10-19T10:55:06+00:00",
+  "rules": {
+    "hash": "72deb411426ed0b5f6594d2bb05d300b04a5142b9616c691f01290d5c2bb32c6",
+    "files": {
+      ".gov/rules.md": "aad8775c99eeec6ae9054050382db77411c9006333501d73cb3016276a1cc8b8",
+      "gates.json": "a9ce8f8f75a612c73e4c1ecafb3b382b6a700869b3365c55958a89a3054ca92b"
+    }
+  },
+  "checklist": [
+    "root cause verified in-source: self_test/_harness.py hardcodes REJECTION_TIMEOUT_S=10 + CONCURRENCY=4; the five live-tree cases serialize on one 5s-deadline lock sized for sub-second windows, blown by 2-5s x2 in-lock gate legs over the 1234-file rawfile closure",
+    "case-staging-generated-webclient-leak lock deadline 5s->60s (family-consistent, measured) and case-transport-tokens joins the live-tree lock family (lock-free exemption falsified 3/3 DAG runs); plane re-sealed with notes as authority",
+    "gov check exclude.json gains the 10 reasoned entries for untracked pinned trees (checks.py #348's intended use)",
+    "evidence matrix: all 27 gates green individually/in-DAG across runs; govrail upstream issue filed (budget knob / exclusive-honoring / staggered lock family)"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0267"
+}
