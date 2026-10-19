@@ -103,7 +103,7 @@ defineTemplate('banner-card', {
 
 defineTemplate('hcard-row', {
   expand: (n) => p('row', { children: (n.items || []).slice(0, 6).map((it) => p('card', { children: [
-    p('text', { text: (it.cover && it.cover.emoji) || '🎵' }),
+    p('image', { emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || '#1677ff' }),
     p('text', { text: String(it.title || ''), size: 'small' }),
     p('text', { text: String(it.sub || ''), size: 'small', tone: 'muted' }),
   ] })) }),
@@ -123,7 +123,7 @@ defineTemplate('balance-card', {
 defineTemplate('mini-player', {
   expand: (n) => {
     const kids = [
-      p('badge', { text: (n.cover && n.cover.emoji) || '🎵' }),
+      p('image', { emoji: (n.cover && n.cover.emoji) || '🎵', color: (n.cover && n.cover.color) || '#1677ff' }),
       p('column', { children: [
         p('text', { text: String(n.title || ''), size: 'body' }),
         p('text', { text: String(n.sub || ''), size: 'small', tone: 'muted' }),

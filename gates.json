@@ -256,6 +256,12 @@
         "--gate"
       ],
       "description": "fresh-clone proof: the vendor scripts materialize what they promise under CI's invocation shapes (mirror-first; engine tarballs + npm legs download)",
+      "paths": [
+        "external/**",
+        "runtime/dsh/ci/parity-node-modules.sh",
+        "runtime/dsh/ci/check-parity-resolution.mjs",
+        "runtime/dsh/upstream/shims/dsh-session-persistence.js"
+      ],
       "timeoutMs": 480000
     },
     {
