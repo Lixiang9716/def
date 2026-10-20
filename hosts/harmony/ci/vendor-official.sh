@@ -1003,7 +1003,13 @@ fi
 echo "vendor-official: byte-verifying the closure copies"
 DRIFT=$(mktemp)
 SKIPS_FILE=$(mktemp)
-trap 'rm -f "$DRIFT" "$SKIPS_FILE"' EXIT
+# The membership probes below grep THIS FILE, not `printf | grep -q`: grep -q
+# exits at the first match and the writer eats SIGPIPE on a list this size —
+# eight "write error: Broken pipe" lines of green-run noise per sweep
+# (2026-10-20, the appshell-morph CI rounds). A file reader never breaks a
+# writer's pipe.
+TRACKED_FILE=$(mktemp)
+trap 'rm -f "$DRIFT" "$SKIPS_FILE" "$TRACKED_FILE"' EXIT
 # In --check mode the comparison judges only the files the repo TRACKS: parts
 # of the vendored closure (the zod runtime files, .gitignore) are deliberately
 # untracked and materialized by THIS script at build time — a fresh checkout
@@ -1017,6 +1023,7 @@ if [ "$MODE" = "check" ]; then
     # compared as-is (the android twin had an absolute/relative mismatch
     # that silently skipped everything; this is why the probes exist).
     TRACKED=$(git ls-files "$RAW")
+    printf '%s\n' "$TRACKED" > "$TRACKED_FILE"
 fi
 # The dsh-ROOT closure (gateway.js et al) byte-checks here: these are the
 # runtime files the materialized bundle imports by relative path — a stale
@@ -1044,7 +1051,7 @@ for f in $DSH_ROOT; do
         cmp -s "runtime/dsh/$f" "$RAW/$f" || cp "runtime/dsh/$f" "$RAW/$f"
     fi
     if [ "$MODE" = "check" ] && [ -n "$TRACKED" ] &&
-       ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$f"; then
+       ! grep -qxF "$RAW/$f" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1060,7 +1067,7 @@ for s in "$RAW"/scenario/*; do
             cp "runtime/dsh/scenario/$s" "$RAW/scenario/$s"
     fi
     if [ "$MODE" = "check" ] && [ -n "$TRACKED" ] &&
-       ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/scenario/$s"; then
+       ! grep -qxF "$RAW/scenario/$s" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1079,7 +1086,7 @@ for s in "$RAW"/web-live/*; do
             cp "runtime/dsh/web-live/$s" "$RAW/web-live/$s"
     fi
     if [ "$MODE" = "check" ] && [ -n "$TRACKED" ] &&
-       ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/web-live/$s"; then
+       ! grep -qxF "$RAW/web-live/$s" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1088,7 +1095,7 @@ for s in "$RAW"/web-live/*; do
 done
 for rel in $CLOSURE; do
     if [ "$MODE" = "check" ] && [ -n "$TRACKED" ] &&
-       ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$rel"; then
+       ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1102,7 +1109,7 @@ for face in tool-web plugin-manager jobs-local shell shell-env subprocess http-p
     while IFS= read -r f; do
         [ -f "$src/$f" ] || continue
         rel="vendor/dsh/$face@0.1.6-alpha.2/$f"
-        if [ -n "$TRACKED" ] && ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$rel"; then
+        if [ -n "$TRACKED" ] && ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
             echo skip >> "$SKIPS_FILE"
             continue
         fi
@@ -1111,7 +1118,7 @@ for face in tool-web plugin-manager jobs-local shell shell-env subprocess http-p
 done
 for f in package.json lib/index.js; do
     rel="vendor/dsh/dsh-web@0.1.6-alpha.2/$f"
-    if [ -n "$TRACKED" ] && ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$rel"; then
+    if [ -n "$TRACKED" ] && ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1123,7 +1130,7 @@ done
 # fails the gate.
 for f in preset.yml agent.cordis.yml; do
     rel="vendor/dsh/agent-presets@0.1.6-alpha.2/presets/mobile/$f"
-    if [ -n "$TRACKED" ] && ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$rel"; then
+    if [ -n "$TRACKED" ] && ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
@@ -1134,7 +1141,7 @@ done
 for dir in $WEBCLIENT_DIRS; do
     webclient_files "$dir" | while IFS= read -r rel; do
         if [ "$MODE" = "check" ] && [ -n "$TRACKED" ] &&
-           ! printf '%s\n' "$TRACKED" | grep -qxF "$RAW/$rel"; then
+           ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
             echo skip >> "$SKIPS_FILE"
             continue
         fi
