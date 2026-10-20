@@ -48,11 +48,20 @@ as a dead number, and a cold-tree red nearly pushed a `--no-verify`. Before
 the first gate or test run in a new or rebased worktree:
 
 ```sh
-build/build.sh sync <platform>   # or the runner's documented materialization
+build/ensure-seat.sh --verify   # default seat: this checkout; pass a seat path to materialize a sibling
 ```
 
-Rebase → re-materialize → re-judge, every time. A cold-tree red is never a
-code regression; treat one as an environment finding, not a verdict.
+- The inventory of untracked trees lives in `.gov/materialization.json`,
+  and the script is its only executor — when a gate gains a new untracked
+  dependency, update the manifest, never this file. It rsyncs each tree
+  from the primary checkout of the worktree graph: rsync resumes cleanly
+  after an interrupted run (never `cp`, whose killed run poisons the
+  target) and is fully offline — the primary seat is the only source.
+- `--verify` probes the base gates (`bundle-files`, `closures`) after
+  staging. The `build/build.sh sync <platform>` verbs an earlier revision
+  of this section gave as the entry point are now a script-internal step.
+- Rebase → re-materialize → re-judge, every time. A cold-tree red is never
+  a code regression; treat one as an environment finding, not a verdict.
 
 ### 3. Orchestrate with a dynamic workflow
 
