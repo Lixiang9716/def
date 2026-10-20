@@ -1,0 +1,16 @@
+{
+  "comment": "Cold-seat materialization inventory: UNTRACKED trees a linked worktree must carry before the gates' base checks (bundle-files, closures, staging-generated, self-test's baseline probe) can pass. The list is executed by build/ensure-seat.sh — update it here when a gate gains a new untracked dependency, never in a skill file. Sources: the primary checkout of the same worktree graph, rsynced (resumable) — never cp, whose interrupted runs poison the target.",
+  "trees": [
+    "external/dsh",
+    "external/npm",
+    "external/quickjs-ng",
+    "external/wasm3",
+    "external/zstd",
+    "external/dsh-tarballs",
+    "runtime/dsh/vendor/dsh",
+    "runtime/dsh/vendor/npm",
+    "test/upstream-suite/node_modules",
+    "runtime/dsh/node_modules"
+  ],
+  "syncVerbs": ["core", "harmony"]
+}
