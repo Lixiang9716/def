@@ -124,5 +124,8 @@ jobs:
         # validator regression turned nothing red). Runs after `gov run`,
         # when this job has materialized the vendored closure and staged
         # the harmony rawfile — the gen-staging real-repo leg's
-        # precondition; see tools/test/run-tools-tests.sh.
-        run: sh tools/test/run-tools-tests.sh
+        # precondition; see tools/test/run-tools-tests.sh. Known flakes
+        # (see .github/flakes.json) get ONE in-step retry with a visible
+        # annotation — the dev-harmonyos for-attempt precedent, so
+        # ci-verdict only ever sees the final attempt.
+        run: node tools/test/flake-retry.mjs -- sh tools/test/run-tools-tests.sh

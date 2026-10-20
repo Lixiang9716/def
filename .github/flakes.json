@@ -1,0 +1,13 @@
+{
+  "comment": "Known-flaky CI signatures eligible for ONE in-step retry (the dev-harmonyos for-attempt precedent). A row is a debt marker with an owner ref and an expiry; green-on-retry still annotates the run — visibility never drops. Remove the row when the flake is fixed.",
+  "flakes": [
+    {
+      "signature": "carrier-page: timed out after 15000ms waiting for the local tab switch",
+      "suite": "tools/dev-web-carrier/appshell-morph.test.mjs",
+      "ref": "surprise:the-appshell-morph-tools-face-tests",
+      "added": "2026-10-20",
+      "expires": "2026-11-20",
+      "maxRetries": 1
+    }
+  ]
+}
