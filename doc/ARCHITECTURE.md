@@ -207,7 +207,7 @@ evidence index. One line each:
 - **The iSH emulated userland**: retired (2026-10) — the frozen contract entry stays, and every host answers honestly unavailable.
 - **The simulator matrix**: the release-grade evidence net — the Release build proves it carries zero drive machinery, then the proven runners re-drive the Debug harness unchanged.
 - **The harmony matrix leg goes real**: the emulator legs run for real when an hdc target is up; honest skip receipts otherwise.
-- **The test-hardening program**: 20 rows in [doc/test-coverage.md](test-coverage.md), 19 landed (row 15, the app-upgrade matrix, is the last planned leg) — hostile-wire chaos, differential and property testing, sanitizers, static analysis, the supply audit.
+- **The test-hardening program**: 20 rows in [doc/test-coverage.md](test-coverage.md), all 20 landed (row 15, the app-upgrade matrix, closed the program on 2026-10-20) — hostile-wire chaos, differential and property testing, sanitizers, static analysis, the supply audit, the install -r upgrade matrix.
 
 ## 11. Key Technical Decisions
 

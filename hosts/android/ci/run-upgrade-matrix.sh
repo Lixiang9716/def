@@ -63,6 +63,11 @@ fi
 [ -n "${ANDROID_HOME:-}" ] || [ -f hosts/android/local.properties ] \
     || die "no Android SDK found — set ANDROID_HOME or write hosts/android/local.properties"
 
+# The tree the two builds come from, pinned BEFORE the run rewrites its own
+# committed evidence under $OUT — read at receipt time, every in-place rerun
+# reads as a dirty tree whatever the seat's real state was.
+TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at run start)')"
+
 # ---- 1. build A: the tree WITH the probe asset ------------------------------
 say "1/7 build A (probe present: $PROBE)"
 if [ "$SKIP_BUILD_A" = "1" ]; then
@@ -186,7 +191,6 @@ cat "$OUT/verdict-android-session-persist-restart.json"
 [ "$FAIL" = "0" ] || die "checker red — evidence stays unreceipted"
 
 UDID="$(adbsh get-serialno | tr -d '\r')"
-TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at receipt time)')"
 cat > "$OUT/receipt.json" <<EOF
 {
   "host": "android",

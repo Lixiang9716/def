@@ -63,12 +63,12 @@ val verifyOfficialTrees = tasks.register("verifyOfficialTrees") {
     doLast {
         if (!officialDistDir.isDirectory) {
             throw GradleException(
-                "official dist missing: $officialDistDir — run tools/e2e/ensure-official-dist.sh",
+                "official dist missing: $officialDistDir — run test/e2e/ensure-official-dist.sh",
             )
         }
         if (!clientBundlesDir.resolve("npm").isDirectory) {
             throw GradleException(
-                "client bundles missing: $clientBundlesDir — run tools/e2e/ensure-client-bundles.sh",
+                "client bundles missing: $clientBundlesDir — run test/e2e/ensure-client-bundles.sh",
             )
         }
     }

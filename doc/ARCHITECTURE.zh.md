@@ -183,7 +183,7 @@ dsh-mobile/
 - **iSH 模拟 userland**:已退场(2026-10)——冻结的契约条目保留,每个宿主如实答 unavailable。
 - **模拟器矩阵**:发布级证据网——Release 构建证明自身零 drive 机制,再由既有运行器原样驱动 Debug harness。
 - **鸿蒙矩阵腿转真**:hdc 目标在场即跑真腿;不在场出具诚实 skip 回执。
-- **测试加固计划**:20 行见 [doc/test-coverage.md](test-coverage.md),已落地 19 行(row 15 应用升级矩阵是最后一条 planned 腿)——敌意线缆 chaos、差分与 property 测试、sanitizer、静态分析、供应链审计。
+- **测试加固计划**:20 行见 [doc/test-coverage.md](test-coverage.md),20 行全部落地(row 15 应用升级矩阵于 2026-10-20 收口)——敌意线缆 chaos、差分与 property 测试、sanitizer、静态分析、供应链审计、install -r 升级矩阵。
 
 ## 11. 关键技术决策
 
