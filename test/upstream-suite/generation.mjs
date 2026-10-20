@@ -16,14 +16,15 @@
  * D6 pin discipline the stamp IS the tree's content identity (hashing
  * 250 MB would say the same thing slower). Written by transpile.mjs as
  * runtime/dsh/upstream-tests/.generation after a FULL successful pass;
- * compared by run-upstream-suite-sweep.sh and
+ * compared by tools/test/sweep.mjs (the Node sweep driver — the
+ * run-upstream-suite-sweep.sh exec shim forwards to it) and
  * `verifications.mjs --check-fresh`. A half-finished transpile never
  * claims freshness.
  *
  * usage: node generation.mjs → prints the hex fingerprint.
  */
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -65,7 +66,19 @@ export const computeFingerprint = () => {
 };
 
 /** CLI: print the fingerprint (the sweep and the stamp writer call the
- * export directly; this face is for a human checking by hand). */
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+ * export directly; this face is for a human checking by hand). The argv
+ * side is realpath'd: the ESM loader resolves symlinks in import.meta.url,
+ * argv[1] stays as typed, and a symlinked checkout must not turn this into
+ * a silent exit 0 (rule 5). */
+const isEntryModule = () => {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+};
+
+if (isEntryModule()) {
   console.log(computeFingerprint());
 }
