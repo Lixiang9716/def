@@ -26,6 +26,7 @@ workspace 包**，共 298 个。
 | 工具移植 | tool-todo；自研工具行——open-design、plugin-manager（`plugin_manager`）、create（`plugin_create`）、office（OOXML 编写工具）；`dsh-shell-js` 自 2026-10-11 起持有 `shell` 席位，`dsh-shell-wasm` 仅为引擎门保留 | ToolRuntime；背后是契约 fs 原语 / `wasmRun`（`dsh-shell-ish` 已随 iSH 引擎于 2026-10 退役） |
 | 技能与交互行 | 技能（dsh-skill + skill-filesystem `watch:false` + tool-skill）；命令（dsh-commands + command-feedback）；目标（dsh-goal + command-goal）；文件引用（dsh-file-reference-local） | 门控 boot 行（`options.skills/commands/goals/fileReferences`）；已接入三宿主的 serve 席位 |
 | Web 面 | dsh-web + tool-web——仅 `web_search`，走无密钥 DuckDuckGo 提供方 | `mountWebPlane` 跑在网关 `httpFetch` 上；`web_fetch` 在 fetch 提供方出现前保持关闭 |
+| MCP client（streamable-HTTP） | @modelcontextprotocol/client + core（连带 jose、eventsource、pkce-challenge） | 产品闭包锚点（`external/ensure-dsh.sh`，2026-10-20）+ `upstream/mcp-http-transport.js` 跑在网关 `httpFetch` 上；仅 CLI 证明——尚未 staged 进三宿主 bundle，也未挂为工具行；stdio 仍排除 |
 | 会话持久化 | dsh-session-persistence-jsonl（逐字 vendored；桌面的 koffi/flock 原生行由 flock shim + 编译内联的 zstd 应答） | 门控 boot 行，三宿主 serve 席位均接线 `sessionPersistence: true`（#463）；逐宿主验证强制杀死后的重启恢复 |
 | 官方 web 层 | 58 包应用层 + 5 个 shell 静态模块 + 构建出的 SPA | staged 客户端 bundle 在运行时组装，由 carrier 服务 |
 | 镜像 API | api-session-controller、api-settings-controller 的行为 | 写面板（web-write.js）——真正的控制器包未挂载 |
@@ -88,6 +89,18 @@ workspace 包**，共 298 个。
   Harmony serve 席位加入默认预设
   （`hosts/harmony/.../OfficialServe.ets`）。插件审批走网关
   `presentApproval` 原语（`system-plugins/dsh-ui`）。
+- **streamable-HTTP 上的 MCP client**——vendored 的
+  @modelcontextprotocol/client@2.0.0（连带 core、jose、eventsource、
+  pkce-challenge）自测试表转正进产品闭包（`external/ensure-dsh.sh` 的
+  MCP CLIENT 行，2026-10-20）；streamable-HTTP 传输经
+  `upstream/mcp-http-transport.js` 跑在网关 `httpFetch` 上（vendored 的
+  `StreamableHTTPClientTransport` 组合在 `gatewayFetch` 之上——
+  `upstream/fetch-gateway-bridge.js` 的导出）；CLI 证据
+  `runtime/dsh/artifacts/macos-cli-mcp-streamable-http/`（腿
+  `runtime/dsh/ci/run-mcp-streamable-http-e2e.sh`，`build.sh test core`）。
+  剩余边界：宿主闭包 staging（iOS TREES / harmony CLOSURE / android pin
+  行 + `build/build.sh sync`）与 MCP 工具行挂载是下一步——client 今日仅是
+  产品闭包/CLI 面；stdio 传输仍留在物理不可能集（见下）。
 
 ### 仍在排期
 
@@ -114,10 +127,6 @@ workspace 包**，共 298 个。
   自动生成未携带（`session/rename` 仅手动）；`permissionPresets/catalog`
   应答诚实空表（`upstream/web-write.js`），dsh-permission-presets 未
   vendored。
-- **streamable-HTTP 上的 MCP**——client 与其 stdio 传输已 vendored 并
-  桥接（@modelcontextprotocol/client @2.0.0，经 npm-bridges 行
-  `shims/npm-bridges-b.js`）；streamable-HTTP 传输仍是登记在案的缺口
-  （`doc/plugin-dev.md` 缺席特性表 mcpResources 行）。
 - **tool-cordis**——运行时侧两条腿已应答（#335 B3），但该工具的线需要
   仅 vendored cordis-host-runner 提供的 `cordisInspect` HOST 服务
   （`upstream/preset-mobile-rows.js`）。

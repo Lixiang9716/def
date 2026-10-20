@@ -5,14 +5,7 @@ import {
   ReadableStream, WritableStream, TransformStream, DecompressionStream,
   Response, TextDecoderStream, TextEncoderStream,
 } from './web-streams.js';
-import {
-  Event,
-  EventTarget,
-  CustomEvent,
-  MessageEvent,
-  ErrorEvent,
-  CloseEvent,
-} from './web-event.js';
+import { installWebEvent } from './web-event.js';
 import { DshURL } from './url.js';
 /**
  * upstream/shims/globals — the WHATWG/engine globals the upstream suite's
@@ -43,13 +36,9 @@ if (typeof globalThis.TextEncoderStream === 'undefined') globalThis.TextEncoderS
 // The DOM event primitives — eventsource@3.0.7's EventSource, the inspector
 // hosts, and the MCP client faces `extends EventTarget` / `new Event(...)`
 // at module-definition time, so they must exist before the first spec import
-// (the same link-time property the streams above serve).
-if (typeof globalThis.Event === 'undefined') globalThis.Event = Event;
-if (typeof globalThis.EventTarget === 'undefined') globalThis.EventTarget = EventTarget;
-if (typeof globalThis.CustomEvent === 'undefined') globalThis.CustomEvent = CustomEvent;
-if (typeof globalThis.MessageEvent === 'undefined') globalThis.MessageEvent = MessageEvent;
-if (typeof globalThis.ErrorEvent === 'undefined') globalThis.ErrorEvent = ErrorEvent;
-if (typeof globalThis.CloseEvent === 'undefined') globalThis.CloseEvent = CloseEvent;
+// (the same link-time property the streams above serve). The same install
+// face the product boot calls (upstream/web-shims.js); only-when-absent.
+installWebEvent();
 // The URL face — the http-proxy policy reader calls the WHATWG static
 // `URL.parse` and the eventsource faces construct `new URL(...)` as a bare
 // global (quickjs defines none). The node:url shim's class IS the URL here.

@@ -371,6 +371,7 @@
 | `security.jail` | — | — | — | 19/19 |
 | `security.manifest-forgery` | — | — | — | 11/11 |
 | `security.byok-leak` | — | — | — | 7/7 |
+| `mcp.streamable-http` | — | — | — | 16/16 |
 
 `（漂移）` = 该 verdict 是在更早的 manifest 版本上捕获的
 （见[信息性说明](#信息性说明不算失败)）。
@@ -481,6 +482,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | `runtime/spike/artifacts/macos-cli-security-manifest-forgery` | macOS CLI | security.manifest-forgery 11/11（五档管线伪造全拒——能力抬升越过过期锚与重算信任、入口替换、id 换牌、旧包回退——零暂存、无 journal；阶梯之后诚实包照常安装；目录新鲜度重放档记录 HIGH 发现：过期但签名有效的目录会装进来，dsh-echo@0.9.0） | ✓ | ✓ | ✓ | 0 |
 | `runtime/spike/artifacts/macos-cli-security-byok-leak` | macOS CLI | security.byok-leak 7/7（金丝雀走过钥匙串保存、重启路由解析、一次真实传输回合与 401 面——错误消息在运行时内断言无密钥；runner 在匹配器自检之后审计裸日志中的两个秘密值） | ✓ | ✓ | ✓ | 0 |
 | `runtime/spike/artifacts/macos-cli-shim-exposure-probe` | macOS CLI | shim.exposure-probe 8/8（shim 曝光测绘的五条行为腿：被 orphan 的 dsh-session-persistence 错误类、node:sqlite `:memory:`、string-decoder 的分片 UTF-8 持有、partial-json + openai-client 的线上脸、slot-registry 的守卫） | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-mcp-streamable-http` | macOS CLI | mcp.streamable-http 16/16（VENDORED 的 `@modelcontextprotocol/client@2.0.0` Client + StreamableHTTPClientTransport 原样跑在 quickjs-ng 里，经库自带的 `fetch` 选项拿到真实网关 `httpFetch`——D5 零新原语、D6 零上游改动——对着 node 侧 loopback TCP 上的 mock MCP 服务器：initialize 200 json → notifications/initialized 202 → 库自己发起的独立 GET 被答 405、按设计容忍（记录在案，不隐藏）→ tools/list 200 text/event-stream（一帧 SSE 经 vendored 解析器走网关 body 的逐 chunk 事件，D8）→ tools/call echo + add 200 json → close；mock 签发的 `mcp-session-id` 经网关响应头往返——mock 对无会话的拨号拒以 400，所以绿即是证明；mock 的逐请求遥测以 `mock-server-stdout.txt` 随四件交付物一起落盘） | ✓ | ✓ | ✓ | 0 |
 | `hosts/ios/artifacts/settings-screens` | iOS | ——（仅人看证据；机器断言在 `b4-write-live`） | ✓（app-stdout） | ✗（设计使然） | ✗（设计使然） | 2 |
 | `presentation/lynx-client/artifacts/cli-lynx-mount-lynx` | macOS CLI | lynx.mount 34/34（lynx 皮肤：bundle 的缝核心 + 工件 sha256 校验） | ✓ | ✓ | ✓ | 0 |
 | `presentation/lynx-client/artifacts/cli-lynx-mount-stub` | macOS CLI | lynx.mount 34/34（stub 皮肤：同一流程——即可替换性证明） | ✓ | ✓ | ✓ | 0 |

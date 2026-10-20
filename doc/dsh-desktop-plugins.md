@@ -27,6 +27,7 @@ ToolRuntime, a vendor pin (`vendor/ensure-dsh.sh`) + shim rows
 | Tool ports | tool-todo; the in-house tool rows — open-design, plugin-manager (`plugin_manager`), create (`plugin_create`), office (the OOXML authoring tools); `dsh-shell-js` holds the `shell` seat (2026-10-11), `dsh-shell-wasm` kept for the engine gates only | ToolRuntime; backed by the contract fs primitives / `wasmRun` (`dsh-shell-ish` retired with the iSH engine, 2026-10) |
 | Skill + interactive rows | skills (dsh-skill + skill-filesystem `watch:false` + tool-skill); commands (dsh-commands + command-feedback); goals (dsh-goal + command-goal); file-references (dsh-file-reference-local) | gated boot rows (`options.skills/commands/goals/fileReferences`); wired on the three hosts' serve seats |
 | Web plane | dsh-web + tool-web — `web_search` only, over the keyless DuckDuckGo provider | `mountWebPlane` over gateway `httpFetch`; `web_fetch` stays off until a fetch provider exists |
+| MCP client (streamable-HTTP) | @modelcontextprotocol/client + core (+ jose, eventsource, pkce-challenge) | product-closure pins (`external/ensure-dsh.sh`, 2026-10-20) + `upstream/mcp-http-transport.js` over gateway `httpFetch`; CLI-proven only — not yet staged into the three platform bundles nor mounted as a tool row; stdio stays excluded |
 | Session persistence | dsh-session-persistence-jsonl (verbatim; the desktop's koffi/flock native row answered by the flock shim + compiled-in zstd) | gated boot row, wired `sessionPersistence: true` on all three hosts (#463); force-kill restart proven per host |
 | Official web tier | the 58-package application tier + 5 shell-static modules + the built SPA | staged client bundles composed in-runtime; served by the carrier |
 | Mirrored API | api-session-controller, api-settings-controller behavior | the write surface (web-write.js) — the real controllers stay unmounted |
@@ -96,6 +97,20 @@ re-judged item by item against file-level evidence.
   mountCompositionHostPlane`); the Harmony serve seat joins the preset
   (`hosts/harmony/.../OfficialServe.ets`). Plugin approvals ride the
   gateway `presentApproval` primitive (`system-plugins/dsh-ui`).
+- **MCP client over streamable-HTTP** — the vendored
+  @modelcontextprotocol/client@2.0.0 (+ core, jose, eventsource,
+  pkce-challenge) left the test table for the product closure
+  (`external/ensure-dsh.sh`, the MCP CLIENT rows, 2026-10-20); the
+  streamable-HTTP transport rides gateway `httpFetch` through
+  `upstream/mcp-http-transport.js` (the vendored
+  `StreamableHTTPClientTransport` composed over `gatewayFetch`, the
+  `upstream/fetch-gateway-bridge.js` export); CLI proof
+  `runtime/dsh/artifacts/macos-cli-mcp-streamable-http/` (leg
+  `runtime/dsh/ci/run-mcp-streamable-http-e2e.sh`, `build.sh test core`).
+  Remaining boundary: host closure staging (iOS TREES / harmony CLOSURE /
+  android pin rows + `build/build.sh sync`) and the MCP tool-row mount are
+  the next step — today the client is a product-closure/CLI face only; the
+  stdio transport stays in the physically-impossible set (below).
 
 ### Still staged
 
@@ -124,11 +139,6 @@ re-judged item by item against file-level evidence.
   manual only); `permissionPresets/catalog` answers the honest empty
   table (`upstream/web-write.js`) and dsh-permission-presets is
   unvendored.
-- **MCP over streamable-HTTP** — the client and its stdio transport are
-  pinned and bridged (@modelcontextprotocol/client @2.0.0 via the
-  npm-bridges rows, `shims/npm-bridges-b.js`); the streamable-HTTP
-  transport is the remaining recorded gap (`doc/plugin-dev.md`, the
-  absent-features table's mcpResources row).
 - **tool-cordis** — the two runtime-side legs answer (#335 B3), but the
   tool's wire needs the `cordisInspect` HOST service that only the
   vendored cordis-host-runner provides (`upstream/preset-mobile-rows.js`).

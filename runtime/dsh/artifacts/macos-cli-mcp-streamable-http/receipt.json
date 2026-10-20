@@ -1,0 +1,16 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@modelcontextprotocol/client@2.0.0 + @modelcontextprotocol/core@2.0.0 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
+  "scenario": "mcp.streamable-http",
+  "mock": "runtime/dsh/ci/mock-mcp-server.mjs (node-side, zero-dependency Streamable HTTP MCP server on real loopback TCP; its per-request telemetry is mock-server-stdout.txt)",
+  "checker": "test/e2e/scenarios/mcp-streamable-http.json",
+  "events": 16,
+  "proves": [
+    "the vendored @modelcontextprotocol/client@2.0.0 runs VERBATIM inside quickjs-ng: Client and StreamableHTTPClientTransport load from the pinned vendor closure with zero upstream edits (D6), and the initialize handshake, notifications/initialized, tools/list and tools/call on the wire are the library's own JSON-RPC shapes",
+    "the transport bridge is composition, not a fork: upstream/mcp-http-transport.js hands the vendored StreamableHTTPClientTransport the gateway fetch (gatewayFetch, upstream/fetch-gateway-bridge.js) through the library's public fetch option — the only seam it exposes and the only one used",
+    "the network face is the REAL gateway httpFetch primitive (contract v1.0.0, D5 — no new primitive): every request crosses the gateway and lands on the node-side mock over real loopback TCP, and the mcp-session-id the server minted round-trips through the gateway's response headers (the mock refuses session-less requests with 400, so a green run IS that proof)",
+    "both Streamable HTTP response modes cross the bridge as streams (D8): tools/list returns text/event-stream (one SSE message frame, parsed by the vendored EventSourceParserStream over the gateway body's chunk events) while initialize and tools/call return application/json; the library's own standalone GET stream attempt is answered 405 and tolerated by design — recorded in the mcp/wire evidence, never suppressed"
+  ]
+}

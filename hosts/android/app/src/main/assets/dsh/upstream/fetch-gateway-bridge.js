@@ -1,4 +1,4 @@
-// dsh:logging-exempt (transport seam: honesty rides the mount's onEvent, never console)
+// dsh:logging-exempt (transport seam: the installed face's honesty rides the mount's onEvent; the explicit gatewayFetch entry is observed by its caller — upstream/mcp-http-transport.js logs per dial)
 /**
  * upstream/fetch-gateway-bridge.js — the ONE gated upgrade of
  * `globalThis.fetch` from fail-loud+loopback to fail-loud+loopback+USER
@@ -53,6 +53,13 @@
  * DEFAULT-OFF: nothing in this file runs unless the mount calls
  * installFetchGatewayBridge — a boot without `options.llm.piaiProviders`
  * (or with loopback-only routes) keeps today's fetch byte-identical.
+ *
+ * THE EXPLICIT ENTRY (gatewayFetch, below) is the second consumer of the
+ * same dial: a fetch-shaped function a vendored transport that accepts a
+ * custom `fetch` option is handed directly (upstream/mcp-http-transport.js).
+ * It installs nothing, consults no global, and excludes no host — the
+ * caller named the seam. The installed face above keeps its dispatch order
+ * and loopback rule untouched.
  */
 import { httpFetch } from '../gateway.js';
 
@@ -200,6 +207,33 @@ const viaGateway = async (href, init) => {
     headers: mapped.headers,
     url: href,
   });
+};
+
+/** The explicit, unconditional gateway dial as a fetch: `(input, init) =>
+ * Promise<Response>`. No global is consulted and loopback is NOT excluded —
+ * unlike the installed face, the caller chose this seam (an E2E probe dials
+ * its loopback mock over the REAL httpFetch through it). Of a Request-like
+ * input only the href is read; method/headers/body ride `init`, as on the
+ * installed face. The href handed to the gateway is the parsed URL's
+ * serialization — what fetch itself reports as response.url.
+ *
+ * Fail-loud (rule 5): a target that is not an http(s) URL — a bare path, a
+ * data: URL, an input carrying no href, an unparseable string — rejects with
+ * a TypeError naming this entry. There is no plain fetch path to fall back
+ * to here, so nothing is swallowed. */
+export const gatewayFetch = async (input, init) => {
+  const href = targetHref(input);
+  if (typeof href !== 'string' || !/^https?:\/\//i.test(href)) {
+    const offending = href === undefined ? `${typeof input} input carrying no href` : href;
+    throw new TypeError(`gatewayFetch: target must be an http(s) URL, got ${offending}`);
+  }
+  let target;
+  try {
+    target = new URL(href);
+  } catch {
+    throw new TypeError(`gatewayFetch: target is not a parseable URL: ${href}`);
+  }
+  return viaGateway(target.href, init);
 };
 
 /** The bridged fetch: consult the previous global FIRST (the proxy-policy

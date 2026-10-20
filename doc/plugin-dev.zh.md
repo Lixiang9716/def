@@ -206,7 +206,7 @@ quickstart 的 Web-UI 流程(模型设置 → 工作区选择 → 带审批的�
 | guide/quickstart | Web-UI 流程即本应用的产品面 |
 | guide/providers | 模型配置产品页;移动等价物是 BYOK/模型设置面(OpenAI 兼容端点);桌面多协议广度(经 llm-pi-ai 的 anthropic-messages / openai-responses)未在移动 vendor——列为后续 |
 | guide/network-proxy、python-sdk | 启动环境代理变量 / 桌面 SDK profile——无插件作者面;不适用 |
-| guide/github-review、guide/schedule、guide/mcp-memory | 建立在未携带 seam 上的桌面产品特性(webhookRuntime;schedule;走 stdio 子进程的 mcp-client=无进程墙)——列为后续 |
+| guide/github-review、guide/schedule、guide/mcp-memory | 建立在未携带 seam 上的桌面产品特性(webhookRuntime;schedule;mcp-memory——其 mcp-client 已 vendored 进产品闭包,streamable-HTTP 传输经网关 `httpFetch` 落地(`upstream/mcp-http-transport.js`,2026-10-20),而走 stdio 子进程的传输仍是无进程墙,memory 产品面本身未挂载)——列为后续 |
 | 生成类 catalog(config/tool/persistence)+ subsystems(约 45 页) | 由同一批 vendored 包生成——构造性覆盖;抽查 tools 与 jobs:文档面与 vendored 库一致(文档站跟 master,个别类型名与我们的 0.1.6-alpha.2 钉版有漂移——以钉版为准) |
 
 ---
