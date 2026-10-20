@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test/e2e/run-ios-m1.sh — ONE attempt of the m1 CI leg: boot.verification +
+# test/e2e/run-ios-boot-carrier.sh — ONE attempt of the boot-carrier CI leg: boot.verification +
 # carrier.loopback in one simulator launch, verified by the shared checker
 # (test/e2e/check.mjs — logs are the verdict, screenshots are never asserted
 # on), then CLASSIFIED by test/e2e/classify.mjs (#515): green, product red, or
@@ -13,27 +13,28 @@
 # dev-harmonyos.yml — never inside check.mjs, which stays a pure function
 # (log in, verdict out; selftest.sh's fixture proofs depend on that).
 #
-# usage: run-ios-m1.sh <attempt 1|2>
+# usage: run-ios-boot-carrier.sh <attempt 1|2>
 # exit: 0 green | 1 product-class red (a retry cannot fix a regression)
 #       | 2 usage | 3 environment-class red (the caller may retry ONCE)
 #
 # On an environment classification the receipt (verdict-environment.json) is
 # written into BOTH artifact dirs; the caller moves attempt-1's whole dirs
-# aside (m1-*.attempt1/) before retrying, so attempt-2's verdicts own the
+# aside (boot-carrier-*.attempt1/) before retrying, so attempt-2's verdicts own the
 # canonical paths: every attempt of one workflow shares GITHUB_RUN_ID, and a
 # stale same-run verdict left at the canonical path would pass the "Report
 # verdict" provenance check as if it were this attempt's product.
+# (renamed from run-ios-m1.sh, 2026-10-20 — 'm1' named the first-spike milestone and collides with Apple's M1)
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
 case "${1:-}" in
   1|2) ATTEMPT="$1" ;;
-  *) echo "usage: run-ios-m1.sh <attempt 1|2>" >&2; exit 2 ;;
+  *) echo "usage: run-ios-boot-carrier.sh <attempt 1|2>" >&2; exit 2 ;;
 esac
 
-ART=hosts/ios/artifacts/m1-dsh
-ART2=hosts/ios/artifacts/m1-carrier
+ART=hosts/ios/artifacts/boot-carrier-dsh
+ART2=hosts/ios/artifacts/boot-carrier-carrier
 mkdir -p "$ART" "$ART2"
 # Match any iPhone device line regardless of name suffix ("iPhone 16",
 # "dsh-iphone", …) — the literal 'iPhone (' never occurs in stock
