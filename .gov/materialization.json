@@ -1,5 +1,5 @@
 {
-  "comment": "Cold-seat materialization inventory: UNTRACKED trees a linked worktree must carry before the gates' base checks (bundle-files, closures, staging-generated, self-test's baseline probe) can pass. The list is executed by build/ensure-seat.sh — update it here when a gate gains a new untracked dependency, never in a skill file. Sources: the primary checkout of the same worktree graph, rsynced (resumable) — never cp, whose interrupted runs poison the target. The dsh-tests row is version-suffixed: update it when the tests pin re-names the directory.",
+  "comment": "Cold-seat materialization inventory: UNTRACKED trees a linked worktree must carry before the gates' base checks (bundle-files, closures, staging-generated, self-test's baseline probe) and the Android host build (verifyOfficialTrees stages official-web/dist + client-bundles/npm into the APK) can pass. The list is executed by build/ensure-seat.sh — update it here when a gate or a host build gains a new untracked dependency, never in a skill file. Sources: the primary checkout of the same worktree graph, rsynced (resumable) — never cp, whose interrupted runs poison the target. The dsh-tests row is version-suffixed: update it when the tests pin re-names the directory.",
   "trees": [
     "external/dsh",
     "external/npm",
@@ -11,7 +11,9 @@
     "runtime/dsh/vendor/dsh",
     "runtime/dsh/vendor/npm",
     "test/upstream-suite/node_modules",
-    "runtime/dsh/node_modules"
+    "runtime/dsh/node_modules",
+    "presentation/official-web/dist",
+    "presentation/official-web/client-bundles/npm"
   ],
   "syncVerbs": [
     "core",
