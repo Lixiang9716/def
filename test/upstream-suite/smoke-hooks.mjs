@@ -71,5 +71,22 @@ export async function resolve(specifier, context, nextResolve) {
       shortCircuit: true,
     };
   }
+  // The transpiler rewrites bare dsh-subprocess-local to the '/index'
+  // SUBPATH so the quickjs loader's module NAME carries the package
+  // directory (the chunk-carrier trick, transpile.mjs). Node's own resolver
+  // refuses that shape — the npm exports map defines no './index' — so the
+  // differential leg died at module level for every family driving the
+  // subprocess-local face (lsp-stdio et al., the sweep's TIMEOUT rows).
+  // Serve the tarball's single-file lib face directly: one module, the same
+  // face the quickjs leg's vendored probe serves.
+  if (specifier === '@deepseek-ai/dsh-subprocess-local/index') {
+    return {
+      url: pathToFileURL(pathResolve(
+        ROOT,
+        'external/npm/@deepseek-ai/dsh-subprocess-local@0.1.6-alpha.2/lib/index.js',
+      )).href,
+      shortCircuit: true,
+    };
+  }
   return nextResolve(specifier, context);
 }

@@ -57,12 +57,15 @@ const REGISTRY = [
       },
       {
         id: 'node-differential',
-        status: 'dead',
+        status: 'divergent',
         runner:
           'runtime/dsh/ci/run-upstream-suite-sweep.sh node leg (test/upstream-suite/smoke.mjs)',
         reason:
-          'dsh-subprocess-local/index exports gap (the lsp-stdio family fails at module ' +
-          'load; predates 2026-10-20)',
+          'runs since the dsh-subprocess-local/index subpath row landed in ' +
+          'smoke-hooks (2026-10-20), but DIVERGES where the vendored spawner ' +
+          'drives real Node children (lsp-stdio: 9/22 vs qjs 31/0 — the piped ' +
+          'protocol stream drops under Node). Divergence is the leg finding ' +
+          'its differential value; treat qjs as the only counting leg.',
       },
     ],
     transpiler: 'test/upstream-suite/transpile.mjs',

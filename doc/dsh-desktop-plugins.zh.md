@@ -31,7 +31,7 @@ workspace 包**，共 298 个。
 | 镜像 API | api-session-controller、api-settings-controller 的行为 | 写面板（web-write.js）——真正的控制器包未挂载 |
 | Web API（T-0035 + #335） | pluginInventory/list、agentPresets/list\|read\|copy\|deletePreset\|select；pluginManager 的 list 腿与写腿——installBundle\|removeBundle\|setBundleEnabled\|setPluginEnabled\|inspect 走真实 §4 安装管线 + 回执日志 + dsh.plugins/1 注册表（cancelInstall 应答 `not-running`）；会话深页腿（page\|search\|rename\|updateQueue\|fork\|selectModel\|cancel\|delete）、subagents/*、workspaceFiles/*（+ `fs/observed` 流）、marketplace/install、dynamicCordisRunner 各腿、credentials/describe、session/modelCatalog、`permissionPresets/catalog`（诚实空表） | 已认领端点；workspace 层是安全边界（只收裸注册表名） |
 
-## 排期中（以 #507 后的 main 为准，2026-10-15 刷新）
+## 排期中（以 #624 后的 main 为准，2026-10-20 刷新）
 
 上一版单段清单双向过时了：大多数项其实落了，另有一员被证伪为墙。
 以下逐项按文件级证据重判。
@@ -114,9 +114,10 @@ workspace 包**，共 298 个。
   自动生成未携带（`session/rename` 仅手动）；`permissionPresets/catalog`
   应答诚实空表（`upstream/web-write.js`），dsh-permission-presets 未
   vendored。
-- **streamable-HTTP 上的 MCP**——未 vendored、未挂载；`httpFetch` 之上
-  可行，等一轮接入工作认领（`doc/plugin-dev.md` 缺席特性表
-  mcpResources 行）。
+- **streamable-HTTP 上的 MCP**——client 与其 stdio 传输已 vendored 并
+  桥接（@modelcontextprotocol/client @2.0.0，经 npm-bridges 行
+  `shims/npm-bridges-b.js`）；streamable-HTTP 传输仍是登记在案的缺口
+  （`doc/plugin-dev.md` 缺席特性表 mcpResources 行）。
 - **tool-cordis**——运行时侧两条腿已应答（#335 B3），但该工具的线需要
   仅 vendored cordis-host-runner 提供的 `cordisInspect` HOST 服务
   （`upstream/preset-mobile-rows.js`）。
