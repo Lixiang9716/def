@@ -26,6 +26,28 @@ const BUNDLE_SCENARIO = {
 const REG_DIR = pathResolve(ROOT, 'test/upstream-suite/.runtime-modules');
 const regFile = (name) => pathResolve(REG_DIR, encodeURIComponent(name) + '.mjs');
 
+/** The dedicated single-URL rows: util-crypto's loader row
+ * (dsh_runtime_host.c DSH_PKG_CRYPTO) and the transpiler's chunk-carrier
+ * subpath (bare dsh-subprocess-local rewritten to '/index' so the quickjs
+ * loader's module NAME carries the package directory — Node's own resolver
+ * refuses that shape, the npm exports map defines no './index', which is
+ * what killed the differential leg at module load for every family driving
+ * the subprocess-local face). Each returns a file URL or undefined. Kept
+ * out of resolve() to hold it under the code-size cap. */
+const serveSpecialRows = (specifier) => {
+  if (specifier === 'dsh:util-crypto') {
+    return pathResolve(
+      ROOT, 'external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js');
+  }
+  if (specifier === '@deepseek-ai/dsh-subprocess-local/index') {
+    return pathResolve(
+      ROOT,
+      'external/npm/@deepseek-ai/dsh-subprocess-local@0.1.6-alpha.2/lib/index.js',
+    );
+  }
+  return null;
+};
+
 export async function resolve(specifier, context, nextResolve) {
   // Runtime-module registrations (see __dshModuleDefine above) win first —
   // the C seam is checked before the bare map on the quickjs side too.
@@ -61,15 +83,9 @@ export async function resolve(specifier, context, nextResolve) {
       shortCircuit: true,
     };
   }
-  // The legacy rt spelling the C host's loader serves as a dedicated row
-  // (dsh_runtime_host.c DSH_PKG_CRYPTO): 'dsh:util-crypto' → the vendored
-  // package. The Node reference leg must speak the same row.
-  if (specifier === 'dsh:util-crypto') {
-    return {
-      url: pathToFileURL(pathResolve(
-        ROOT, 'external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js')).href,
-      shortCircuit: true,
-    };
+  const special = serveSpecialRows(specifier);
+  if (special !== null) {
+    return { url: pathToFileURL(special).href, shortCircuit: true };
   }
   return nextResolve(specifier, context);
 }
