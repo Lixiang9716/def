@@ -245,6 +245,41 @@ const hoistCreateRequireJson = (source, rel) => {
   return `${imports.join('\n')}\n${rewritten}`;
 };
 
+/** Module-identity rewrites (issue #610): a spec importing the package's
+ * own src module by RELATIVE path gets esbuild's INLINED TS copy — a class
+ * object distinct from the one the vendored lib's provider constructs, so
+ * a prototype spy can never observe a real instance (the lsp lifecycle
+ * spec's didClose-failure mocks resolved where upstream sees a rejection;
+ * the two cases held red for an identity reason no shim can fix).
+ * Upstream's monorepo vitest resolves the spec's copy and the lib's
+ * internals to ONE source module, and a file-split transpile cannot
+ * reproduce that graph — so it reproduces the IDENTITY: the import is
+ * rewritten to the vendored lib's BARE specifier, which both legs serve
+ * from one cached module record (the C host's bare map / Node's
+ * runtime/dsh/node_modules probe), making the spec's binding the exact
+ * class the mounted provider news up. Bare, not inline, is forced here:
+ * the tarball face is a SINGLE-FILE bundle that bakes the class into
+ * lib/index.js, so no inline target exists to dedupe against (contrast the
+ * W5-S web-fetch-http row, where inlining the tests-tree source collapses
+ * the pair by resolved path). Legal only where the lib's export list
+ * re-exports the symbols the spec binds — dsh-lsp-stdio exports
+ * LspConnection verbatim. Keyed by the exact relative specifier; the
+ * corpus carries exactly one importer (lifecycle.spec.ts), and a future
+ * stray import from another package fails loud at link (missing export),
+ * never silently (rule 5). */
+export const IDENTITY_BARE_REWRITES = new Map([
+  ['../src/connection.ts', '@deepseek-ai/dsh-lsp-stdio'],
+]);
+
+export const rewriteIdentityImports = (source) => {
+  let out = source;
+  for (const [specifier, bare] of IDENTITY_BARE_REWRITES) {
+    out = out.replaceAll(`'${specifier}'`, `'${bare}'`)
+      .replaceAll(`"${specifier}"`, `"${bare}"`);
+  }
+  return out;
+};
+
 /** Monorepo src/ subpaths a spec needs at RUNTIME for symbols no vendored
  * tarball carries. '@deepseek-ai/dsh-llm-pi-ai/src/context.ts' (toPiContext —
  * the system-prompt-admission spec's admission oracle) is a deliberate

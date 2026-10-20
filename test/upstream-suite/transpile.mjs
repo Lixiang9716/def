@@ -30,7 +30,7 @@ const OUT = join(ROOT, 'runtime/dsh/upstream-tests');
 const HARNESS_SPECIFIER = 'scenario/upstream-test-harness.js';
 // The path-rewrite machinery lives in transpile-rewrites.js (the file
 // crossed the size budget; these faces are pure source->source transforms).
-import { BARE_EXTERNAL_PLUGIN, SUBMODULE_BARE_RESOLVES, hoistCreateRequireJson, hoistSubmoduleSrcSubpaths, rewriteBundleManifestRoot, rewriteSeedTreeRoots, collectSeedTreeFiles, walk, BUNDLE_MANIFEST_PACKAGES, BUNDLE_MANIFEST_FILES, SEED_TREE_SPECS } from './transpile-rewrites.mjs';
+import { BARE_EXTERNAL_PLUGIN, SUBMODULE_BARE_RESOLVES, hoistCreateRequireJson, hoistSubmoduleSrcSubpaths, rewriteBundleManifestRoot, rewriteSeedTreeRoots, rewriteIdentityImports, collectSeedTreeFiles, walk, BUNDLE_MANIFEST_PACKAGES, BUNDLE_MANIFEST_FILES, SEED_TREE_SPECS } from './transpile-rewrites.mjs';
 
 const UNIMPLEMENTED = [
   [/from\s*[\x27\x22]node:vm[\x27\x22]/, 'node:vm (no dsh shim — the vm builtin is a Node embedding surface)'],
@@ -192,7 +192,7 @@ const transpileOne = async (rel, manifest) => {
   // Hoisting precedes the exclusion scan: a src/ subpath we can inline from
   // the pinned submodule is no longer a bare monorepo specifier, while any
   // specifier without a hoist target keeps its named exclusion below.
-  const hoisted = hoistSubmoduleSrcSubpaths(hoistCreateRequireJson(source, rel));
+  const hoisted = hoistSubmoduleSrcSubpaths(hoistCreateRequireJson(rewriteIdentityImports(source), rel));
   const unimplemented = unimplementedIn(hoisted, spyOnNamespaceRules(hoisted));
   if (unimplemented.length > 0) {
     const key = unimplemented.join(' + ');
