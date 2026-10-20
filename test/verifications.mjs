@@ -20,9 +20,22 @@
  *       the flattened artifact name for a spec path. Only entries carrying
  *       a resolve function answer; a path none of them claims lists the
  *       entries that do.
+ *   node test/verifications.mjs --check-fresh
+ *       compare the staged upstream-tests' generation stamp against the
+ *       current inputs (transpilers, pin stamps, esbuild). Nonzero = stale:
+ *       re-run node test/upstream-suite/transpile.mjs first.
  *
  * Unknown names fail loud naming the offender (rule 5): exit 1.
  */
+
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { computeFingerprint } from './upstream-suite/generation.mjs';
+
+const ROOT = fileURLToPath(new URL('../', import.meta.url));
+const GENERATION_STAMP = join(ROOT, 'runtime/dsh/upstream-tests/.generation');
+const TRANSPILER = 'node test/upstream-suite/transpile.mjs';
 
 const FLATTEN_SOURCE = 'test/upstream-suite/transpile.mjs (line ~225)';
 const flattenSpecPath = (rel) =>
@@ -174,8 +187,25 @@ const usage = (message) =>
       '  node test/verifications.mjs --list\n' +
       '  node test/verifications.mjs --why <registry-name | artifact-stem>\n' +
       '  node test/verifications.mjs --resolve <tests-tree-relative-path>\n' +
+      '  node test/verifications.mjs --check-fresh\n' +
       `registered names: ${NAMES.join(', ')}`,
   );
+
+const printCheckFresh = () => {
+  const staged = existsSync(GENERATION_STAMP)
+    ? readFileSync(GENERATION_STAMP, 'utf8').trim()
+    : 'missing';
+  const now = computeFingerprint();
+  if (staged === now) {
+    console.log(`fresh (${now.slice(0, 12)})`);
+    return;
+  }
+  failLoud(
+    `staged upstream-tests are STALE (staged gen ${staged.slice(0, 12)} ≠ ` +
+      `current ${now.slice(0, 12)}). Fix: run \`${TRANSPILER}\`, then re-run ` +
+      'this check.',
+  );
+};
 
 const argv = process.argv.slice(2);
 if (argv.length === 0) usage('expected a flag');
@@ -192,6 +222,9 @@ if (flag === '--list') {
 } else if (flag === '--resolve') {
   if (!value) usage('--resolve needs a tests-tree-relative path');
   printResolve(value);
+} else if (flag === '--check-fresh') {
+  if (value) usage(`--check-fresh takes no value, got '${value}'`);
+  printCheckFresh();
 } else {
   usage(`unknown flag '${flag}'`);
 }
