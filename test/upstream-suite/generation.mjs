@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+// dsh:logging-exempt (tool: its stdout is the fingerprint)
+/**
+ * generation.mjs — the upstream-tests generation fingerprint.
+ *
+ * The staged specs under runtime/dsh/upstream-tests/ are LOCAL-ONLY
+ * (untracked): nothing updates them when an input changes, so a tree that
+ * survived a transpiler change silently served the OLD artifacts (measured
+ * 2026-10-20: #614's transpiler fix stayed invisible on main — 29/2 stale
+ * vs 31/0 fresh — until transpile.mjs was re-run by hand).
+ *
+ * The fingerprint = sha256 over every input that determines the staged
+ * bytes, represented by CHEAP markers: the transpilers' own bytes, the
+ * suite's lockfile (the bundler's version), and the vendored trees'
+ * .vendor-pin stamps — each stamp carries its tarball's sha256, so by the
+ * D6 pin discipline the stamp IS the tree's content identity (hashing
+ * 250 MB would say the same thing slower). Written by transpile.mjs as
+ * runtime/dsh/upstream-tests/.generation after a FULL successful pass;
+ * compared by run-upstream-suite-sweep.sh and
+ * `verifications.mjs --check-fresh`. A half-finished transpile never
+ * claims freshness.
+ *
+ * usage: node generation.mjs → prints the hex fingerprint.
+ */
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const SUITE = join(ROOT, 'test/upstream-suite');
+
+/** The staged bytes' full input set, as deterministic marker bytes. */
+export const computeFingerprint = () => {
+  const hash = createHash('sha256');
+  // The transpilers + the lockfile (which pins esbuild): the code half.
+  for (const f of [
+    'transpile.mjs',
+    'transpile-rewrites.mjs',
+    'transpile-decorators.mjs',
+    'package-lock.json',
+  ]) {
+    hash.update(f);
+    hash.update(readFileSync(join(SUITE, f)));
+  }
+  // The vendored trees' pin stamps (external/, recursive): the data half.
+  const stamps = [];
+  const walk = (dir, depth) => {
+    if (depth > 6 || !existsSync(dir)) return;
+    for (const name of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, name.name);
+      if (name.isDirectory()) walk(full, depth + 1);
+      else if (name.name === '.vendor-pin') {
+        stamps.push([relative(ROOT, full).split('\\').join('/'), readFileSync(full)]);
+      }
+    }
+  };
+  walk(join(ROOT, 'external'), 0);
+  stamps.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  for (const [p, bytes] of stamps) {
+    hash.update(p);
+    hash.update(bytes);
+  }
+  return hash.digest('hex');
+};
+
+/** CLI: print the fingerprint (the sweep and the stamp writer call the
+ * export directly; this face is for a human checking by hand). */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  console.log(computeFingerprint());
+}

@@ -83,13 +83,22 @@ worker() {
 export -f worker run_to
 export ROOT SPIKE LOGDIR FRAGS
 
-# The specs must exist: vendor the pinned dsh-tests tree + transpile when
-# the tree is empty (the same materialization run-ios-upstream-suite.sh does).
-[ -f "$SPIKE/upstream-tests/core__agent-loop__tests__loop.spec.mjs" ] || {
+# The staged specs must exist AND be FRESH: they are local-only (untracked),
+# so a tree that survived a transpiler change used to silently serve the OLD
+# artifacts (measured 2026-10-20: #614's fix stayed invisible on main, 29/2
+# stale vs 31/0 fresh, until re-transpiled by hand). The generation
+# fingerprint covers the transpilers' bytes + the vendored trees' pin stamps
+# + esbuild; missing stamp or mismatch re-transpiles (the empty-tree case
+# falls out — no stamp at all). The same materialization
+# run-ios-upstream-suite.sh does.
+GEN_NOW="$(node "$ROOT/test/upstream-suite/generation.mjs")"
+GEN_STAGED="$(cat "$SPIKE/upstream-tests/.generation" 2>/dev/null || echo missing)"
+if [ "$GEN_NOW" != "$GEN_STAGED" ]; then
+    echo "sweep: staged upstream-tests stale (gen ${GEN_STAGED:0:12} ≠ ${GEN_NOW:0:12}) — re-transpiling"
     sh "$SPIKE/../../external/ensure-dsh-tests.sh"
     (cd "$ROOT/test/upstream-suite" && npm install --no-audit --no-fund >/dev/null 2>&1 \
-        && node transpile.mjs >/dev/null)
-}
+        && node transpile.mjs)
+fi
 
 find "$SPIKE/upstream-tests" -maxdepth 1 -name '*.spec.mjs' | sort | \
     xargs -P "$PARAL" -I{} bash -c 'worker "$@"' _ {}

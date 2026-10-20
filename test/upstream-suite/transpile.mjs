@@ -31,6 +31,7 @@ const HARNESS_SPECIFIER = 'scenario/upstream-test-harness.js';
 // The path-rewrite machinery lives in transpile-rewrites.js (the file
 // crossed the size budget; these faces are pure source->source transforms).
 import { BARE_EXTERNAL_PLUGIN, SUBMODULE_BARE_RESOLVES, hoistCreateRequireJson, hoistSubmoduleSrcSubpaths, rewriteBundleManifestRoot, rewriteSeedTreeRoots, rewriteIdentityImports, collectSeedTreeFiles, walk, BUNDLE_MANIFEST_PACKAGES, BUNDLE_MANIFEST_FILES, SEED_TREE_SPECS } from './transpile-rewrites.mjs';
+import { computeFingerprint } from './generation.mjs';
 
 const UNIMPLEMENTED = [
   [/from\s*[\x27\x22]node:vm[\x27\x22]/, 'node:vm (no dsh shim — the vm builtin is a Node embedding surface)'],
@@ -363,4 +364,8 @@ manifest.counts = {
   excluded: Object.entries(manifest.excluded).map(([reason, count]) => ({ reason, count })),
 };
 writeFileSync(join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2));
+// The generation stamp: what the sweep's freshness guard and
+// `verifications.mjs --check-fresh` compare against. Written ONLY after the
+// full pass above — a half-finished transpile never claims freshness.
+writeFileSync(join(OUT, '.generation'), computeFingerprint());
 console.log(JSON.stringify(manifest.counts, null, 2));
