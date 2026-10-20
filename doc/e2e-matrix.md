@@ -6,6 +6,22 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-10-20 (row 15) — the test-hardening program closes
+> **20/20**: row 15, the app upgrade matrix
+> (`hosts/android/ci/run-upgrade-matrix.sh`, evidence under
+> `hosts/android/artifacts/upgrade-matrix/`), landed in #569 and is re-proven
+> on main today — `adb install -r` of build B over build A replaces the
+> restart leg's force-stop, the resume leg continues the journal across the
+> upgrade (`android.session-persist.restart` 46/46 on the manifest shared
+> with the restart leg), and the run-as on-disk assertions hold (stale probe
+> wiped by the stamp reconciliation, canary intact, stamp present). This
+> run's receipt pins the tree the two builds came from —
+> `"tree": "origin/main e5f92b4931af"` — read at run start, no longer at
+> receipt time (the runner rewrites its own committed evidence before the
+> receipt, so #569's receipt reported a dirty tree the seat did not have).
+> Checker on this tree: **136 evidence dirs / 256 green verdicts / 250 pngs**,
+> zero findings under `--accept-known-gaps`.
+
 > **Currency**: 2026-10-19 (model swap) — the cost ledger goes dual-model:
 > `deepseek-v4-flash` (the owner's pick; the legacy alias routes to V4.1
 > Flash) lands **all five bars green** beside the GLM ledger — morph P50
@@ -488,6 +504,7 @@ present. `shots` = PNG count (all magic-verified except where noted).
 | `hosts/android/artifacts/simulator-matrix/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
 | `hosts/android/artifacts/simulator-matrix/regression` | Android | boot.verification 8/8, gateway.bridge-smoke 6/6, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 1 |
 | `hosts/android/artifacts/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
+| `hosts/android/artifacts/upgrade-matrix` | Android | android.session-persist.restart 46/46 (the upgrade matrix (row 15): install -r across two builds replaces the restart leg's force-stop; the on-disk reconciliation facts ride receipt.json) | ✓ | ✓ | ✓ | 2 |
 | `hosts/harmony/artifacts/whale-mount` | HarmonyOS | harmony.whale.mount 7/7 | ✓ | ✓ | ✓ | 0 |
 | `hosts/harmony/artifacts/nextweb-mount` | HarmonyOS | harmony.nextweb.mount 24/24 | ✓ | ✓ | ✓ | 0 |
 | `hosts/ios/artifacts/settings-screens` | iOS | — (human evidence only; the machine assertions live in `b4-write-live`) | ✓ (app-stdout) | ✗ (by design) | ✗ (by design) | 2 |

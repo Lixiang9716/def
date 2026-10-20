@@ -6,6 +6,17 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-20（第 15 行）——测试加固计划合上 **20/20**：第 15 行
+> App 升级矩阵（`hosts/android/ci/run-upgrade-matrix.sh`，证据在
+> `hosts/android/artifacts/upgrade-matrix/`）于 #569 落地、今日在 main 上重证——
+> 以构建 B 对构建 A 的 `adb install -r` 替代 restart 腿的 force-stop，resume 腿
+> 跨升级续写 journal（`android.session-persist.restart` 46/46，与 restart 腿共用
+> manifest），run-as 盘面断言成立（stale probe 被 stamp 对账清掉、canary 完好、
+> stamp 在位）。本次回执钉住两份构建所出的树——`"tree": "origin/main e5f92b4931af"`
+> ——在 run 开始时读取，不再在写回执时读取（runner 会在写回执前重写自身已提交的
+> 证据，#569 的回执因此被标成了席位并不具备的 dirty）。本树校验计数
+> **136 个证据目录 / 256 条绿色 verdict / 250 png**，`--accept-known-gaps` 下零 finding。
+
 > **时效性**：2026-10-19（换模型）——成本账进入双模型：`deepseek-v4-flash`
 > （owner 选型；旧别名自动路由到 V4.1 Flash）在 GLM 账旁**五行全绿**——
 > morph P50 **1532** ≤3k ✓ / P95 **1772** ≤5k ✓ / **4.5s** ≤20s ✓；update
@@ -405,6 +416,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | `hosts/android/artifacts/simulator-matrix/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
 | `hosts/android/artifacts/simulator-matrix/regression` | Android | boot.verification 8/8, gateway.bridge-smoke 6/6, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 1 |
 | `hosts/android/artifacts/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
+| `hosts/android/artifacts/upgrade-matrix` | Android | android.session-persist.restart 46/46（升级矩阵（第 15 行）：跨两份构建的 install -r 替代 restart 腿的 force-stop；盘面对账事实随 receipt.json 落档） | ✓ | ✓ | ✓ | 2 |
 | `hosts/harmony/artifacts/d9-official-web` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
 | `hosts/harmony/artifacts/d9-session-live` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
 | `hosts/harmony/artifacts/d9-write-live` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
