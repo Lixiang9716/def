@@ -96,7 +96,7 @@ const SUBMODULE_BARE_ROWS = new Map([
     ['@deepseek-ai/dsh-skill-badge', {
       inline: join(ROOT, 'external/npm/@deepseek-ai/dsh-skill-badge@0.1.6-alpha.2/lib/index.js'),
     }],
-    // W5-S (2026-09-28): the package face the three web spec families drive
+    // #238 (2026-09-28): the package face the three web spec families drive
     // (fetch-http, proxy, tool-web integration/spill). The specs spy
     // publicHttpNetwork on the copy their RELATIVE import inlines
     // ('../src/network.ts' — resolved inside the tests tree), while the
@@ -120,7 +120,7 @@ const SUBMODULE_BARE_ROWS = new Map([
 
 const SUBMODULE_BARE_RESOLVES = () => {
   const abs = (rel) => join(SUBMODULE_ROOT, rel);
-  // W5-T (2026-09-28): the @opentelemetry faces the session-telemetry-otel
+  // #238 (2026-09-28): the @opentelemetry faces the session-telemetry-otel
   // specs import — inlined from the vendored npm trees (D6-verbatim) instead
   // of loader-served, because OTel's build/esm output imports its own files
   // EXTENSIONLESS ('./LoggerProvider'), which the loader's relative
@@ -177,9 +177,9 @@ export const BARE_EXTERNAL_PLUGIN = {
     // version) — the spec-source rewrite above never sees them. For limb
     // files under the tests tree, rewrite the reads to real JSON imports:
     // esbuild bundles JSON natively, and the limb's resolveDir keeps the
-    // relative path pointed at the now-staged package.json (W5-T).
+    // relative path pointed at the now-staged package.json (#238).
     build.onLoad({ filter: /\.(ts|mts|js|mjs)$/ }, limbJsonLoad);
-    // The decorator lowering for BUNDLED HELPER files (W8): local test
+    // The decorator lowering for BUNDLED HELPER files (#240): local test
     // helpers the spec imports carry the same @Remote shapes as the specs,
     // and esbuild bundles them from disk after the spec-source rewrite —
     // without this hook the built output re-trips the decorators exclusion
@@ -260,7 +260,7 @@ const hoistCreateRequireJson = (source, rel) => {
  * class the mounted provider news up. Bare, not inline, is forced here:
  * the tarball face is a SINGLE-FILE bundle that bakes the class into
  * lib/index.js, so no inline target exists to dedupe against (contrast the
- * W5-S web-fetch-http row, where inlining the tests-tree source collapses
+ * #238 web-fetch-http row, where inlining the tests-tree source collapses
  * the pair by resolved path). Legal only where the lib's export list
  * re-exports the symbols the spec binds — dsh-lsp-stdio exports
  * LspConnection verbatim. Keyed by the exact relative specifier; the
@@ -455,7 +455,7 @@ const collectSeedTreeFiles = (rel, files, mirrorTests) => {
   }
 };
 
-// The TC39 method-decorator lowering (W8) and the bundle-manifest /
+// The TC39 method-decorator lowering (#240) and the bundle-manifest /
 // seed-tree families live in transpile-decorators.mjs (this file crossed
 // the code-size gate). THIS module still calls lowerDecorators (the
 // bundled-helper onLoad in BARE_EXTERNAL_PLUGIN, hoistSubmoduleSrcSubpaths)

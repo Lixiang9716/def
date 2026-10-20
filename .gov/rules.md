@@ -18,7 +18,7 @@ contract (interface / schema / format), process or tooling, or a decision a
 maintainer may reasonably revisit. Test: would a maintainer a month later ask
 "why was this done?" If yes, write a note. Purely mechanical or local edits
 (typo, format, local rename, comment sync) are exempt.
-The presence gate is advisory until you flip it blocking (P0-3: a fresh
+The presence gate is advisory until you flip it blocking (a fresh
 install never goes red on day one).
 
 ## 3. A note has three required sections

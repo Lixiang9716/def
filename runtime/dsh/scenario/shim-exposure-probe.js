@@ -88,7 +88,7 @@ const probeSqlite = () => {
   const ok = run.changes === 1
     && Number(run.lastInsertRowid) === 7
     && row?.a === 7 && row?.b === 'seven'
-    && empty === undefined // node:sqlite's no-row face (the W6-V distinction)
+    && empty === undefined // node:sqlite's no-row face (the #273 distinction)
     && iteration.length === 1 && iteration[0].a === 7;
   db.close();
   emit('probe/sqlite', {

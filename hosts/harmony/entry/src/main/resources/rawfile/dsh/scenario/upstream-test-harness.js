@@ -55,7 +55,7 @@ const propertyMatchers = (actual, check) => ({
     for (const p of parts) {
       // vitest reads through PROPERTY ACCESS: a class instance's methods
       // (`start`/`close` on the MCP transports — the createTransport table,
-      // W4-M 2026-09-28) live on the PROTOTYPE, so an own-key-only walk
+      // #238 2026-09-28) live on the PROTOTYPE, so an own-key-only walk
       // failed every method face. Absent = undefined AND no own key.
       if (at === null || at === undefined || (at[p] === undefined && !Object.prototype.hasOwnProperty.call(at, p))) {
         check(false, `property "${key}"`);
@@ -76,7 +76,7 @@ const propertyMatchers = (actual, check) => ({
  * an object with a `message` string compares through it (jest-compatible);
  * a thrown STRING/number stringifies and compares against that (R3-G1,
  * 2026-09-28). JSON-RPC errors keep the REAL error in `.data` while
- * `message` collapses to "Internal error" — surfaced in the verdict (W5-Q,
+ * `message` collapses to "Internal error" — surfaced in the verdict (#238,
  * 2026-09-28). An ERROR INSTANCE expectation compares by message and
  * identity — jest's contract for this form (measured 2026-09-28). */
 
@@ -113,7 +113,7 @@ const makeExpect = (actual, negatedOrMessage = false, customMessage = '') => {
   };
   // .not is LAZY: constructing it eagerly would recurse (each negated
   // matcher set builds its own .not, forever). The custom failure MESSAGE
-  // rides along (W4-N 2026-09-28: vitest's `expect(x, msg).not.toContain()`
+  // rides along (#238 2026-09-28: vitest's `expect(x, msg).not.toContain()`
   // throws with msg as the failure text and storage-policy's guard asserts
   // that message via rejects.toThrow — dropping it broke the match).
   let negatedApi = null;
@@ -154,7 +154,7 @@ describe.skip = () => { /* counted at transpile time */ };
 describe.only = (name, factory) => describe(name, factory);
 // vitest's concurrent suites run their tests in parallel; the runtime is
 // single-threaded serial (D2), so the face runs them sequentially — the
-// acp-snapshot suite selects describe.concurrent for replay mode (W5-T).
+// acp-snapshot suite selects describe.concurrent for replay mode (#238).
 describe.concurrent = (name, optionsOrFactory, maybeFactory) => describe(name, optionsOrFactory, maybeFactory);
 
 export const it = (name, optionsOrFn, maybeFn) => {

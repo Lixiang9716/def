@@ -177,7 +177,7 @@ dsh-mobile/
 - **Android 与鸿蒙宿主**:双双同构,各自具备真实九原语网关绑定,由 carrier 把 Web Client 送进系统 WebView。
 - **D9 上游移植**:自研 Harness 重实现被上游运行时**原样**跑在 quickjs 上取代——包逐个 pin + sha256 校验,自研代码只留胶水。实际垫层面远小于 §3 的静态预测;[runtime/dsh/upstream/README.md](../runtime/dsh/upstream/README.md) 有全表。
 - **设备面**:震动、剪贴板、分享、keepAwake、多媒体选择器跑在真实特权层上——每宿主一份平台中立场景。
-- **系统能力面**:相机、麦克风、BLE 置于同一双层同意模型(gateway 授权先行、OS 权限随后、拒绝按层审计);电台面等待真机(D-g 契约)。
+- **系统能力面**:相机、麦克风、BLE 置于同一双层同意模型(gateway 授权先行、OS 权限随后、拒绝按层审计);电台面等待真机(设备 parity 契约,#253)。
 - **渲染面客户端(Lynx 试点)**:架在 RenderSurfaceClient 缝上、可整体替换的客户端插件——用第二张脸证明 UI 层的可替换性。
 - **应用内 shell**:一份 bash 子集 shell 服务三宿主,进程内,如实声明是模拟(§12),并与真实 bash 做过差分测试。
 - **iSH 模拟 userland**:已退场(2026-10)——冻结的契约条目保留,每个宿主如实答 unavailable。

@@ -43,7 +43,7 @@ const makeMockFn = (impl) => {
   f.mockResolvedValueOnce = (value) => { onceQueue.push(() => Promise.resolve(value)); return f; };
   f.mockRejectedValue = (value) => { impl = () => Promise.reject(value); return f; };
   f.mockRejectedValueOnce = (value) => { onceQueue.push(() => Promise.reject(value)); return f; };
-  // vitest's reset family (W4-N 2026-09-28, remote-mock's proxy spec):
+  // vitest's reset family (#238 2026-09-28, remote-mock's proxy spec):
   // mockClear clears the CALL LEDGERS only — queued one-shot overrides
   // survive it ("keeps queued overrides on mockClear"); mockReset clears
   // the ledgers AND the queued overrides AND restores the ORIGINAL
@@ -71,7 +71,7 @@ const viApi = {
     const spy = makeMockFn(typeof original === 'function' ? original : undefined);
     spy.mockRestore = () => { object[key] = original; };
     object[key] = spy;
-    // Registry for vi.restoreAllMocks (W6-V: session-persistence zstd — the
+    // Registry for vi.restoreAllMocks (#238: session-persistence zstd — the
     // "falls back to the public decoder" test mocks the PRIVATE create
     // static to undefined and relies on afterEach's restoreAllMocks to undo
     // it; the old no-op left the static mocked, so every later create() in

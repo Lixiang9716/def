@@ -589,6 +589,20 @@ missing or malformed is a finding of its own, never a silent pass.
 | code | file | owner | closes with |
 | --- | --- | --- | --- |
 
+### Receipt family codes
+
+Evidence directories and receipts issued before 2026-10-20 carry
+**historical family codes** — a "wave letter + sequence number" shorthand
+from the project's sprint waves, not a self-decoding scheme (`m1-spike`,
+`b4-write-live`, `d9-official-web`, and their platform-prefixed siblings).
+The machine-readable decode table — legacy family code → current scenario /
+family name — is `LEGACY_STEMS` in `test/e2e/matrix.mjs`, the single source
+of truth; this document deliberately does not copy it. (`b2` held a slot in
+the same series but was never issued — no evidence carries it.) From
+2026-10-20 on, every new evidence family takes a plain feature name
+(`composer-live-write` style). Historical artifact directories keep their
+codes — evidence is immutable and is never renamed.
+
 ### The last row closed 2026-10-16 (the honest record)
 
 The last row — the iOS b4 receipt — closed 2026-10-16: a real green

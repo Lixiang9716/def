@@ -1,6 +1,6 @@
 // dsh:logging-exempt (dev script: the log stream is the product)
 /**
- * upstream-suite-type-world — the W8 remote-mock type-world seeder of the
+ * upstream-suite-type-world — the #240 remote-mock type-world seeder of the
  * upstream suite leg, extracted from upstream-suite-leg.js at the
  * code-size gate. Takes (spec, emit, submoduleRootRel) — the caller (the
  * leg) passes its SUBMODULE_ROOT_REL so this module stays decoupled from
@@ -23,7 +23,7 @@ const typesNodeStubSeeds = (encodeUtf8) => ({
     mtimeMs: 0,
   },
   '/node_modules/@types/node/index.d.ts': { bytes: encodeUtf8([
-    '// Test-support minimum staged by upstream-suite-leg (W8): the vendored',
+    '// Test-support minimum staged by upstream-suite-leg (#240): the vendored',
     '// closure names the NodeJS namespace; @types/node itself is not vendored.',
     'declare namespace NodeJS {',
     '  interface Process {}',
@@ -55,7 +55,7 @@ const seedVitestTrio = (spawnSync, readSeed, submoduleRootRel) => {
   }
 };
 
-/** Stage the remote-mock type world (W8, 2026-09-29): the proxy-types spec
+/** Stage the remote-mock type world (#240, 2026-09-29): the proxy-types spec
  * type-checks against the upstream REPO ROOT (root =
  * resolve(import.meta.dirname, '../../../..') → '/' under flat staging) —
  * it reads tsconfig.base.client.json (→ extends tsconfig.base.json) there,

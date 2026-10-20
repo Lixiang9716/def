@@ -118,7 +118,7 @@ const pinProfileContainer = async () => {
   // The transpiled specs' module directory (import.meta.dirname is
   // 'upstream-tests' — bundle-relative) is a REAL directory in node's
   // layout; specs that join it for scratch dirs (typert generator's
-  // .generated-schema-*) need it under the pinned cwd too (W3-K, 2026-09-28).
+  // .generated-schema-*) need it under the pinned cwd too (#238, 2026-09-28).
   try {
     mkdirSync(`${globalThis.__dshProfileCwd.replace(/\/$/, '')}/upstream-tests`, { recursive: true });
   } catch (error) {
@@ -129,7 +129,7 @@ const pinProfileContainer = async () => {
   // fixture's own header says "Run: node fixture-server.ts"). When the host
   // exposes a node binary (the subprocess seam's PATH probe), pin it — the
   // old fixed spelling (`/usr/local/bin/dsh-cli`) was a non-executable
-  // placeholder whose only property was being absolute (W5-R, 2026-09-28).
+  // placeholder whose only property was being absolute (#238, 2026-09-28).
   try {
     const facts = globalThis.__dshProcFacts?.();
     if (typeof facts?.nodePath === 'string' && facts.nodePath.length > 0) {
@@ -147,7 +147,7 @@ const pinProfileContainer = async () => {
  * vendored test tree, and a real child reads the real disk — the staged-fs
  * (in-runtime) fixture seeding cannot serve it. Sources stay vendored and
  * read-only (D6): the leg COPIES, never edits. Inert where the bundle is
- * not a writable real directory (device hosts). (W5-R, 2026-09-28.) */
+ * not a writable real directory (device hosts). (#238, 2026-09-28.) */
 const REAL_SIBLING_FILES = [
   // lsp-stdio's scriptable fake LSP server (connection/lifecycle spawn it;
   // its header: "Run: node fixture-server.ts (Node's erasable TypeScript
@@ -160,7 +160,7 @@ const REAL_SIBLING_FILES = [
   // the sdk-client fake runtime server (spawned as `execPath fake-runtime.ts`)
   ['packages/sdk/client/tests/fake-runtime.ts', 'fake-runtime.ts'],
   // skill-office's checkers spec spawns `python3 check_office_test.py` — the
-  // script is a REAL sibling of the vendored spec (W6-V, 2026-09-28)
+  // script is a REAL sibling of the vendored spec (#238, 2026-09-28)
   ['packages/skill/skill-office/tests/check_office_test.py', 'check_office_test.py'],
 ];
 const VENDOR_TESTS_TAG = 'dsh-v0.1.6-alpha.2'; // the ensure-dsh-tests.sh pin
@@ -184,7 +184,7 @@ const stageRealSiblingFiles = async () => {
 
 /** Stage the running spec's PACKAGE SOURCE tree into the seeded read-only
  * view at the bundle-root paths the transpiled spec's source-introspection
- * joins resolve to (W6-V, 2026-09-28). The source-audit tests read their own
+ * joins resolve to (#238, 2026-09-28). The source-audit tests read their own
  * production sources — `readFileSync(new URL('../src/brand.ts',
  * import.meta.url), 'utf8')` — which on the monorepo layout resolves beside
  * the spec; under flat staging (spec at /upstream-tests/<stem>.spec.mjs) the
@@ -237,7 +237,7 @@ const preloadRealFs = async () => {
 };
 
 /** Stage the spec's tests/fixtures tree as REAL files under
- * upstream-tests/fixtures (W6-V, 2026-09-28). The transpiler already seeds
+ * upstream-tests/fixtures (#238, 2026-09-28). The transpiler already seeds
  * those bytes into the VFS at /upstream-tests/fixtures (the bundle-root
  * join), but specs that resolve fixtures against process.cwd() produce the
  * WORKSPACE-absolute <cwd>/upstream-tests/fixtures path — outside every
@@ -275,7 +275,7 @@ const stageFixtureTypesStub = async (spawnSync) => {
   const nm = `${root}/node_modules/@types/node`;
   spawnSync('/bin/mkdir', ['-p', nm]);
   const decl = [
-    '// Test-support minimum staged by upstream-suite-leg (W6-V): the vendored',
+    '// Test-support minimum staged by upstream-suite-leg (#238): the vendored',
     '// fixture closure names the NodeJS namespace; @types/node itself is not',
     '// vendored. Ambient vocabulary only — no member shapes are asserted.',
     'declare namespace NodeJS {',
@@ -317,7 +317,7 @@ const stageRealFixturesTree = async (spec) => {
   await stageFixtureTypesStub(spawnSync);
 };
 
-/** Pin the real host platform for the shell-gated suites (W7-X1): upstream
+/** Pin the real host platform for the shell-gated suites (#238): upstream
  * guards its real-shell compositions with `process.platform === 'linux' ||
  * 'darwin'` (tool-terminal loader-composition's suite selector) — a gate
  * this runtime's 'mobile' default silently fails, registering the suite as
@@ -359,7 +359,7 @@ const stageShellSuitePlatform = async (spec) => {
   log.debug('shell-suite platform pinned', { platform });
 };
 
-/** Stage the committed session-format corpus (W8, 2026-09-29): the
+/** Stage the committed session-format corpus (#240, 2026-09-29): the
  * llm-replay session-format-corpus spec walks the upstream REPO ROOT
  * (`resolve(import.meta.dirname, '../../../..')` — the bundle root '/' under
  * flat staging) for committed session fixtures under snapshots/ + packages/
@@ -430,10 +430,10 @@ const bootLegEnvironment = async () => {
   emit('suite/spec', { spec });
   // Stage the package source tree for the source-audit tests (see above).
   await stageSourceIntrospectionTree(spec, emit);
-  // Stage the committed session-format corpus for the llm-replay walk (W8).
+  // Stage the committed session-format corpus for the llm-replay walk (#240).
   await stageSessionFormatCorpus(spec, emit);
   // Stage the remote-mock type world (tsconfig chain + ambient types +
-  // @vitest trio) for the proxy-types compiler (W8).
+  // @vitest trio) for the proxy-types compiler (#240).
   await stageRemoteMockTypeWorld(spec, emit, SUBMODULE_ROOT_REL);
 
   // The spec's fixtures module (emitted by transpile.mjs when the spec ships
@@ -441,7 +441,7 @@ const bootLegEnvironment = async () => {
   // spec imports — some specs read fixtures at MODULE scope during
   // collection (session-snapshot's suite.spec reads its record-suite
   // fixture bytes into a closure before any test runs), so seeding after
-  // the import lost that race (W5-T). `../fixtures` joins resolve at
+  // the import lost that race (#238). `../fixtures` joins resolve at
   // /upstream-tests/fixtures, one spec per runtime, so the flat namespace
   // never collides. A spec without a fixtures module simply skips.
   await seedSpecFixtures(spec, emit);

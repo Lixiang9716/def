@@ -201,7 +201,7 @@ evidence index. One line each:
 - **The Android and HarmonyOS hosts**: both isomorphic, each with the real nine-primitive gateway binding and the carrier serving the Web Client in the system WebView.
 - **The D9 upstream port**: the in-house Harness reimplementation was replaced by the upstream runtime running VERBATIM on quickjs — packages pinned and sha256-verified, in-house code reduced to glue. The shipped shim table is far smaller than §3's static prediction; [runtime/dsh/upstream/README.md](../runtime/dsh/upstream/README.md) tables it.
 - **The device plane**: haptics, clipboard, share, keepAwake, and the media picker over the real privileged layers — one platform-neutral scenario per host.
-- **The system capability plane**: camera, microphone, and BLE behind one two-layer consent model (gateway grant first, OS permission second, refusals audited by layer); the radio faces await real hardware (the D-g contract).
+- **The system capability plane**: camera, microphone, and BLE behind one two-layer consent model (gateway grant first, OS permission second, refusals audited by layer); the radio faces await real hardware (the device-parity contract, #253).
 - **The render-surface client (Lynx pilot)**: a wholly replaceable client plugin over the RenderSurfaceClient seam — the UI layer's replaceability proven with a second face.
 - **The in-app shell**: one bash-subset shell for all three hosts, in-process, honestly an emulation (§12), differentially tested against real bash.
 - **The iSH emulated userland**: retired (2026-10) — the frozen contract entry stays, and every host answers honestly unavailable.

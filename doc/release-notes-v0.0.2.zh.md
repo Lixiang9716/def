@@ -49,7 +49,7 @@
 - #250 — **模拟器矩阵**:一条命令证明 release/harness 双味拆分于真实模拟器——
   iOS release 腿 + gateway 19/19 + device-plane(dsh-iphone),Android release 腿 +
   三场景回归 + device-plane 15/15;无工具链处 harmony 诚实跳过并留 skip 收据。
-- #253 — **harmony 设备 parity 跑步器**(D-g):一条命令产出 25 记录 parity 收据
+- #253 — **harmony 设备 parity 跑步器**:一条命令产出 25 记录 parity 收据
   与 tool-rows 上机挂载证明(CLT 模拟器上全绿);无目标在线时打印待机报告、退出 0。
 
 ## 治理与 DX
