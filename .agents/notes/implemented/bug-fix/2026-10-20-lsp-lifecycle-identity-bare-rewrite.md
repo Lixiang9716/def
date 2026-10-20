@@ -1,4 +1,7 @@
-# The lsp lifecycle spec spies the vendored class — module-identity rewrites for inlined src limbs
+# Agent Note: the lsp lifecycle spec spies the vendored class — module-identity rewrites for inlined src limbs (issue #610)
+
+Status: implemented
+Related: #610, #259 (the lsp-stdio seat whose fs-face fixes left these two residuals), the W5-S web-fetch-http identity row this mechanism contrasts with
 
 ## Problem
 
