@@ -159,7 +159,7 @@ const buildOptionsFor = (rel, hoisted, forceStdin) => {
   };
   // forceStdin is required when an IN-MEMORY transform must reach the build:
   // entryPoints reads the bytes off DISK, silently dropping any rewrite that
-  // left `hoisted` equal to the rewritten source (measured W5-Q: the
+  // left `hoisted` equal to the rewritten source (measured #238: the
   // bundle-manifest root rewrite produced a hoisted string identical to the
   // rewritten source, so the old `hoisted === source` probe took the
   // entryPoints path and the staged output kept the original '..' join).
@@ -274,7 +274,7 @@ const emitFixturesModule = (rel, flat) => {
     + `export const fixtures = ${JSON.stringify(files)};\n`);
 };
 
-// W5-T: the spec's PACKAGE assets (skill-badge's ../assets/dsh-badge.png).
+// #238: the spec's PACKAGE assets (skill-badge's ../assets/dsh-badge.png).
 // The tests tarball stages no assets/, but the vendored npm tree of the same
 // package ships them verbatim; they ride the same fixtures seed delivery at
 // the URL the spec builds (new URL('../assets/<name>', import.meta.url) from
@@ -317,7 +317,7 @@ for (const rel of specs) {
   await transpileOne(rel, manifest);
 }
 
-// The experimental Inspector's WORKER entry (W5-Q, 2026-09-28): the vendored
+// The experimental Inspector's WORKER entry (#238, 2026-09-28): the vendored
 // host bridge spawns the BUILT entry sibling of its lib chunk —
 // `new Worker(new URL('./worker.js', import.meta.url))`. The staged .host
 // specs inline the controller source, but the worker entry is a separate

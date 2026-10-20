@@ -19,7 +19,7 @@ class AssertionError extends Error {
  * String() is NOT used as a fallback: they consult toJSON/toString — property
  * PROBES that dispatch through lazy test proxies (remote-mock's namespace
  * proxy registers an endpoint and throws MissingUnaryRule on any
- * toJSON/toString read — W4-N 2026-09-28) and quickjs stringify throws on
+ * toJSON/toString read — #238 2026-09-28) and quickjs stringify throws on
  * BigInt. The walk reads OWN KEYS ONLY (an ownKeys proxy never sees a get
  * trap, so formatting never registers endpoints), cycles render as
  * [Circular], and functions get node's inspect spellings. */
@@ -270,7 +270,7 @@ const valueMatchers = (actual, check) => ({
     // newline dropped, common indentation stripped, trailing blank lines
     // trimmed) and a string actual serializes quoted with its real newlines
     // kept (the terminal tools PTC output-map projection is the only corpus
-    // user — W4-N 2026-09-28).
+    // user — #238 2026-09-28).
     toMatchInlineSnapshot(expected) {
       if (typeof expected !== 'string') {
         check(false, 'inline snapshot: no stored snapshot (vitest write mode is unsupported here)');
@@ -371,7 +371,7 @@ const checkThrownMessage = (threw, expected, check) => {
   if (typeof expected === 'string') return check(thrownMessage.includes(expected), `throw message containing "${expected}" (got "${thrownMessage}")${dataNote}`);
   // The got-message echo stays in the regex arm too: a bare "matching /…/"
   // verdict hides which arm of an it.each table drifted (acp bridge's
-  // mcpServers validation table, W3-J 2026-09-27).
+  // mcpServers validation table, #238 2026-09-27).
   if (expected instanceof RegExp) return check(expected.test(thrownMessage), `throw message matching ${expected} (got "${thrownMessage}")${dataNote}`);
   // A thrown-in ERROR INSTANCE (jest/vitest contract): compared by MESSAGE
   // (and identity), not by instanceof — the product may re-wrap an equal
@@ -389,7 +389,7 @@ const checkThrownMessage = (threw, expected, check) => {
   // before any equality; a plain-shape expected walks the subset below. The
   // verdict echoes the thrown error (name+message+code) exactly like the
   // string/regex arms: without it a shape failure is undiagnosable from the
-  // structured log alone (W7-Y1 2026-09-29: web-fetch-http 'maps a connection
+  // structured log alone (#240 2026-09-29: web-fetch-http 'maps a connection
   // failure to WEB_PROVIDER_ERROR' verdict showed only the matcher and never
   // what was actually thrown).
   if (typeof expected === 'object') {
@@ -432,7 +432,7 @@ export const throwMatchers = (actual, check) => ({
 /** Identity/truthiness matchers. */
 export const identityMatchers = (actual, check) => ({
   toBeInstanceOf(cls) {
-    // Vendoring parity (W6-V, session-persistence-jsonl zstd contract): the
+    // Vendoring parity (#238, session-persistence-jsonl zstd contract): the
     // staged spec bundle INLINES the vendored package's src/ (esbuild bundle
     // mode) while the runtime serves the published lib build for the same
     // bare specifier — the same nominal class exists as two distinct

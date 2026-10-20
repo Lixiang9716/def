@@ -1,11 +1,11 @@
-// transpile-decorators.mjs — the TC39 method-decorator lowering (W8) and the
+// transpile-decorators.mjs — the TC39 method-decorator lowering (#240) and the
 // bundle-manifest / seed-tree source-rewrite families, split out of
 // transpile-rewrites.mjs when that file crossed the code-size budget. Pure
 // functions and tables over source text: NO imports at all (the importer
 // pulls back what its own paths need — a static import back into
 // transpile-rewrites.mjs would close a module cycle).
 
-/** W8 (2026-09-29): the TC39 method-decorator lowering — the wall that kept
+/** #240 (2026-09-29): the TC39 method-decorator lowering — the wall that kept
  * the gateway.host / typert-protocol spec families out of the staged tree
  * since wave 3. esbuild's TS transform passes ES decorators through
  * verbatim and quickjs-ng 0.17 refuses to parse them; the corpus's two
@@ -199,7 +199,7 @@ export const lowerDecorators = (source) => {
   return `${DSH_DECORATE_HELPER}\n${lowered.join('\n')}`;
 };
 
-/** The bundle-manifest family (W5-Q, 2026-09-28): the bundle/agent-team
+/** The bundle-manifest family (#240, 2026-09-28): the bundle/agent-team
  * profile specs read the SPEC'S OWN PACKAGE manifest off disk —
  * `fileURLToPath(new URL('..', import.meta.url))` is the package root on the
  * monorepo layout (spec at <pkg>/tests/x.spec.ts), but flat staging puts the
@@ -233,7 +233,7 @@ export const rewriteBundleManifestRoot = (source) => source
   .replaceAll("new URL('..', import.meta.url)", "new URL('.', import.meta.url)")
   .replaceAll('new URL("..", import.meta.url)', 'new URL(".", import.meta.url)');
 
-/** The layout-tree family (W5-Q, 2026-09-28): specs that audit the VENDORED
+/** The layout-tree family (#240, 2026-09-28): specs that audit the VENDORED
  * SOURCE TREE itself (the experimental Inspector's client/host path
  * mirroring) walk `../src/` off the monorepo layout — the same flat-staging
  * problem the bundle-manifest family has, at tree scale. Two moves: rewrite

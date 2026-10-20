@@ -66,7 +66,7 @@ English | [简体中文](release-notes-v0.0.2.zh.md)
   device-plane legs on dsh-iphone, Android release-leg + three-scenario
   regression + device-plane 15/15; harmony honestly skipped with a receipt
   where no toolchain exists.
-- #253 — the **harmony device-parity runner** (D-g): one command produces
+- #253 — the **harmony device-parity runner**: one command produces
   the 25-record parity receipts and the tool-rows on-device mount proof
   (ran green on the CLT emulator); prints a standby report and exits 0 with
   no target online.

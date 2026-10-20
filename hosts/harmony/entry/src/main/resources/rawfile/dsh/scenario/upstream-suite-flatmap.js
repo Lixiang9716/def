@@ -1,6 +1,6 @@
 // dsh:logging-exempt (dev script: the log stream is the product)
 /**
- * upstream-suite-flatmap — the W6-V flat-path map of the upstream suite
+ * upstream-suite-flatmap — the #238 flat-path map of the upstream suite
  * leg, extracted from upstream-suite-leg.js at the code-size gate (the
  * tables + installer crossed the 50-line function cap inline there).
  * ONE-WAY dependency: this module imports nothing at all — the leg
@@ -8,7 +8,7 @@
  * import cycle between closure files kills QuickJS at link).
  */
 
-/** Install the flat-path map (W6-V): the transpiled specs' bundle-relative
+/** Install the flat-path map (#238): the transpiled specs' bundle-relative
  * joins (/vendor/..., /upstream-tests/...) are REAL directories of the
  * desktop checkout — the fs faces' real-disk fallbacks re-root through this
  * map so reads/stats of vendored assets answer from the pinned tree (D6: the
@@ -16,7 +16,7 @@
  * against the CLI's real working directory, exactly like the sibling
  * staging's /bin/cp. Undefined for paths with no real-world twin. */
 // The webworker-runtime node/chokidar spec's per-consumer package trees
-// (W7-X1): the spec resolves REAL chokidar/readdirp bytes through
+// (#240): the spec resolves REAL chokidar/readdirp bytes through
 // createRequire(<consumer manifest>).resolve() — the node:module shim's
 // node_modules ancestor walk over the staged view — then mounts the files
 // into its own Worker-loader VFS. Upstream's lockfile pins DIFFERENT
@@ -33,7 +33,7 @@ const watchTrees = [
   ['/packages/skill/skill-filesystem/node_modules/chokidar/', 'vendor/npm/chokidar@5.0.0/'],
   ['/packages/skill/skill-filesystem/node_modules/readdirp/', 'vendor/npm/readdirp@5.0.0/'],
 ];
-// W8 (2026-09-29), the sdk-launch / subagent-dsh-sdk launch-resolution
+// #240 (2026-09-29), the sdk-launch / subagent-dsh-sdk launch-resolution
 // family: `import.meta.resolve("@deepseek-ai/dsh/package.json")` answers
 // with the SPECIFIER VERBATIM (the product package is outside both
 // vendored staging families, so the bare map declines it and the loader's
@@ -55,7 +55,7 @@ const reRoots = [
 ];
 
 export const installFlatPathMap = () => {
-  // W8 (2026-09-29): the spec joins its consumer manifest against
+  // #240 (2026-09-29): the spec joins its consumer manifest against
   // process.cwd() — the RUN's workspace root (/tmp/dsh-runtime-smoke.*) — so
   // the ancestor walk produces WORKSPACE-ABSOLUTE spellings
   // (<root>/packages/.../node_modules/...) the bare watchTrees rows above

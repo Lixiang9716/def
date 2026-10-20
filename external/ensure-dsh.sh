@@ -15,7 +15,7 @@
 #
 # Run before the upstream E2E (runtime/dsh/ci/run-upstream-e2e.sh). Network
 # is only needed for packages missing on disk. @deepseek-ai/dsh-client-modules
-# is vendored since the W-INTEG web-boot leg: the OFFICIAL web boot composer
+# is vendored since the #58 web-boot leg: the OFFICIAL web boot composer
 # (its node half) plus the browser bootstrap bundle the injected facade queue
 # expects (lib/client.js). Still staged OUT of the
 # closure: session-persistence (agent-loop hard-imports its error type at
@@ -24,7 +24,7 @@
 # the transport adapters' DIRECT-FETCH face (llm-deepseek stays out entirely —
 # its direct-fetch transport is the desktop's; the mobile seam is the gateway
 # adapter in runtime/dsh/upstream/llm-transport.js). dsh-llm is vendored since
-# the W-LLM leg; llm-mock-server is vendored as the E2E test vehicle (its
+# the #53 leg; llm-mock-server is vendored as the E2E test vehicle (its
 # node-side driver is runtime/dsh/ci/mock-llm-server.mjs); llm-replay stays
 # out (peer deps on compaction + api-extensions, none of it needed).
 # 2026-10-11 (the llm-pi-ai leg): dsh-llm-pi-ai JOINED — the multi-protocol
@@ -74,7 +74,7 @@
 # dsh-ptc-runtime is
 # the abstract PtcRuntime contract whose only concrete implementation is the
 # desktop's sandboxed Node process (subprocess class). 2026-10-03 (issue #335
-# B5): tool-web JOINED the product closure — the W4-P suite round had already
+# B5): tool-web JOINED the product closure — the #341 suite round had already
 # solved its turndown→domino CJS seam (the shims' cjs-loader + the
 # npm-bridges linkage rows), and the web plane's keyless search provider
 # (upstream/web-search-keyless.js) gives it a transport over gateway
