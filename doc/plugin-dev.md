@@ -355,7 +355,7 @@ Every docs-site page was read and compared against the host. Dispositions:
 | guide/quickstart | the Web-UI flow IS this app's product surface |
 | guide/providers | the model-configuration product page; mobile's equivalent is the BYOK/models settings surface (OpenAI-compatible endpoints); the desktop multi-protocol breadth (anthropic-messages / openai-responses via llm-pi-ai) is not vendored on mobile — flagged follow-up |
 | guide/network-proxy, python-sdk | launch-env proxy vars / desktop SDK profile — no plugin-author face; N/A |
-| guide/github-review, guide/schedule, guide/mcp-memory | desktop product features over seams not carried (webhookRuntime; schedule; mcp-client over stdio subprocess = the no-process wall) — flagged follow-ups |
+| guide/github-review, guide/schedule, guide/mcp-memory | desktop product features over seams not carried (webhookRuntime; schedule; mcp-memory — its mcp-client is now vendored in the product closure with the streamable-HTTP transport landed over gateway `httpFetch` (`upstream/mcp-http-transport.js`, 2026-10-20), while the stdio-subprocess transport stays the no-process wall and the memory product face itself is not mounted) — flagged follow-ups |
 | generated catalogs (config/tool/persistence) + subsystems (~45 pages) | generated FROM the same vendored packages — by-construction coverage; spot-checked tools + jobs: the documented faces match the vendored lib (the docs site tracks master, so a few type names drift from our 0.1.6-alpha.2 pin — the pin is authoritative) |
 
 ---

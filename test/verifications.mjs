@@ -174,6 +174,31 @@ export const REGISTRY = [
     platform: 'a live harmony hdc target; Windows drives hdc.exe through WSL interop',
     evidence: ['doc/windows-test-plan.md', 'doc/e2e-matrix.md'],
   },
+  {
+    name: 'mcp-streamable-http',
+    what:
+      'the vendored MCP client over the streamable-HTTP transport on gateway httpFetch ' +
+      '(scenario mcp.streamable-http against a Node mock MCP server on loopback)',
+    countsFrom:
+      'the CLI proof leg — runtime/dsh/ci/run-mcp-streamable-http-e2e.sh; the count is the ' +
+      'leg\'s scenario events (12 mcp/ records among the 16 total scenario rows) in ' +
+      'runtime/dsh/artifacts/macos-cli-mcp-streamable-http/scenario.jsonl, matched ' +
+      'one-to-one against the scenario manifest (verdict.json expected↔logged)',
+    legs: [
+      {
+        id: 'cli',
+        status: 'live',
+        runner:
+          'runtime/dsh/ci/run-mcp-streamable-http-e2e.sh (the desktop CLI over the REAL ' +
+          'gateway httpFetch; also run by build/build.sh test core)',
+      },
+    ],
+    platform:
+      'the desktop CLI host (committed artifacts from darwin; c-core CI runs the leg on ' +
+      'ubuntu-24.04-arm through build/build.sh test core)',
+    ci: '.github/workflows/c-core.yml',
+    evidence: ['runtime/dsh/artifacts/macos-cli-mcp-streamable-http/', 'doc/dsh-desktop-plugins.md'],
+  },
 ];
 
 const failLoud = (message) => {

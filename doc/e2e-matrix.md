@@ -461,6 +461,7 @@ evidence on that platform.
 | `security.jail` | — | — | — | 19/19 |
 | `security.manifest-forgery` | — | — | — | 11/11 |
 | `security.byok-leak` | — | — | — | 7/7 |
+| `mcp.streamable-http` | — | — | — | 16/16 |
 
 `(drift)` = the verdict was captured against an older manifest revision
 (see [Manifest-revision drift](#informational-not-failures)).
@@ -576,6 +577,7 @@ present. `shots` = PNG count (all magic-verified except where noted).
 | `runtime/spike/artifacts/macos-cli-security-manifest-forgery` | macOS CLI | security.manifest-forgery 11/11 (five pipeline forgery rungs rejected — capability escalation past a stale anchor and past recomputed trust, entry replacement, id swap, old-package rollback — zero staging, no journal; the control honest package installs after the ladder; the catalog-freshness replay rung records the HIGH finding: the stale-but-valid catalog INSTALLS, dsh-echo@0.9.0) | ✓ | ✓ | ✓ | 0 |
 | `runtime/spike/artifacts/macos-cli-security-byok-leak` | macOS CLI | security.byok-leak 7/7 (a canary through the keychain save, the relaunch route resolution, one REAL transport turn, and the 401 face — the error message asserted key-free IN RUNTIME; the runner audits the raw log for both secret values behind a matcher self-check) | ✓ | ✓ | ✓ | 0 |
 | `runtime/spike/artifacts/macos-cli-shim-exposure-probe` | macOS CLI | shim.exposure-probe 8/8 (the shim exposure survey's five behavior legs: the loader-orphaned dsh-session-persistence error classes, node:sqlite `:memory:`, string-decoder's split-UTF-8 hold, partial-json + openai-client's wire faces, slot-registry's guards) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-mcp-streamable-http` | macOS CLI | mcp.streamable-http 16/16 (the VENDORED `@modelcontextprotocol/client@2.0.0` Client + StreamableHTTPClientTransport verbatim inside quickjs-ng, handed the REAL gateway `httpFetch` through the library's own `fetch` option — D5 zero new primitive, D6 zero upstream edit — against a node-side mock MCP server on loopback TCP: initialize 200 json → notifications/initialized 202 → the library's standalone GET answered 405 and tolerated by design (recorded, not hidden) → tools/list 200 text/event-stream (one SSE frame through the vendored parser over the gateway body's chunk events, D8) → tools/call echo + add 200 json → close; the mock-minted `mcp-session-id` round-trips through the gateway's response headers — the mock refuses a session-less dial with 400, so green IS that proof; the mock's per-request telemetry rides beside the four deliverables as `mock-server-stdout.txt`) | ✓ | ✓ | ✓ | 0 |
 
 Zero screenshots is compliant everywhere (bar clause 2 makes screenshots
 optional debugging aids, never deliverables or inputs): the CLI host dirs

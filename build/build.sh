@@ -200,7 +200,8 @@ stage_test() {
             runtime/dsh/ci/run-plugin-forms-e2e.sh
             runtime/dsh/ci/run-seam-inventory-e2e.sh
             runtime/dsh/ci/run-gateway-audit-invariant.sh
-            runtime/dsh/ci/run-shim-exposure-probe.sh ;;
+            runtime/dsh/ci/run-shim-exposure-probe.sh
+            runtime/dsh/ci/run-mcp-streamable-http-e2e.sh ;;
         *)
             echo "::error::build: test: unknown platform '$1' (want ios|android|harmony|core)" >&2
             return 1 ;;

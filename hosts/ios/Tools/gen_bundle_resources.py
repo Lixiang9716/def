@@ -52,6 +52,7 @@ RESOURCES = [
     ("upstream_boot_js", DSH / "upstream" / "boot.js"),
     ("upstream_wire_logger_js", DSH / "upstream" / "wire-logger.js"),
     ("upstream_llm_route_js", DSH / "upstream" / "llm-route.js"),
+    ("upstream_mcp_http_transport_js", DSH / "upstream" / "mcp-http-transport.js"),
     ("upstream_settings_memory_js", DSH / "upstream" / "settings-memory.js"),
     ("upstream_web_write_js", DSH / "upstream" / "web-write.js"),
     ("upstream_web_write_session_js", DSH / "upstream" / "web-write-session.js"),

@@ -41,6 +41,26 @@
  *   - URL                       — combo request routing in client-modules'
  *                                 compose loop (pathname/search resolution);
  *                                 special-schemes subset over shims/url.js.
+ *   - Event/EventTarget family  — the MCP client row (upstream/mcp-http-
+ *                                 transport.js): @modelcontextprotocol/
+ *                                 client@2.0.0 statically imports
+ *                                 eventsource@3.0.7, which `extends Event` /
+ *                                 `extends EventTarget` at module-definition
+ *                                 time; the six DOM classes of
+ *                                 shims/web-event.js, installed only when
+ *                                 absent (the same face the suite harness
+ *                                 installs through shims/globals.js).
+ *   - TransformStream,          — the same MCP client row: eventsource-
+ *     TextDecoderStream            parser@3.1.0/dist/stream.js `extends
+ *                                 TransformStream` at module-definition time
+ *                                 and the client's SSE response path pipes
+ *                                 `body.pipeThrough(new TextDecoderStream())`;
+ *                                 the shims/web-streams.js classes (the
+ *                                 ReadableStream they pipe from is the one
+ *                                 installWebFetchValues already installs).
+ *                                 WritableStream/TextEncoderStream/
+ *                                 DecompressionStream stay harness-only until
+ *                                 a product import names them.
  *
  * Intentionally NOT supported (absent on purpose — an accidental call is a
  * loud ReferenceError, never a silent no-op):
@@ -72,6 +92,19 @@ import { installWebFetchValues } from 'upstream/shims/web-fetch-values.js';
 // The W3C Storage face (localStorage/sessionStorage) client modules persist
 // through — in-memory Map backing, one shared instance per face.
 import { installWebStorage } from 'upstream/shims/web-storage.js';
+// The DOM event family (Event/EventTarget/CustomEvent/MessageEvent/
+// ErrorEvent/CloseEvent): the vendored eventsource@3.0.7 — a static import
+// of @modelcontextprotocol/client@2.0.0 — subclasses Event and EventTarget
+// at module-definition time, so the classes must be globals before that
+// graph links (the MCP transport's dynamic import, upstream/mcp-http-
+// transport.js). Same classes the suite harness installs (shims/globals.js).
+import { installWebEvent } from 'upstream/shims/web-event.js';
+// The two WHATWG stream classes the same MCP row names as bare globals (the
+// header's row). The BUNDLE-ABSOLUTE spelling matches web-fetch-values.js:
+// the host loader keys module instances by the exact specifier string, and
+// the ReadableStream that file installs as the global comes from this
+// spelling — one evaluation of web-streams.js, one queue model end to end.
+import { TransformStream, TextDecoderStream } from '/upstream/shims/web-streams.js';
 
 /** The forwarder every console method rides. The release strip is applied
  * HERE, through the logger's shared policy — not by a copy of the flag — so a
@@ -434,3 +467,19 @@ if (typeof nativeQueueMicrotask === 'function') {
  * so its TextEncoder dependency sees this module's install order. */
 installWebFetchValues();
 installWebStorage();
+/* ---- DOM event family (Event/EventTarget/...) -----------------------------
+ * Installed only when absent. Independent of the AbortController block above:
+ * that block's private event-target base serves AbortSignal alone and never
+ * claims globalThis.EventTarget (the web-event.js header names the split). */
+installWebEvent();
+/* ---- WHATWG stream pipes (TransformStream / TextDecoderStream) -----------
+ * Installed only when absent, AFTER installWebFetchValues so the
+ * ReadableStream they pipe from is already the global (one queue model end
+ * to end). TextDecoderStream resolves globalThis.TextDecoder at construction
+ * — the node:util face installed above, whose decode honors {stream: true}. */
+if (typeof globalThis.TransformStream === 'undefined') {
+  globalThis.TransformStream = TransformStream;
+}
+if (typeof globalThis.TextDecoderStream === 'undefined') {
+  globalThis.TextDecoderStream = TextDecoderStream;
+}

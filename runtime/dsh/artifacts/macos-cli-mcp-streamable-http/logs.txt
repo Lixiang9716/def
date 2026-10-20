@@ -1,0 +1,155 @@
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"main begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"launch env","data":[{"keys":["DSH_HOST_PLATFORM","DSH_MCP_URL"],"url":"http://127.0.0.1:50750/mcp"}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"boot phase begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-mcp-streamable-http-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-mcp-streamable-http-0001"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"loadMcpSdk","data":[]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"connect phase begin","data":[{"url":"http://127.0.0.1:50750/mcp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"createMcpHttpTransport","data":[{"observed":true,"overridden":false,"requestInit":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"endpointUrl","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"endpointUrl parsed","data":[{"host":"127.0.0.1:50750"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch wrap","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"loadMcpSdk","data":[]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/transport-created","kind":"streamable-http","wire":"gateway.httpFetch","url":"http://127.0.0.1:50750/mcp"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"POST","path":"/mcp","status":200,"contentType":"application/json","rpcMethod":"initialize"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":246}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":4}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":200}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":4}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:6","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"POST","path":"/mcp","status":202,"rpcMethod":"notifications/initialized"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":6}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"GET"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"GET"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/connected","serverName":"dsh-mock-mcp","serverVersion":"0.0.1","protocolVersion":"2025-11-25","sessionId":"sess-mock-0001"}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"tools phase begin","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:7","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"undefined"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"GET","path":"/mcp","status":405,"contentType":"application/json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":266}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":7}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":220}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:7","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":7}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:9","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"POST","path":"/mcp","status":200,"contentType":"text/event-stream","rpcMethod":"tools/list"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":618}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":9}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":572}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:9","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/tools-listed","count":2,"names":["add","echo"]}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"call tool","data":[{"name":"echo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":9}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:12","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"POST","path":"/mcp","status":200,"contentType":"application/json","rpcMethod":"tools/call"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":175}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":12}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":128}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:12","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":12}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/tool-called","tool":"echo","text":"hello from dsh-mobile"}]}
+dsh.runtime.log: {"level":"debug","module":"mcp.streamable-http.dsh","message":"call tool","data":[{"name":"add"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"observedFetch dial","data":[{"method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:50750/mcp","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:15","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"dialedPath","data":[{"kind":"object"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"mediaEssence","data":[{"present":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.mcp.http","message":"rpcMethodOf","data":[{"kind":"string"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/wire","method":"POST","path":"/mcp","status":200,"contentType":"application/json","rpcMethod":"tools/call"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":147}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":15}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":100}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:15","buffered":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":15}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/tool-called","tool":"add","text":"42"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:4"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:6"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:7"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:9"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:12"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:15"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"mcp/closed"}]}
+dsh.runtime.log: {"level":"info","module":"mcp.streamable-http.dsh","message":"e2e","data":[{"scenario":"mcp.streamable-http","event":"probe/completed","status":"pass"}]}

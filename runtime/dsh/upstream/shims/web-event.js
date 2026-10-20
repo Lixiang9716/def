@@ -1,6 +1,6 @@
 // dsh:logging-exempt (host shim: no side effects to log)
 /**
- * shims/web-event.js — the DOM event primitives the upstream suite's
+ * shims/web-event.js — the DOM event primitives the vendored closure's
  * web-adjacent faces use as BARE GLOBALS (quickjs defines none):
  *   - EventTarget — the extendable base class: eventsource@3.0.7's
  *     EventSource, the inspector hosts, and the MCP client faces all
@@ -17,6 +17,16 @@
  * Deliberately NOT implemented: signal options, passive listeners, event
  * phases/propagation paths, AbortSignal's EventTarget base (the shims'
  * AbortSignal predates this module and stays the ?= loser).
+ *
+ * Two installers call installWebEvent (below): the suite harness
+ * (shims/globals.js) and the PRODUCT boot (upstream/web-shims.js). The
+ * product-side evidence is the MCP client row: @modelcontextprotocol/
+ * client@2.0.0/dist/index.mjs:4 statically imports `eventsource`, whose
+ * dist/index.js evaluates `class ErrorEvent extends Event` (line 2) and
+ * `class EventSource extends EventTarget` (line 64) at module-definition
+ * time and dispatches `new Event("open")` (86) / `new MessageEvent(...)`
+ * (101) at run time — so the globals must exist before the SDK's dynamic
+ * import links (upstream/mcp-http-transport.js), not merely before a spec.
  */
 const capture = (options) => (typeof options === 'boolean' ? options : options?.capture === true);
 
@@ -137,3 +147,27 @@ export class EventTarget {
     return !event.defaultPrevented;
   }
 }
+
+/** Install the event family as globals, only when absent (the web-shims.js
+ * rule: a host that binds them natively keeps its own). One face for the six
+ * classes — the family is one DOM contract, and the harness and the product
+ * boot must agree on the same prototypes (`event instanceof Event` across
+ * a dispatchEvent boundary). Returns the names installed. */
+export const installWebEvent = () => {
+  const installs = [
+    ['Event', Event],
+    ['EventTarget', EventTarget],
+    ['CustomEvent', CustomEvent],
+    ['MessageEvent', MessageEvent],
+    ['ErrorEvent', ErrorEvent],
+    ['CloseEvent', CloseEvent],
+  ];
+  const installed = [];
+  for (const [name, value] of installs) {
+    if (globalThis[name] === undefined) {
+      globalThis[name] = value;
+      installed.push(name);
+    }
+  }
+  return installed;
+};
