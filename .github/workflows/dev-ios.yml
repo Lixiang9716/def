@@ -210,7 +210,7 @@ jobs:
             | tail -30
 
       # Boot + install + launch + verify + classify. The mechanics live in
-      # test/e2e/run-ios-m1.sh (one attempt per invocation, extracted
+      # test/e2e/run-ios-boot-carrier.sh (one attempt per invocation, extracted
       # verbatim from the inline bash that used to sit here); the step is the
       # #515 attempt loop: at most ONE retry, ONLY on an environment-class
       # red (exit 3) — a product red (exit 1) is a regression no retry can
@@ -226,7 +226,7 @@ jobs:
       # precedent (dev-harmonyos.yml's CLT download).
       #
       # Before a retry, attempt-1's whole artifact dirs move aside
-      # (m1-*.attempt1/): every attempt of one workflow shares GITHUB_RUN_ID,
+      # (boot-carrier-*.attempt1/): every attempt of one workflow shares GITHUB_RUN_ID,
       # so a stale verdict left at the canonical path would pass the "Report
       # verdict" provenance check as if attempt 2 had produced it. If
       # attempt 2 goes green, the green IS the verdict and attempt-1's
@@ -240,7 +240,7 @@ jobs:
           final_rc=0
           for attempt in 1 2; do
             rc=0
-            sh test/e2e/run-ios-m1.sh "$attempt" || rc=$?
+            sh test/e2e/run-ios-boot-carrier.sh "$attempt" || rc=$?
             if [ "$rc" -eq 0 ]; then
               final_rc=0
               break
@@ -249,16 +249,16 @@ jobs:
             if [ "$rc" -ne 3 ] || [ "$attempt" -eq 2 ]; then
               break
             fi
-            echo "::warning::attempt 1 ended environment-class — preserving its verdicts/receipt under m1-*.attempt1/ and retrying ONCE"
-            for d in m1-dsh m1-carrier; do
+            echo "::warning::attempt 1 ended environment-class — preserving its verdicts/receipt under boot-carrier-*.attempt1/ and retrying ONCE"
+            for d in boot-carrier-dsh boot-carrier-carrier; do
               rm -rf "hosts/ios/artifacts/$d.attempt1"
               mv "hosts/ios/artifacts/$d" "hosts/ios/artifacts/$d.attempt1"
             done
           done
           if [ "$final_rc" -eq 3 ]; then
-            echo "::error::m1 e2e ended ENVIRONMENT-class on BOTH attempts — receipts: hosts/ios/artifacts/m1-*/verdict-environment.json (+ m1-*.attempt1/). The step stays red: a twice-reproduced stall is a real problem, not a flake."
+            echo "::error::boot-carrier e2e ended ENVIRONMENT-class on BOTH attempts — receipts: hosts/ios/artifacts/boot-carrier-*/verdict-environment.json (+ boot-carrier-*.attempt1/). The step stays red: a twice-reproduced stall is a real problem, not a flake."
           elif [ "$final_rc" -eq 1 ]; then
-            echo "::error::one or more m1 scenarios FAILED (product red) — the verdicts above are authoritative"
+            echo "::error::one or more boot-carrier scenarios FAILED (product red) — the verdicts above are authoritative"
           fi
           exit "$final_rc"
 
@@ -273,7 +273,7 @@ jobs:
       # m2 E2E runs locally via test/e2e/run-ios.sh and its committed
       # evidence is what the matrix cites.
       #
-      # What gates in this workflow: the build, and (below) the m1 scenarios —
+      # What gates in this workflow: the build, and (below) the boot-carrier scenarios —
       # which are log-driven and DO run on a hosted simulator.
 
 
@@ -297,8 +297,8 @@ jobs:
           # run's id is reported as ABSENT, which is the truth.
           reported=0
           for f in \
-            hosts/ios/artifacts/m1-dsh/verdict.json \
-            hosts/ios/artifacts/m1-carrier/verdict.json \
+            hosts/ios/artifacts/boot-carrier-dsh/verdict.json \
+            hosts/ios/artifacts/boot-carrier-carrier/verdict.json \
             hosts/ios/artifacts/gateway/verdict.json \
             hosts/ios/artifacts/gateway/verdict-audit.json; do
             name="$(basename "$f")"
@@ -323,8 +323,8 @@ jobs:
           # canonical dirs carry the FINAL attempt's classification; the
           # .attempt1 dirs carry a retried attempt's (the flake's evidence).
           for f in \
-            hosts/ios/artifacts/m1-dsh/verdict-environment.json \
-            hosts/ios/artifacts/m1-dsh.attempt1/verdict-environment.json; do
+            hosts/ios/artifacts/boot-carrier-dsh/verdict-environment.json \
+            hosts/ios/artifacts/boot-carrier-dsh.attempt1/verdict-environment.json; do
             if [ -f "$f" ]; then
               echo "" | tee -a "$GITHUB_STEP_SUMMARY"
               echo "environment receipt — $f:" | tee -a "$GITHUB_STEP_SUMMARY"
@@ -338,17 +338,17 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: m1-dsh-ios
+          name: boot-carrier-dsh-ios
           path: |
-            hosts/ios/artifacts/m1-dsh/
-            hosts/ios/artifacts/m1-carrier/
+            hosts/ios/artifacts/boot-carrier-dsh/
+            hosts/ios/artifacts/boot-carrier-carrier/
             # A retried attempt-1 keeps its verdicts + environment receipt
             # under these — the flake's evidence rides the same artifact.
-            hosts/ios/artifacts/m1-dsh.attempt1/
-            hosts/ios/artifacts/m1-carrier.attempt1/
+            hosts/ios/artifacts/boot-carrier-dsh.attempt1/
+            hosts/ios/artifacts/boot-carrier-carrier.attempt1/
             hosts/ios/artifacts/gateway/
             # The JUnit XMLs rode along inside the dirs above already; naming
             # them keeps the annotation contract explicit rather than incidental.
-            hosts/ios/artifacts/m1-dsh/verdict.xml
-            hosts/ios/artifacts/m1-carrier/verdict.xml
+            hosts/ios/artifacts/boot-carrier-dsh/verdict.xml
+            hosts/ios/artifacts/boot-carrier-carrier/verdict.xml
           if-no-files-found: warn
