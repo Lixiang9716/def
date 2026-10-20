@@ -3,7 +3,8 @@
 # evidence run: every transpiled upstream spec under the QuickJS CLI with
 # DSH_MODULE_MANIFEST pointed at a per-spec manifest file. The QJS leg ONLY —
 # the exposure survey needs what the loader resolved, not the node
-# differential verdicts (run-upstream-suite-sweep.sh owns that heavier shape).
+# differential verdicts (tools/test/sweep.mjs owns that heavier shape; the
+# run-upstream-suite-sweep.sh exec shim forwards to it).
 #
 # Also produces the HARNESS BASELINE: one leg run with a nonexistent spec —
 # the harness boots, the import fails, and the manifest names exactly the

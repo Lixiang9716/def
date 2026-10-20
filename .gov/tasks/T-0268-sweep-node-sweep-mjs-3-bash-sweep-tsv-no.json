@@ -1,0 +1,23 @@
+{
+  "title": "sweep \u9a71\u52a8 Node \u5316(sweep.mjs): \u7edf\u4e00\u6d4b\u8bd5\u68af\u5b50\u7b2c 3 \u7ea7 \u2014 bash sweep \u7684\u7f16\u6392(\u5e76\u884c/\u91cd\u8bd5/TSV)\u6c89\u6210 Node, \u5403 verifications \u8868",
+  "created": "2026-10-20T10:12:49+00:00",
+  "rules": {
+    "hash": "7343012b2198772324fba287934a1a75c34ba324ac63a6b02011f7a918aacc5a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "f82fd8f701ede3670258f45639736b8983c22a18532bb368d1a5c4297a177c5d"
+    }
+  },
+  "checklist": [
+    "[x] tools/test/sweep.mjs ports the bash sweep's orchestration (parallel pool, qjs one-retry, TSV report + totals, freshness re-transpile), driven by the upstream-sweep entry of test/verifications.mjs",
+    "[x] test/verifications.mjs exports the registry with machine drive fields; the CLI sits behind a main-module guard; --list/--why/--resolve/--check-fresh behave as before",
+    "[x] runtime/dsh/ci/run-upstream-suite-sweep.sh becomes an exec shim onto the Node driver so weekly-sweep.yml and every documented command keep working",
+    "[x] tools/test/sweep.test.mjs covers summary parsing, agree/totals, pool bound, retry-once, timeout, dry-run and an end-to-end fixture run \u2014 green in the tools vitest face",
+    "[x] Differential acceptance: the original bash sweep and the Node sweep run on the same transpiled tree; per-row compare classified; every delta documented in the note",
+    "[x] Discovery surfaces updated (ops-dispatch row, generation.mjs and weekly-sweep.yml comments, registry prose) and the testing-class Agent Note lands",
+    "gov run scoped green on the seat; PR merged; AOCI closing tail lands"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0268"
+}

@@ -9,6 +9,12 @@
  * The unified test driver that re-runs these legs grows here, in this
  * file, as it lands.
  *
+ * The registry is exported (REGISTRY) so drivers can consume the machine
+ * fields without scraping this CLI's prose: the `upstream-sweep` entry
+ * carries a `drive` block (specs dir, output paths, per-leg spawn recipes)
+ * that tools/test/sweep.mjs executes. The prose fields below stay the
+ * human contract; `drive` is the executable one.
+ *
  * usage:
  *   node test/verifications.mjs --list
  *       one line per registered entry.
@@ -25,13 +31,18 @@
  *       current inputs (transpilers, pin stamps, esbuild). Nonzero = stale:
  *       re-run node test/upstream-suite/transpile.mjs first.
  *
+ * The CLI face runs only when this file is the entry module; importing
+ * verifications.mjs has zero side effects.
+ *
  * Unknown names fail loud naming the offender (rule 5): exit 1.
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { computeFingerprint } from './upstream-suite/generation.mjs';
+
+export { computeFingerprint };
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const GENERATION_STAMP = join(ROOT, 'runtime/dsh/upstream-tests/.generation');
@@ -41,31 +52,61 @@ const FLATTEN_SOURCE = 'test/upstream-suite/transpile.mjs (line ~225)';
 const flattenSpecPath = (rel) =>
   rel.split('/').join('__').replace(/\.spec\.ts$/, '.spec.mjs');
 
-const REGISTRY = [
+/** The qjs leg's spawn recipe, verbatim from the bash sweep: inside
+ * runtime/dsh, run `./build/dsh-cli . scenario/upstream-suite-leg.js
+ * --env DSH_UPSTREAM_SPEC=upstream-tests/<name>`. A module-level arrow —
+ * inlining the array in the REGISTRY pushed its items past the code-size
+ * gate's indent budget. */
+const qjsLegArgv = (name) => [
+  './build/dsh-cli',
+  '.',
+  'scenario/upstream-suite-leg.js',
+  '--env',
+  'DSH_UPSTREAM_SPEC=upstream-tests/' + name,
+];
+
+export const REGISTRY = [
   {
     name: 'upstream-sweep',
     what: 'the FULL upstream dsh-tests suite sweep, both legs',
     countsFrom:
-      'the qjs leg — runtime/dsh/ci/run-upstream-suite-sweep.sh running every transpiled ' +
+      'the qjs leg — tools/test/sweep.mjs (the Node sweep driver; runtime/dsh/ci/' +
+      'run-upstream-suite-sweep.sh is an exec shim into it) running every transpiled ' +
       'spec through scenario upstream.suite (runtime/dsh/scenario/upstream-suite-leg.js)',
     legs: [
       {
         id: 'qjs',
         status: 'live',
         runner:
-          'runtime/dsh/ci/run-upstream-suite-sweep.sh -> runtime/dsh/scenario/upstream-suite-leg.js',
+          'tools/test/sweep.mjs qjs leg -> runtime/dsh/scenario/upstream-suite-leg.js ' +
+          '(runtime/dsh/ci/run-upstream-suite-sweep.sh exec-shims into the driver)',
+        column: 'qjs',
+        drive: {
+          cwd: 'runtime/dsh',
+          requires: 'runtime/dsh/build/dsh-cli',
+          argv: qjsLegArgv,
+          summary: { pattern: '"event":"suite/summary".*', pick: 'last' },
+          retries: 1,
+        },
       },
       {
         id: 'node-differential',
         status: 'divergent',
         runner:
-          'runtime/dsh/ci/run-upstream-suite-sweep.sh node leg (test/upstream-suite/smoke.mjs)',
+          'tools/test/sweep.mjs node leg (test/upstream-suite/smoke.mjs)',
         reason:
           'runs since the dsh-subprocess-local/index subpath row landed in ' +
           'smoke-hooks (2026-10-20), but DIVERGES where the vendored spawner ' +
           'drives real Node children (lsp-stdio: 9/22 vs qjs 31/0 — the piped ' +
           'protocol stream drops under Node). Divergence is the leg finding ' +
           'its differential value; treat qjs as the only counting leg.',
+        column: 'node',
+        drive: {
+          cwd: '.',
+          argv: (name) => ['node', 'test/upstream-suite/smoke.mjs', name],
+          summary: { pattern: 'harness smoke: \\{.*\\}', pick: 'first' },
+          retries: 0,
+        },
       },
     ],
     transpiler: 'test/upstream-suite/transpile.mjs',
@@ -76,6 +117,25 @@ const REGISTRY = [
     resolve: (testsTreeRelativePath) => {
       const clean = String(testsTreeRelativePath).replace(/^\.\//, '');
       return /\.spec\.ts$/.test(clean) ? flattenSpecPath(clean) : null;
+    },
+    drive: {
+      specsDir: 'runtime/dsh/upstream-tests',
+      specSuffix: '.spec.mjs',
+      out: {
+        report: 'tmp/upstream-suite-report.tsv',
+        totals: 'tmp/upstream-suite-report-totals.txt',
+        logDir: 'tmp/upstream-suite-logs',
+      },
+      legTimeoutMs: 90000,
+      defaultParallel: 4,
+      freshness: {
+        stamp: 'runtime/dsh/upstream-tests/.generation',
+        refresh: [
+          { cwd: '.', argv: ['sh', 'external/ensure-dsh-tests.sh'] },
+          { cwd: 'test/upstream-suite', argv: ['npm', 'install', '--no-audit', '--no-fund'] },
+          { cwd: 'test/upstream-suite', argv: ['node', 'transpile.mjs'] },
+        ],
+      },
     },
   },
   {
@@ -210,24 +270,43 @@ const printCheckFresh = () => {
   );
 };
 
-const argv = process.argv.slice(2);
-if (argv.length === 0) usage('expected a flag');
-if (argv.length > 2) usage(`expected one flag and its value, got: ${argv.join(' ')}`);
-const [flag, value] = argv;
-if (flag === '--list') {
-  if (value) usage(`--list takes no value, got '${value}'`);
-  printList();
-} else if (flag === '--why') {
-  if (!value) usage('--why needs a registry name or an artifact stem');
-  const found = findForWhy(value);
-  if (!found) usage(`unknown verification name or artifact stem '${value}'`);
-  printWhy(found.entry);
-} else if (flag === '--resolve') {
-  if (!value) usage('--resolve needs a tests-tree-relative path');
-  printResolve(value);
-} else if (flag === '--check-fresh') {
-  if (value) usage(`--check-fresh takes no value, got '${value}'`);
-  printCheckFresh();
-} else {
-  usage(`unknown flag '${flag}'`);
+const runCli = (argv) => {
+  if (argv.length === 0) usage('expected a flag');
+  if (argv.length > 2) usage(`expected one flag and its value, got: ${argv.join(' ')}`);
+  const [flag, value] = argv;
+  if (flag === '--list') {
+    if (value) usage(`--list takes no value, got '${value}'`);
+    printList();
+  } else if (flag === '--why') {
+    if (!value) usage('--why needs a registry name or an artifact stem');
+    const found = findForWhy(value);
+    if (!found) usage(`unknown verification name or artifact stem '${value}'`);
+    printWhy(found.entry);
+  } else if (flag === '--resolve') {
+    if (!value) usage('--resolve needs a tests-tree-relative path');
+    printResolve(value);
+  } else if (flag === '--check-fresh') {
+    if (value) usage(`--check-fresh takes no value, got '${value}'`);
+    printCheckFresh();
+  } else {
+    usage(`unknown flag '${flag}'`);
+  }
+};
+
+/** CLI face — generation.mjs's entry-module guard with the argv side
+ *  realpath'd (the ESM loader resolves symlinks in import.meta.url, argv[1]
+ *  stays as typed; a symlinked checkout must not turn the CLI into a silent
+ *  exit 0). Importing this file stays side-effect free; only a direct
+ *  `node test/verifications.mjs` run dispatches the flags above. */
+const isEntryModule = () => {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+};
+
+if (isEntryModule()) {
+  runCli(process.argv.slice(2));
 }

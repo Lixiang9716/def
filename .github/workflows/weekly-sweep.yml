@@ -1,7 +1,8 @@
 name: weekly-sweep
 # The FULL upstream dsh-tests sweep as a standing drift net: every transpiled
 # spec runs under the QuickJS CLI AND the plain-Node differential reference
-# (runtime/dsh/ci/run-upstream-suite-sweep.sh), weekly plus on demand.
+# (runtime/dsh/ci/run-upstream-suite-sweep.sh, now an exec shim into the Node
+# driver tools/test/sweep.mjs), weekly plus on demand.
 #
 # This is an INSPECTION, not a gate: the sweep step is continue-on-error by
 # design — a non-green result means the inspection FOUND something (shim or
@@ -76,11 +77,15 @@ jobs:
       - name: Build the desktop CLI
         run: sh src/build.sh
       - name: Run the full upstream-suite sweep
-        # --paral 4: the sweep script's own default, kept explicit. The step
-        # is continue-on-error ON PURPOSE (see the header): red findings are
-        # the inspection working, and the report must still reach the
-        # artifacts. Infrastructure failures still surface — the summary
-        # step below fails loud on a missing/empty report.
+        # The script is now an exec shim into tools/test/sweep.mjs (the Node
+        # driver fed by the upstream-sweep entry's drive field in
+        # test/verifications.mjs); this invocation is unchanged ON PURPOSE —
+        # the shim is the compatibility seam. --paral 4: the sweep's own
+        # default, kept explicit. The step is continue-on-error ON PURPOSE
+        # (see the header): red findings are the inspection working, and the
+        # report must still reach the artifacts. Infrastructure failures
+        # still surface — the summary step below fails loud on a
+        # missing/empty report.
         continue-on-error: true
         run: runtime/dsh/ci/run-upstream-suite-sweep.sh --paral 4
       - name: Summarize the report
