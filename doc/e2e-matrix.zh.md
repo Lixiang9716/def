@@ -6,6 +6,15 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-10-21（#633）——下面三张表从 `node test/e2e/matrix.mjs
+> --out`（机器清单）再生，清掉本页积欠的文档漂移：24 行清单仍指向 #402 改名
+> 前的 `runtime/spike/artifacts/` 路径（2026-10-07 起树改为 `runtime/dsh/`），
+> 现已改回；25 个 macOS CLI 证据目录首次登记（appshell-spec、dsh-shell-js、
+> llm.piai-probe、llm.chaos.*、seam-inventory、gateway-audit-invariant……）；
+> 覆盖矩阵 80 → 120 行 scenario。旧散文 note 里的 `runtime/spike/…` 路径是
+> 历史引用，不是活指针。本树校验计数 **137 个证据目录 / 257 条绿色 verdict /
+> 250 png**，`--accept-known-gaps` 下零 finding。
+
 > **时效性**：2026-10-20（第 15 行）——测试加固计划合上 **20/20**：第 15 行
 > App 升级矩阵（`hosts/android/ci/run-upgrade-matrix.sh`，证据在
 > `hosts/android/artifacts/upgrade-matrix/`）于 #569 落地、今日在 main 上重证——
@@ -279,10 +288,10 @@
 
 | 指标 | 数值 |
 | --- | --- |
-| 证据目录 | 93 |
-| 已提交 verdict（206 绿） | 206 |
-| 至少有一份已提交证据的 scenario | 80 / 80 个不同的 scenario id（73 个 manifest） |
-| 已验证 PNG 的截图 | 213 |
+| 证据目录 | 137 |
+| 已提交 verdict（257 绿） | 257 |
+| 至少有一份已提交证据的 scenario | 120 / 120 个不同的 scenario id（116 个 manifest） |
+| 已验证 PNG 的截图 | 250 |
 | 验收标准缺口 | 0 —— 登记表已清空；最后一行（iOS b4 回执）已于 2026-10-16 闭合 |
 
 ## 覆盖矩阵 —— scenario × 平台
@@ -292,86 +301,126 @@
 
 | Scenario | iOS | Android | HarmonyOS | macOS CLI |
 | --- | --- | --- | --- | --- |
-| `b-android.official-web.mount` | — | 14/14 | — | — |
-| `b-android.session.live` | — | 46/46 | — | — |
-| `b-android.write.live` | — | 45/45 | — | — |
-| `b-harmony.httpfetch-v2` | — | — | 6/6, 6/6, 6/6, 6/6 | — |
-| `b-harmony.official-web-mount` | — | — | 17/17, 17/17, 17/17, 17/17 | — |
-| `b-harmony.session.live` | — | — | 43/43, 43/43, 43/43 | — |
-| `b-harmony.write.live` | — | — | 33/33（漂移）, 33/33（漂移） | — |
-| `b1.official-web.mount` | 14/14 | — | — | — |
-| `officialweb.mount` | 14/14 | — | — | — |
-| `b3.session.live` | 46/46 | — | — | — |
-| `session.live-read` | 46/46 | — | — | — |
-| `b4.write.live` | 46/46, 43/43（漂移） | — | — | — |
-| `agent.flow` | 17/17 | — | — | — |
-| `ble.plane` | 16/16, 8/8 | 16/16, 8/8 | — | — |
-| `ble.plane.audit` | 8/8, 4/4 | 8/8, 4/4 | — | — |
-| `boot.verification` | 8/8, 8/8 | 8/8 | 8/8 | — |
-| `carrier.loopback` | 7/7, 7/7 | — | — | — |
-| `camera.plane` | 6/6 | 8/8 | — | — |
-| `camera.plane.audit` | 3/3 | 5/6（漂移） | — | — |
-| `composer.live-write` | 46/46 | — | — | — |
-| `device.plane` | 16/16, 16/16 | 15/15, 15/15 | 13/13 | — |
-| `device.plane.audit` | 14/23, 14/23 | 13/22, 13/22 | — | — |
-| `m1.spike.boot` | 9/9（漂移）, 7/7（漂移） | 9/9（漂移）, 7/7（漂移）, 7/7（漂移） | 7/7（漂移）, 7/7（漂移）, 7/7（漂移）, 9/9（漂移）, 7/7（漂移）, 7/7（漂移） | 9/9（漂移） |
-| `m1.carrier.loopback` | 7/7, 7/7 | — | — | — |
-| `m2.bridge.smoke` | — | 6/6, 6/6 | 6/6, 6/6, 6/6, 6/6, 6/6 | 6/6 |
-| `gateway.bridge-smoke` | — | 6/6 | 6/6 | — |
-| `gateway.audit` | 16/16, 16/16 | — | — | — |
-| `gateway.binding` | 19/19, 19/19 | — | — | — |
-| `m2.gateway.audit` | 16/16 | 16/16 | — | — |
-| `m2.gateway.binding` | 19/19 | — | — | — |
-| `install.carrier-evidence` | 11/11 | — | — | — |
-| `install.from-http` | 46/46 | — | — | — |
-| `m2.llm` | 14/148 | 14/171 | 14/130, 14/114（Windows 宿主） | 19/19 |
-| `real.agent.loop` | — | — | 21/21（Windows 宿主，glm-5.3-flash 实况） | — |
-| `m2.llm.carrier` | 7/7 | 7/7 | — | — |
-| `llm.live-stream` | 14/67 | — | 14/130 | — |
-| `llm.live-stream.carrier` | 7/7 | — | 7/7 | — |
-| `m2.session` | 23/23, 23/23 | 23/23, 22/22（漂移） | 23/23, 23/23, 23/23, 23/23, 23/23 | 23/23 |
-| `m2.webclient.mount` | 7/7 | — | — | — |
-| `webclient.mount` | 7/7 | — | — | — |
-| `upstream.session` | — | — | — | 31/31 |
-| `upstream.web-boot` | — | — | — | 12/12 |
-| `m3.ui-swap` | 7/7 | — | — | — |
-| `m3.install` | — | — | — | 22/22 |
-| `m3.complete` | — | — | — | 41/41 |
-| `m3.fetch-install` | 46/46 | — | — | — |
-| `m3.fetch-carrier` | 11/11 | — | — | — |
-| `ish.shell` | — | — | — | 11/11 |
-| `m4.host-binding` | — | 35/35 | — | — |
-| `m5.host-binding` | — | — | 20/20（漂移）, 20/20（漂移）, 20/20（漂移）, 20/20（漂移）, 27/27 | — |
-| `harmony.capability-binding` | — | — | 27/27 | — |
-| `harmony.composer.live-write` | — | — | 36/36 | — |
-| `harmony.httpfetch-streaming` | — | — | 6/6 | — |
-| `harmony.officialweb.mount` | — | — | 17/17 | — |
-| `harmony.session.live-read` | — | — | 43/43 | — |
-| `mic.plane` | 11/11 | 9/9（漂移） | — | — |
-| `mic.plane.audit` | 6/6 | — | — | — |
-| `android.mic.plane.audit` | — | 4/4（漂移） | — | — |
-| `models.directory` | — | — | — | 6/6 |
-| `office` | — | — | — | 19/19 |
-| `onboarding.flow` | — | — | — | 13/13 |
-| `open.design` | — | — | — | 15/15 |
-| `session.mock-llm` | 23/23, 23/23 | 23/23 | 23/23 | — |
-| `settings.surfaces.cli` | — | — | — | 12/12 |
-| `nextweb.mount` | 24/24 | — | — | — |
-| `whale.mount` | 7/7 | — | — | — |
-| `android.whale.mount` | — | 7/7 | — | — |
-| `android.nextweb.mount` | — | 24/24 | — | — |
-| `harmony.whale.mount` | — | — | 7/7 | — |
-| `harmony.nextweb.mount` | — | — | 24/24 | — |
-| `upstream.parity` | 12/37（漂移） + 差分 25/25 | 13/13 + 25/25 | — | 12/37（漂移） + 25/25 |
-| `userland.shell` | — | — | — | 11/11 |
-| `lynx.mount` | — | — | — | 34/34, 34/34 |
-| `socket.seam` | — | — | — | 19/19 |
-| `shim.exposure-probe` | — | — | — | 8/8 |
-| `security.gateway-fuzz` | — | — | — | 25/25 |
-| `security.jail` | — | — | — | 19/19 |
-| `security.manifest-forgery` | — | — | — | 11/11 |
-| `security.byok-leak` | — | — | — | 7/7 |
-| `mcp.streamable-http` | — | — | — | 16/16 |
+| `agent.flow` | agent.flow 17/17 | — | — | — |
+| `android.composer.live-write` | — | android.composer.live-write 60/60 | — | — |
+| `android.mic.plane.audit` | — | android.mic.plane.audit 6/6 | — | — |
+| `android.nextweb.mount` | — | android.nextweb.mount 24/24 | — | — |
+| `android.officialweb.mount` | — | android.officialweb.mount 14/14 | — | — |
+| `android.perf.turn-latency` | — | android.perf.turn-latency 15/15 | — | — |
+| `android.session-persist.midturn` | — | android.session-persist.midturn 34/34 | — | — |
+| `android.session-persist.restart` | — | android.session-persist.restart 46/46, android.session-persist.restart 46/46 | — | — |
+| `android.session.live-read` | — | android.session.live-read 46/46 | — | — |
+| `android.whale.mount` | — | android.whale.mount 7/7 | — | — |
+| `appshell.m3` | — | — | — | — |
+| `appshell.m4` | — | — | — | — |
+| `appshell.morph` | — | — | — | — |
+| `appshell.spec` | — | — | — | appshell.spec 14/14 |
+| `appshell.swarm` | — | — | — | — |
+| `b-harmony.httpfetch-v2` | — | — | b-harmony.httpfetch-v2 6/6, b-harmony.httpfetch-v2 6/6, b-harmony.httpfetch-v2 6/6, b-harmony.httpfetch-v2 6/6 | — |
+| `b-harmony.official-web-mount` | — | — | b-harmony.official-web-mount 17/17, b-harmony.official-web-mount 17/17, b-harmony.official-web-mount 17/17, b-harmony.official-web-mount 17/17 | — |
+| `b-harmony.session.live` | — | — | b-harmony.session.live 43/43, b-harmony.session.live 43/43, b-harmony.session.live 43/43 | — |
+| `b-harmony.write.live` | — | — | b-harmony.write.live 33/33 (drift), b-harmony.write.live 33/33 (drift) | — |
+| `b1.official-web.mount` | b1.official-web.mount 14/14 | — | — | — |
+| `b3.session.live` | b3.session.live 46/46 | — | — | — |
+| `b4.write.live` | b4.write.live 46/46, b4.write.live 43/43 (drift) | — | — | — |
+| `ble.plane` | ble.plane 16/16, ble.plane 8/8, ble.plane 16/16, ble.plane 8/8 | ble.plane 16/16, ble.plane 8/8 | ble.plane 16/16 | — |
+| `ble.plane.audit` | ble.plane.audit 8/8, ble.plane.audit 4/4, ble.plane.audit 8/8, ble.plane.audit 4/4 | ble.plane.audit 8/8, ble.plane.audit 4/4 | — | — |
+| `boot.verification` | boot.verification 8/8, boot.verification 8/8, boot.verification 8/8 | boot.verification 8/8 | boot.verification 8/8, boot.verification 8/8, boot.verification 8/8, boot.verification 8/8, boot.verification 8/8 | — |
+| `byok.anthropic-wire` | — | — | — | byok.anthropic-wire 10/10 |
+| `camera.plane` | camera.plane 6/6, camera.plane 6/6 | camera.plane 8/8 | — | — |
+| `camera.plane.audit` | camera.plane.audit 3/3, camera.plane.audit 3/3 | camera.plane.audit 5/6 | — | — |
+| `card.player` | card.player 11/11 | card.player 12/12 (drift) | card.player 11/11 | — |
+| `carrier.loopback` | carrier.loopback 7/7, carrier.loopback 7/7, carrier.loopback 7/7 | — | — | — |
+| `composer.live-write` | composer.live-write 46/46, composer.live-write 46/46, composer.live-write 46/46 | — | — | — |
+| `create.calendar.live` | — | create.calendar.live 8/8 | — | — |
+| `create.card` | create.card 12/12 | create.card 12/12 | create.card 6/6 | — |
+| `device.plane` | device.plane 16/16, device.plane 16/16, device.plane 16/16 | device.plane 15/15, device.plane 15/15 | device.plane 13/13 | — |
+| `device.plane.audit` | device.plane.audit 14/23, device.plane.audit 14/23, device.plane.audit 14/23 | device.plane.audit 13/22, device.plane.audit 13/22 | — | — |
+| `dsh-shell-js` | — | — | — | dsh-shell-js 35/35 |
+| `gateway.audit` | gateway.audit 16/16 (drift), gateway.audit 16/16 (drift), gateway.audit 16/16 (drift) | — | — | — |
+| `gateway.audit-invariant` | — | — | — | gateway.audit-invariant 64/64 |
+| `gateway.binding` | gateway.binding 19/19 (drift), gateway.binding 19/19 (drift), gateway.binding 19/19 (drift) | — | — | — |
+| `gateway.bridge-smoke` | — | gateway.bridge-smoke 7/7 | gateway.bridge-smoke 7/7, gateway.bridge-smoke 7/7, gateway.bridge-smoke 7/7, gateway.bridge-smoke 7/7, gateway.bridge-smoke 7/7 | gateway.bridge-smoke 7/7 |
+| `harmony.capability-binding` | — | — | harmony.capability-binding 27/27 (drift), harmony.capability-binding 27/27 (drift), harmony.capability-binding 27/27 (drift), harmony.capability-binding 27/27 (drift), harmony.capability-binding 27/27 (drift) | — |
+| `harmony.composer.live-write` | — | — | harmony.composer.live-write 38/38 (drift), harmony.composer.live-write 38/38 (drift), harmony.composer.live-write 38/38 (drift), harmony.composer.live-write 42/41, harmony.composer.live-write 42/41 | — |
+| `harmony.httpfetch-streaming` | — | — | harmony.httpfetch-streaming 6/6, harmony.httpfetch-streaming 6/6, harmony.httpfetch-streaming 6/6, harmony.httpfetch-streaming 6/6, harmony.httpfetch-streaming 6/6 | — |
+| `harmony.nextweb.mount` | — | — | harmony.nextweb.mount 24/24 | — |
+| `harmony.officialweb.mount` | — | — | harmony.officialweb.mount 17/17, harmony.officialweb.mount 17/17, harmony.officialweb.mount 17/17, harmony.officialweb.mount 17/17, harmony.officialweb.mount 17/17 | — |
+| `harmony.session-persist.restart` | — | — | harmony.session-persist.restart 44/44 | — |
+| `harmony.session.live-read` | — | — | harmony.session.live-read 43/43, harmony.session.live-read 43/43, harmony.session.live-read 43/43, harmony.session.live-read 43/43, harmony.session.live-read 43/43 | — |
+| `harmony.whale.mount` | — | — | harmony.whale.mount 7/7 | — |
+| `install.carrier-evidence` | install.carrier-evidence 11/11 | — | — | — |
+| `install.from-http` | install.from-http 46/46 | — | — | — |
+| `ish.shell` | — | — | — | ish.shell 11/11 |
+| `leak.canary` | — | — | — | leak.canary 6/6 |
+| `llm.chaos.malformed-sse` | — | — | — | llm.chaos.malformed-sse 26/26 |
+| `llm.chaos.no-headers` | — | — | — | llm.chaos.no-headers 27/27 |
+| `llm.chaos.oversized` | — | — | — | llm.chaos.oversized 27/27 |
+| `llm.chaos.toolargs-deep-nesting` | — | — | — | llm.chaos.toolargs-deep-nesting 40/40 |
+| `llm.chaos.toolargs-missing-field` | — | — | — | llm.chaos.toolargs-missing-field 40/40 |
+| `llm.chaos.toolargs-oversized` | — | — | — | llm.chaos.toolargs-oversized 40/40 |
+| `llm.chaos.toolargs-type-error` | — | — | — | llm.chaos.toolargs-type-error 40/40 |
+| `llm.chaos.truncation` | — | — | — | llm.chaos.truncation 26/26 |
+| `llm.live-stream` | llm.live-stream 14/67 | — | llm.live-stream 14/67, llm.live-stream 14/114 | — |
+| `llm.live-stream.carrier` | llm.live-stream.carrier 7/7 | — | llm.live-stream.carrier 7/7, llm.live-stream.carrier 7/7 | — |
+| `llm.piai-live` | — | — | — | llm.piai-live 3/2 |
+| `llm.piai-probe` | — | — | — | llm.piai-probe 12/12 |
+| `llm.piai-user-endpoint` | — | — | — | llm.piai-user-endpoint 12/10 |
+| `lynx.mount` | — | — | — | — |
+| `m1.carrier.loopback` | m1.carrier.loopback 7/7, m1.carrier.loopback 7/7 | — | — | — |
+| `m1.spike.boot` | m1.spike.boot 9/9 (drift), m1.spike.boot 7/7 (drift) | m1.spike.boot 9/9 (drift), m1.spike.boot 7/7 (drift), m1.spike.boot 7/7 (drift) | m1.spike.boot 7/7 (drift), m1.spike.boot 7/7 (drift), m1.spike.boot 7/7 (drift), m1.spike.boot 9/9 (drift), m1.spike.boot 7/7 (drift), m1.spike.boot 7/7 (drift) | m1.spike.boot 9/9 (drift) |
+| `m2.bridge.smoke` | — | m2.bridge.smoke 6/6 (drift), m2.bridge.smoke 6/6 (drift) | m2.bridge.smoke 6/6 (drift), m2.bridge.smoke 6/6 (drift), m2.bridge.smoke 6/6 (drift), m2.bridge.smoke 6/6 (drift), m2.bridge.smoke 6/6 (drift) | — |
+| `m2.gateway.audit` | m2.gateway.audit 16/16 (drift) | m2.gateway.audit 16/16 (drift) | — | — |
+| `m2.gateway.binding` | m2.gateway.binding 19/19 (drift) | — | — | — |
+| `m2.llm` | m2.llm 14/148 | m2.llm 14/171 | — | m2.llm 19/19 |
+| `m2.llm.carrier` | m2.llm.carrier 7/7 | m2.llm.carrier 7/7 | — | — |
+| `m2.session` | m2.session 23/23, m2.session 23/23 | m2.session 23/23, m2.session 22/22 (drift) | m2.session 23/23, m2.session 23/23, m2.session 23/23, m2.session 23/23, m2.session 23/23 | m2.session 23/23 |
+| `m2.webclient.mount` | m2.webclient.mount 7/7 | — | — | — |
+| `m3.complete` | — | — | — | m3.complete 41/41 |
+| `m3.fetch-carrier` | m3.fetch-carrier 11/11 | — | — | — |
+| `m3.fetch-install` | m3.fetch-install 46/46 | — | — | — |
+| `m3.install` | — | — | — | m3.install 22/22 |
+| `m3.ui-swap` | m3.ui-swap 7/7 | — | — | — |
+| `m4.host-binding` | — | m4.host-binding 35/35 (drift) | — | — |
+| `m5.host-binding` | — | — | m5.host-binding 20/20 (drift), m5.host-binding 20/20 (drift), m5.host-binding 20/20 (drift), m5.host-binding 20/20 (drift), m5.host-binding 27/27 (drift) | — |
+| `marketplace.install` | — | — | — | marketplace.install 72/72 |
+| `marketplace.ui.flow` | — | — | — | marketplace.ui.flow 12/12 |
+| `mcp.streamable-http` | — | — | — | mcp.streamable-http 16/16 |
+| `mic.plane` | mic.plane 11/11, mic.plane 11/11 | mic.plane 11/11 | — | — |
+| `mic.plane.audit` | mic.plane.audit 6/6, mic.plane.audit 6/6 | — | — | — |
+| `models.directory` | — | — | — | models.directory 6/6 |
+| `nextweb.mount` | nextweb.mount 25/25, nextweb.mount 24/24 (drift) | — | — | — |
+| `office` | — | — | — | office 19/19 |
+| `officialweb.mount` | officialweb.mount 14/14 | — | — | — |
+| `onboarding.flow` | — | — | — | onboarding.flow 13/13 |
+| `open.design` | — | — | — | open.design 15/15 |
+| `perf.baseline` | — | — | — | perf.baseline 6/6 |
+| `perf.turn-latency` | — | — | — | perf.turn-latency 14/14 |
+| `plugin.forms` | — | — | — | plugin.forms 34/34 |
+| `real.agent.loop` | — | — | real.agent.loop 21/21 | — |
+| `resource.starvation` | — | — | — | resource.starvation 7/16 |
+| `seam.inventory` | — | — | — | seam.inventory 4/4 |
+| `security.byok-leak` | — | — | — | security.byok-leak 8/8 |
+| `security.gateway-fuzz` | — | — | — | security.gateway-fuzz 25/25 |
+| `security.jail` | — | — | — | security.jail 19/19 |
+| `security.manifest-forgery` | — | — | — | security.manifest-forgery 13/13 |
+| `session-persist.restart` | session-persist.restart 46/46 | — | — | — |
+| `session.live-read` | session.live-read 46/46 | — | — | — |
+| `session.mock-llm` | session.mock-llm 23/23, session.mock-llm 23/23, session.mock-llm 23/23, session.mock-llm 23/23 | session.mock-llm 23/23 | session.mock-llm 23/23, session.mock-llm 23/23, session.mock-llm 23/23, session.mock-llm 23/23, session.mock-llm 23/23 | — |
+| `session.multi.stress` | — | — | — | session.multi.stress 46/46 |
+| `session.persistence.midturn` | — | — | — | session.persistence.midturn 24/24 |
+| `settings.surfaces` | — | — | — | settings.surfaces 12/12 |
+| `shim.exposure-probe` | — | — | — | shim.exposure-probe 8/8 |
+| `soak.aging` | — | — | — | soak.aging 3/3 |
+| `socket.seam` | — | — | — | socket.seam 19/19 |
+| `ui.occlusion` | — | ui.occlusion 1/1 | — | — |
+| `upstream.compaction` | — | — | — | upstream.compaction 39/39 |
+| `upstream.parity` | upstream.parity 12/37 (drift) | — | — | upstream.parity 12/37 (drift) |
+| `upstream.session` | — | — | — | upstream.session 31/31 |
+| `upstream.web-boot` | — | — | — | upstream.web-boot 12/12 |
+| `userland.shell` | — | — | — | userland.shell 11/11 |
+| `webclient.mount` | webclient.mount 7/7, webclient.mount 7/7 | — | — | — |
+| `whale.mount` | whale.mount 7/7, whale.mount 7/7 | — | — | — |
 
 `（漂移）` = 该 verdict 是在更早的 manifest 版本上捕获的
 （见[信息性说明](#信息性说明不算失败)）。
@@ -400,39 +449,70 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 
 | 目录 | 平台 | Verdict（`expected/logged`） | logs | scen | rcpt | shots |
 | --- | --- | --- | --- | --- | --- | --- |
-| `hosts/android/artifacts/android-upstream` | Android | b-android.official-web.mount 14/14 | ✓ | ✓ | ✓ | 4 |
-| `hosts/android/artifacts/upstream-parity` | Android | upstream.parity 13/13 + 与 Node 金标的差分 25/25 条记录一致（模拟器腿，设备内 MockLlmRoute） | ✓ | ✓ | ✓ | 0 |
 | `hosts/android/artifacts/android-session-live` | Android | b-android.session.live 46/46 | ✓ | ✓ | ✓ | 4 |
-| `hosts/android/artifacts/android-write-live` | Android | b-android.write.live 45/45 | ✓ | ✓ | ✓ | 4 |
-| `hosts/android/artifacts/whale-mount` | Android | android.whale.mount 7/7 | ✓ | ✓ | ✓ | 1 |
-| `hosts/android/artifacts/nextweb-mount` | Android | android.nextweb.mount 24/24 | ✓ | ✓ | ✓ | 2 |
+| `hosts/android/artifacts/android-upstream` | Android | b-android.official-web.mount 14/14 | ✓ | ✓ | ✓ | 4 |
+| `hosts/android/artifacts/android-write-live` | Android | android.composer.live-write 60/60 | ✓ | ✓ | ✓ | 4 |
+| `hosts/android/artifacts/ble-mock` | Android | ble.plane 16/16, ble.plane.audit 8/8 (the deterministic mock radio's two-device GATT db — 180f/2a19 read+notify, fe00/fe01 write — riding the same gateway enforcement, consent layers, and audit as a real radio) | ✓ | ✓ | ✓ | 0 |
+| `hosts/android/artifacts/ble-skip` | Android | ble.plane 8/8, ble.plane.audit 4/4 (the honest no-radio posture: the emulator's virtual controller with ungranted runtime permissions) | ✓ | ✓ | ✓ | 0 |
+| `hosts/android/artifacts/calendar-live` | Android | create.calendar.live 8/8 | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/camera-plane` | Android | camera.plane.audit 5/6, camera.plane 8/8 | ✓ | ✓ | ✓ | 0 |
+| `hosts/android/artifacts/card-player` | Android | card.player 12/12 (drift) | ✓ | ✓ | ✓ | 2 |
+| `hosts/android/artifacts/create-card` | Android | create.card 12/12 | ✓ | ✓ | ✓ | 3 |
+| `hosts/android/artifacts/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
 | `hosts/android/artifacts/m1-spike` | Android | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 1 |
 | `hosts/android/artifacts/m2-llm` | Android | m2.llm.carrier 7/7, m2.llm 14/171 | ✓ | ✓ | ✓ | 0 |
 | `hosts/android/artifacts/m4-complete` | Android | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m2.gateway.audit 16/16, m4.host-binding 35/35 | ✓ | ✓ | ✓ | 5 |
-| `hosts/android/artifacts/m4-host` | Android | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 22/22（漂移） | ✓ | ✓ | ✓ | 1 |
-| `hosts/android/artifacts/ble-mock` | Android | ble.plane 16/16, ble.plane.audit 8/8（确定性 mock 电台的双设备 GATT 库——180f/2a19 read+notify、fe00/fe01 write——与真实电台共用同一套 gateway 强制、同意层与审计） | ✓ | ✓ | ✓ | 0 |
-| `hosts/android/artifacts/ble-skip` | Android | ble.plane 8/8, ble.plane.audit 4/4（如实无电台姿态：模拟器的虚拟控制器带未授予的运行时权限） | ✓ | ✓ | ✓ | 0 |
-| `hosts/android/artifacts/camera-plane` | Android | camera.plane 8/8（虚拟相机真实拍摄），camera.plane.audit 5 钉/6 记（审计 manifest 已声明 `repeat`——合法） | ✓ | ✓ | ✓ | 0 |
-| `hosts/android/artifacts/mic-plane` | Android | mic.plane 9/9（漂移）, android.mic.plane.audit 4/4（漂移）——武装梯带真实 PCM 帧 | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/m4-host` | Android | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 22/22 (drift) | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/mic-plane` | Android | android.mic.plane.audit 6/6, mic.plane 11/11 | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/nextweb-mount` | Android | android.nextweb.mount 24/24 | ✓ | ✓ | ✓ | 2 |
+| `hosts/android/artifacts/perf-turn-latency` | Android | android.perf.turn-latency 15/15 | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/session-persist-midturn` | Android | android.session-persist.midturn 34/34 | ✓ | ✓ | ✓ | 2 |
+| `hosts/android/artifacts/session-persist-restart` | Android | android.session-persist.restart 46/46 | ✓ | ✓ | ✓ | 2 |
 | `hosts/android/artifacts/simulator-matrix/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
 | `hosts/android/artifacts/simulator-matrix/regression` | Android | boot.verification 8/8, gateway.bridge-smoke 6/6, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 1 |
-| `hosts/android/artifacts/device-plane` | Android | device.plane 15/15, device.plane.audit 13/22 | ✓ | ✓ | ✓ | 4 |
-| `hosts/android/artifacts/upgrade-matrix` | Android | android.session-persist.restart 46/46（升级矩阵（第 15 行）：跨两份构建的 install -r 替代 restart 腿的 force-stop；盘面对账事实随 receipt.json 落档） | ✓ | ✓ | ✓ | 2 |
-| `hosts/harmony/artifacts/d9-official-web` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
-| `hosts/harmony/artifacts/d9-session-live` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
-| `hosts/harmony/artifacts/d9-write-live` | HarmonyOS | 完整 8-scenario 套件，绿色（receipt 2026-10-05） | ✓ | ✓ | ✓ | 8 |
-| `hosts/harmony/artifacts/whale-mount` | HarmonyOS | harmony.whale.mount 7/7 | ✓ | ✓ | ✓ | 1 |
-| `hosts/harmony/artifacts/nextweb-mount` | HarmonyOS | harmony.nextweb.mount 24/24 | ✓ | ✓ | ✓ | 1 |
+| `hosts/android/artifacts/upgrade-matrix` | Android | android.session-persist.restart 46/46 (the upgrade matrix (row 15): install -r across two builds replaces the restart leg's force-stop; the on-disk reconciliation facts ride receipt.json) | ✓ | ✓ | ✓ | 2 |
+| `hosts/android/artifacts/whale-mount` | Android | android.whale.mount 7/7 | ✓ | ✓ | ✓ | 1 |
+| `hosts/harmony/artifacts/ble-mock` | HarmonyOS | ble.plane 16/16 | ✓ | ✓ | ✓ | 0 |
+| `hosts/harmony/artifacts/card-player` | HarmonyOS | card.player 11/11 | ✓ | ✓ | ✓ | 3 |
+| `hosts/harmony/artifacts/create-card` | HarmonyOS | create.card 6/6 | ✓ | ✓ | ✓ | 2 |
+| `hosts/harmony/artifacts/d9-official-web` | HarmonyOS | b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, boot.verification 8/8, gateway.bridge-smoke 7/7, harmony.capability-binding 27/27 (drift), harmony.composer.live-write 38/38 (drift), harmony.httpfetch-streaming 6/6, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, m1.spike.boot 7/7 (drift), m2.bridge.smoke 6/6 (drift), m2.session 23/23, m5.host-binding 20/20 (drift), session.mock-llm 23/23 | ✓ | ✓ | ✓ | 13 |
+| `hosts/harmony/artifacts/d9-session-live` | HarmonyOS | b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, b-harmony.session.live 43/43, boot.verification 8/8, gateway.bridge-smoke 7/7, harmony.capability-binding 27/27 (drift), harmony.composer.live-write 38/38 (drift), harmony.httpfetch-streaming 6/6, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, m1.spike.boot 7/7 (drift), m2.bridge.smoke 6/6 (drift), m2.session 23/23, m5.host-binding 20/20 (drift), session.mock-llm 23/23 | ✓ | ✓ | ✓ | 15 |
+| `hosts/harmony/artifacts/d9-write-live` | HarmonyOS | b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, b-harmony.session.live 43/43, b-harmony.write.live 33/33 (drift), boot.verification 8/8, gateway.bridge-smoke 7/7, harmony.capability-binding 27/27 (drift), harmony.composer.live-write 38/38 (drift), harmony.httpfetch-streaming 6/6, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, m1.spike.boot 7/7 (drift), m2.bridge.smoke 6/6 (drift), m2.session 23/23, m5.host-binding 20/20 (drift), session.mock-llm 23/23 | ✓ | ✓ | ✓ | 18 |
 | `hosts/harmony/artifacts/device-plane` | HarmonyOS | device.plane 13/13 | ✓ | ✓ | ✓ | 1 |
 | `hosts/harmony/artifacts/m1-spike` | HarmonyOS | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 1 |
-| `hosts/harmony/artifacts/m5-host` | HarmonyOS | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m5.host-binding 20/20（漂移）, harmony.capability-binding 27/27, boot.verification 8/8, gateway.bridge-smoke 6/6, session.mock-llm 23/23, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, harmony.composer.live-write 36/36, harmony.httpfetch-streaming 6/6 | ✓ | ✓ | ✓ | 11 |
-| `hosts/harmony/artifacts/m5-llm-live-stream` | HarmonyOS | llm.live-stream 14/130, llm.live-stream.carrier 7/7 —— 配额阻塞的 `m5-m2-llm` 目录于 2026-09-28 重跑转绿（提交 `64889c54`）；被服务的轮次已可宣称 | ✓ | ✓ | ✓ | 1 |
-| `hosts/harmony/artifacts/windows-t3-live-llm` | HarmonyOS | llm.live-stream 14/114 + carrier 7/7（receipt 2026-10-05，bigmodel 座，Windows 宿主） | ✓ | ✓ | ✓ | 1 |
-| `hosts/harmony/artifacts/windows-t4t5-real-agent` | HarmonyOS | real.agent.loop 21/21（receipt 2026-10-05，glm-5.3-flash 实况工具循环，Windows 宿主） | ✓ | ✓ | ✓ | 1 |
+| `hosts/harmony/artifacts/m5-host` | HarmonyOS | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m5.host-binding 20/20 (drift), harmony.capability-binding 27/27, boot.verification 8/8, gateway.bridge-smoke 6/6, session.mock-llm 23/23, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, harmony.composer.live-write 36/36, harmony.httpfetch-streaming 6/6 | ✓ | ✓ | ✓ | 11 |
+| `hosts/harmony/artifacts/m5-llm-live-stream` | HarmonyOS | llm.live-stream 14/130, llm.live-stream.carrier 7/7 — the quota-blocked `m5-m2-llm` dir re-run GREEN on 2026-09-28 (commit `64889c54`); the served turn is claimed | ✓ | ✓ | ✓ | 1 |
 | `hosts/harmony/artifacts/m5-primitives` | HarmonyOS | m1.spike.boot 7/7, m2.bridge.smoke 6/6, m2.session 23/23, m5.host-binding 27/27, b-harmony.httpfetch-v2 6/6, b-harmony.official-web-mount 17/17, b-harmony.session.live 43/43, b-harmony.write.live 33/33 | ✓ | ✓ | ✓ | 9 |
+| `hosts/harmony/artifacts/nextweb-mount` | HarmonyOS | harmony.nextweb.mount 24/24 | ✓ | ✓ | ✓ | 1 |
+| `hosts/harmony/artifacts/session-persist-restart` | HarmonyOS | harmony.session-persist.restart 44/44 | ✓ | ✓ | ✓ | 0 |
+| `hosts/harmony/artifacts/simulator-matrix/harness` | HarmonyOS | boot.verification 8/8, gateway.bridge-smoke 7/7, harmony.capability-binding 27/27 (drift), harmony.composer.live-write 42/41, harmony.httpfetch-streaming 6/6, harmony.officialweb.mount 17/17, harmony.session.live-read 43/43, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 9 |
+| `hosts/harmony/artifacts/whale-mount` | HarmonyOS | harmony.whale.mount 7/7 | ✓ | ✓ | ✓ | 1 |
+| `hosts/harmony/artifacts/windows-t3-live-llm` | HarmonyOS | llm.live-stream 14/114 + carrier 7/7 (receipt 2026-10-05, bigmodel seat, Windows host) | ✓ | ✓ | ✓ | 1 |
+| `hosts/harmony/artifacts/windows-t4t5-real-agent` | HarmonyOS | real.agent.loop 21/21 (receipt 2026-10-05, glm-5.3-flash live agent loop, Windows host) | ✓ | ✓ | ✓ | 1 |
+| `hosts/ios/artifacts/agent-flow` | iOS | agent.flow 17/17 | ✓ | ✓ | ✓ | 4 |
 | `hosts/ios/artifacts/b1-official-web` | iOS | b1.official-web.mount 14/14 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/b3-session-live` | iOS | b3.session.live 46/46 | ✓ | ✓ | ✓ | 2 |
-| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✓ | 4 |
+| `hosts/ios/artifacts/b4-write-live` | iOS | b4.write.live 46/46 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/ble-mock` | iOS | ble.plane 16/16, ble.plane.audit 8/8 (the same deterministic mock radio, the same enforcement) | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/ble-skip` | iOS | ble.plane 8/8, ble.plane.audit 4/4 (the honest radio-absent posture) | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/camera-plane` | iOS | camera.plane 6/6, camera.plane.audit 3/3 (the simulator's honest capture-unavailable posture) | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/card-player` | iOS | card.player 11/11 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/composer-live-write` | iOS | composer.live-write 46/46 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/create-card` | iOS | create.card 12/12 | ✓ | ✓ | ✓ | 2 |
+| `hosts/ios/artifacts/device-plane` | iOS | device.plane 16/16, device.plane.audit 14/23 | ✓ | ✓ | ✓ | 6 |
+| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 7 |
+| `hosts/ios/artifacts/install-full-cycle` | iOS | install.carrier-evidence 11/11, install.from-http 46/46 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/ios-live-test/A-ui/nextweb-mount` | iOS | nextweb.mount 25/25 | ✓ | ✓ | ✓ | 2 |
+| `hosts/ios/artifacts/ios-live-test/A-ui/whale-mount` | iOS | session.mock-llm 23/23, whale.mount 7/7 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/ios-live-test/B-backend/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16 (drift), gateway.binding 19/19 (drift) | ✓ | ✓ | ✓ | 6 |
+| `hosts/ios/artifacts/ios-live-test/B-backend/session-mock-llm` | iOS | session.mock-llm 23/23, webclient.mount 7/7 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/ios-live-test/C-tools/b4-write-live` | iOS | composer.live-write 46/46 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/ios-live-test/D-capability/ble-mock` | iOS | ble.plane.audit 8/8, ble.plane 16/16 | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/ios-live-test/D-capability/ble-skip` | iOS | ble.plane.audit 4/4, ble.plane 8/8 | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/ios-live-test/D-capability/camera-plane` | iOS | camera.plane.audit 3/3, camera.plane 6/6 | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/ios-live-test/D-capability/device-plane` | iOS | device.plane.audit 14/23, device.plane 16/16 | ✓ | ✓ | ✓ | 5 |
+| `hosts/ios/artifacts/ios-live-test/D-capability/mic-plane` | iOS | mic.plane.audit 6/6, mic.plane 11/11 | ✓ | ✓ | ✓ | 1 |
+| `hosts/ios/artifacts/llm-live-stream` | iOS | llm.live-stream 14/67, llm.live-stream.carrier 7/7 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/m1-carrier` | iOS | m1.carrier.loopback 7/7 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m1-spike` | iOS | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 1 |
 | `hosts/ios/artifacts/m2-gateway` | iOS | m1.spike.boot 7/7, m1.carrier.loopback 7/7, m2.gateway.audit 16/16, m2.gateway.binding 19/19 | ✓ | ✓ | ✓ | 9 |
@@ -440,52 +520,72 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | `hosts/ios/artifacts/m2-session` | iOS | m2.session 23/23, m2.webclient.mount 7/7 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/m3-complete` | iOS | m3.fetch-carrier 11/11, m3.fetch-install 46/46 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/m3-pluginization` | iOS | m2.session 23/23, m3.ui-swap 7/7 | ✓ | ✓ | ✓ | 3 |
-| `hosts/ios/artifacts/upstream-parity` | iOS | upstream.parity 12/37（漂移） + 与已提交金标的差分 25/25 条记录一致（模拟器腿；gateway httpFetch → 宿主机侧 mock） | ✓ | ✓ | ✓ | 2 |
-| `hosts/ios/artifacts/nextweb-mount` | iOS | nextweb.mount 24/24 | ✓ | ✓ | ✓ | 0 |
-| `hosts/ios/artifacts/agent-flow` | iOS | agent.flow 17/17 | ✓ | ✓ | ✓ | 4 |
-| `hosts/ios/artifacts/composer-live-write` | iOS | composer.live-write 46/46 | ✓ | ✓ | ✓ | 3 |
-| `hosts/ios/artifacts/device-plane` | iOS | device.plane 16/16, device.plane.audit 14/23 | ✓ | ✓ | ✓ | 6 |
-| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 7 |
-| `hosts/ios/artifacts/install-full-cycle` | iOS | install.carrier-evidence 11/11, install.from-http 46/46 | ✓ | ✓ | ✓ | 3 |
-| `hosts/ios/artifacts/llm-live-stream` | iOS | llm.live-stream 14/67, llm.live-stream.carrier 7/7 | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/mic-plane` | iOS | mic.plane 11/11, mic.plane.audit 6/6 — the armed ladder with real PCM frames | ✓ | ✓ | ✓ | 1 |
+| `hosts/ios/artifacts/nextweb-mount` | iOS | nextweb.mount 24/24 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/session-live-read` | iOS | session.live-read 46/46 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/session-mock-llm` | iOS | session.mock-llm 23/23, webclient.mount 7/7 | ✓ | ✓ | ✓ | 3 |
-| `hosts/ios/artifacts/wasm-shell-e2e` | iOS | b4.write.live 43/43（漂移） | ✓ | ✓ | ✓ | 3 |
-| `hosts/ios/artifacts/ble-mock` | iOS | ble.plane 16/16, ble.plane.audit 8/8（同一台确定性 mock 电台、同一套强制） | ✓ | ✓ | ✓ | 0 |
-| `hosts/ios/artifacts/ble-skip` | iOS | ble.plane 8/8, ble.plane.audit 4/4（如实电台缺席姿态） | ✓ | ✓ | ✓ | 0 |
-| `hosts/ios/artifacts/camera-plane` | iOS | camera.plane 6/6, camera.plane.audit 3/3（模拟器如实回答 capture-unavailable 的姿态） | ✓ | ✓ | ✓ | 0 |
-| `hosts/ios/artifacts/mic-plane` | iOS | mic.plane 11/11, mic.plane.audit 6/6 —— 武装梯带真实 PCM 帧 | ✓ | ✓ | ✓ | 1 |
+| `hosts/ios/artifacts/session-persist-restart` | iOS | session-persist.restart 46/46 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/simulator-matrix/device-plane` | iOS | device.plane 16/16, device.plane.audit 14/23 | ✓ | ✓ | ✓ | 5 |
-| `hosts/ios/artifacts/simulator-matrix/gateway-drive` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 7 |
-| `hosts/ios/artifacts/whale-mount` | iOS | whale.mount 7/7, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli` | macOS CLI | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-bridge-smoke` | macOS CLI | m2.bridge.smoke 6/6 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-m2-llm` | macOS CLI | m2.llm 19/19（scripted-SSE 分支） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-m2-session` | macOS CLI | m2.session 23/23 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-m3-install` | macOS CLI | m3.install 22/22 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-m3-complete` | macOS CLI | m3.complete 41/41 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-upstream-session` | macOS CLI | upstream.session 31/31 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-upstream-parity` | macOS CLI | upstream.parity 12/37（漂移） + 与已提交金标的差分 25/25 条记录一致（两腿各自独立的 mock 实例） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-models-directory` | macOS CLI | models.directory 6/6 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-onboarding` | macOS CLI | onboarding.flow 13/13 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-settings-surfaces` | macOS CLI | settings.surfaces.cli 12/12 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-tool-fs` | macOS CLI | tool.fs（探针，15 条记录） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-upstream-boot` | macOS CLI | upstream.web-boot 12/12 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-ish-shell` | macOS CLI | ish.shell 11/11 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-office` | macOS CLI | office 19/19 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-open-design` | macOS CLI | open.design 15/15 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-userland-shell` | macOS CLI | userland.shell 11/11 | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-socket-seam` | macOS CLI | socket.seam 19/19（回环缝：带半关闭的真实 TCP echo、一个经 /dev/tcp 拨接测试服务器的 /bin/bash 子进程、两条越界拒绝腿；审计门钉 listen=3 connect=3 accept=2 denied=2） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-marketplace-install` | macOS CLI | marketplace.install 71/71（签名目录：纯 JS ed25519 验签、信任记录透传给零改动安装器、密钥轮换演练、四档篡改阶梯——每次拒绝零暂存） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-security-gateway-fuzz` | macOS CLI | security.gateway-fuzz 25/25（21 案例畸形参数电池打裸网关缝——错型、缺字段、路径逃逸、未知 scope、超长值、必须不存在的原语名、畸形 args JSON——每次攻击都是结构化 §3 拒绝；电池后的良性往返证明进程存活；两起 socket 攻击以固定 reason 码审计） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-security-jail` | macOS CLI | security.jail 19/19（8 个手工 wasm 模块打 jail——被调用的敌意导入、错签名 emit、越界 emit 指针、栈耗尽、缺导出、缺模块、路径逃逸、未授予 scope——外加 6 个越界 socket 拨号，逐条审计 host-not-loopback=4 / scope-not-loopback=2；诚实 echo 模块在电池前后各跑一次） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-security-manifest-forgery` | macOS CLI | security.manifest-forgery 11/11（五档管线伪造全拒——能力抬升越过过期锚与重算信任、入口替换、id 换牌、旧包回退——零暂存、无 journal；阶梯之后诚实包照常安装；目录新鲜度重放档记录 HIGH 发现：过期但签名有效的目录会装进来，dsh-echo@0.9.0） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-security-byok-leak` | macOS CLI | security.byok-leak 7/7（金丝雀走过钥匙串保存、重启路由解析、一次真实传输回合与 401 面——错误消息在运行时内断言无密钥；runner 在匹配器自检之后审计裸日志中的两个秘密值） | ✓ | ✓ | ✓ | 0 |
-| `runtime/spike/artifacts/macos-cli-shim-exposure-probe` | macOS CLI | shim.exposure-probe 8/8（shim 曝光测绘的五条行为腿：被 orphan 的 dsh-session-persistence 错误类、node:sqlite `:memory:`、string-decoder 的分片 UTF-8 持有、partial-json + openai-client 的线上脸、slot-registry 的守卫） | ✓ | ✓ | ✓ | 0 |
-| `runtime/dsh/artifacts/macos-cli-mcp-streamable-http` | macOS CLI | mcp.streamable-http 16/16（VENDORED 的 `@modelcontextprotocol/client@2.0.0` Client + StreamableHTTPClientTransport 原样跑在 quickjs-ng 里，经库自带的 `fetch` 选项拿到真实网关 `httpFetch`——D5 零新原语、D6 零上游改动——对着 node 侧 loopback TCP 上的 mock MCP 服务器：initialize 200 json → notifications/initialized 202 → 库自己发起的独立 GET 被答 405、按设计容忍（记录在案，不隐藏）→ tools/list 200 text/event-stream（一帧 SSE 经 vendored 解析器走网关 body 的逐 chunk 事件，D8）→ tools/call echo + add 200 json → close；mock 签发的 `mcp-session-id` 经网关响应头往返——mock 对无会话的拨号拒以 400，所以绿即是证明；mock 的逐请求遥测以 `mock-server-stdout.txt` 随四件交付物一起落盘） | ✓ | ✓ | ✓ | 0 |
-| `hosts/ios/artifacts/settings-screens` | iOS | ——（仅人看证据；机器断言在 `b4-write-live`） | ✓（app-stdout） | ✗（设计使然） | ✗（设计使然） | 2 |
-| `presentation/lynx-client/artifacts/cli-lynx-mount-lynx` | macOS CLI | lynx.mount 34/34（lynx 皮肤：bundle 的缝核心 + 工件 sha256 校验） | ✓ | ✓ | ✓ | 0 |
-| `presentation/lynx-client/artifacts/cli-lynx-mount-stub` | macOS CLI | lynx.mount 34/34（stub 皮肤：同一流程——即可替换性证明） | ✓ | ✓ | ✓ | 0 |
+| `hosts/ios/artifacts/simulator-matrix/gateway-drive` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 8 |
+| `hosts/ios/artifacts/upstream-parity` | iOS | upstream.parity 12/37 (drift) + parity differential 25/25 records identical to the committed golden (the simulator leg; gateway httpFetch → the host-side mock) | ✓ | ✓ | ✓ | 2 |
+| `hosts/ios/artifacts/wasm-shell-e2e` | iOS | b4.write.live 43/43 (drift) | ✓ | ✓ | ✓ | 3 |
+| `hosts/ios/artifacts/whale-mount` | iOS | whale.mount 7/7, session.mock-llm 23/23 | ✓ | ✓ | ✓ | 3 |
+| `runtime/dsh/artifacts/macos-cli` | macOS CLI | m1.spike.boot 9/9 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-appshell-spec` | macOS CLI | appshell.spec 14/14 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-bridge-smoke` | macOS CLI | gateway.bridge-smoke 7/7 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-byok-piai-anthropic` | macOS CLI | byok.anthropic-wire 10/10 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-dsh-shell-js` | macOS CLI | dsh-shell-js 35/35 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-gateway-audit-invariant` | macOS CLI | gateway.audit-invariant 64/64 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-ish-shell` | macOS CLI | ish.shell 11/11 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-leak-canary` | macOS CLI | leak.canary 6/6 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-chaos/malformed-sse` | macOS CLI | llm.chaos.malformed-sse 26/26 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-chaos/no-headers` | macOS CLI | llm.chaos.no-headers 27/27 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-chaos/oversized` | macOS CLI | llm.chaos.oversized 27/27 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-chaos/truncation` | macOS CLI | llm.chaos.truncation 26/26 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-piai-live` | macOS CLI | llm.piai-live 3/2 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-piai-probe` | macOS CLI | llm.piai-probe 12/12 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-piai-user-endpoint` | macOS CLI | llm.piai-user-endpoint 12/10 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-toolargs/toolargs-deep-nesting` | macOS CLI | llm.chaos.toolargs-deep-nesting 40/40 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-toolargs/toolargs-missing-field` | macOS CLI | llm.chaos.toolargs-missing-field 40/40 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-toolargs/toolargs-oversized` | macOS CLI | llm.chaos.toolargs-oversized 40/40 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-llm-toolargs/toolargs-type-error` | macOS CLI | llm.chaos.toolargs-type-error 40/40 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-m2-llm` | macOS CLI | m2.llm 19/19 (scripted-SSE leg) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-m2-session` | macOS CLI | m2.session 23/23 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-m3-complete` | macOS CLI | m3.complete 41/41 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-m3-install` | macOS CLI | m3.install 22/22 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-marketplace-install` | macOS CLI | marketplace.install 72/72 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-marketplace-ui` | macOS CLI | marketplace.ui.flow 12/12 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-mcp-streamable-http` | macOS CLI | mcp.streamable-http 16/16 (the VENDORED `@modelcontextprotocol/client@2.0.0` Client + StreamableHTTPClientTransport verbatim inside quickjs-ng, handed the REAL gateway `httpFetch` through the library's own `fetch` option — D5 zero new primitive, D6 zero upstream edit — against a node-side mock MCP server on loopback TCP: initialize 200 json → notifications/initialized 202 → the library's standalone GET answered 405 and tolerated by design (recorded, not hidden) → tools/list 200 text/event-stream (one SSE frame through the vendored parser over the gateway body's chunk events, D8) → tools/call echo + add 200 json → close; the mock-minted `mcp-session-id` round-trips through the gateway's response headers — the mock refuses a session-less dial with 400, so green IS that proof; the mock's per-request telemetry rides beside the four deliverables as `mock-server-stdout.txt`) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-models-directory` | macOS CLI | models.directory 6/6 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-office` | macOS CLI | office 19/19 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-onboarding` | macOS CLI | onboarding.flow 13/13 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-open-design` | macOS CLI | open.design 15/15 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-perf-baseline` | macOS CLI | perf.baseline 6/6 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-perf-turn-latency` | macOS CLI | perf.turn-latency 14/14 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-plugin-forms` | macOS CLI | plugin.forms 34/34 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-resource-starvation` | macOS CLI | resource.starvation 7/16 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-seam-inventory` | macOS CLI | seam.inventory 4/4 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-security-byok-leak` | macOS CLI | security.byok-leak 8/8 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-security-gateway-fuzz` | macOS CLI | security.gateway-fuzz 25/25 (the 21-case malformed-primitive battery through the RAW gateway seam — wrong types, missing fields, path escapes, unknown scopes, overlong values, must-not-exist primitive names, malformed args JSON — every attack a structured §3 rejection; the benign post-battery roundtrip proves the process survived; both socket attacks audited, fixed reason codes) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-security-jail` | macOS CLI | security.jail 19/19 (8 crafted wasm modules against the jail — hostile import called, wrong-signature emit, out-of-bounds emit pointer, stack exhaustion, missing export, absent module, path escape, ungranted scope — plus 6 out-of-boundary socket dials, each audited host-not-loopback=4 / scope-not-loopback=2; the honest echo module runs before AND after the battery) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-security-manifest-forgery` | macOS CLI | security.manifest-forgery 13/13 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-session-multi-stress` | macOS CLI | session.multi.stress 46/46 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-session-persist-midturn` | macOS CLI | session.persistence.midturn 24/24 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-settings-surfaces` | macOS CLI | settings.surfaces.cli 12/12 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-shim-exposure-probe` | macOS CLI | shim.exposure-probe 8/8 (the shim exposure survey's five behavior legs: the loader-orphaned dsh-session-persistence error classes, node:sqlite `:memory:`, string-decoder's split-UTF-8 hold, partial-json + openai-client's wire faces, slot-registry's guards) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-soak-aging` | macOS CLI | soak.aging 3/3 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-socket-seam` | macOS CLI | socket.seam 19/19 (the loopback seam: a real-TCP echo with half-close, a spawned /bin/bash child dialing the in-test server over /dev/tcp, and the two out-of-scope denial legs; the audit gate pins listen=3 connect=3 accept=2 denied=2) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-upstream-boot` | macOS CLI | upstream.web-boot 12/12 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-upstream-compaction` | macOS CLI | upstream.compaction 39/39 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-upstream-parity` | macOS CLI | upstream.parity 12/37 (drift) + parity differential 25/25 records identical to the committed golden (per-leg mock instances) | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-upstream-session` | macOS CLI | upstream.session 31/31 | ✓ | ✓ | ✓ | 0 |
+| `runtime/dsh/artifacts/macos-cli-userland-shell` | macOS CLI | userland.shell 11/11 | ✓ | ✓ | ✓ | 0 |
+| `tools/dev-web-carrier/artifacts/appshell-m3` | Dev web carrier | appshell.m3 6/6 | ✓ | ✓ | ✓ | 0 |
+| `tools/dev-web-carrier/artifacts/appshell-m4` | Dev web carrier | appshell.m4 4/4 | ✓ | ✓ | ✓ | 0 |
+| `tools/dev-web-carrier/artifacts/appshell-morph` | Dev web carrier | appshell.morph 23/23 | ✓ | ✓ | ✓ | 0 |
+| `tools/dev-web-carrier/artifacts/appshell-swarm` | Dev web carrier | appshell.swarm 14/14 | ✓ | ✓ | ✓ | 3 |
+| `presentation/lynx-client/artifacts/cli-lynx-mount-lynx` | Lynx client | lynx.mount 34/34 (lynx face: the bundle's seam core + artifact sha256 verify) | ✓ | ✓ | ✓ | 0 |
+| `presentation/lynx-client/artifacts/cli-lynx-mount-stub` | Lynx client | lynx.mount 34/34 (stub face: the SAME flow — the replaceability proof) | ✓ | ✓ | ✓ | 0 |
 
 零截图在任何目录都是合规的（标准第 2 条使截图只是可选的调试辅助，
 既非交付物也非输入）：CLI 主机目录本就无头，
