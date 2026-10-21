@@ -50,6 +50,13 @@ SCEN_DIR=test/e2e/scenarios
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
 mkdir -p "$OUT/screens"
 
+# The tree the evidence comes from, pinned BEFORE the run rewrites its own
+# committed evidence under $OUT — read at receipt time, every in-place rerun
+# reads as a dirty tree whatever the seat's real state was (the
+# run-upgrade-matrix.sh fix; this runner is one of the siblings that note
+# names).
+TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at run start)')"
+
 if [ "$SKIP_BUILD" = "0" ]; then
     say "1/5 assembleDebug"
     ( cd hosts/android && ./gradlew assembleDebug --console=plain -q >/dev/null ) \
@@ -148,7 +155,6 @@ cat "$OUT/verdict-$SCEN.json"
 [ "$FAIL" = "0" ] || die "checkers red — evidence stays unreceipted"
 
 UDID="$(adbsh get-serialno | tr -d '\r')"
-TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at receipt time)')"
 cat > "$OUT/receipt.json" <<EOF
 {
   "host": "android",
