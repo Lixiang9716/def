@@ -1,5 +1,5 @@
 {
-  "comment": "Cold-seat materialization inventory: UNTRACKED trees a linked worktree must carry before the gates' base checks (bundle-files, closures, staging-generated, self-test's baseline probe) and the Android host build (verifyOfficialTrees stages official-web/dist + client-bundles/npm into the APK) can pass. The list is executed by build/ensure-seat.sh — update it here when a gate or a host build gains a new untracked dependency, never in a skill file. Sources: the primary checkout of the same worktree graph, rsynced (resumable) — never cp, whose interrupted runs poison the target. The dsh-tests row is version-suffixed: update it when the tests pin re-names the directory.",
+  "comment": "Cold-seat materialization inventory: UNTRACKED trees a linked worktree must carry before the gates' base checks (bundle-files, closures, staging-generated, self-test's baseline probe) and the Android host build (verifyOfficialTrees stages official-web/dist + client-bundles/npm into the APK) can pass. The list is executed by build/ensure-seat.sh — update it here when a gate or a host build gains a new untracked dependency, never in a skill file. Sources: the primary checkout of the same worktree graph, rsynced (resumable) — never cp, whose interrupted runs poison the target. The dsh-tests row is version-suffixed: update it when the tests pin re-names the directory. `provision` lists the seat-BUILT dependencies (executed by ensure-seat after the rsyncs, in order): the pinned submodule corpus and the Node resolution farm — the farm is built in the seat, never rsynced, because the parity script's links are seat-absolute and a copied farm would silently resolve the seat's node leg against the primary tree's bytes (#627).",
   "trees": [
     "external/dsh",
     "external/npm",
@@ -18,5 +18,9 @@
   "syncVerbs": [
     "core",
     "harmony"
+  ],
+  "provision": [
+    "clone-submodule third-party/deepseek-harness",
+    "sh runtime/dsh/ci/parity-node-modules.sh"
   ]
 }

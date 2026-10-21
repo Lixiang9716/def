@@ -53,6 +53,7 @@ import {
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REGISTRY, computeFingerprint } from '../../test/verifications.mjs';
+import { ensureParityFarm } from './parity-farm.mjs';
 
 const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const SWEEP_ENTRY = 'upstream-sweep';
@@ -453,6 +454,9 @@ export const runSweep = async (options = {}) => {
           dryRun: ctx.dryRun,
         });
   if (ctx.dryRun) return { plan: planDryRun(ctx, fresh) };
+  if (!ensureParityFarm(ctx.root)) {
+    throw new SweepFailure(1, 'sweep: parity-node-modules.sh failed — the node leg cannot resolve the vendored corpus');
+  }
   return executeSweep(ctx);
 };
 
