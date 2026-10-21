@@ -32,6 +32,36 @@ if (typeof spec !== 'string') {
   process.exit(2);
 }
 
+// The qjs leg's driver runs the suite with runtime/dsh as the working
+// directory (upstream-suite-leg.js pins the profile container there); the
+// tsx-face discovery in source-bootstrap-tsx.js keys on the same cwd. Match
+// it before anything resolves.
+process.chdir(pathResolve(ROOT, 'runtime/dsh'));
+
+// The web faces: the vendored closure expects the DOM faces the qjs host
+// presents, and the harness and the product boot must agree on the same
+// prototypes (the web-event.js instanceof gate dies on Node's native Event
+// otherwise — the #641 source-chooser row). Node ships native Event family
+// members, so the only-when-absent installers would keep the natives; the
+// harness explicitly presents the SHIM classes, exactly what the qjs leg
+// serves. Storage has no Node native counterpart, so its installer is the
+// plain face.
+const shim = (f) => import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims', f)).href);
+const webEvent = await shim('web-event.js');
+for (const k of ['Event', 'EventTarget', 'CustomEvent', 'MessageEvent', 'ErrorEvent', 'CloseEvent']) {
+  globalThis[k] = webEvent[k];
+}
+const webStorage = await shim('web-storage.js');
+webStorage.installWebStorage();
+
+// The tsx-face host intrinsics: after the #626/#647 passthrough the REAL
+// child_process namespace is the honest node-side face (the parity
+// precedent — fs-readdir.js reads it first, shim fallback), and the
+// profile tmp is a scratch dir under the staged tree.
+globalThis.__dshChildProcessNs = await import('node:child_process');
+globalThis.__dshProfileTmpdir = pathResolve(ROOT, 'runtime/dsh/upstream-tests/.tmp');
+mkdirSync(globalThis.__dshProfileTmpdir, { recursive: true });
+
 const { runCollected } = await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/scenario/upstream-test-harness.js')));
 try {
   await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream-tests', spec)));

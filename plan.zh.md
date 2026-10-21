@@ -48,7 +48,7 @@
 | 3.15 | 共享 `.git` 里两个陈旧 stash（gaps-integration 2026-10-11；feat/device-plane WIP）——落地或丢弃 | 2026-10-21 看到 | S | — | open |
 | 3.16 | 2026-10-26 03:17 UTC：看 weekly-sweep 首次 Node 驱动跑（totals 解析、首批 NO 行、NOSUM 缩水）；数字回填驱动的 note；红 = inspection 发现而非基础设施失败 | 入口：`.github/workflows/weekly-sweep.yml`；`node test/verifications.mjs --why upstream-sweep` | S | — | scheduled |
 
-| 3.17 | #626 passthrough 落地后重分诊 37 条原 a 行 + 4 条新分歧行（它们现在真跑 spawn、因自身 merit 失败：preset-mount loader 缝、hooks 真 spawn 行为、spawn-runner 的 seam 时代断言、media-references 的 qjs 缺口、sdk-client 一例之差、subprocess egress 的 ALL_PROXY） | #641 分类表的 (a) 标签本意是"根本没跑到被测代码"——passthrough 揭开了它们；注册表 reason 已带修后计数 | M | — done（2026-10-21——重分诊在 Tier 2 之后一次完成（一次 sweep 服务两事）：终表 a 18 / b 18 / c 17 / d 10；Tier-1 快照的 41 行全部带机制重分类；重跑门因席位路径迁移执行 0 次——已如实披露；计数由三次对比 sweep 与周扫继续锚定） |
+| 3.17 | #626 passthrough 落地后重分诊 37 条原 a 行 + 4 条新分歧行（它们现在真跑 spawn、因自身 merit 失败：preset-mount loader 缝、hooks 真 spawn 行为、spawn-runner 的 seam 时代断言、media-references 的 qjs 缺口、sdk-client 一例之差、subprocess egress 的 ALL_PROXY） | #641 分类表的 (a) 标签本意是"根本没跑到被测代码"——passthrough 揭开了它们；注册表 reason 已带修后计数 | M | — done（2026-10-21——重分诊在 Tier 2 之后一次完成（一次 sweep 服务两事）：终表 a 18 / b 18 / c 17 / d 10；Tier-1 快照的 41 行全部带机制重分类；重跑门因席位路径迁移执行 0 次——已如实披露；计数由三次对比 sweep 与周扫继续锚定）  node 腿补缝席位落了 18 条 b 行中的 6 条（web 面、tsx 内在、FormData 双脸）：63→58，b 18→12；余 12 条需要逐族 fixture 播种设计、loader internals 接线、node-pty vendor 行、resolve 语义修复 |
 
 ## 4. 🧭 MCP 上机（"万能工具"主线，两步）
 
