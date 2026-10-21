@@ -31,7 +31,7 @@
 
 | # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
 |---|---|---|---|---|---|
-| 3.1 | **3.2 的前置：给 86 条 "NO" 行分类**（#631 之后 node 列诚实了；族分布 hooks 9、llm 9、web 8、session 6、shell 6……）分四类：(a) #626 类 harness 伪像、(b) Node 面缺口、(c) 真实运行时差异、(d) 规格依赖 Node 独有能力。分类表决定 3.2 的重基线范围与第二档取舍；注册表 `reason` 改成分类实况 | 入口：`/tmp/dsh-sweep-differential/sweep-compare.md`，或 `node tools/test/sweep.mjs --paral 4` 过滤 `agree==NO`（每行两份日志 `tmp/upstream-suite-logs/<stem>.{qjs,node}.log`）。形状：一族一子代理 + 确认者抽检 + `world.run` 单 spec 两腿复跑作确定性门 | M | — | open |
+| 3.1 | **3.2 的前置：给 86 条 "NO" 行分类**（#631 之后 node 列诚实了；族分布 hooks 9、llm 9、web 8、session 6、shell 6……）分四类：(a) #626 类 harness 伪像、(b) Node 面缺口、(c) 真实运行时差异、(d) 规格依赖 Node 独有能力。分类表决定 3.2 的重基线范围与第二档取舍；注册表 `reason` 改成分类实况 | 入口：`/tmp/dsh-sweep-differential/sweep-compare.md`，或 `node tools/test/sweep.mjs --paral 4` 过滤 `agree==NO`（每行两份日志 `tmp/upstream-suite-logs/<stem>.{qjs,node}.log`）。形状：一族一子代理 + 确认者抽检 + `world.run` 单 spec 两腿复跑作确定性门 | M | — done（2026-10-21——逐族工作流跑在新鲜 681 spec 树上：a 58（#626 波及面）· b 15（node 腿缺缝：fixture 播种、storage 全局、fetch loopback、tsx 宿主内在）· c 24（真实运行时差异——差分的价值所在）· d 4（持久化 worker；二档）。53 行独立复核、53 行过两腿重跑门。分类表见 testing/2026-10-21 note；注册表 reason 已改写为分类实况） |
 | 3.2 | **#626** node 腿：`test/upstream-suite/smoke-hooks.mjs` 加 `NODE_BUILTIN_PASSTHROUGH = new Set(['node:child_process'])` + 一行早返回；改正 `test/verifications.mjs` reason/status；用 Node 驱动 / 周扫重测 | 根因已双向复现（9/22 ↔ 31/0）；node 腿约 100 spec / 38 家族会 spawn | S 代码 / M 测量 | — | open；复现驱动在 `../dsh-mobile-lsp-diff-fork/tmp/` |
 | 3.3 | node 腿第二档：11 个 `node:*` shim 行全部直通真内建；单独 PR、单独重基线（`node:vm` 等翻成 qjs 红/node 绿 = 真运行时缺口） | `runtime-modules.js` 的行：string_decoder、stream/promises、tls、inspector、dns/promises、readline、vm、http、net、child_process、url | M | — | parked，排在 3.2 后 |
 | 3.4 | **#627** ensure-seat 补全：`external/node_modules` 农场行（或直接跑 `parity-node-modules.sh`）、sweep 自建农场、对 `third-party/deepseek-harness` 做 `git submodule update --init`、node_modules 链接指向席位、`generation.mjs` 指纹覆盖 submodule 语料（`git ls-tree HEAD third-party/deepseek-harness` + 依赖路径探针）、`transpile.mjs` 遇 ENOENT 排除时至少 warn 而不静默改写已跟踪的 manifest。验收：新席位转译 = 681 且 stamp 与 main 一致 | 席位 648 vs 681 而 `.generation` 相同；manifest.json（已跟踪）被静默改写 681→648。#629 已往 materialization 加了 `presentation/official-web/dist` + `client-bundles/npm`——同一个文件。surprise sig `linked-worktree-materialized-buildensure-seatsh` | S–M | — done（2026-10-21——manifest 增 `provision` 数组（clone-submodule + parity 农场，席位内建、绝不 rsync）；generation 指纹覆盖 submodule；transpile 高声告警；sweep 自物化农场；验收：新席位转译 681 = main，零缺零多） |
@@ -133,7 +133,7 @@
 
 1. ✅ §1 AOCI approve/apply（owner）+ 认知收口 PR（61 源，关 T-0268）——2026-10-21 落地。
 2. 🟢 落本 plan（`docs/plan-2026-10` 开 `docs(plan)` PR）+ "证据卫生"小车队：#633（3.8）+ #627（3.4）+ #628（3.11）+ tree 行（3.10）——文件互不相碰。
-3. 🟢 3.1 的 86 条 NO 行分类（一个 workflow 会话）→ 然后 #626 修复（3.2）带重基线。
+3. ✅ 3.1 已分类（2026-10-21：101 行 = a 58 / b 15 / c 24 / d 4）→ §3.2 #626 修复连同重基线（预期变化：58 条 a 类翻转）。
 4. 🟢 2.1 发布预检 → v0.0.3 go（owner）→ 2.2 视频。
 5. 🧭 4.1 → 4.2 MCP 主线（2–3 个会话）。
 6. 🟠 5.x 契约、6.x 文档、7.1 GenUI 评审——按 owner 优先级，互不阻塞。
