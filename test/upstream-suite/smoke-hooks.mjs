@@ -48,7 +48,24 @@ const serveSpecialRows = (specifier) => {
   return null;
 };
 
+/** Node builtins the harness must NOT shadow (the #626 finding): the qjs
+ * host's runtime-modules table registers node:child_process unconditionally
+ * (its shim answers ERR_DSH_NO_SEAM by design on the hosts that lack the
+ * subprocess seam), and the registration lookup below would serve that shim
+ * here too — the vendored spawner never saw a real child process (measured
+ * 2026-10-20: lsp-stdio 9/22 vs 31/0 with the real builtin; the 2026-10-21
+ * classification pins 58 of the 101 disagreement rows on this). This hook
+ * only runs on the Node leg, so the qjs leg and every host shim stay
+ * untouched; Tier 2 (the remaining node:* rows) is a separate decision. */
+const NODE_BUILTIN_PASSTHROUGH = new Set(['node:child_process']);
+
 export async function resolve(specifier, context, nextResolve) {
+  // The passthrough set MUST be checked before the registry lookup — the
+  // registration file for node:child_process exists on every run and would
+  // otherwise win (#626).
+  if (NODE_BUILTIN_PASSTHROUGH.has(specifier)) {
+    return { url: specifier, shortCircuit: true };
+  }
   // Runtime-module registrations (see __dshModuleDefine above) win first —
   // the C seam is checked before the bare map on the quickjs side too.
   const registered = regFile(specifier);
