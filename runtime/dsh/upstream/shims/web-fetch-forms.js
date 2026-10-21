@@ -121,7 +121,15 @@ export class FormData {
     return entries;
   }
   #normalized(name, value, filename) {
-    if (typeof value !== 'string' && !(value instanceof Blob)) {
+    // On a host with a NATIVE Blob (plain Node), the vendored clients
+    // construct the native class while this FormData is the shim face —
+    // accept either realm's Blob (an object with the Blob shape suffices;
+    // the qjs single-realm case is the instanceof fast path).
+    const blobLike = typeof value !== 'string'
+      && (value instanceof Blob
+        || (typeof value === 'object' && value !== null
+          && typeof value.array === 'function' && typeof value.size === 'number'));
+    if (typeof value !== 'string' && !blobLike) {
       throw new TypeError('FormData: value must be a string or a Blob');
     }
     // Appending a Blob under a filename wraps it into a File (the W3C

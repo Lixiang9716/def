@@ -114,8 +114,12 @@ export const REGISTRY = [
           'two-face, presets roster, node-pty, tsx intrinsics, loader ' +
           'internals, resolve semantics), c 17 real behavior deltas, d 10 ' +
           'spec-requires-host-unavailable rows (persistence worker, ssh ' +
-          'TLS, platform-gated bash). Divergence is the leg finding its ' +
-          'differential value; treat qjs as the only counting leg.',
+          'TLS, platform-gated bash). The node-leg seams (2026-10-21, ' +
+          'testing note) then landed 6 of the b rows: 63 -> 58, b 18 -> 12 ' +
+          '(the remaining 12 need per-family fixture seeding, loader ' +
+          'internals wiring, a node-pty vendor row, and the resolve ' +
+          'semantics fix). Divergence is the leg finding its differential ' +
+          'value; treat qjs as the only counting leg.',
         column: 'node',
         drive: {
           cwd: '.',
