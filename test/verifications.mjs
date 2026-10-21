@@ -96,10 +96,18 @@ export const REGISTRY = [
           'tools/test/sweep.mjs node leg (test/upstream-suite/smoke.mjs)',
         reason:
           'runs since the dsh-subprocess-local/index subpath row landed in ' +
-          'smoke-hooks (2026-10-20), but DIVERGES where the vendored spawner ' +
-          'drives real Node children (lsp-stdio: 9/22 vs qjs 31/0 — the piped ' +
-          'protocol stream drops under Node). Divergence is the leg finding ' +
-          'its differential value; treat qjs as the only counting leg.',
+          'smoke-hooks (2026-10-20). The 2026-10-21 full-tree differential ' +
+          '(681 specs) classified all 101 disagreement rows ' +
+          '(testing/2026-10-21 note): 58 harness artifacts — the #626 ' +
+          'node:child_process shim masking plus the missing node-side ' +
+          'fixture seeding, the rows the NODE_BUILTIN_PASSTHROUGH fix is ' +
+          'expected to flip; 15 Node-face gaps (no fixture seeding, no ' +
+          'web-storage globals, no fetch-loopback seam, no tsx host ' +
+          'intrinsics in smoke.mjs); 24 real runtime deltas — the ' +
+          "differential's actual value; 4 Node-only abilities the qjs host " +
+          'answers unavailable by design (the persistence worker). Divergence ' +
+          'is the leg finding its differential value; treat qjs as the only ' +
+          'counting leg.',
         column: 'node',
         drive: {
           cwd: '.',
