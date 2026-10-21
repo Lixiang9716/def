@@ -106,13 +106,16 @@ export const REGISTRY = [
           'intrinsics in smoke.mjs); 24 real runtime deltas — the ' +
           "differential's actual value; 4 Node-only abilities the qjs host " +
           'answers unavailable by design (the persistence worker). The ' +
-          '#626 passthrough (2026-10-21) then re-measured: 101 -> 83 ' +
-          'disagreements — 21 of the 58 artifact rows flip clean, 37 now ' +
-          'run the real spawn and fail on their own merits (re-triage ' +
-          'open, plan 3.17), and four rows newly disagree (one exposes a ' +
-          'qjs gap: media-references 22/0 node vs 21/1 qjs). Divergence ' +
-          'is the leg finding its differential value; treat qjs as the only ' +
-          'counting leg.',
+          '#626 passthrough (2026-10-21) re-measured 101 -> 83, and Tier 2 ' +
+          '(all eleven node:* rows passthrough, plan 3.3) re-measured ' +
+          '83 -> 63. The final classification (testing/2026-10-21 Tier-2 ' +
+          'note): a 18 qjs/node staging asymmetries, b 18 node-leg ' +
+          'capability gaps (storage globals, fixture seeding, FormData ' +
+          'two-face, presets roster, node-pty, tsx intrinsics, loader ' +
+          'internals, resolve semantics), c 17 real behavior deltas, d 10 ' +
+          'spec-requires-host-unavailable rows (persistence worker, ssh ' +
+          'TLS, platform-gated bash). Divergence is the leg finding its ' +
+          'differential value; treat qjs as the only counting leg.',
         column: 'node',
         drive: {
           cwd: '.',

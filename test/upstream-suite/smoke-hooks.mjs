@@ -48,16 +48,31 @@ const serveSpecialRows = (specifier) => {
   return null;
 };
 
-/** Node builtins the harness must NOT shadow (the #626 finding): the qjs
- * host's runtime-modules table registers node:child_process unconditionally
- * (its shim answers ERR_DSH_NO_SEAM by design on the hosts that lack the
- * subprocess seam), and the registration lookup below would serve that shim
- * here too — the vendored spawner never saw a real child process (measured
- * 2026-10-20: lsp-stdio 9/22 vs 31/0 with the real builtin; the 2026-10-21
- * classification pins 58 of the 101 disagreement rows on this). This hook
- * only runs on the Node leg, so the qjs leg and every host shim stay
- * untouched; Tier 2 (the remaining node:* rows) is a separate decision. */
-const NODE_BUILTIN_PASSTHROUGH = new Set(['node:child_process']);
+/** Node builtins the harness must NOT shadow: the qjs host's runtime-modules
+ * table registers the node:* faces unconditionally (shims that answer the
+ * qjs hosts' honest limited/unavailable postures — ERR_DSH_NO_SEAM for
+ * child_process, stub faces for vm/tls/net…), and the registration lookup
+ * below would serve those shims on the Node leg too, where Node ships every
+ * one of them for real. Tier 1 (#626) passthrough'd node:child_process;
+ * Tier 2 (plan §3.3) extends the set to ALL eleven node:* rows
+ * runtime-modules.js registers — on the Node reference leg, the real
+ * builtins are strictly more capable than the shims, so the differential
+ * measures the qjs shims' actual gaps (expected shape: qjs-red /
+ * node-green). This hook only runs on the Node leg, so the qjs leg and
+ * every host shim stay untouched. */
+const NODE_BUILTIN_PASSTHROUGH = new Set([
+  'node:child_process',
+  'node:dns/promises',
+  'node:http',
+  'node:inspector',
+  'node:net',
+  'node:readline',
+  'node:string_decoder',
+  'node:stream/promises',
+  'node:tls',
+  'node:url',
+  'node:vm',
+]);
 
 export async function resolve(specifier, context, nextResolve) {
   // The passthrough set MUST be checked before the registry lookup — the
