@@ -14,7 +14,7 @@
 - Owner（或 owner 明确委托）按顺序执行：
   `~/tools/aoci/aoci --repo <root> scope approve --preview-file .aoci/scope-change/activate-1904454454/preview.json --actor <id> --out-file .aoci/scope-change/activate-1904454454/approval.json`
   再 `scope apply --preview-file … --approval-file …`。**agent 永不自行签名**——只能在 owner 明确指示下、以 owner 的身份执行。
-- 批完后 agent 接手：`aoci_maintain` → 为约 27 个源写 FRAS → `node tools/aoci/fras-lint.mjs` 预检 → `aoci_update_entry` → `chore(aoci)` PR。半个会话。关掉 T-0268 第 7 项。规模 S。门 🔒。状态 blocked。
+- 批完后 agent 接手：`aoci_maintain` → 为约 27 个源写 FRAS → `node tools/aoci/fras-lint.mjs` 预检 → `aoci_update_entry` → `chore(aoci)` PR。半个会话。关掉 T-0268 第 7 项。规模 S。门 🔒。状态 done（2026-10-21——owner 批准 `activate-1904454454`，收口落地：五个机器批共 61 源撰写，aligned，T-0268 关闭）。
 
 ## 2. 现在就发（接下来 2–4 周）
 
@@ -131,7 +131,7 @@
 
 ## 12. 建议顺序（合并）
 
-1. 🔒 §1 AOCI approve/apply（owner，约 1 分钟）→ agent：27 源认知收口 PR（顺带关 T-0268）。
+1. ✅ §1 AOCI approve/apply（owner）+ 认知收口 PR（61 源，关 T-0268）——2026-10-21 落地。
 2. 🟢 落本 plan（`docs/plan-2026-10` 开 `docs(plan)` PR）+ "证据卫生"小车队：#633（3.8）+ #627（3.4）+ #628（3.11）+ tree 行（3.10）——文件互不相碰。
 3. 🟢 3.1 的 86 条 NO 行分类（一个 workflow 会话）→ 然后 #626 修复（3.2）带重基线。
 4. 🟢 2.1 发布预检 → v0.0.3 go（owner）→ 2.2 视频。

@@ -34,7 +34,9 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
   initiative** — only on the owner's explicit instruction, under the owner's identity.
 - After approval, agent picks up: `aoci_maintain` → author FRAS for the ~27 sources →
   `node tools/aoci/fras-lint.mjs` precheck → `aoci_update_entry` → `chore(aoci)` PR. Half a
-  session. Closes T-0268 item 7. Size S. Gate 🔒. Status blocked.
+  session. Closes T-0268 item 7. Size S. Gate 🔒. Status done (2026-10-21 — the owner approved
+  `activate-1904454454` and the closeout landed: 61 sources authored across five machine
+  batches, aligned, T-0268 closed).
 
 ## 2. Ship now (the next 2–4 weeks)
 
@@ -151,7 +153,7 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
 
 ## 12. Recommended order (merged)
 
-1. 🔒 §1 AOCI approve/apply (owner, ~1 min) → agent: 27-source cognition PR (closes T-0268).
+1. ✅ §1 AOCI approve/apply (owner) + the cognition closeout PR (61 sources, closes T-0268) — landed 2026-10-21.
 2. 🟢 Land this plan (`docs(plan)` PR from `docs/plan-2026-10`) + the "evidence hygiene" mini-convoy: #633 (3.8) + #627 (3.4) + #628 (3.11) + tree-line (3.10) — disjoint files.
 3. 🟢 3.1 the 86-NO classification (one workflow session) → then #626 fix (3.2) with its re-baseline.
 4. 🟢 2.1 release precheck → v0.0.3 go (owner) → 2.2 video.
