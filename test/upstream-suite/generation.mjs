@@ -24,12 +24,36 @@
  * usage: node generation.mjs → prints the hex fingerprint.
  */
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const SUITE = join(ROOT, 'test/upstream-suite');
+
+/** The pinned submodule corpus (third-party/deepseek-harness): the gitlink
+ * sha is the pin; the working tree's own HEAD marks whether it is
+ * MATERIALIZED. Without these markers an uninitialized seat produced the
+ * IDENTICAL stamp over 33 fewer specs — the identical-stamp/648≠681 trap
+ * (#627). 'absent' is the un-materialized marker. The .git existence check
+ * comes FIRST: rev-parse on a missing/empty submodule dir walks UP and
+ * would answer the superproject's HEAD. */
+const hashSubmoduleMarkers = (hash) => {
+  hash.update('submodule:third-party/deepseek-harness');
+  hash.update(execFileSync('git', ['ls-tree', 'HEAD', '--', 'third-party/deepseek-harness'], { cwd: ROOT }).toString());
+  let submoduleHead = 'absent';
+  if (existsSync(join(ROOT, 'third-party/deepseek-harness/.git'))) {
+    try {
+      submoduleHead = execFileSync('git', ['-C', 'third-party/deepseek-harness', 'rev-parse', 'HEAD'], {
+        cwd: ROOT,
+      }).toString();
+    } catch {
+      /* a .git entry exists but is not resolvable — treat as absent */
+    }
+  }
+  hash.update(submoduleHead);
+};
 
 /** The staged bytes' full input set, as deterministic marker bytes. */
 export const computeFingerprint = () => {
@@ -62,6 +86,7 @@ export const computeFingerprint = () => {
     hash.update(p);
     hash.update(bytes);
   }
+  hashSubmoduleMarkers(hash);
   return hash.digest('hex');
 };
 

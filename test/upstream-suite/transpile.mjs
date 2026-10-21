@@ -115,6 +115,14 @@ try {
 } catch {
   /* absent submodule: SUBMODULE_SRC_HOISTS targets fail existsSync and the
    * generic monorepo-src exclusion names the specifier instead */
+  // Loud, not silent (rule 5; #627): an uninitialized submodule excludes the
+  // monorepo-src specs and would shrink the TRACKED manifest.json as a
+  // side effect — a reader must know the pass ran against a partial corpus.
+  console.error(
+    'transpile: third-party/deepseek-harness is NOT materialized — ' +
+      'monorepo-src specs will be excluded and manifest.json will shrink accordingly; ' +
+      "run: git submodule update --init third-party/deepseek-harness",
+  );
 }
 /** Bare specifiers the loader cannot serve as-is, resolved here so the
  * esbuild graph (spec source, bundled helpers AND inlined submodule limbs —

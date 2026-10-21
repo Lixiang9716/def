@@ -82,6 +82,50 @@ for verb in $(node -e '
     (cd "$SEAT" && build/build.sh sync "$verb" >/dev/null)
 done
 
+# The seat-only provisions (the manifest's `provision` array — executed here,
+# so the inventory stays the single source of what a cold seat must carry).
+# The submodule corpus: a linked worktree cannot share the primary's
+# submodule gitdir (it is checked out there — `submodule update` refuses a
+# second checkout of the same module dir), so the provision CLONES the
+# primary's submodule checkout in place — offline, and it lands on the
+# pinned gitlink sha because that is the primary's own HEAD. The Node
+# resolution farm: built IN the seat, never rsynced — the parity script's
+# links are seat-absolute, so a copied farm would silently resolve the
+# seat's node leg against the PRIMARY tree's bytes (#627).
+while IFS= read -r step; do
+    [ -n "$step" ] || continue
+    case "$step" in
+      "clone-submodule"*)
+          name="${step#clone-submodule }"
+          if [ ! -e "$SEAT/$name/.git" ]; then
+              echo "ensure-seat: provision clone-submodule $name (offline, from the primary's checkout)"
+              rm -rf "${SEAT:?}/$name"
+              git clone --quiet "$PRIMARY/$name" "$SEAT/$name"
+              # The harness repo GITIGNORES its vendored lib/ bytes (upstream's
+              # own materialization step writes them; .gitignore:7 `lib/`) — a
+              # fresh clone carries the tracked shell only. Overlay the
+              # primary's working tree so the corpus carries everything the
+              # transpile inlines (same trust model as every rsynced tree:
+              # the primary is the one source).
+              rsync -a --exclude .git "$PRIMARY/$name/" "$SEAT/$name/"
+          fi
+          ;;
+      "sh "*)
+          echo "ensure-seat: provision $step"
+          (cd "$SEAT" && sh "${step#sh }" >/dev/null)
+          ;;
+      *)
+          echo "ensure-seat: unknown provision step shape: $step" >&2
+          exit 2
+          ;;
+    esac
+done <<PROVISIONS
+$(node -e '
+    const m = require(process.argv[1]);
+    for (const s of (m.provision ?? [])) console.log(s);
+' "$MANIFEST")
+PROVISIONS
+
 if [ "$VERIFY" -eq 1 ]; then
     GOV="$(command -v gov || true)"
     [ -n "$GOV" ] || GOV="$HOME/.local/bin/gov"
