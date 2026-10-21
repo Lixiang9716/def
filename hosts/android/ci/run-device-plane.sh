@@ -29,6 +29,13 @@ adbsh() { if [ -n "$SERIAL" ]; then adb -s "$SERIAL" "$@"; else adb "$@"; fi; }
 
 mkdir -p "$OUT/screens"
 
+# The tree the evidence comes from, pinned BEFORE the run rewrites its own
+# committed evidence under $OUT — read at receipt time, every in-place rerun
+# reads as a dirty tree whatever the seat's real state was (the
+# run-upgrade-matrix.sh fix; this runner is one of the siblings that note
+# names).
+TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at run start)')"
+
 # ---- 1. build ---------------------------------------------------------------
 if [ "$SKIP_BUILD" = "0" ]; then
     say "1/6 assembleDebug"
@@ -188,7 +195,6 @@ cat "$OUT/verdict-android-device-plane-audit.json"
 [ "$FAIL" = "0" ] || die "checkers red — evidence stays unreceipted (rule: receipts only from green runs)"
 
 UDID="$(adbsh get-serialno | tr -d '\r')"
-TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at receipt time)')"
 cat > "$OUT/receipt.json" <<EOF
 {
   "host": "android",

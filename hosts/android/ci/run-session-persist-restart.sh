@@ -41,6 +41,13 @@ shot() { adbsh shell screencap -p /sdcard/dsh-shot.png >/dev/null 2>&1 && adbsh 
 
 mkdir -p "$OUT/screens"
 
+# The tree the evidence comes from, pinned BEFORE the run rewrites its own
+# committed evidence under $OUT — read at receipt time, every in-place rerun
+# reads as a dirty tree whatever the seat's real state was (the
+# run-upgrade-matrix.sh fix; this runner is one of the siblings that note
+# names).
+TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at run start)')"
+
 # ---- 0. Android SDK discovery ----------------------------------------------
 # The fresh-worktree trap (measured 2026-10-11): hosts/android/local.properties
 # is machine-local and untracked, CI exports ANDROID_HOME, so a bare checkout
@@ -158,7 +165,6 @@ cat "$OUT/verdict-android-session-persist-restart.json"
 [ "$FAIL" = "0" ] || die "checker red — evidence stays unreceipted"
 
 UDID="$(adbsh get-serialno | tr -d '\r')"
-TREE_LINE="origin/main $(git rev-parse --short=12 HEAD)$(git diff-index --quiet HEAD -- || echo ' (dirty working tree at receipt time)')"
 cat > "$OUT/receipt.json" <<EOF
 {
   "host": "android",
