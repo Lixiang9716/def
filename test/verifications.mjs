@@ -105,7 +105,12 @@ export const REGISTRY = [
           'web-storage globals, no fetch-loopback seam, no tsx host ' +
           'intrinsics in smoke.mjs); 24 real runtime deltas — the ' +
           "differential's actual value; 4 Node-only abilities the qjs host " +
-          'answers unavailable by design (the persistence worker). Divergence ' +
+          'answers unavailable by design (the persistence worker). The ' +
+          '#626 passthrough (2026-10-21) then re-measured: 101 -> 83 ' +
+          'disagreements — 21 of the 58 artifact rows flip clean, 37 now ' +
+          'run the real spawn and fail on their own merits (re-triage ' +
+          'open, plan 3.17), and four rows newly disagree (one exposes a ' +
+          'qjs gap: media-references 22/0 node vs 21/1 qjs). Divergence ' +
           'is the leg finding its differential value; treat qjs as the only ' +
           'counting leg.',
         column: 'node',

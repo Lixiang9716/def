@@ -32,7 +32,7 @@
 | # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
 |---|---|---|---|---|---|
 | 3.1 | **3.2 的前置：给 86 条 "NO" 行分类**（#631 之后 node 列诚实了；族分布 hooks 9、llm 9、web 8、session 6、shell 6……）分四类：(a) #626 类 harness 伪像、(b) Node 面缺口、(c) 真实运行时差异、(d) 规格依赖 Node 独有能力。分类表决定 3.2 的重基线范围与第二档取舍；注册表 `reason` 改成分类实况 | 入口：`/tmp/dsh-sweep-differential/sweep-compare.md`，或 `node tools/test/sweep.mjs --paral 4` 过滤 `agree==NO`（每行两份日志 `tmp/upstream-suite-logs/<stem>.{qjs,node}.log`）。形状：一族一子代理 + 确认者抽检 + `world.run` 单 spec 两腿复跑作确定性门 | M | — done（2026-10-21——逐族工作流跑在新鲜 681 spec 树上：a 58（#626 波及面）· b 15（node 腿缺缝：fixture 播种、storage 全局、fetch loopback、tsx 宿主内在）· c 24（真实运行时差异——差分的价值所在）· d 4（持久化 worker；二档）。53 行独立复核、53 行过两腿重跑门。分类表见 testing/2026-10-21 note；注册表 reason 已改写为分类实况） |
-| 3.2 | **#626** node 腿：`test/upstream-suite/smoke-hooks.mjs` 加 `NODE_BUILTIN_PASSTHROUGH = new Set(['node:child_process'])` + 一行早返回；改正 `test/verifications.mjs` reason/status；用 Node 驱动 / 周扫重测 | 根因已双向复现（9/22 ↔ 31/0）；node 腿约 100 spec / 38 家族会 spawn | S 代码 / M 测量 | — | open；复现驱动在 `../dsh-mobile-lsp-diff-fork/tmp/` |
+| 3.2 | **#626** node 腿：`test/upstream-suite/smoke-hooks.mjs` 加 `NODE_BUILTIN_PASSTHROUGH = new Set(['node:child_process'])` + 一行早返回；改正 `test/verifications.mjs` reason/status；用 Node 驱动 / 周扫重测 | 根因已双向复现（9/22 ↔ 31/0） | S 代码 / M 测量 | — | done（2026-10-21——passthrough 落地；重基线刻意不是干净翻转：101→83 分歧，58 条 a 行中 21 行干净翻绿，37 行真跑真败（新分诊清单→3.17），4 条新分歧；surprise ×3 随本变更） |
 | 3.3 | node 腿第二档：11 个 `node:*` shim 行全部直通真内建；单独 PR、单独重基线（`node:vm` 等翻成 qjs 红/node 绿 = 真运行时缺口） | `runtime-modules.js` 的行：string_decoder、stream/promises、tls、inspector、dns/promises、readline、vm、http、net、child_process、url | M | — | parked，排在 3.2 后 |
 | 3.4 | **#627** ensure-seat 补全：`external/node_modules` 农场行（或直接跑 `parity-node-modules.sh`）、sweep 自建农场、对 `third-party/deepseek-harness` 做 `git submodule update --init`、node_modules 链接指向席位、`generation.mjs` 指纹覆盖 submodule 语料（`git ls-tree HEAD third-party/deepseek-harness` + 依赖路径探针）、`transpile.mjs` 遇 ENOENT 排除时至少 warn 而不静默改写已跟踪的 manifest。验收：新席位转译 = 681 且 stamp 与 main 一致 | 席位 648 vs 681 而 `.generation` 相同；manifest.json（已跟踪）被静默改写 681→648。#629 已往 materialization 加了 `presentation/official-web/dist` + `client-bundles/npm`——同一个文件。surprise sig `linked-worktree-materialized-buildensure-seatsh` | S–M | — done（2026-10-21——manifest 增 `provision` 数组（clone-submodule + parity 农场，席位内建、绝不 rsync）；generation 指纹覆盖 submodule；transpile 高声告警；sweep 自物化农场；验收：新席位转译 681 = main，零缺零多） |
 | 3.5 | sweep 驱动后续（#631）：`MODULE-LEVEL FAILURE` / `ERR_DSH_NO_SEAM` 归为环境红；3.2 之后分诊 node NOSUM 43 | node 列自 #631 起诚实 | S | — | open |
@@ -47,6 +47,8 @@
 | 3.14 | Stryker 政策：家族变更时重跑，永不作门禁。残留 `test/mutation/.stryker-tmp`（502 MB，两份沙箱）**2026-10-21 已删**——它在 scope 评估里占了 111 条 observe 行 | 试点抓到死反例网（publisher-token） | S | — | done |
 | 3.15 | 共享 `.git` 里两个陈旧 stash（gaps-integration 2026-10-11；feat/device-plane WIP）——落地或丢弃 | 2026-10-21 看到 | S | — | open |
 | 3.16 | 2026-10-26 03:17 UTC：看 weekly-sweep 首次 Node 驱动跑（totals 解析、首批 NO 行、NOSUM 缩水）；数字回填驱动的 note；红 = inspection 发现而非基础设施失败 | 入口：`.github/workflows/weekly-sweep.yml`；`node test/verifications.mjs --why upstream-sweep` | S | — | scheduled |
+
+| 3.17 | #626 passthrough 落地后重分诊 37 条原 a 行 + 4 条新分歧行（它们现在真跑 spawn、因自身 merit 失败：preset-mount loader 缝、hooks 真 spawn 行为、spawn-runner 的 seam 时代断言、media-references 的 qjs 缺口、sdk-client 一例之差、subprocess egress 的 ALL_PROXY） | #641 分类表的 (a) 标签本意是"根本没跑到被测代码"——passthrough 揭开了它们；注册表 reason 已带修后计数 | M | — | open |
 
 ## 4. 🧭 MCP 上机（"万能工具"主线，两步）
 
