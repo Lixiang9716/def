@@ -109,6 +109,56 @@ const NODE_BUILTIN_PASSTHROUGH = new Set([
   'node:vm',
 ]);
 
+/** The enumerated spec-side farm re-anchor (see the FARM_ANCHORED notes):
+ * extracted from resolve() when the stem scoping crossed the function-size
+ * budget (2026-10-22). Returns a resolution result or undefined to fall
+ * through. */
+const farmAnchoredDshResolve = async (specifier, context, nextResolve) => {
+  // Spec-side bare dsh imports must share ONE physical copy with the
+  // vendored graph: the spec copy lives under .seam-run/<pid>/, whose
+  // ancestor walk lands on runtime/dsh/node_modules — the RUNTIME VENDOR
+  // face — while the vendored packages resolve their siblings through
+  // external/node_modules (the farm) — two module instances of one logical
+  // package, and every cross-module instanceof gate between the spec and
+  // the vendored code fails (compaction's ManualCompactionError, goal's
+  // GoalError — 2026-10-22). Re-anchor ONLY the enumerated names: the
+  // blanket form hijacked tool-web, whose spec-side import MUST keep the
+  // runtime-vendor face (the host-integrated dsh-web the suite exercises —
+  // the raw npm face fails 3 turndown rows). Each name here carries a
+  // proven two-face split; new names join with their row's evidence.
+  const FARM_ANCHORED_DSH = new Set([
+    '@deepseek-ai/dsh-compaction',
+    '@deepseek-ai/dsh-compaction-basic',
+    '@deepseek-ai/dsh-command-compact',
+    '@deepseek-ai/dsh-goal',
+    '@deepseek-ai/dsh-command-goal',
+  ]);
+  // STEM-scoped too: dsh-goal's two faces differ in behavior (the
+  // runtime-vendor face carries the structured codes the tool-goal spec
+  // asserts — the same disease that scoped this rule away from the
+  // blanket form), so only the command/compaction specs whose instanceof
+  // gates PROVED the split re-anchor; the tool specs keep the
+  // runtime-vendor face (measured: tool-goal lost GOAL_INVALID_OBJECTIVE
+  // under the name-only scope, 2026-10-22).
+  const FARM_ANCHORED_STEMS = ['compaction__command-compact', 'compaction__compaction-basic', 'goal__command-goal'];
+  if (FARM_ANCHORED_DSH.has(specifier)
+      && context.parentURL?.includes('/.seam-run/')) {
+    // The staged spec FILE is `<family-stem>__tests__<name>.spec.mjs` —
+    // the family stem is a PREFIX, not the whole filename.
+    const stemMatched = FARM_ANCHORED_STEMS.some((stem) => context.parentURL?.includes(`/${stem}__`));
+    if (!stemMatched && process.env.R2PROBE !== '1') {
+      return nextResolve(specifier, context);
+    }
+    try {
+      return await nextResolve(specifier, {
+        ...context,
+        parentURL: pathToFileURL(pathResolve(ROOT, 'external/node_modules/_pin.js')).href,
+      });
+    } catch { /* not farm-served; fall through */ }
+  }
+  return undefined;
+};
+
 export async function resolve(specifier, context, nextResolve) {
   // The passthrough set MUST be checked before the registry lookup — the
   // registration file for node:child_process exists on every run and would
@@ -154,47 +204,7 @@ export async function resolve(specifier, context, nextResolve) {
   if (special !== null) {
     return { url: pathToFileURL(special).href, shortCircuit: true };
   }
-  // Spec-side bare dsh imports must share ONE physical copy with the
-  // vendored graph: the spec copy lives under .seam-run/<pid>/, whose
-  // ancestor walk lands on runtime/dsh/node_modules — the RUNTIME VENDOR
-  // face — while the vendored packages resolve their siblings through
-  // external/node_modules (the farm) — two module instances of one logical
-  // package, and every cross-module instanceof gate between the spec and
-  // the vendored code fails (compaction's ManualCompactionError, goal's
-  // GoalError — 2026-10-22). Re-anchor ONLY the enumerated names: the
-  // blanket form hijacked tool-web, whose spec-side import MUST keep the
-  // runtime-vendor face (the host-integrated dsh-web the suite exercises —
-  // the raw npm face fails 3 turndown rows). Each name here carries a
-  // proven two-face split; new names join with their row's evidence.
-  const FARM_ANCHORED_DSH = new Set([
-    '@deepseek-ai/dsh-compaction',
-    '@deepseek-ai/dsh-compaction-basic',
-    '@deepseek-ai/dsh-command-compact',
-    '@deepseek-ai/dsh-goal',
-    '@deepseek-ai/dsh-command-goal',
-  ]);
-  // STEM-scoped too: dsh-goal's two faces differ in behavior (the
-  // runtime-vendor face carries the structured codes the tool-goal spec
-  // asserts — the same disease that scoped this rule away from the
-  // blanket form), so only the command/compaction specs whose instanceof
-  // gates PROVED the split re-anchor; the tool specs keep the
-  // runtime-vendor face (measured: tool-goal lost GOAL_INVALID_OBJECTIVE
-  // under the name-only scope, 2026-10-22).
-  const FARM_ANCHORED_STEMS = ['compaction__command-compact', 'compaction__compaction-basic', 'goal__command-goal'];
-  if (FARM_ANCHORED_DSH.has(specifier)
-      && context.parentURL?.includes('/.seam-run/')) {
-    // The staged spec FILE is `<family-stem>__tests__<name>.spec.mjs` —
-    // the family stem is a PREFIX, not the whole filename.
-    const stemMatched = FARM_ANCHORED_STEMS.some((stem) => context.parentURL?.includes(`/${stem}__`));
-    if (!stemMatched && process.env.R2PROBE !== '1') {
-      return nextResolve(specifier, context);
-    }
-    try {
-      return await nextResolve(specifier, {
-        ...context,
-        parentURL: pathToFileURL(pathResolve(ROOT, 'external/node_modules/_pin.js')).href,
-      });
-    } catch { /* not farm-served; fall through */ }
-  }
+  const anchored = farmAnchoredDshResolve(specifier, context, nextResolve);
+  if (anchored !== undefined) return anchored;
   return nextResolve(specifier, context);
 }

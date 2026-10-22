@@ -24,30 +24,11 @@ import { makeRequire, bareCjsPackages } from 'upstream/shims/cjs-loader.js';
  * module NAME; see the module header). A base that NAMES a directory
  * (trailing separator — tree ctx.baseUrl spellings are directory URLs)
  * is its own first search parent; anything else uses path.dirname. */
-const baseDirOf = (base) => {
-  let p = base.startsWith('file:') ? fileURLToPath(base) : base;
-  const isDirectory = /\/$/.test(p);
-  p = p.replace(/\/+$/, '');
-  if (isDirectory) return p === '' ? '/' : p;
-  const cut = p.lastIndexOf('/');
-  return cut > 0 ? p.slice(0, cut) : '/';
-};
 
 /** node's resolution search paths for a base: `<ancestor>/node_modules` from
  * the base directory up to the root (the global/current-dir tail node adds
  * has no counterpart here). The plugin-package inventory walks these to find
  * manifests the staged workspace carries. */
-const resolvePathsFor = (base) => {
-  const dirs = [];
-  let current = baseDirOf(base);
-  for (;;) {
-    dirs.push(`${current}/node_modules`);
-    if (current === '/' || current.length === 0) break;
-    const cut = current.lastIndexOf('/');
-    current = cut > 0 ? current.slice(0, cut) : '/';
-  }
-  return dirs;
-};
 
 /** The require face for one base (module level for size). JS modules
  * (relative .js/.cjs/.mjs) go through the userland CJS loader: it EVALUATES
@@ -80,90 +61,10 @@ const makeRequireFace = (base) => (request) => {
   return JSON.parse(text);
 };
 
-/** require.resolve — the plugin-package inventory reads only `.paths(name)`
- * (the node_modules candidates a bare specifier would search); the face
- * answers from the staged fs view so workspace-seeded manifests resolve. */
-const makeResolveFace = (base) => {
-  /** node resolve() answers a request RELATIVE to the base's directory too
-   * ('./main.js' from a manifest-owner validation); the staged view answers
-   * the existing file or nothing. */
-  const resolveRelative = (request) => {
-    if (!request.startsWith('./') && !request.startsWith('../')) return undefined;
-    const baseDir = base.replace(/\/[^/]*$/, '');
-    const parts = [];
-    for (const seg of `${baseDir}/${request}`.split('/')) {
-      if (seg === '.' || seg === '') continue;
-      if (seg === '..') parts.pop();
-      else parts.push(seg);
-    }
-    const candidate = `/${parts.join('/')}`;
-    return existsSync(candidate) ? candidate : undefined;
-  };
-  /** The manifest's answer for one subpath: the exports map when the package
-   * carries one, else main for the root request. A subpath the exports map
-   * does not name is a MISS (node's ERR_MODULE_NOT_FOUND shape) — answering
-   * the package root instead would turn every unresolvable subpath row into
-   * a mount (the typert loader's skip test). */
-  const manifestEntry = (dir, pkg, sub) => {
-    const manifest = `${dir}/${pkg}/package.json`;
-    if (!existsSync(manifest)) return undefined;
-    let parsed;
-    try {
-      parsed = JSON.parse(readFileSync(manifest, 'utf8'));
-    } catch {
-      return sub === null ? manifest : undefined;
-    }
-    if (sub !== null) {
-      let target = parsed.exports?.[`./${sub}`];
-      if (target === undefined) return undefined;
-      if (typeof target !== 'string') target = target.default;
-      const candidate = `${dir}/${pkg}/${String(target).replace(/^\.\//, '')}`;
-      return existsSync(candidate) ? candidate : undefined;
-    }
-    // Real Node resolve() answers the package ENTRY, not the manifest —
-    // callers import fileURL(resolve(specifier)) and importing a manifest
-    // dies on the host loader (the typert loader row). An unparseable or
-    // entry-less manifest answers itself.
-    try {
-      const main = String(parsed.main ?? 'index.js').replace(/^\.\//, '');
-      const candidate = `${dir}/${pkg}/${main}`;
-      if (existsSync(candidate)) return candidate;
-    } catch { /* fall through — answer the manifest */ }
-    return manifest;
-  };
-  const resolve = (request) => {
-    if (typeof request !== 'string' || request.length === 0) {
-      throw new TypeError(`node:module: resolve needs a specifier, got ${String(request)}`);
-    }
-    const relative = resolveRelative(request);
-    if (relative !== undefined) return relative;
-    // A subpath request ('@scope/pkg/sub') names the package plus one
-    // subpath: the scoped spelling splits at the second slash, the plain
-    // one at the first.
-    const slash = request.startsWith('@') ? request.indexOf('/', 1) : -1;
-    const split = slash > 0 ? request.indexOf('/', slash + 1) : request.indexOf('/');
-    const shapes = split > 0
-      ? [{ pkg: request, sub: null }, { pkg: request.slice(0, split), sub: request.slice(split + 1) }]
-      : [{ pkg: request, sub: null }];
-    for (const dir of resolvePathsFor(base)) {
-      for (const { pkg, sub } of shapes) {
-        const entry = manifestEntry(dir, pkg, sub);
-        if (entry !== undefined) return entry;
-      }
-    }
-    const error = new Error(`Cannot find module '${request}' imported from ${base}`);
-    error.code = 'MODULE_NOT_FOUND';
-    error.requireStack = [base];
-    throw error;
-  };
-  resolve.paths = (request) => {
-    if (typeof request !== 'string' || request.length === 0) {
-      throw new TypeError(`node:module: resolve.paths needs a specifier, got ${String(request)}`);
-    }
-    return resolvePathsFor(base);
-  };
-  return resolve;
-};
+/** require.resolve — the face lives in node-module-resolve.js (the
+ * exports-map subpath support crossed the function-size budget, 2026-10-22);
+ * imported here so every existing specifier keeps its shape. */
+import { makeResolveFace } from 'upstream/shims/node-module-resolve.js';
 
 export function createRequire(base) {
   if (typeof base !== 'string' || base.length === 0) {

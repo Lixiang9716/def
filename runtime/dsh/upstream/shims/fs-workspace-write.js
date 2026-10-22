@@ -147,6 +147,21 @@ export const wsResolveSymlinkChain = (state, canonical) => {
   return hit && resolved !== canonical ? resolved : canonical;
 };
 
+
+/** A directory occupying the path is EISDIR, like node's writeFile (measured
+ * 2026-09-27: storage-json makes the publish target a directory to force the
+ * atomic-replacement failure its rollback test needs). (Extracted
+ * 2026-10-22: the function-size budget.) */
+const wsRequireNotDir = (state, canonical) => {
+  if (state.dirs.has(canonical) || (state.files.has(canonical) === false && wsIsDirAt(canonical))) {
+    const error = new Error(`EISDIR: illegal operation on a directory, open '${canonical}'`);
+    error.code = 'EISDIR';
+    error.errno = -21;
+    error.syscall = 'open';
+    error.path = canonical;
+    throw error;
+  }
+};
 /** Write file bytes (create or replace). Parents must already exist — the
  * fs-local write path always mkdirs them first, and node's writeFile would
  * ENOENT too. */
@@ -173,17 +188,7 @@ export const wsWriteFile = (path, bytes, mode) => {
     if (next <= 0) break;
     ancestorEnd = next;
   }
-  // A directory occupying the path is EISDIR, like node's writeFile
-  // (measured 2026-09-27: storage-json makes the publish target a directory
-  // to force the atomic-replacement failure its rollback test needs).
-  if (state.dirs.has(canonical) || (state.files.has(canonical) === false && wsIsDirAt(canonical))) {
-    const error = new Error(`EISDIR: illegal operation on a directory, open '${canonical}'`);
-    error.code = 'EISDIR';
-    error.errno = -21;
-    error.syscall = 'open';
-    error.path = canonical;
-    throw error;
-  }
+  wsRequireNotDir(state, canonical);
   const existing = state.files.get(canonical);
   if (existing !== undefined) {
     existing.bytes = bytes;

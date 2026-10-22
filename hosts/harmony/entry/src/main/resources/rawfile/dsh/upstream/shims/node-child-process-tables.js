@@ -102,7 +102,12 @@ const spawnError = (syscall, command, raw) => {
  * anchored at the real CLI cwd). Absolute cwds and unset options pass
  * through untouched. */
 const spawnCwd = (cwd) => {
-  if (typeof cwd !== 'string' || cwd.length === 0 || cwd.startsWith('/')) return cwd;
+  // Real node treats cwd: '' as UNSET (no chdir happens; verified against
+  // node 24) — passing '' through made the C host chdir('') and ENOENT'd
+  // the spawn (the computer-use driver child: the mcp-client Config
+  // defaults cwd to '', 2026-10-22).
+  if (cwd === '') return undefined;
+  if (typeof cwd !== 'string' || cwd.startsWith('/')) return cwd;
   const pinned = globalThis.__dshProfileCwd;
   if (typeof pinned !== 'string' || pinned.length <= 1) return cwd;
   return `${pinned.replace(/\/$/, '')}/${cwd}`;

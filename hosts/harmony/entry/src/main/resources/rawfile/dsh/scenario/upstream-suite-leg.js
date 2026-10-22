@@ -148,39 +148,9 @@ const pinProfileContainer = async () => {
  * (in-runtime) fixture seeding cannot serve it. Sources stay vendored and
  * read-only (D6): the leg COPIES, never edits. Inert where the bundle is
  * not a writable real directory (device hosts). (#238, 2026-09-28.) */
-const REAL_SIBLING_FILES = [
-  // lsp-stdio's scriptable fake LSP server (connection/lifecycle spawn it;
-  // its header: "Run: node fixture-server.ts (Node's erasable TypeScript
-  // syntax support)")
-  ['packages/lsp/lsp-stdio/tests/fixture-server.ts', 'fixture-server.ts'],
-  // the win32-dialog driver spawns the worker and expects the native-less
-  // failure to reject through it ("rejects through the real worker where
-  // the Win32 surface is unavailable")
-  ['packages/host/directory-picker-native/src/win32-dialog-worker.ts', 'win32-dialog-worker.ts'],
-  // the sdk-client fake runtime server (spawned as `execPath fake-runtime.ts`)
-  ['packages/sdk/client/tests/fake-runtime.ts', 'fake-runtime.ts'],
-  // skill-office's checkers spec spawns `python3 check_office_test.py` — the
-  // script is a REAL sibling of the vendored spec (#238, 2026-09-28)
-  ['packages/skill/skill-office/tests/check_office_test.py', 'check_office_test.py'],
-];
-const VENDOR_TESTS_TAG = 'dsh-v0.1.6-alpha.2'; // the ensure-dsh-tests.sh pin
-const stageRealSiblingFiles = async () => {
-  log.debug('real sibling staging begin', {});
-  // Real children read the REAL disk, so the copies must be real too — and
-  // the runtime's own fs face is the in-memory workspace VFS. The one real
-  // disk actor this seam owns is a CHILD PROCESS: /bin/cp runs in the CLI's
-  // real working directory (the checkout root, where vendor/ and
-  // upstream-tests/ live) — no cwd option on purpose (options.cwd would pin
-  // the virtual profile container, which is NOT on the real disk).
-  const { spawnSync } = await import('node:child_process');
-  for (const [from, to] of REAL_SIBLING_FILES) {
-    const vendorPath = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/${from}`;
-    const res = spawnSync('/bin/cp', [vendorPath, `upstream-tests/${to}`]);
-    if (res.status !== 0) {
-      log.debug('sibling stage failed', { from, to, code: res.error?.code ?? res.stderr?.slice?.(0, 80) });
-    }
-  }
-};
+// The real-disk sibling staging lives in upstream-suite-siblings.js (the
+// file crossed the line budget, 2026-10-22); VENDOR_TESTS_TAG moved with it.
+import { VENDOR_TESTS_TAG, stageRealSiblingFiles } from 'scenario/upstream-suite-siblings.js';
 
 /** Stage the running spec's PACKAGE SOURCE tree into the seeded read-only
  * view at the bundle-root paths the transpiled spec's source-introspection
@@ -251,14 +221,24 @@ const preloadRealFs = async () => {
  * self-contained (D6: read-only staging of the pinned vendored bytes). */
 const stageFixtureNodeModules = async (spawnSync) => {
   const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
-  for (const pkg of ['zod']) {
-    const probe = spawnSync('/bin/test', ['-d', `vendor/node_modules/${pkg}`]);
+  // zod mirrors from the runtime vendor; the @deepseek-ai entries mirror
+  // from the runtime closure's node_modules — the fixture presets name
+  // them as plugin rows and the vendored packageInstalled walk climbs
+  // node_modules ancestors of the run scope (measured: preset remote +
+  // composition-inventory answered `broken: row "prompt" … cannot be
+  // resolved` without it, 2026-10-22).
+  const mirrors = [
+    ['vendor/node_modules/zod', 'zod'],
+    ['node_modules/@deepseek-ai/dsh-system-prompt', '@deepseek-ai/dsh-system-prompt'],
+  ];
+  for (const [src, dest] of mirrors) {
+    const probe = spawnSync('/bin/test', ['-d', src]);
     if (probe.status !== 0) continue;
     // cp -R src dest/ needs dest to exist (no implicit mkdir in /bin/cp).
-    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules`]);
-    const mirror = spawnSync('/bin/cp', ['-R', `vendor/node_modules/${pkg}`, `${root}/node_modules/`]);
+    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules/${dest}`]);
+    const mirror = spawnSync('/bin/cp', ['-R', `${src}/.`, `${root}/node_modules/${dest}/`]);
     if (mirror.status !== 0) {
-      log.debug('fixture node_modules mirror skipped', { pkg, code: mirror.status });
+      log.debug('fixture node_modules mirror skipped', { src, code: mirror.status });
     }
   }
 };
@@ -301,7 +281,26 @@ const stageRealFixturesTree = async (spec) => {
   const stem = spec.replace(/^upstream-tests\//, '').replace(/\.spec\.mjs$/, '');
   const parts = stem.split('__');
   if (parts.length < 3 || parts[2] !== 'tests') return;
-  const vendorFixtures = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22).
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22). Existence rides the same real-child channel as the copy.
+  const vendorRoot = `vendor/dsh-tests@${VENDOR_TESTS_TAG}`;
+  const fixturesRel = `/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  let vendorBase = vendorRoot;
+  const { spawnSync: probe } = await import('node:child_process');
+  if (probe('/usr/bin/test', ['-d', vendorRoot + fixturesRel]).status !== 0) {
+    vendorBase = `../../external/dsh-tests@${VENDOR_TESTS_TAG}`;
+  }
+  const vendorFixtures = vendorBase + fixturesRel;
   // The cwd-joined path is the RUN'S OWN real scope root (the per-run
   // mkdtemp), not the CLI checkout — materialize there (absolute real paths;
   // the /bin tools see exactly what the real fallback will stat).
@@ -420,8 +419,9 @@ const bootLegEnvironment = async () => {
   await pinProfileContainer();
   // Stage the spawned sibling files (real children read the real disk).
   await stageRealSiblingFiles();
-  // Bundle-relative paths re-root at the real checkout (see above).
-  installFlatPathMap();
+  // Bundle-relative paths re-root at the real checkout (see above); the
+  // spec stem scopes the family-specific rows.
+  installFlatPathMap(cfg.spec);
   // The fs faces' real readdir needs the namespace before the spec's
   // module-scope walks run.
   await preloadRealFs();

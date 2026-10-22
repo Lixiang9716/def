@@ -380,56 +380,16 @@ const resolveSymlinkAt = (path) => {
 // size budget); re-exported here so every existing import — fs.js's and
 // fs-promises's whole surface — keeps its specifier.
 import { wsMkdir as wsMkdirCore, wsWriteFile, wsRm, wsResolveSymlinkChain, wsMaterialize, wsTruncateAt } from 'upstream/shims/fs-workspace-write.js';
-import { wsRename as wsRenameCore, wsLink, wsChmod, wsUtimes } from 'upstream/shims/fs-workspace-rename.js';
+import { wsRename as wsRenameCore, mirrorRenameReal, wsLink, wsChmod, wsUtimes } from 'upstream/shims/fs-workspace-rename.js';
 import { wsSymlink } from 'upstream/shims/fs-workspace-write.js';
 
-/** Real-disk rename mirror (W8 cwd/tmp-fidelity). The VFS rename re-keys its
- * maps only — the workspace-write round mirrored write/rm/mkdir/chmod but
- * left rename's real side unmoved, so a moved file lingered under the old
- * name on the disk the seam's children read and never appeared at the new
- * one (measured: workspace-changes' turn diff lost the same.txt → moved.txt
- * rename entirely — real git saw the file unchanged). After the core
- * re-key, whatever the VFS now holds at the DESTINATION (one file or a
- * subtree) is the rename's payload: the real source is removed and the
- * destination re-materialized from the moved entries. Best-effort like the
- * sibling mirrors — the VFS stays the world of record. */
-const writeRealFile = (path, bytes) => {
-  if (typeof path !== 'string' || !path.startsWith('/') || !(bytes instanceof Uint8Array)
-      || bytes.length > 8 * 1024 * 1024) return;
-  let bin = '';
-  const CHUNK = 0x8000;
-  for (let i = 0; i < bytes.length; i += CHUNK) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
-  }
-  globalThis.__dshProcWriteFileReal?.(path, btoa(bin));
-};
-
-const mirrorRenameReal = (state, sourcePath, destPath) => {
-  try {
-    const destFile = state.files.get(destPath);
-    if (destFile !== undefined) {
-      globalThis.__dshProcRmReal?.(sourcePath, false);
-      writeRealFile(destPath, destFile.bytes);
-      return;
-    }
-    if (state.dirs.has(destPath)) {
-      globalThis.__dshProcRmReal?.(sourcePath, true);
-      globalThis.__dshProcMkdirReal?.(destPath);
-      const prefix = `${destPath}/`;
-      for (const [key, entry] of state.files) {
-        if (key.startsWith(prefix)) writeRealFile(key, entry.bytes);
-      }
-    }
-  } catch { /* structural mirror is best-effort */ }
-};
-
+/** The rename faces + their real-disk mirror live in fs-workspace-rename.js
+ * (the file crossed the line budget, 2026-10-22). */
 export const wsRename = (from, to) => {
   const source = wsAt(from);
   const dest = wsAt(to);
   const result = wsRenameCore(from, to);
-  if (source !== null && dest !== null) {
-    mirrorRenameReal(source.state, source.path, dest.path);
-  }
+  if (source !== null && dest !== null) mirrorRenameReal(source.state, source.path, dest.path);
   return result;
 };
 

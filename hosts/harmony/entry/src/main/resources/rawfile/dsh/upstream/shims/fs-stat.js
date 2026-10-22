@@ -250,8 +250,16 @@ const nodeModulesProbe = (path) => {
 
 export const existsSync = (rawPath) => {
   const path = asFsPath(rawPath);
+
   const files = vfs();
-  if (files !== null && underVFS(path)) return files.has(path);
+  // A VFS hit answers true; a VFS MISS falls through to the real-disk twin
+  // at the tail — the read arms already serve real files behind the VFS
+  // (W6-V), and existence must agree with them or fs-promises readFile's
+  // existsSync gate hides files the read arm serves. Measured: the driver
+  // stages fixture trees through real /bin/cp children and the vendored
+  // packageInstalled walk (VFS-prefixed paths) read every stage as absent
+  // (preset remote + composition-inventory 'broken' rows, 2026-10-22).
+  if (files !== null && underVFS(path) && files.has(path)) return true;
   if (workspaceSymlinkTarget(path) !== undefined) return true;
   if (wsFileAt(path) !== undefined) return true;
   if (wsIsDirAt(path)) return true;

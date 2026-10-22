@@ -90,14 +90,19 @@ export class Headers {
   constructor(init = undefined) {
     headersState.set(this, new Map());
     if (init === undefined || init === null) return;
-    const consume = (key, value) => this.append(key, value);
     if (typeof init === 'object' && Symbol.iterator in Object(init)) {
       for (const pair of init) {
         if (!Array.isArray(pair) || pair.length < 2) throw new TypeError('Headers: iterable init must yield [name, value] pairs');
-        consume(pair[0], pair[1]);
+        this.append(pair[0], pair[1]);
       }
     } else if (typeof init === 'object') {
-      for (const key of Reflect.ownKeys(init)) consume(key, init[key]);
+      // A RECORD init SETS each member (WebIDL last-wins); append JOINED
+      // case-different duplicates — the Response.json default
+      // 'content-type' merged with the server's "Content-Type" into one
+      // doubled value the MCP client's probe rejects
+      // ('application/json, application/json', the acp bridge row,
+      // 2026-10-22).
+      for (const key of Reflect.ownKeys(init)) this.set(key, init[key]);
     } else {
       throw new TypeError('Headers: init must be an object or a pair iterable');
     }

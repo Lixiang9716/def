@@ -421,6 +421,26 @@ const clientDestroyFace = (req) => (error) => {
   return req;
 };
 
+export 
+/** node's ClientRequest.setTimeout(delay[, callback]): the inactivity
+ * timeout arms a one-shot that destroys with ETIMEDOUT and calls the
+ * callback; it disarms on 'response'. The OTLP exporter's sendWithHttp
+ * calls this UNCONDITIONALLY — without the face every export died with a
+ * bare "not a function" before dispatching a byte (the telemetry-otel
+ * egress row, 2026-10-22). (Extracted 2026-10-22: the function-size
+ * budget.) */
+const clientSetTimeoutFace = (req) => (delay, callback) => {
+  const timer = setTimeout(() => {
+    const error = new Error(`loopback request timed out after ${delay}ms`);
+    error.code = 'ETIMEDOUT';
+    req.destroy(error);
+    if (typeof callback === 'function') callback(error);
+  }, delay);
+  req.once('response', () => clearTimeout(timer));
+  req.once('close', () => clearTimeout(timer));
+  return req;
+};
+
 export const createLoopbackClientRequest = (urlOrOptions, optionsOrCb, maybeCb) => {
   // node's overloads: request(url[, options][, cb]) and request(options[, cb]).
   let url = null;
@@ -463,5 +483,6 @@ export const createLoopbackClientRequest = (urlOrOptions, optionsOrCb, maybeCb) 
   // vendored client's abortHandshake path destroys the request with the real
   // reason, W5-Q).
   req.destroy = clientDestroyFace(req);
+  req.setTimeout = clientSetTimeoutFace(req);
   return req;
 };

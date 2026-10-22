@@ -350,16 +350,12 @@ export const PI_AI_BRIDGES = [
     "export * from '/vendor/dsh/sandbox-windows-acl@0.1.6-alpha.2/lib/index.js';"],
 
   // cross-spawn: NO vendored tree (the chokidar precedent). The mcp stdio
-  // transport's CJS-only spawn wrapper — D2 forbids the subprocess seam it
-  // wraps, so the linkage shim satisfies the import and the default export
-  // fails loud naming the gap.
-  ['cross-spawn', [
-    "const refuse = () => {",
-    "  throw new Error('cross-spawn: child process spawn is not served in this runtime — ",
-    "no subprocess seam (rule D2)');",
-    "};",
-    "export default refuse;",
-  ].join(' ')],
+  // transport's CJS-only spawn wrapper — the D2-era refusal is OBSOLETE: the
+  // W5-R __dshProcSpawn seam exists and the execa bridge below already rides
+  // it, and the acp bridge + computer-use compositions spawn REAL driver
+  // children through this name (measured 2026-10-22). cross-spawn's wrapper
+  // is arg-escaping over the platform spawn; the node face is that signature.
+  ['cross-spawn', "import { spawn } from 'node:child_process';\nexport default spawn;"],
 
   // execa: the promise-child face over the W5-R child_process seam (the old
   // "no subprocess seam" refusal is obsolete — __dshProcSpawn exists, children

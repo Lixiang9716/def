@@ -234,3 +234,43 @@ export const wsUtimes = (path, atimeSeconds, mtimeSeconds) => {
 /** symlink(target, path) — store the raw target string; readers resolve one
  * hop through resolveSymlinkAt (fs.js). Node validates the parent directory;
  * the link itself may dangle. */
+
+/** Real-disk rename mirror (W8 cwd/tmp-fidelity). The VFS rename re-keys its
+ * maps only — the workspace-write round mirrored write/rm/mkdir/chmod but
+ * left rename's real side unmoved, so a moved file lingered under the old
+ * name on the disk the seam's children read and never appeared at the new
+ * one (measured: workspace-changes' turn diff lost the same.txt → moved.txt
+ * rename entirely — real git saw the file unchanged). After the core
+ * re-key, whatever the VFS now holds at the DESTINATION (one file or a
+ * subtree) is the rename's payload: the real source is removed and the
+ * destination re-materialized from the moved entries. Best-effort like the
+ * sibling mirrors — the VFS stays the world of record. */
+export const writeRealFile = (path, bytes) => {
+  if (typeof path !== 'string' || !path.startsWith('/') || !(bytes instanceof Uint8Array)
+      || bytes.length > 8 * 1024 * 1024) return;
+  let bin = '';
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  globalThis.__dshProcWriteFileReal?.(path, btoa(bin));
+};
+
+export const mirrorRenameReal = (state, sourcePath, destPath) => {
+  try {
+    const destFile = state.files.get(destPath);
+    if (destFile !== undefined) {
+      globalThis.__dshProcRmReal?.(sourcePath, false);
+      writeRealFile(destPath, destFile.bytes);
+      return;
+    }
+    if (state.dirs.has(destPath)) {
+      globalThis.__dshProcRmReal?.(sourcePath, true);
+      globalThis.__dshProcMkdirReal?.(destPath);
+      const prefix = `${destPath}/`;
+      for (const [key, entry] of state.files) {
+        if (key.startsWith(prefix)) writeRealFile(key, entry.bytes);
+      }
+    }
+  } catch { /* structural mirror is best-effort */ }
+};

@@ -141,7 +141,7 @@ export class ChildProcess extends EventEmitter {
  * other consumer), idempotent, desktop-only (no sync seam → no staging). */
 const stageSpawnedSiblings = (args, stdio) => {
   if (typeof spawnSyncIntrinsic !== 'function') return;
-  if (!args.some((a) => typeof a === 'string' && (a.includes('control-child.ts') || a.includes('check_office')))) return;
+  if (!args.some((a) => typeof a === 'string' && (a.includes('control-child.ts') || a.includes('check_office') || a.includes('driver.mjs')))) return;
   const quiet = stdio?.length === 3 ? stdio : ['ignore', 'ignore', 'ignore'];
   const stage = (from, to) => {
     spawnSyncIntrinsic({ command: '/bin/mkdir', args: ['-p', to.slice(0, to.lastIndexOf('/'))], stdio: quiet });
@@ -157,6 +157,14 @@ const stageSpawnedSiblings = (args, stdio) => {
   stage(
     '../../third-party/deepseek-harness/packages/subprocess/subprocess/src/control.ts',
     'subprocess/src/control.ts',
+  );
+  // The computer-use composition's CUA driver child: the fixture module
+  // seeds /upstream-tests/fixtures/driver.mjs in the VFS, but the spawned
+  // child reads the REAL disk at the bundle-root join (the control-child
+  // precedent — same staging shape, 2026-10-22).
+  stage(
+    'vendor/dsh-tests@dsh-v0.1.6-alpha.2/packages/experimental/computer-use-cua-driver-mcp/tests/fixtures/driver.mjs',
+    'upstream-tests/fixtures/driver.mjs',
   );
   // The skill-office checker suite: the python TEST drives the SHIPPED
   // checker script (CHECKER = parents[1] / 'assets/scripts/check_office.py')
