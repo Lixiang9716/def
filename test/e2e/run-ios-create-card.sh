@@ -40,7 +40,7 @@ cd "$ROOT"
 UDID=""                       # resolved in step 1 (explicit > env > booted > available)
 ART="hosts/ios/artifacts/create-card"
 SKIP_BUILD=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 APP=hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app
 SIM_LOCK=/tmp/dsh-ios-e2e-sim.lock
 LOCK_ACQUIRE_DEADLINE=$((60 * 45))   # 45 min, polled at 15s

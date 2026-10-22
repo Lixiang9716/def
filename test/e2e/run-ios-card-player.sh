@@ -53,7 +53,7 @@ cd "$ROOT"
 UDID=""
 ART="hosts/ios/artifacts/card-player"
 SKIP_BUILD=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 APP=hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app
 SIM_LOCK=/tmp/dsh-ios-e2e-sim.lock
 while [ $# -gt 0 ]; do
@@ -118,7 +118,7 @@ wait_first_record() { # the scenario reaches its first marker ~1s in (60s budget
 # run-ios.sh) and cannot know this script's /tmp lock — so this side checks
 # THEIRS. A live holder means the shared device is mid-run elsewhere: fail
 # loud instead of interleaving install/launch/terminate on the same
-# org.dsh.DSHHost. (They never check ours; symmetric exclusion would need
+# io.github.lixiang9716.def. (They never check ours; symmetric exclusion would need
 # edits to those runners, which is out of this leg's scope.)
 check_sibling_locks() {
   local lockf holder

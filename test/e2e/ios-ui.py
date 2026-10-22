@@ -44,7 +44,7 @@ import urllib.error
 import urllib.request
 
 UDID_DEFAULT = os.environ.get("DSH_E2E_UDID", "A4AE41BF-026A-441E-85DF-F53522996073")
-BUNDLE = "org.dsh.DSHHost"
+BUNDLE = "io.github.lixiang9716.def"
 WDA = "http://localhost:8100"
 EDITABLE = ("TextField", "TextArea", "SecureTextField", "SearchField", "TextView")
 ACTIONABLE = {

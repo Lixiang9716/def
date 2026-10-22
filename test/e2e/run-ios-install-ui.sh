@@ -29,7 +29,7 @@ cd "$ROOT"
 UDID="${DSH_E2E_UDID:-A4AE41BF-026A-441E-85DF-F53522996073}"   # dsh-iphone
 ART="hosts/ios/artifacts/install-full-cycle"
 SKIP_BUILD=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 APP=hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app
 while [ $# -gt 0 ]; do
   case "$1" in

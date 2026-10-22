@@ -22,7 +22,7 @@
 set -eu
 DIR=""
 UDID="${DSH_DEV_UDID:-}"
-BUNDLE="org.dsh.DSHHost"
+BUNDLE="io.github.lixiang9716.def"
 LAUNCH=1
 MODE="serve"
 while [ $# -gt 0 ]; do

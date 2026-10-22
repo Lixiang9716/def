@@ -10,7 +10,7 @@
 #
 # Prerequisites (a simulator leg never needs these):
 #   - a physical iPhone in Developer Mode, attached;
-#   - a signing identity (Xcode managed or manual) for org.dsh.DSHHost —
+#   - a signing identity (Xcode managed or manual) for io.github.lixiang9716.def —
 #     this machine has none today, so the build step names the fix when it
 #     fails;
 #   - FIRST RUN ONLY: someone taps "Allow" on the OS camera prompt (the
@@ -27,7 +27,7 @@ UDID="${DSH_E2E_UDID:-}"
 ART="hosts/ios/artifacts/camera-plane-device"
 SKIP_BUILD=0
 SKIP_INSTALL=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 while [ $# -gt 0 ]; do
   case "$1" in
     --udid) UDID="$2"; shift 2 ;;
