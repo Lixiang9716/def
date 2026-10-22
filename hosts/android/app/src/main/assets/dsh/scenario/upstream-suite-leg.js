@@ -18,7 +18,7 @@ import 'upstream/shims/npm-bridges.js'; // the bare-npm bridges (diff/yaml/choki
 import { createLogger } from 'logger.js';
 import { resetCollection, runCollected } from 'scenario/upstream-test-harness.js';
 import { fsScope } from 'gateway.js';
-import { installFlatPathMap } from 'scenario/upstream-suite-flatmap.js';
+import { installFlatPathMap, stageFixtureTypesStub } from 'scenario/upstream-suite-flatmap.js';
 import { stageRemoteMockTypeWorld } from 'scenario/upstream-suite-type-world.js';
 
 const SCENARIO = 'upstream.suite';
@@ -148,9 +148,51 @@ const pinProfileContainer = async () => {
  * (in-runtime) fixture seeding cannot serve it. Sources stay vendored and
  * read-only (D6): the leg COPIES, never edits. Inert where the bundle is
  * not a writable real directory (device hosts). (#238, 2026-09-28.) */
-// The real-disk sibling staging lives in upstream-suite-siblings.js (the
-// file crossed the line budget, 2026-10-22); VENDOR_TESTS_TAG moved with it.
-import { VENDOR_TESTS_TAG, stageRealSiblingFiles } from 'scenario/upstream-suite-siblings.js';
+const REAL_SIBLING_FILES = [
+  // lsp-stdio's scriptable fake LSP server (connection/lifecycle spawn it;
+  // its header: "Run: node fixture-server.ts (Node's erasable TypeScript
+  // syntax support)")
+  ['packages/lsp/lsp-stdio/tests/fixture-server.ts', 'fixture-server.ts'],
+  // the win32-dialog driver spawns the worker and expects the native-less
+  // failure to reject through it ("rejects through the real worker where
+  // the Win32 surface is unavailable")
+  ['packages/host/directory-picker-native/src/win32-dialog-worker.ts', 'win32-dialog-worker.ts'],
+  // the sdk-client fake runtime server (spawned as `execPath fake-runtime.ts`)
+  ['packages/sdk/client/tests/fake-runtime.ts', 'fake-runtime.ts'],
+  // the acp bridge's stdio MCP server — the transpiled spec joins
+  // ../../../mcp/mcp-client/tests/fixture-server.ts at the bundle root, and
+  // the mounted session's MCP mount spawns it through cross-spawn (the
+  // acp bridge row, 2026-10-22)
+  // (destination walks out of upstream-tests/: the bridge spec's URL math
+  // joins ../../../mcp/... at the BUNDLE root, so the remap looks under
+  // runtime/dsh/mcp/... — not under upstream-tests/)
+  ['packages/mcp/mcp-client/tests/fixture-server.ts', '../mcp/mcp-client/tests/fixture-server.ts'],
+  // skill-office's checkers spec spawns `python3 check_office_test.py` — the
+  // script is a REAL sibling of the vendored spec (#238, 2026-09-28)
+  ['packages/skill/skill-office/tests/check_office_test.py', 'check_office_test.py'],
+];
+const VENDOR_TESTS_TAG = 'dsh-v0.1.6-alpha.2'; // the ensure-dsh-tests.sh pin
+const stageRealSiblingFiles = async () => {
+  log.debug('real sibling staging begin', {});
+  // Real children read the REAL disk, so the copies must be real too — and
+  // the runtime's own fs face is the in-memory workspace VFS. The one real
+  // disk actor this seam owns is a CHILD PROCESS: /bin/cp runs in the CLI's
+  // real working directory (the checkout root, where vendor/ and
+  // upstream-tests/ live) — no cwd option on purpose (options.cwd would pin
+  // the virtual profile container, which is NOT on the real disk).
+  const { spawnSync } = await import('node:child_process');
+  for (const [from, to] of REAL_SIBLING_FILES) {
+    const vendorPath = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/${from}`;
+    if (to.includes('/')) {
+      // cp -R needs the destination dir (no implicit mkdir in /bin/cp).
+      spawnSync('/bin/mkdir', ['-p', `upstream-tests/${to.slice(0, to.lastIndexOf('/'))}`]);
+    }
+    const res = spawnSync('/bin/cp', [vendorPath, `upstream-tests/${to}`]);
+    if (res.status !== 0) {
+      log.debug('sibling stage failed', { from, to, code: res.error?.code ?? res.stderr?.slice?.(0, 80) });
+    }
+  }
+};
 
 /** Stage the running spec's PACKAGE SOURCE tree into the seeded read-only
  * view at the bundle-root paths the transpiled spec's source-introspection
@@ -250,32 +292,6 @@ const stageFixtureNodeModules = async (spawnSync) => {
  * .parity-shim precedent): just enough ambient vocabulary for the namespace
  * lookups to resolve — the analyzer under test observes the fixture's OWN
  * declarations, and the vendored fixture tree must stay verbatim (D6). */
-const stageFixtureTypesStub = async (spawnSync) => {
-  const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
-  const nm = `${root}/node_modules/@types/node`;
-  spawnSync('/bin/mkdir', ['-p', nm]);
-  const decl = [
-    '// Test-support minimum staged by upstream-suite-leg (#238): the vendored',
-    '// fixture closure names the NodeJS namespace; @types/node itself is not',
-    '// vendored. Ambient vocabulary only — no member shapes are asserted.',
-    'declare namespace NodeJS {',
-    '  interface Process {}',
-    '  interface ProcessEnv { [key: string]: string | undefined }',
-    '  interface Timeout {}',
-    '  interface Immediate {}',
-    '}',
-    'declare namespace NodeJS { interface Process { env: ProcessEnv } }',
-    '',
-  ].join('\n');
-  // The python3 writer (a staged real child) owns the bytes; spawnSync has
-  // no stdin-input face worth leaning on here.
-  const writer = spawnSync('/usr/bin/python3', ['-c', `import pathlib; pathlib.Path('${nm}/index.d.ts').write_text(${JSON.stringify(decl)})`]);
-  if (writer.status !== 0) {
-    log.debug('fixture @types/node stub skipped', { code: writer.status });
-  } else {
-    spawnSync('/usr/bin/python3', ['-c', `import json, pathlib; p = pathlib.Path('${nm}/package.json'); p.write_text(json.dumps({'name': '@types/node', 'version': '0.0.0-test-support', 'types': './index.d.ts'}))`]);
-  }
-};
 
 const stageRealFixturesTree = async (spec) => {
   const stem = spec.replace(/^upstream-tests\//, '').replace(/\.spec\.mjs$/, '');
@@ -313,7 +329,7 @@ const stageRealFixturesTree = async (spec) => {
     log.debug('fixtures tree stage skipped', { vendorFixtures, code: res.status });
   }
   await stageFixtureNodeModules(spawnSync);
-  await stageFixtureTypesStub(spawnSync);
+  await stageFixtureTypesStub(log, spawnSync);
 };
 
 /** Pin the real host platform for the shell-gated suites (#238): upstream

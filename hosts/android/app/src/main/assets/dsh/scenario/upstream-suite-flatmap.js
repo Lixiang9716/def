@@ -108,3 +108,36 @@ export const installFlatPathMap = (spec) => {
     return undefined;
   };
 };
+
+/** The fixture @types/node stub (moved here from upstream-suite-leg.js
+ * when that file crossed the line budget, 2026-10-22): the leg passes its
+ * own log face — this module stays import-free (the closure-file cycle
+ * rule in the header). */
+export const stageFixtureTypesStub = async (log, spawnSync) => {
+  const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
+  const nm = `${root}/node_modules/@types/node`;
+  spawnSync('/bin/mkdir', ['-p', nm]);
+  const decl = [
+    '// Test-support minimum staged by upstream-suite-leg (#238): the vendored',
+    '// fixture closure names the NodeJS namespace; @types/node itself is not',
+    '// vendored. Ambient vocabulary only — no member shapes are asserted.',
+    'declare namespace NodeJS {',
+    '  interface Process {}',
+    '  interface ProcessEnv { [key: string]: string | undefined }',
+    '  interface Timeout {}',
+    '  interface Immediate {}',
+    '}',
+    'declare namespace NodeJS { interface Process { env: ProcessEnv } }',
+    '',
+  ].join('\n');
+  // The python3 writer (a staged real child) owns the bytes; spawnSync has
+  // no stdin-input face worth leaning on here.
+  const writer = spawnSync('/usr/bin/python3', ['-c', `import pathlib; pathlib.Path('${nm}/index.d.ts').write_text(${JSON.stringify(decl)})`]);
+  if (writer.status !== 0) {
+    log.debug('fixture @types/node stub skipped', { code: writer.status });
+  } else {
+    spawnSync('/usr/bin/python3', ['-c', `import json, pathlib; p = pathlib.Path('${nm}/package.json'); p.write_text(json.dumps({'name': '@types/node', 'version': '0.0.0-test-support', 'types': './index.d.ts'}))`]);
+  }
+};
+
+export { stageFixtureTypesStub };
