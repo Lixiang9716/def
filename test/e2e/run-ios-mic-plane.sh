@@ -21,7 +21,7 @@ UDID="${DSH_E2E_UDID:-A4AE41BF-026A-441E-85DF-F53522996073}"   # dsh-iphone
 ART="hosts/ios/artifacts/mic-plane"
 SKIP_BUILD=0
 SKIP_INSTALL=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 APP=hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app
 DEADLINE=$((SECONDS + 600))
 while [ $# -gt 0 ]; do

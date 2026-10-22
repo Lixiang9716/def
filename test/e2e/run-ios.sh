@@ -40,7 +40,7 @@ ART="hosts/ios/artifacts/gateway"
 SKIP_BUILD=0
 NO_REBOOT=0
 SKIP_INSTALL=0
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 APP=hosts/ios/DerivedData/Build/Products/Debug-iphonesimulator/DSHHost.app
 # The step-3 REBOOT kills any running WDA, so step 5 re-bootstraps it on the
 # freshly booted sim — test-manager daemons can take minutes there, and the

@@ -101,7 +101,7 @@ SIMCTL_CHILD_DYLD_FALLBACK_LIBRARY_PATH="$RUNTIME_ROOT/System/Cryptexes/OS/usr/l
 xcrun simctl launch --terminate-running-process \
   --stdout="$PWD/$ART/logs.txt" \
   --stderr="$PWD/$ART/nslog-stderr.txt" \
-  "$UDID" org.dsh.DSHHost || launch_rc=$?
+  "$UDID" io.github.lixiang9716.def || launch_rc=$?
 if [ "$launch_rc" != "0" ]; then
   echo "::error::simctl launch exited $launch_rc — the app launched and then exited or crashed. Captured log + screenshot are uploaded; the checks below run on whatever was captured."
 fi

@@ -274,10 +274,10 @@ external/ensure-dsh.sh
 
 # 2. stage them into the app container
 #    simulator:
-APP_DATA=$(xcrun simctl get_app_container "$UDID" org.dsh.DSHHost data)
+APP_DATA=$(xcrun simctl get_app_container "$UDID" io.github.lixiang9716.def data)
 #    device (iOS 17+; UDID or name from `xcrun devicectl list devices`):
 #      xcrun devicectl device copy to --device "$DEVICE" \
-#        --domain-type appDataContainer --domain-identifier org.dsh.DSHHost \
+#        --domain-type appDataContainer --domain-identifier io.github.lixiang9716.def \
 #        --source <tree> --destination Documents/...
 #    both: dist → Documents/official-web/dist
 #          client bundles → Documents/web-plugins/npm/@deepseek-ai/
@@ -286,10 +286,10 @@ APP_DATA=$(xcrun simctl get_app_container "$UDID" org.dsh.DSHHost data)
 
 # 3. launch in official-web mode
 #    simulator:
-xcrun simctl launch org.dsh.DSHHost -dsh-mode official-web
+xcrun simctl launch io.github.lixiang9716.def -dsh-mode official-web
 #    device:
 #      xcrun devicectl device process launch --device "$DEVICE" \
-#        org.dsh.DSHHost -dsh-mode official-web
+#        io.github.lixiang9716.def -dsh-mode official-web
 ```
 
 A real chat turn additionally needs credentials in

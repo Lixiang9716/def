@@ -10,7 +10,7 @@ final class KeychainPrimitives {
     private let service: String
 
     init(core: GatewayCore) {
-        service = Bundle.main.bundleIdentifier ?? "org.dsh.DSHHost"
+        service = Bundle.main.bundleIdentifier ?? "io.github.lixiang9716.def"
         core.register(name: "keychainGet") { call, done in self.get(call, done) }
         core.register(name: "keychainSet") { call, done in self.set(call, done) }
     }

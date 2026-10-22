@@ -11,7 +11,7 @@
 #   1. materialize (no rebuild by default): the vendor closure, the official
 #      dist, and the client bundles are verified/rebuilt by their ensure
 #      scripts; `build/build.sh sync ios` regenerates the embed + project.
-#      The INSTALLED org.dsh.DSHHost is driven as-is (the owner's build);
+#      The INSTALLED io.github.lixiang9716.def is driven as-is (the owner's build);
 #      --build opts into gen.sh + xcodebuild when a rebuild is warranted.
 #   2. the vendored dsh-llm-mock on the HOST loopback (the simulator shares
 #      host loopback — no reverse step), script `tool_call_success` then
@@ -42,7 +42,7 @@ set -eu
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
 UDID="${DSH_IOS_UDID:-A4AE41BF-026A-441E-85DF-F53522996073}"   # dsh-iphone
-APP_BUNDLE_ID=org.dsh.DSHHost
+APP_BUNDLE_ID=io.github.lixiang9716.def
 OUT="${DSH_SHELLTURN_OUT:-hosts/ios/artifacts/shell-turn}"
 TOOL_NAME="${DSH_MOCK_TOOL_NAME:-shell}"
 TOOL_ARGS="${DSH_MOCK_TOOL_ARGS:-{\"command\":\"echo hi-from-ios > note.txt && cat note.txt\"}}"
@@ -115,7 +115,7 @@ fi
 bash hosts/ios/Tools/sim-preflight.sh "$UDID" || die "simulator runtime preflight failed (the iOS 18.5 trap)"
 xcrun simctl bootstatus "$UDID" -b >/dev/null || die "simulator did not finish booting"
 APP_DATA="$(xcrun simctl get_app_container "$UDID" "$APP_BUNDLE_ID" data)" \
-    || die "org.dsh.DSHHost is not installed on $UDID (install it first, or pass --build)"
+    || die "io.github.lixiang9716.def is not installed on $UDID (install it first, or pass --build)"
 [ -n "$APP_DATA" ] || die "empty app container path for $APP_BUNDLE_ID"
 
 # ---- 2. the mock in the credential seat ----------------------------------------
@@ -301,7 +301,7 @@ cat > "$OUT/receipt.json" <<EOF
   "host": "iOS Simulator $UDID (pid $APP_PID, -dsh-serve seat)",
   "phase": "t0216.shell.turn",
   "verdict": "$VERDICT",
-  "build": "the installed org.dsh.DSHHost driven with -dsh-serve (AppDelegate.swift:54) — no rebuild; container trees staged per the run-ios-live-write.sh recipe",
+  "build": "the installed io.github.lixiang9716.def driven with -dsh-serve (AppDelegate.swift:54) — no rebuild; container trees staged per the run-ios-live-write.sh recipe",
   "model": "vendored dsh-llm-mock on the host loopback (no reverse — the simulator shares it); tool_call_success → $TOOL_NAME",
   "drive": "composer's own wire: POST /api/session/prompt (client-request envelope) with the dsh.serve origin token (SessionServe.swift:496) and the /api/state pageSession",
   "proves": [

@@ -9,7 +9,7 @@
 # external/ensure.sh.
 name: DSHHost
 options:
-  bundleIdPrefix: org.dsh
+  bundleIdPrefix: io.github.lixiang9716
   createIntermediateGroups: true
   deploymentTarget:
     iOS: "17.0"
@@ -161,7 +161,7 @@ targets:
     info:
       path: App/Info.plist
       properties:
-        CFBundleDisplayName: DSH Dsh
+        CFBundleDisplayName: def
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         UILaunchScreen: {}
@@ -174,7 +174,7 @@ targets:
         NSCameraUsageDescription: The camera capture burst (cameraCapture) lands the frames you shoot into the session's capture scope.
         # The capability plane's microphone face (v1.10.0): the same rule —
         # the first mic request TCC-kills the app without this key.
-        NSMicrophoneUsageDescription: DSH Dsh records audio only while an agent session you started is using the microphone.
+        NSMicrophoneUsageDescription: def records audio only while an agent session you started is using the microphone.
         # The picker E2E grants a scope into the app's Documents directory;
         # both flags keep that directory visible/browsable in Files.app so
         # the granted files can be inspected from the simulator UI.
@@ -182,7 +182,7 @@ targets:
         LSSupportsOpeningDocumentsInPlace: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: org.dsh.DSHHost
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.lixiang9716.def
         SWIFT_OBJC_BRIDGING_HEADER: App/Source/Bridge.h
         TARGETED_DEVICE_FAMILY: "1"
         # Historical: the removed iSH engine was aarch64-only (hand-written

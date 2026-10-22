@@ -227,10 +227,10 @@ external/ensure-dsh.sh
 
 # 2. 暂存进应用容器
 #    模拟器:
-APP_DATA=$(xcrun simctl get_app_container "$UDID" org.dsh.DSHHost data)
+APP_DATA=$(xcrun simctl get_app_container "$UDID" io.github.lixiang9716.def data)
 #    真机(iOS 17+;设备名/UDID 见 `xcrun devicectl list devices`):
 #      xcrun devicectl device copy to --device "$DEVICE" \
-#        --domain-type appDataContainer --domain-identifier org.dsh.DSHHost \
+#        --domain-type appDataContainer --domain-identifier io.github.lixiang9716.def \
 #        --source <tree> --destination Documents/...
 #    两者相同:dist → Documents/official-web/dist
 #             客户端 bundles → Documents/web-plugins/npm/@deepseek-ai/
@@ -239,10 +239,10 @@ APP_DATA=$(xcrun simctl get_app_container "$UDID" org.dsh.DSHHost data)
 
 # 3. 以 official-web 模式启动
 #    模拟器:
-xcrun simctl launch org.dsh.DSHHost -dsh-mode official-web
+xcrun simctl launch io.github.lixiang9716.def -dsh-mode official-web
 #    真机:
 #      xcrun devicectl device process launch --device "$DEVICE" \
-#        org.dsh.DSHHost -dsh-mode official-web
+#        io.github.lixiang9716.def -dsh-mode official-web
 ```
 
 真实对话回合还需要把凭据放进
