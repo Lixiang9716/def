@@ -271,6 +271,12 @@ terminal|0.1.6-alpha.2|cb9b07571654bcfe6877f8ff860a3ebd17564fe17994a9e905aea0ef4
 # session-format + the v0→v1/v1→v2/v2→v3 migration adapters). The backend's
 # native row (koffi/flock) rides the shims' single-process flock face; the
 # boot mounts it behind the options.sessionPersistence gate (default off).
+# The NODE-PTY pair (2026-10-22, the terminal-controller row on the node
+# differential leg): dsh-subprocess-local lazily requires node-pty for real
+# PTY sessions. The binding compiles at provisioning time (see
+# parity-node-modules.sh); node-addon-api is its header dependency for that
+# build. The tarball's prebuilds dir ships the macOS spawn-helper and the
+# Windows conpty bits; Linux builds pty.cc from src.
 # The MCP CLIENT rows (2026-10-20, the streamable-HTTP transport leg):
 # @modelcontextprotocol/client@2.0.0 + core, jose, eventsource, pkce-challenge
 # PROMOTED from the ensure-dsh-tests.sh test table into the product closure
@@ -289,6 +295,8 @@ zod@4.4.3|zod/-/zod-4.4.3.tgz|ee38f17f533fd500610685a483ae2f413c26f4eb33a5168431
 @deepseek-ai/cordis-plugin-loader@1.0.3|@deepseek-ai/cordis-plugin-loader/-/cordis-plugin-loader-1.0.3.tgz|86df86a31f58f306a4bb71c7b9bfe5d47dba8afaacf550ddc3bb654b57821e2f
 @deepseek-ai/cordis-plugin-include@1.0.7|@deepseek-ai/cordis-plugin-include/-/cordis-plugin-include-1.0.7.tgz|fb6a2b9cc4b0da51f736c4bfb281b914dc9987c7235826b0cadb5efcabfe6352
 js-yaml@4.1.0|js-yaml/-/js-yaml-4.1.0.tgz|0dae332559cf22b21c26ea70e732afd8303ff99412f9c3d9d209faa8882cf2ca
+node-pty@1.2.0-beta.15|node-pty/-/node-pty-1.2.0-beta.15.tgz|114ac80c3fe075eff76217a4122d135576582695f49c03a5da3835cdfc2f89c5
+node-addon-api@7.1.1|node-addon-api/-/node-addon-api-7.1.1.tgz|b10455d15a977c0cd17a1cb0eb679e03d939f8ef8d4302eb33e1f78dacc71f82
 @deepseek-ai/dsh-anonymous-user-id@0.1.6-alpha.2|@deepseek-ai/dsh-anonymous-user-id/-/dsh-anonymous-user-id-0.1.6-alpha.2.tgz|2030491f97388ac6dfa5df01811c118354fe9a6b78d3b96dda0ce429d6da5ba3
 @deepseek-ai/dsh-file-reference@0.1.6-alpha.2|@deepseek-ai/dsh-file-reference/-/dsh-file-reference-0.1.6-alpha.2.tgz|a26f311c6002f65c7aae9a40b32287d7d87352ea64a21405f1e9c070620fba5d
 @deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2|@deepseek-ai/dsh-file-reference-local/-/dsh-file-reference-local-0.1.6-alpha.2.tgz|05a17ee9e586514793078a7301c64c6c0bbcb40b48576988a9518846fe55412b
