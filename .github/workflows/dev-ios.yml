@@ -86,13 +86,22 @@ jobs:
           # gitignored build output, absent from a fresh checkout until gen.sh
           # runs BELOW this step — keying on them was hashing air and made the
           # key blind to exactly nothing.
-          key: dev-ios-deriveddata-${{ hashFiles('hosts/ios/App/Source/**', 'hosts/ios/Tools/**', 'hosts/ios/project.yml') }}
+          #
+          # github.repository is a third rotation axis, added after the
+          # dsh-mobile -> def rename (#658): the runner workspace path embeds
+          # the repo name (/Users/runner/work/<name>/<name>), and DerivedData's
+          # PCH/module caches record those absolute paths — restoring the old
+          # tree under the new workspace failed the bridging-header precompile.
+          # A future rename rotates the key by itself.
+          key: dev-ios-deriveddata-${{ github.repository }}-${{ hashFiles('hosts/ios/App/Source/**', 'hosts/ios/Tools/**', 'hosts/ios/project.yml') }}
           # A static key with no fallback is written once and then never
           # refreshed — every later run restores the same frozen tree. The
           # prefix fallback lets a newer save land and be picked up, while the
-          # primary key still pins the fast path.
+          # primary key still pins the fast path. The repository rides the
+          # prefix too: a cross-rename restore is the failure this key exists
+          # to prevent.
           restore-keys: |
-            dev-ios-deriveddata-
+            dev-ios-deriveddata-${{ github.repository }}-
 
       - name: Toolchain sanity
         run: |
