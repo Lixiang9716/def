@@ -124,7 +124,10 @@ export const REGISTRY = [
           'then landed 24 more rows: 63 -> 58 -> 46, and five ' +
           'leakage-blessed rows flipped to NO under the correct isolation ' +
           '(shipped-root, typert type-model, computer-use composition, ' +
-          'inspector host ×2) — fresh triage rows.',
+          'inspector host ×2) — fresh triage rows. The node harness now ' +
+          'executes the shim tables + bridges family (2026-10-21): mount ' +
+          '14/39 -> 51/2, inventory all-fail -> 9/3 inside their rows; the ' +
+          'final surface is 46 rows, every one naming a mechanism.',
         column: 'node',
         drive: {
           cwd: '.',
