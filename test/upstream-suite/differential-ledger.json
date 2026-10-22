@@ -1,0 +1,62 @@
+{
+  "ssh__ssh__tests__helper-failure-settlement": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-capability": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-timeout": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-lifetime": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__helper-lifecycle": {
+    "class": "d-contract",
+    "note": "One visible failure is 'leaked helper allocations', but its root is the same node:tls refusal: the TLS listener never completes, so close-join sees allocations nothing can release. qjs-red/node-green by frozen contract (cascade signature, 2026-10-22 evidence)."
+  },
+  "session__session-persistence-jsonl__tests__content-admission": {
+    "class": "d-contract",
+    "note": "The jsonl persistence spine loads its worker module (worker.js) — worker_threads-class ability the qjs host declares unavailable by design ('stored log is corrupt: cannot load module worker.js'); the node leg runs the real worker. qjs-red/node-green by frozen contract (D-b worker decision)."
+  },
+  "session__session-persistence-jsonl__tests__multi-edge-publication": {
+    "class": "d-contract",
+    "note": "Same worker-module refusal as the persistence rows; its two JsonlGenerationSourceChangedError instanceof rows are cascades (drift rejection lives behind the worker). qjs-red/node-green by frozen contract."
+  },
+  "session__session-persistence-jsonl__tests__v2-ptc-migration": {
+    "class": "d-contract",
+    "note": "The migration verifier drives the persistence worker; qjs answers the worker-module refusal by design. qjs-red/node-green by frozen contract."
+  },
+  "session__session-persistence-jsonl__tests__v2-system-migration": {
+    "class": "d-contract",
+    "note": "The migration verifier drives the persistence worker; qjs answers the worker-module refusal by design. qjs-red/node-green by frozen contract."
+  },
+  "preset__agent-presets__tests__shipped-root": {
+    "class": "c-delta",
+    "note": "The dsh-mobile host intentionally ships its own `mobile` preset (runtime/dsh/presets-mobile, synthesized into the generated probe seed); the vendored roster assertion enumerates exactly the upstream four (cordis/minimal/ptc/standard) and cannot pass on this host. qjs 5/1 vs node 6/0 — a real host-vs-upstream-contract finding, kept as a documented delta."
+  },
+  "subprocess__subprocess-local__tests__spawn-runner": {
+    "class": "both-red",
+    "note": "Structural both-legs red in kind: the inlined spawnRunnerInvocation branches on import.meta.url ending .ts, and a single-file transpile pins it to the built-entry limb, so the assertion's source-form tsx/esm URL (registry-served, double-encoded %252F) can never appear. Upstream is green only inside its monorepo layout."
+  },
+  "deliverables__workspace-changes__tests__plugin": {
+    "class": "c-delta",
+    "note": "Two facets. (1) The qjs leg pins HOME under the profile container (/tmp/dsh-runtime-smoke.*) while the vendored plugin hardcodes /tmp as its temporary root — out-of-repo $HOME captures fail the vendored isTemporaryPath rule and are legitimately excluded (two it-blocks). (2) os.tmpdir() deliberately pins the profile container: honoring the spec's TMPDIR env rewrite (real node's POSIX contract) would let the shell's TMPDIR move every tmp write out of the fs sandbox — a frozen host-contract refusal, not a bug. node 16/0 vs qjs 13/3."
+  },
+  "acp__acp__tests__turns": {
+    "class": "c-delta",
+    "note": "Cancel-delivery latency, not an ordering bug: client.notify(session/cancel) resolves when the frame is WRITTEN; the qjs web-streams reader faces add dozens of microtask hops before the bridge processes it, while native streams deliver same-tick. The upstream assertions read the settlement flag synchronously after the await, so the admission trio (settled flag / agent-idle / a full LLM request in the gap) fails deterministically. Admission machinery itself verified correct (abort state, throwIfAborted, settlement latch). node 32/0 vs qjs 29/3."
+  },
+  "session__session-telemetry-otel__tests__egress": {
+    "class": "c-delta",
+    "note": "qjs 0/4 (node 4/0). Probe-evidenced 2026-10-22: the OTLP dispatch DOES reach the loopback client face (four http.request calls to otel-direct.invalid, each with an agent and setTimeout(1000) armed — the missing setTimeout face was found and fixed this session), yet the in-test collector records zero captures. The failing hop is inside the agent-lookup routing from the dispatch to the collector server (host spelling otel-direct.invalid vs the registry key) or the exporter's swallowed response handling; needs its own instrumented dig."
+  },
+  "lsp__lsp-stdio__tests__instance": {
+    "class": "c-delta",
+    "note": "One timing-sensitive test: 'terminates when abort interrupts a backpressured didOpen write' lands either side across identical runs (23/0 and 22/1 both observed 2026-10-22) — the abort-vs-backpressure write race under the shim stream faces. node 23/0 stable; the qjs instance suite is otherwise green."
+  }
+}

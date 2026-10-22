@@ -224,6 +224,46 @@ stage_nested "$VENDOR/npm/@img" sharp-libvips-linux-arm64 "$VENDOR/npm/@img/shar
 # faces require.resolve at call time (importing stays addon-free).
 stage_nested "$VENDOR/npm/@deepseek-ai/node-addon-system@0.1.2/node_modules/@deepseek-ai" node-addon-system-linux-x64 "$VENDOR/npm/@deepseek-ai/node-addon-system-linux-x64@0.1.2"
 stage_nested "$VENDOR/npm/@deepseek-ai/node-addon-system@0.1.2/node_modules/@deepseek-ai" node-addon-system-linux-arm64 "$VENDOR/npm/@deepseek-ai/node-addon-system-linux-arm64@0.1.2"
+
+# The node-pty native binding (2026-10-22): the links above resolve the JS
+# half, but the binding is machine-built at provisioning time — never
+# committed, rebuilt here whenever absent (a cold seat used to fail the
+# real-PTY rows with "Cannot find module 'node-pty'" because the first seat
+# that measured them compiled the binding by hand). Headers come from an
+# include/node tree beside the node/npm on PATH (nvm installs ship them;
+# bare bin-only installs do not) so the build usually stays offline; when
+# neither headers nor toolchain exist the face is named and skipped — the
+# rows then fail honestly, which is the platform-coverage stance the
+# terminal-controller row landed with (D6 vendor discipline: the vendored
+# bytes stay verbatim; this only builds them).
+PTYSRC="$VENDOR/npm/node-pty@1.2.0-beta.15"
+if [ -d "$PTYSRC" ] && [ ! -f "$PTYSRC/build/Release/pty.node" ]; then
+    NODE_BIN="$(command -v node || true)"
+    NPM_BIN="$(command -v npm || true)"
+    GYP=""
+    if command -v node-gyp >/dev/null 2>&1; then
+        GYP="node-gyp"
+    elif [ -n "$NPM_BIN" ] && [ -f "$(dirname "$NPM_BIN")/../lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js" ]; then
+        GYP="node $(dirname "$NPM_BIN")/../lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js"
+    fi
+    if [ -z "$GYP" ]; then
+        echo "parity node_modules: node-pty binding NOT built — no node-gyp on PATH or beside npm; the real-PTY rows will fail on the node leg" >&2
+    else
+        NODEDIR=""
+        for cand in "$(dirname "${NPM_BIN:-}")/.." "$(dirname "${NODE_BIN:-}")/.."; do
+            if [ -n "$cand" ] && [ -f "$cand/include/node/node.h" ]; then
+                NODEDIR="$(cd "$cand" && pwd)"
+                break
+            fi
+        done
+        echo "parity node_modules: building the node-pty native binding (one-time per tree)${NODEDIR:+ — headers from $NODEDIR}"
+        if ( cd "$PTYSRC" && $GYP rebuild ${NODEDIR:+--nodedir="$NODEDIR"} ) >&2; then
+            echo "parity node_modules: node-pty binding built: $PTYSRC/build/Release/pty.node"
+        else
+            echo "parity node_modules: node-pty binding build FAILED — the real-PTY rows will fail on the node leg" >&2
+        fi
+    fi
+fi
 fi  # --parity-only guard around the test-face staging
 
 # The driver itself lives at runtime/dsh/ci/ — OUTSIDE the vendor tree —

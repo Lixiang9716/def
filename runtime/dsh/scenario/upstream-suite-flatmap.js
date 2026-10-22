@@ -51,10 +51,20 @@ const watchTrees = [
 const reRoots = [
   ['@deepseek-ai/dsh/', '../../third-party/deepseek-harness/apps/cli/'],
   ['/@deepseek-ai/dsh/', '../../third-party/deepseek-harness/apps/cli/'],
-  ['/package.json', 'vendor/npm/@deepseek-ai/dsh-sdk-client@0.1.6-alpha.2/package.json'],
 ];
 
-export const installFlatPathMap = () => {
+
+/** The bare '/package.json' reRoot is the #240 sdk-launch family's
+ * consumer-manifest answer — SCOPED to those stems, not global: answered
+ * globally it catches the inventory walk's root-relative nearestManifest
+ * miss and mis-attributes the loose module to the vendored sdk-client
+ * identity (the inventory "reports active package versions once" row,
+ * 2026-10-22). */
+const scopedReRoots = (reRoots, spec) => (typeof spec === 'string' && spec.replace(/^upstream-tests\//, '').startsWith('sdk__')
+  ? [...reRoots, ['/package.json', 'vendor/npm/@deepseek-ai/dsh-sdk-client@0.1.6-alpha.2/package.json']]
+  : reRoots);
+
+export const installFlatPathMap = (spec) => {
   // #240 (2026-09-29): the spec joins its consumer manifest against
   // process.cwd() — the RUN's workspace root (/tmp/dsh-runtime-smoke.*) — so
   // the ancestor walk produces WORKSPACE-ABSOLUTE spellings
@@ -69,8 +79,9 @@ export const installFlatPathMap = () => {
   const roots = [globalThis.__dshProfileCwd, globalThis.__dshProfileTmpdir]
     .filter((root) => typeof root === 'string' && root.length > 0)
     .map((root) => `${root.replace(/\/$/, '')}/`);
+  const reRootsScoped = scopedReRoots(reRoots, spec);
   const mapAll = (candidate) => {
-    for (const [staged, real] of reRoots) {
+    for (const [staged, real] of reRootsScoped) {
       if (staged.endsWith('/') ? candidate.startsWith(staged) : candidate === staged) {
         return `${real}${candidate.slice(staged.length)}`;
       }
@@ -97,3 +108,35 @@ export const installFlatPathMap = () => {
     return undefined;
   };
 };
+
+/** The fixture @types/node stub (moved here from upstream-suite-leg.js
+ * when that file crossed the line budget, 2026-10-22): the leg passes its
+ * own log face — this module stays import-free (the closure-file cycle
+ * rule in the header). */
+export const stageFixtureTypesStub = async (log, spawnSync) => {
+  const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
+  const nm = `${root}/node_modules/@types/node`;
+  spawnSync('/bin/mkdir', ['-p', nm]);
+  const decl = [
+    '// Test-support minimum staged by upstream-suite-leg (#238): the vendored',
+    '// fixture closure names the NodeJS namespace; @types/node itself is not',
+    '// vendored. Ambient vocabulary only — no member shapes are asserted.',
+    'declare namespace NodeJS {',
+    '  interface Process {}',
+    '  interface ProcessEnv { [key: string]: string | undefined }',
+    '  interface Timeout {}',
+    '  interface Immediate {}',
+    '}',
+    'declare namespace NodeJS { interface Process { env: ProcessEnv } }',
+    '',
+  ].join('\n');
+  // The python3 writer (a staged real child) owns the bytes; spawnSync has
+  // no stdin-input face worth leaning on here.
+  const writer = spawnSync('/usr/bin/python3', ['-c', `import pathlib; pathlib.Path('${nm}/index.d.ts').write_text(${JSON.stringify(decl)})`]);
+  if (writer.status !== 0) {
+    log.debug('fixture @types/node stub skipped', { code: writer.status });
+  } else {
+    spawnSync('/usr/bin/python3', ['-c', `import json, pathlib; p = pathlib.Path('${nm}/package.json'); p.write_text(json.dumps({'name': '@types/node', 'version': '0.0.0-test-support', 'types': './index.d.ts'}))`]);
+  }
+};
+

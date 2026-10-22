@@ -54,6 +54,8 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { REGISTRY, computeFingerprint } from '../../test/verifications.mjs';
 import { ensureParityFarm } from './parity-farm.mjs';
+import { classifyDisagreements, loadLedger, renderTotals } from './sweep-ledger.js';
+export { renderTotals };
 
 const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const SWEEP_ENTRY = 'upstream-sweep';
@@ -163,16 +165,6 @@ export const computeTotals = (rows) => ({
   qjsGreen: rows.filter((r) => r.qjs.includes('"failed":0')).length,
   disagreements: rows.filter((r) => r.agree === 'NO').length,
 });
-
-/** The totals block — the bash sweep's exact four segments (the second
- * carrying its three-line parenthetical note, verbatim). */
-export const renderTotals = (totals, reportPath) =>
-  `specs: ${totals.specs}\n` +
-  `qjs specs with a green summary: ${totals.qjsGreen} (see the note for the\n` +
-  '  three-way classification: green / partial / module-gap —\n' +
-  '  module-gap rows carry no summary by construction)\n' +
-  `failed-count disagreements (qjs vs node): ${totals.disagreements}\n` +
-  `report: ${reportPath}\n`;
 
 /** Bounded-concurrency pool: at most `width` workers in flight, every item
  * processed exactly once, results in input order. A worker rejection fails
@@ -432,11 +424,12 @@ const executeSweep = async (ctx) => {
   mkdirSync(ctx.outDir, { recursive: true });
   writeFileSync(ctx.paths.report, renderReport(rows));
   const totals = computeTotals(rows);
-  const totalsText = renderTotals(totals, ctx.paths.report);
+  const classification = classifyDisagreements(rows, loadLedger(ctx.root));
+  const totalsText = renderTotals(totals, ctx.paths.report, classification);
   writeFileSync(ctx.paths.totals, totalsText);
   console.log(`sweep: DONE — ${ctx.paths.totals}`);
   process.stdout.write(totalsText);
-  return { reportPath: ctx.paths.report, totalsPath: ctx.paths.totals, rows, totals };
+  return { reportPath: ctx.paths.report, totalsPath: ctx.paths.totals, rows, totals, classification };
 };
 
 /** The whole sweep. Injectable (root/registry/legs/freshness/specsDir/out/

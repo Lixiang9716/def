@@ -46,6 +46,14 @@ const randomUUID = () => {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 };
 
+// The HOST crypto global carries only getRandomValues (dsh_runtime_host.c's
+// crypto face); the MCP server's request-id minter calls crypto.randomUUID()
+// unguarded (server dist :684) and the ACP bridge wraps the throw as
+// JSON-RPC "Internal error". Attach THIS module's v4 minter — the property
+// form (not ??= on the global) because the host object already exists, and
+// a future host-native randomUUID overwrites it by plain assignment.
+globalThis.crypto.randomUUID ??= randomUUID;
+
 /** Pure-JS SHA-1 over byte arrays (FIPS 180-1). 32-bit ops via Math.floor
  * arithmetic: quickjs has no Int32 overflow semantics to lean on beyond
  * `|0`, so every add re-truncates — correct, and irrelevant at staged-bundle

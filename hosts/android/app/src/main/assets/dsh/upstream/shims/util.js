@@ -383,11 +383,19 @@ export class TextDecoder {
   }
 
   decode(bytes, options = {}) {
-    bytes = toBytesView(bytes);
     if (bytes === undefined || bytes === null) {
+      // The nullary face is the stream FINAL flush: node replaces the held
+      // tail with ONE U+FFFD per maximal subpart — and the parked tail is
+      // by construction a single incomplete sequence suffix (the stream
+      // face holds back only the longest complete prefix), so the flush is
+      // exactly one replacement character. The old body dropped #pending
+      // on the floor ('flushes incomplete UTF-8', 2026-10-22; the first
+      // cut decoded lossily and answered one FFFD PER BYTE).
+      const pending = this.#pending;
       this.#pending = null;
-      return '';
+      return pending !== null && pending.length > 0 ? '\uFFFD' : '';
     }
+    bytes = toBytesView(bytes);
     // Single-byte face: every byte maps through the cp1252 index directly;
     // no sequences, so stream mode carries nothing.
     if (this.#cp1252) {

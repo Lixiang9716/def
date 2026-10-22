@@ -129,8 +129,24 @@ export const REGISTRY = [
           'b-closeout (2026-10-22) then vendored the node-pty pair ' +
           '(controller flips: node 55/0), moved the typert resolve face to ' +
           'the staged-fs read, and re-measured: 63 -> 42, with the same ' +
-          'five leakage-blessed rows NO under the correct isolation — ' +
-          'the final surface, every row naming a mechanism.',
+          'five leakage-blessed rows NO under the correct isolation. The ' +
+          'diff-closeout (2026-10-22, the terminal state) then landed the ' +
+          'final waves — the loader bridge row, the node-pty provisioning ' +
+          'compile, the transpile-inline sibling staging, the ENUMERATED ' +
+          'farm re-anchor (compaction/goal instanceof rows; the blanket ' +
+          'form hijacked tool-web), the dual-realm FormData gate, the ' +
+          'no-real-package bridge rows, sparse fs truncate, exports-map ' +
+          'resolve, the vitest-faithful stubEnv, the existsSync VFS-miss ' +
+          'real-disk fall-through, the child stdio close — 30 rows ' +
+          'flipped to agreement, and the remaining 15 moved into the ' +
+          'committed differential ledger ' +
+          '(test/upstream-suite/differential-ledger.json, read by the ' +
+          'sweep driver: 9 d-contract, 5 c-delta, 1 both-red; the totals ' +
+          'report documented vs unexplained and name every unexplained ' +
+          'or stale row — terminal state: 15 disagreements, 15 ' +
+          'documented, 0 unexplained). This entry is done: the ' +
+          'differential is honest end to end and every disagreement ' +
+          'names its finding.',
         column: 'node',
         drive: {
           cwd: '.',

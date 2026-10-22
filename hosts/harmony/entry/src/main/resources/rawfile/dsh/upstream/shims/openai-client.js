@@ -80,11 +80,18 @@ function apiPromise(settled) {
  * non-2xx → status/error/message throw. */
 async function wireRequest(client, path, params, options) {
   const doFetch = client.fetchImpl();
-  const headers = {
-    ...(client.apiKey ? { authorization: `Bearer ${client.apiKey}` } : {}),
-    'content-type': 'application/json',
-    ...client.defaultHeaders,
-  };
+  // Case-insensitive fold, last wins — the real SDK's Headers.set: pi-ai's
+  // client headers put "User-Agent" (via real node:os) in the same object as
+  // attribution's lowercase "user-agent", and native fetch APPENDS
+  // case-variant duplicates instead of collapsing them (the qjs loopback
+  // already folds last-wins, so the wire is unchanged there).
+  const headerBag = new Map();
+  if (client.apiKey) headerBag.set('authorization', `Bearer ${client.apiKey}`);
+  headerBag.set('content-type', 'application/json');
+  for (const [name, value] of Object.entries(client.defaultHeaders ?? {})) {
+    headerBag.set(String(name).toLowerCase(), String(value));
+  }
+  const headers = Object.fromEntries(headerBag);
   const init = {
     method: 'POST',
     headers,

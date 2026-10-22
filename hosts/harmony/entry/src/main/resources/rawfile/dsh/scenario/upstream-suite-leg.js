@@ -18,7 +18,7 @@ import 'upstream/shims/npm-bridges.js'; // the bare-npm bridges (diff/yaml/choki
 import { createLogger } from 'logger.js';
 import { resetCollection, runCollected } from 'scenario/upstream-test-harness.js';
 import { fsScope } from 'gateway.js';
-import { installFlatPathMap } from 'scenario/upstream-suite-flatmap.js';
+import { installFlatPathMap, stageFixtureTypesStub } from 'scenario/upstream-suite-flatmap.js';
 import { stageRemoteMockTypeWorld } from 'scenario/upstream-suite-type-world.js';
 
 const SCENARIO = 'upstream.suite';
@@ -159,6 +159,14 @@ const REAL_SIBLING_FILES = [
   ['packages/host/directory-picker-native/src/win32-dialog-worker.ts', 'win32-dialog-worker.ts'],
   // the sdk-client fake runtime server (spawned as `execPath fake-runtime.ts`)
   ['packages/sdk/client/tests/fake-runtime.ts', 'fake-runtime.ts'],
+  // the acp bridge's stdio MCP server — the transpiled spec joins
+  // ../../../mcp/mcp-client/tests/fixture-server.ts at the bundle root, and
+  // the mounted session's MCP mount spawns it through cross-spawn (the
+  // acp bridge row, 2026-10-22)
+  // (destination walks out of upstream-tests/: the bridge spec's URL math
+  // joins ../../../mcp/... at the BUNDLE root, so the remap looks under
+  // runtime/dsh/mcp/... — not under upstream-tests/)
+  ['packages/mcp/mcp-client/tests/fixture-server.ts', '../mcp/mcp-client/tests/fixture-server.ts'],
   // skill-office's checkers spec spawns `python3 check_office_test.py` — the
   // script is a REAL sibling of the vendored spec (#238, 2026-09-28)
   ['packages/skill/skill-office/tests/check_office_test.py', 'check_office_test.py'],
@@ -175,6 +183,10 @@ const stageRealSiblingFiles = async () => {
   const { spawnSync } = await import('node:child_process');
   for (const [from, to] of REAL_SIBLING_FILES) {
     const vendorPath = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/${from}`;
+    if (to.includes('/')) {
+      // cp -R needs the destination dir (no implicit mkdir in /bin/cp).
+      spawnSync('/bin/mkdir', ['-p', `upstream-tests/${to.slice(0, to.lastIndexOf('/'))}`]);
+    }
     const res = spawnSync('/bin/cp', [vendorPath, `upstream-tests/${to}`]);
     if (res.status !== 0) {
       log.debug('sibling stage failed', { from, to, code: res.error?.code ?? res.stderr?.slice?.(0, 80) });
@@ -251,14 +263,24 @@ const preloadRealFs = async () => {
  * self-contained (D6: read-only staging of the pinned vendored bytes). */
 const stageFixtureNodeModules = async (spawnSync) => {
   const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
-  for (const pkg of ['zod']) {
-    const probe = spawnSync('/bin/test', ['-d', `vendor/node_modules/${pkg}`]);
+  // zod mirrors from the runtime vendor; the @deepseek-ai entries mirror
+  // from the runtime closure's node_modules — the fixture presets name
+  // them as plugin rows and the vendored packageInstalled walk climbs
+  // node_modules ancestors of the run scope (measured: preset remote +
+  // composition-inventory answered `broken: row "prompt" … cannot be
+  // resolved` without it, 2026-10-22).
+  const mirrors = [
+    ['vendor/node_modules/zod', 'zod'],
+    ['node_modules/@deepseek-ai/dsh-system-prompt', '@deepseek-ai/dsh-system-prompt'],
+  ];
+  for (const [src, dest] of mirrors) {
+    const probe = spawnSync('/bin/test', ['-d', src]);
     if (probe.status !== 0) continue;
     // cp -R src dest/ needs dest to exist (no implicit mkdir in /bin/cp).
-    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules`]);
-    const mirror = spawnSync('/bin/cp', ['-R', `vendor/node_modules/${pkg}`, `${root}/node_modules/`]);
+    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules/${dest}`]);
+    const mirror = spawnSync('/bin/cp', ['-R', `${src}/.`, `${root}/node_modules/${dest}/`]);
     if (mirror.status !== 0) {
-      log.debug('fixture node_modules mirror skipped', { pkg, code: mirror.status });
+      log.debug('fixture node_modules mirror skipped', { src, code: mirror.status });
     }
   }
 };
@@ -270,38 +292,31 @@ const stageFixtureNodeModules = async (spawnSync) => {
  * .parity-shim precedent): just enough ambient vocabulary for the namespace
  * lookups to resolve — the analyzer under test observes the fixture's OWN
  * declarations, and the vendored fixture tree must stay verbatim (D6). */
-const stageFixtureTypesStub = async (spawnSync) => {
-  const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
-  const nm = `${root}/node_modules/@types/node`;
-  spawnSync('/bin/mkdir', ['-p', nm]);
-  const decl = [
-    '// Test-support minimum staged by upstream-suite-leg (#238): the vendored',
-    '// fixture closure names the NodeJS namespace; @types/node itself is not',
-    '// vendored. Ambient vocabulary only — no member shapes are asserted.',
-    'declare namespace NodeJS {',
-    '  interface Process {}',
-    '  interface ProcessEnv { [key: string]: string | undefined }',
-    '  interface Timeout {}',
-    '  interface Immediate {}',
-    '}',
-    'declare namespace NodeJS { interface Process { env: ProcessEnv } }',
-    '',
-  ].join('\n');
-  // The python3 writer (a staged real child) owns the bytes; spawnSync has
-  // no stdin-input face worth leaning on here.
-  const writer = spawnSync('/usr/bin/python3', ['-c', `import pathlib; pathlib.Path('${nm}/index.d.ts').write_text(${JSON.stringify(decl)})`]);
-  if (writer.status !== 0) {
-    log.debug('fixture @types/node stub skipped', { code: writer.status });
-  } else {
-    spawnSync('/usr/bin/python3', ['-c', `import json, pathlib; p = pathlib.Path('${nm}/package.json'); p.write_text(json.dumps({'name': '@types/node', 'version': '0.0.0-test-support', 'types': './index.d.ts'}))`]);
-  }
-};
 
 const stageRealFixturesTree = async (spec) => {
   const stem = spec.replace(/^upstream-tests\//, '').replace(/\.spec\.mjs$/, '');
   const parts = stem.split('__');
   if (parts.length < 3 || parts[2] !== 'tests') return;
-  const vendorFixtures = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22).
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22). Existence rides the same real-child channel as the copy.
+  const vendorRoot = `vendor/dsh-tests@${VENDOR_TESTS_TAG}`;
+  const fixturesRel = `/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  let vendorBase = vendorRoot;
+  const { spawnSync: probe } = await import('node:child_process');
+  if (probe('/usr/bin/test', ['-d', vendorRoot + fixturesRel]).status !== 0) {
+    vendorBase = `../../external/dsh-tests@${VENDOR_TESTS_TAG}`;
+  }
+  const vendorFixtures = vendorBase + fixturesRel;
   // The cwd-joined path is the RUN'S OWN real scope root (the per-run
   // mkdtemp), not the CLI checkout — materialize there (absolute real paths;
   // the /bin tools see exactly what the real fallback will stat).
@@ -314,7 +329,7 @@ const stageRealFixturesTree = async (spec) => {
     log.debug('fixtures tree stage skipped', { vendorFixtures, code: res.status });
   }
   await stageFixtureNodeModules(spawnSync);
-  await stageFixtureTypesStub(spawnSync);
+  await stageFixtureTypesStub(log, spawnSync);
 };
 
 /** Pin the real host platform for the shell-gated suites (#238): upstream
@@ -420,8 +435,9 @@ const bootLegEnvironment = async () => {
   await pinProfileContainer();
   // Stage the spawned sibling files (real children read the real disk).
   await stageRealSiblingFiles();
-  // Bundle-relative paths re-root at the real checkout (see above).
-  installFlatPathMap();
+  // Bundle-relative paths re-root at the real checkout (see above); the
+  // spec stem scopes the family-specific rows.
+  installFlatPathMap(cfg.spec);
   // The fs faces' real readdir needs the namespace before the spec's
   // module-scope walks run.
   await preloadRealFs();

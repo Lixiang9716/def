@@ -131,6 +131,8 @@ import {
   wsEnotdir,
   wsMkdir,
   wsWriteFile,
+  wsTruncateAt,
+  wsMaterialize,
   wsRm,
   wsRename,
   wsLink,
@@ -229,7 +231,10 @@ export const readAnyBytes = (path) => {
       error.path = resolved;
       throw error;
     }
-    return DshBuffer.fromBytes(file.bytes);
+    // The sparse truncate-grow tail answers zeros here, at the one read arm
+    // every read path funnels through (fs-promises readFile, FileHandle
+    // read/write/append — node's sparse read semantics).
+    return DshBuffer.fromBytes(wsMaterialize(file));
   }
   // Reading a DIRECTORY is EISDIR, like node's open(2) gate (measured
   // 2026-09-28: credentials-local mkdirs the document path and expects the
@@ -338,7 +343,7 @@ export const readFileSync = (rawPath, encoding) => {
       throw error;
     }
     assertReadEncoding(encoding);
-    return decodeReadBytes(file.bytes, encoding);
+    return decodeReadBytes(wsMaterialize(file), encoding);
   }
   const files = vfs();
   if (files !== null && underVFS(path)) {
@@ -373,6 +378,7 @@ export {
   mountWorkspace as _mountWorkspace,
   wsMkdir as _wsMkdir,
   wsWriteFile as _wsWriteFile,
+  wsTruncateAt as _wsTruncate,
   wsRm as _wsRm,
   wsRename as _wsRename,
   wsLink as _wsLink,

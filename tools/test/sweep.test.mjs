@@ -329,7 +329,88 @@ it('runSweep end to end: the TSV report and the totals file are the rendered row
   expect(report.split('\n')[0]).toBe('spec\tqjs\tnode\tagree');
   expect(report).toBe(renderReport(result.rows));
   const totalsText = readFileSync(result.totalsPath, 'utf8');
-  expect(totalsText).toBe(renderTotals(result.totals, result.reportPath));
+  // The classification (against the root's ledger — the fixture root has
+  // none, so b-second lands unexplained) is part of the rendered block.
+  expect(totalsText).toBe(renderTotals(result.totals, result.reportPath, result.classification));
+  expect(result.classification.unexplained).toEqual(['b-second']);
+  expect(totalsText).toContain('  unexplained: 1\n    UNEXPLAINED: b-second\n');
+  expect(result.reportPath).toBe(join(fx.out, 'upstream-suite-report.tsv'));
+  expect(result.totalsPath).toBe(join(fx.out, 'upstream-suite-report-totals.txt'));
+  cleanup(fx.root);
+});
+
+it('runPool caps concurrency at width and completes every item in order', async () => {
+  let active = 0;
+  let peak = 0;
+  const results = await runPool([1, 2, 3, 4, 5, 6, 7], 3, async (n) => {
+    active += 1;
+    peak = Math.max(peak, active);
+    await new Promise((r) => setTimeout(r, 5));
+    active -= 1;
+    return n * 10;
+  });
+  expect(peak).toBeLessThanOrEqual(3);
+  expect(results).toEqual([10, 20, 30, 40, 50, 60, 70]);
+});
+
+it('runPool propagates a worker failure (after every lane settles)', async () => {
+  const failer = async (n) => {
+    if (n === 2) throw new Error('boom');
+    return n;
+  };
+  await expect(runPool([1, 2], 2, failer)).rejects.toThrow('boom');
+});
+
+it('runLeg extracts the summary even on exit 1 and appends the exit line (delta 1)', async () => {
+  const root = seat();
+  const leg = fakeLeg('node', 'SM \\{.*\\}', 'first', () => [
+    'node',
+    '-e',
+    'console.log("SM {\\"failed\\":3}"); process.exit(1);',
+  ]);
+  const logPath = join(root, 'x.node.log');
+  const result = await runLeg(leg, 'x.spec.mjs', { root, logPath, timeoutMs: 5000 });
+  expect(result).toEqual({ summary: 'SM {"failed":3}', exitCode: 1, timedOut: false });
+  expect(readFileSync(logPath, 'utf8')).toContain('sweep: exit=1 timedOut=false');
+  cleanup(root);
+});
+
+it('runLeg SIGKILLs a hung leg past a short timeout and reports timedOut', async () => {
+  const root = seat();
+  const leg = fakeLeg('qjs', 'SM \\{.*\\}', 'last', () => ['node', '-e', 'setInterval(() => {}, 1000);']);
+  const logPath = join(root, 'x.qjs.log');
+  const result = await runLeg(leg, 'x.spec.mjs', { root, logPath, timeoutMs: 400 });
+  expect(result.timedOut).toBe(true);
+  expect(result.summary).toBeNull();
+  expect(readFileSync(logPath, 'utf8')).toContain('sweep: exit=null timedOut=true');
+  cleanup(root);
+});
+
+it('runSweep end to end: stem-sorted rows, agreement, totals — over the fixture', async () => {
+  const { fx, result } = await runFixture();
+  expect(result.rows.map((r) => r.stem)).toEqual(['a-first', 'b-second', 'c-third']);
+  expect(result.rows.map((r) => r.agree)).toEqual(['yes', 'NO', '—']);
+  expect(result.rows.map((r) => r.qjs)).toEqual([
+    'QJS {"failed":0}',
+    'QJS {"failed":2}',
+    'TIMEOUT-OR-ERROR',
+  ]);
+  expect(result.rows.map((r) => r.node)).toEqual(['NODE {"failed":0}', 'NODE {"failed":0}', 'NODE {"failed":0}']);
+  expect(result.totals).toEqual({ specs: 3, qjsGreen: 1, disagreements: 1 });
+  cleanup(fx.root);
+});
+
+it('runSweep end to end: the TSV report and the totals file are the rendered rows', async () => {
+  const { fx, result } = await runFixture();
+  const report = readFileSync(result.reportPath, 'utf8');
+  expect(report.split('\n')[0]).toBe('spec\tqjs\tnode\tagree');
+  expect(report).toBe(renderReport(result.rows));
+  const totalsText = readFileSync(result.totalsPath, 'utf8');
+  // The classification (against the root's ledger — the fixture root has
+  // none, so b-second lands unexplained) is part of the rendered block.
+  expect(totalsText).toBe(renderTotals(result.totals, result.reportPath, result.classification));
+  expect(result.classification.unexplained).toEqual(['b-second']);
+  expect(totalsText).toContain('  unexplained: 1\n    UNEXPLAINED: b-second\n');
   expect(result.reportPath).toBe(join(fx.out, 'upstream-suite-report.tsv'));
   expect(result.totalsPath).toBe(join(fx.out, 'upstream-suite-report-totals.txt'));
   cleanup(fx.root);
@@ -401,74 +482,5 @@ it('dry-run lists a missing required binary in plan.missingRequires instead of r
   const { plan } = await runSweep({ root, legs: [leg], freshness: null, specsDir: root, out: root, dryRun: true });
   expect(plan.missingRequires).toEqual(['no/such/binary']);
   expect(plan.discoveryError).toMatch(/no \*\.spec\.mjs specs/);
-  cleanup(root);
-});
-
-it('ensureFresh does nothing when the staged stamp matches the fingerprint', async () => {
-  const root = seat();
-  const now = computeFingerprint();
-  writeFileSync(join(root, 'gen.stamp'), now);
-  const drive = { freshness: { stamp: 'gen.stamp', refresh: [{ cwd: '.', argv: ['node', '-e', 'process.exit(1)'] }] } };
-  const out = await ensureFresh({ root, drive, dryRun: false });
-  expect(out).toEqual({ staged: now, now, stale: false, ranRefresh: false });
-  cleanup(root);
-});
-
-it('ensureFresh prints the bash stale line and runs every refresh step in order on mismatch', async () => {
-  const root = seat();
-  const marker = join(root, 'marker');
-  writeFileSync(join(root, 'gen.stamp'), 'stale-stamp-value');
-  const drive = {
-    freshness: {
-      stamp: 'gen.stamp',
-      refresh: [
-        { cwd: '.', argv: ['node', '-e', 'require("node:fs").writeFileSync(process.argv[1], "one")', marker] },
-        { cwd: '.', argv: ['node', '-e', 'require("node:fs").appendFileSync(process.argv[1], "two")', marker] },
-      ],
-    },
-  };
-  const logged = [];
-  const spy = vi.spyOn(console, 'log').mockImplementation((...parts) => logged.push(parts.join(' ')));
-  try {
-    const out = await ensureFresh({ root, drive, dryRun: false });
-    expect(out.stale).toBe(true);
-    expect(out.ranRefresh).toBe(true);
-    expect(readFileSync(marker, 'utf8')).toBe('onetwo');
-  } finally {
-    spy.mockRestore();
-  }
-  expect(logged.join('\n')).toContain('sweep: staged upstream-tests stale (gen stale-stamp-');
-  expect(logged.join('\n')).toContain('— re-transpiling');
-  cleanup(root);
-});
-
-it('ensureFresh aborts with a SweepFailure when a refresh step fails (delta 4)', async () => {
-  const root = seat();
-  writeFileSync(join(root, 'gen.stamp'), 'stale-stamp-value');
-  const drive = { freshness: { stamp: 'gen.stamp', refresh: [{ cwd: '.', argv: ['node', '-e', 'process.exit(3)'] }] } };
-  const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-  try {
-    await expect(ensureFresh({ root, drive, dryRun: false })).rejects.toThrow(/freshness step failed.*exit 3/s);
-  } finally {
-    spy.mockRestore();
-  }
-  cleanup(root);
-});
-
-it('ensureFresh dryRun compares only — a stale stamp triggers no refresh step', async () => {
-  const root = seat();
-  writeFileSync(join(root, 'gen.stamp'), 'stale-stamp-value');
-  const drive = {
-    freshness: {
-      stamp: 'gen.stamp',
-      refresh: [
-        { cwd: '.', argv: ['node', '-e', 'require("node:fs").writeFileSync(process.argv[1], "RAN")', join(root, 'marker')] },
-      ],
-    },
-  };
-  const out = await ensureFresh({ root, drive, dryRun: true });
-  expect(out.stale).toBe(true);
-  expect(out.ranRefresh).toBe(false);
-  expect(existsSync(join(root, 'marker'))).toBe(false);
   cleanup(root);
 });
