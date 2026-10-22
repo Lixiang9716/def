@@ -140,4 +140,3 @@ export const stageFixtureTypesStub = async (log, spawnSync) => {
   }
 };
 
-export { stageFixtureTypesStub };
