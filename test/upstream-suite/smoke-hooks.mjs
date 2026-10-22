@@ -160,9 +160,8 @@ const farmAnchoredDshResolve = async (specifier, context, nextResolve) => {
 };
 
 export async function resolve(specifier, context, nextResolve) {
-  // The passthrough set MUST be checked before the registry lookup — the
-  // registration file for node:child_process exists on every run and would
-  // otherwise win (#626).
+  // The passthrough set MUST precede the registry lookup — the
+  // node:child_process registration file exists on every run (#626).
   if (NODE_BUILTIN_PASSTHROUGH.has(specifier)) {
     return { url: specifier, shortCircuit: true };
   }
@@ -204,7 +203,8 @@ export async function resolve(specifier, context, nextResolve) {
   if (special !== null) {
     return { url: pathToFileURL(special).href, shortCircuit: true };
   }
-  const anchored = farmAnchoredDshResolve(specifier, context, nextResolve);
+  // await is LOAD-BEARING: un-awaited, a fall-through returns Promise-of-undefined (sweep-5 collapse).
+  const anchored = await farmAnchoredDshResolve(specifier, context, nextResolve);
   if (anchored !== undefined) return anchored;
   return nextResolve(specifier, context);
 }
