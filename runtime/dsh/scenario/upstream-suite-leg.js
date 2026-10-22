@@ -159,6 +159,14 @@ const REAL_SIBLING_FILES = [
   ['packages/host/directory-picker-native/src/win32-dialog-worker.ts', 'win32-dialog-worker.ts'],
   // the sdk-client fake runtime server (spawned as `execPath fake-runtime.ts`)
   ['packages/sdk/client/tests/fake-runtime.ts', 'fake-runtime.ts'],
+  // the acp bridge's stdio MCP server — the transpiled spec joins
+  // ../../../mcp/mcp-client/tests/fixture-server.ts at the bundle root, and
+  // the mounted session's MCP mount spawns it through cross-spawn (the
+  // acp bridge row, 2026-10-22)
+  // (destination walks out of upstream-tests/: the bridge spec's URL math
+  // joins ../../../mcp/... at the BUNDLE root, so the remap looks under
+  // runtime/dsh/mcp/... — not under upstream-tests/)
+  ['packages/mcp/mcp-client/tests/fixture-server.ts', '../mcp/mcp-client/tests/fixture-server.ts'],
   // skill-office's checkers spec spawns `python3 check_office_test.py` — the
   // script is a REAL sibling of the vendored spec (#238, 2026-09-28)
   ['packages/skill/skill-office/tests/check_office_test.py', 'check_office_test.py'],
@@ -175,6 +183,10 @@ const stageRealSiblingFiles = async () => {
   const { spawnSync } = await import('node:child_process');
   for (const [from, to] of REAL_SIBLING_FILES) {
     const vendorPath = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/${from}`;
+    if (to.includes('/')) {
+      // cp -R needs the destination dir (no implicit mkdir in /bin/cp).
+      spawnSync('/bin/mkdir', ['-p', `upstream-tests/${to.slice(0, to.lastIndexOf('/'))}`]);
+    }
     const res = spawnSync('/bin/cp', [vendorPath, `upstream-tests/${to}`]);
     if (res.status !== 0) {
       log.debug('sibling stage failed', { from, to, code: res.error?.code ?? res.stderr?.slice?.(0, 80) });
@@ -251,14 +263,24 @@ const preloadRealFs = async () => {
  * self-contained (D6: read-only staging of the pinned vendored bytes). */
 const stageFixtureNodeModules = async (spawnSync) => {
   const root = globalThis.__dshProfileCwd?.replace(/\/$/, '');
-  for (const pkg of ['zod']) {
-    const probe = spawnSync('/bin/test', ['-d', `vendor/node_modules/${pkg}`]);
+  // zod mirrors from the runtime vendor; the @deepseek-ai entries mirror
+  // from the runtime closure's node_modules — the fixture presets name
+  // them as plugin rows and the vendored packageInstalled walk climbs
+  // node_modules ancestors of the run scope (measured: preset remote +
+  // composition-inventory answered `broken: row "prompt" … cannot be
+  // resolved` without it, 2026-10-22).
+  const mirrors = [
+    ['vendor/node_modules/zod', 'zod'],
+    ['node_modules/@deepseek-ai/dsh-system-prompt', '@deepseek-ai/dsh-system-prompt'],
+  ];
+  for (const [src, dest] of mirrors) {
+    const probe = spawnSync('/bin/test', ['-d', src]);
     if (probe.status !== 0) continue;
     // cp -R src dest/ needs dest to exist (no implicit mkdir in /bin/cp).
-    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules`]);
-    const mirror = spawnSync('/bin/cp', ['-R', `vendor/node_modules/${pkg}`, `${root}/node_modules/`]);
+    spawnSync('/bin/mkdir', ['-p', `${root}/node_modules/${dest}`]);
+    const mirror = spawnSync('/bin/cp', ['-R', `${src}/.`, `${root}/node_modules/${dest}/`]);
     if (mirror.status !== 0) {
-      log.debug('fixture node_modules mirror skipped', { pkg, code: mirror.status });
+      log.debug('fixture node_modules mirror skipped', { src, code: mirror.status });
     }
   }
 };
@@ -301,7 +323,26 @@ const stageRealFixturesTree = async (spec) => {
   const stem = spec.replace(/^upstream-tests\//, '').replace(/\.spec\.mjs$/, '');
   const parts = stem.split('__');
   if (parts.length < 3 || parts[2] !== 'tests') return;
-  const vendorFixtures = `vendor/dsh-tests@${VENDOR_TESTS_TAG}/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22).
+  // The runtime-vendor fixtures tree is provisioning-dependent (a worktree
+  // whose ensure-dsh-tests hasn't run lacks it); the identical tree exists
+  // under the test assets at external/ — fall back to it verbatim (D6-safe:
+  // placement, not a rewrite) so the stage never silently degrades to the
+  // 17-file seed (measured: preset remote/composition-inventory roster rows,
+  // 2026-10-22). Existence rides the same real-child channel as the copy.
+  const vendorRoot = `vendor/dsh-tests@${VENDOR_TESTS_TAG}`;
+  const fixturesRel = `/packages/${parts[0]}/${parts[1]}/tests/fixtures`;
+  let vendorBase = vendorRoot;
+  const { spawnSync: probe } = await import('node:child_process');
+  if (probe('/usr/bin/test', ['-d', vendorRoot + fixturesRel]).status !== 0) {
+    vendorBase = `../../external/dsh-tests@${VENDOR_TESTS_TAG}`;
+  }
+  const vendorFixtures = vendorBase + fixturesRel;
   // The cwd-joined path is the RUN'S OWN real scope root (the per-run
   // mkdtemp), not the CLI checkout — materialize there (absolute real paths;
   // the /bin tools see exactly what the real fallback will stat).
@@ -420,8 +461,9 @@ const bootLegEnvironment = async () => {
   await pinProfileContainer();
   // Stage the spawned sibling files (real children read the real disk).
   await stageRealSiblingFiles();
-  // Bundle-relative paths re-root at the real checkout (see above).
-  installFlatPathMap();
+  // Bundle-relative paths re-root at the real checkout (see above); the
+  // spec stem scopes the family-specific rows.
+  installFlatPathMap(cfg.spec);
   // The fs faces' real readdir needs the namespace before the spec's
   // module-scope walks run.
   await preloadRealFs();
