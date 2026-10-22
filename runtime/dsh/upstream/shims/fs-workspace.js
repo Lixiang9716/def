@@ -255,8 +255,11 @@ const wsStatAt = (path, bigint) => {
   if (at === null) return null;
   const file = at.state.files.get(at.path);
   if (file !== undefined) {
+    // A sparse truncate-grow tail counts toward size (node stats the sparse
+    // length); the bytes answer zeros only when materialized on read.
+    const size = file.bytes.length + (file.sparseTail ?? 0);
     return statFace('file', {
-      size: bigint ? BigInt(file.bytes.length) : file.bytes.length,
+      size: bigint ? BigInt(size) : size,
       // The number face carries the permission bits (spill/aging stat().mode
       // vs the 0700/0644 constants) and dev/ino (the v2 rename-identity assert).
       dev: 1,
@@ -376,7 +379,7 @@ const resolveSymlinkAt = (path) => {
 // The mutation faces live in fs-workspace-write.js (the file crossed the
 // size budget); re-exported here so every existing import — fs.js's and
 // fs-promises's whole surface — keeps its specifier.
-import { wsMkdir as wsMkdirCore, wsWriteFile, wsRm, wsResolveSymlinkChain } from 'upstream/shims/fs-workspace-write.js';
+import { wsMkdir as wsMkdirCore, wsWriteFile, wsRm, wsResolveSymlinkChain, wsMaterialize, wsTruncateAt } from 'upstream/shims/fs-workspace-write.js';
 import { wsRename as wsRenameCore, wsLink, wsChmod, wsUtimes } from 'upstream/shims/fs-workspace-rename.js';
 import { wsSymlink } from 'upstream/shims/fs-workspace-write.js';
 
@@ -490,6 +493,8 @@ export {
   wsEexist,
   wsEnotdir,
   wsWriteFile,
+  wsTruncateAt,
+  wsMaterialize,
   wsRm,
   wsLink,
   wsChmod,

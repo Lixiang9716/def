@@ -3,9 +3,9 @@
 /** smoke.mjs — run ONE transpiled spec through the quickjs-shaped harness
  * under Node (both hosts share the pipeline; this isolates harness bugs
  * from runtime gaps). usage: node smoke.mjs <spec.mjs> */
-import { register } from 'node:module';
+import { register, registerHooks } from 'node:module';
 import { pathToFileURL } from 'node:url';
-import { dirname, join, resolve as pathResolve } from 'node:path';
+import { basename, dirname, join, resolve as pathResolve } from 'node:path';
 import { symlinkSync } from 'node:fs';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 
@@ -22,6 +22,28 @@ mkdirSync(REG_DIR, { recursive: true });
 globalThis.__dshModuleDefine = (name, source) => {
   writeFileSync(pathResolve(REG_DIR, encodeURIComponent(name) + '.mjs'), source);
 };
+
+// The CJS require seam (SYNC hooks intercept require; the async register()
+// below never sees it): vendored packages' `createLazyRequire('sharp',
+// import.meta.url)` must reach the D-c pure-JS sharp face (the closure
+// ships the @img binaries for LINUX only — on darwin-arm64 real sharp
+// throws at load and the durable-image pipeline dies, the computer-use
+// composition row), and the sharp shim's own internals require
+// '/vendor/npm/...' bundle-root shapes the ESM hook already maps.
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier === 'sharp') {
+      return { url: pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/sharp/index.js')).href, shortCircuit: true };
+    }
+    if (specifier.startsWith('/vendor/')) {
+      return {
+        url: pathToFileURL(pathResolve(ROOT, 'runtime/dsh', specifier.slice(1))).href,
+        shortCircuit: true,
+      };
+    }
+    return nextResolve(specifier, context);
+  },
+});
 
 // Execute the shim tables so their __dshModuleDefine rows land as
 // registration files BEFORE the spec loads: the qjs boot imports
@@ -44,8 +66,21 @@ globalThis.__dshModuleDefine = (name, source) => {
 // the loader tree-base semantics the preset mount/inventory rows exercise.
 await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/runtime-modules.js')));
 const { BRIDGES_C } = await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/npm-bridges-c.js')));
-for (const [name, source] of BRIDGES_C) {
-  if (name === '@deepseek-ai/cordis-plugin-loader') globalThis.__dshModuleDefine(name, source);
+const { BRIDGES_B } = await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/npm-bridges-b.js')));
+// openai / @anthropic-ai/sdk / partial-json: NO real package exists anywhere
+// in the closure (the heavy SDKs were deliberately never fetched), so pi-ai's
+// lazy API graph cannot load without their bridge faces — the adapters
+// convert the load failure into an error finish chunk and the rows see empty
+// streams. These are the cordis-plugin-loader class: registered because the
+// real thing does not exist, not instead of it.
+const HARNESS_BRIDGE_ROWS = new Set([
+  '@deepseek-ai/cordis-plugin-loader',
+  'openai',
+  '@anthropic-ai/sdk',
+  'partial-json',
+]);
+for (const [name, source] of [...BRIDGES_C, ...BRIDGES_B]) {
+  if (HARNESS_BRIDGE_ROWS.has(name)) globalThis.__dshModuleDefine(name, source);
 }
 
 const unhandled = [];
@@ -138,6 +173,46 @@ for (const sibling of ['worker.js']) {
   const src = pathResolve(ROOT, 'runtime/dsh/upstream-tests', sibling);
   if (existsSync(src)) copyFileSync(src, join(WORK_RUNTIME_DSH, 'upstream-tests', sibling));
 }
+// The transpiler inlines each SPEC but not the non-spec files its URL math
+// names; the qjs staged fs serves them, so the work root stages the named
+// leaves. Sources stay verbatim vendored bytes (D6) — this is placement,
+// not a rewrite. Sourced from ROOT (this worktree), never from the primary
+// checkout's absolute links.
+const STAGED_SIBLINGS = [
+  // sdk-client's fakeLaunch spawns node <specDir>/fake-runtime.ts.
+  ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/sdk/client/tests/fake-runtime.ts', join(WORK_RUNTIME_DSH, 'upstream-tests')],
+  // acp bridge's fixture-server.ts lives at <work>/mcp/mcp-client/tests/ in
+  // the flat layout; it imports @modelcontextprotocol/server + zod, which
+  // resolve only through the farm — a node_modules link in that dir.
+  ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/mcp/mcp-client/tests/fixture-server.ts', join(WORK, 'mcp/mcp-client/tests')],
+];
+for (const [src, dir] of STAGED_SIBLINGS) {
+  const from = pathResolve(ROOT, src);
+  if (!existsSync(from)) continue;
+  mkdirSync(dir, { recursive: true });
+  copyFileSync(from, join(dir, basename(from)));
+  if (dir.endsWith('mcp/mcp-client/tests')) {
+    try {
+      symlinkSync(pathResolve(ROOT, 'external/node_modules'), join(dir, 'node_modules'), 'dir');
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+    }
+  }
+}
+// sdk-client's installedDshNodeLaunch reads ../package.json relative to the
+// spec copy — upstream the sdk-client package manifest (version parity vs
+// @deepseek-ai/dsh); the staged answer is the vendored package's own.
+const sdkClientPkg = pathResolve(ROOT, 'external/npm/@deepseek-ai/dsh-sdk-client@0.1.6-alpha.2/package.json');
+if (existsSync(sdkClientPkg)) copyFileSync(sdkClientPkg, join(WORK_RUNTIME_DSH, 'package.json'));
+// skill-office adjacency: the vendored service's default asset root is its
+// OWN ../assets/, while the spec asserts the seeded fixture tree beside the
+// spec copy — the hook serves the lib from this verbatim work-root copy, so
+// its '../assets/' lands on the seeded tree (smoke-hooks serveSpecialRows).
+const skillOfficeLib = pathResolve(ROOT, 'external/npm/@deepseek-ai/dsh-skill-office@0.1.6-alpha.2/lib/index.js');
+if (existsSync(skillOfficeLib)) {
+  mkdirSync(join(WORK_RUNTIME_DSH, 'lib'), { recursive: true });
+  copyFileSync(skillOfficeLib, join(WORK_RUNTIME_DSH, 'lib/dsh-skill-office.js'));
+}
 
 // The web faces: the vendored closure expects the DOM faces the qjs host
 // presents, and the harness and the product boot must agree on the same
@@ -154,6 +229,30 @@ for (const k of ['Event', 'EventTarget', 'CustomEvent', 'MessageEvent', 'ErrorEv
 }
 const webStorage = await shim('web-storage.js');
 webStorage.installWebStorage();
+
+// The runtime presents the qjs value classes as globals (above) while fetch
+// stays NATIVE (only-when-absent installers keep Node's) — and native fetch
+// brand-checks its own FormData, so a shim-realm FormData body dies with a
+// bare "fetch failed" and the Files-API upload falls back to the inline
+// shape (the deepseek adapter rows, 2026-10-22). The adapter serializes the
+// shim faces over the multipart encoder and delegates everything else.
+const webFetchForms = await shim('web-fetch-forms.js');
+const webMultipart = await shim('web-multipart.js');
+const nativeFetch = globalThis.fetch.bind(globalThis);
+globalThis.fetch = (input, init = {}) => {
+  const body = init?.body;
+  if (body instanceof webFetchForms.FormData) {
+    return webMultipart.encodeFormData(body).then(({ bytes, contentType }) => {
+      const headers = new globalThis.Headers(init?.headers);
+      headers.set('content-type', contentType);
+      return nativeFetch(input, { ...init, body: Buffer.from(bytes), headers });
+    });
+  }
+  if (body instanceof webFetchForms.Blob) {
+    return nativeFetch(input, { ...init, body: Buffer.from(webFetchForms.blobState.get(body).bytes) });
+  }
+  return nativeFetch(input, init);
+};
 
 // The tsx-face host intrinsics: after the #626/#647 passthrough the REAL
 // child_process namespace is the honest node-side face (the parity

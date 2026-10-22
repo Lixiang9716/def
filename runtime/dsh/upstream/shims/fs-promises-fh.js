@@ -11,7 +11,7 @@ import { existsSync, statSync } from 'upstream/shims/fs.js';
 // under both entries — a bundle-path import would dual-instance the
 // module and read its `open` binding mid-cycle (measured: 'open is not
 // initialized' at boot).
-import { enoent, writeFile, readFile, realFileExists, constants, _wsChmod, _wsWriteFile, _wsAt } from 'node:fs/promises';
+import { enoent, writeFile, readFile, realFileExists, constants, _wsChmod, _wsWriteFile, _wsTruncate, _wsAt } from 'node:fs/promises';
 
 /** The FileHandle face the closure's write paths drive: fs-local's atomic
  * write (staging `wx` + diff-basis `r`) and the session-persistence-jsonl
@@ -103,9 +103,8 @@ class FileHandle {
     if (!Number.isInteger(len) || len < 0) {
       throw new TypeError(`FileHandle.truncate: non-negative integer len, got ${String(len)}`);
     }
-    const data = await readFile(this.#path);
-    if (data.byteLength <= len) return undefined;
-    return _wsWriteFile(this.#path, data.subarray(0, len), undefined);
+    await _wsTruncate(this.#path, len);
+    return undefined;
   }
 
   async chmod(mode) {

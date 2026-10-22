@@ -39,10 +39,35 @@ const serveSpecialRows = (specifier) => {
     return pathResolve(
       ROOT, 'external/dsh/util-crypto@0.1.6-alpha.2/lib/index.js');
   }
+  // The farm's @deepseek-ai/dsh-session-persistence row still serves the
+  // errors-only parity shim (.parity-shim-session-persistence) whose own
+  // header says to retire the mapping once the real package is vendored —
+  // it has been (external/dsh/session-persistence). The stale row served a
+  // DIFFERENT SessionPersistenceNotFoundError class than the vendored
+  // graph's, so agent-loop's `instanceof` gate missed and the config-driven
+  // exact-id restore died contained instead of falling through to create().
+  if (specifier === '@deepseek-ai/dsh-session-persistence') {
+    return pathResolve(
+      ROOT, 'external/dsh/session-persistence@0.1.6-alpha.2/lib/index.js');
+  }
   if (specifier === '@deepseek-ai/dsh-subprocess-local/index') {
     return pathResolve(
       ROOT,
       'external/npm/@deepseek-ai/dsh-subprocess-local@0.1.6-alpha.2/lib/index.js',
+    );
+  }
+  // The skill-office spec's spec/lib split: the vendored service's default
+  // asset root is `new URL('../assets/', import.meta.url)` — ITS OWN vendored
+  // dir — while the spec asserts the seeded fixture tree beside the spec
+  // copy. The qjs leg bridges the split by re-rooting fileURLToPath for
+  // exactly this vendor subtree; the node leg restores the upstream
+  // ADJACENCY instead: serve the lib from a verbatim copy inside the work
+  // root (staged by smoke.mjs next to the seeded assets), so '../assets/'
+  // lands on the fixture tree.
+  if (specifier === '@deepseek-ai/dsh-skill-office') {
+    return pathResolve(
+      ROOT,
+      `runtime/dsh/upstream-tests/.seam-run/${process.pid}/runtime/dsh/lib/dsh-skill-office.js`,
     );
   }
   // The subprocess control fixture's spawned child imports the package's
@@ -128,6 +153,33 @@ export async function resolve(specifier, context, nextResolve) {
   const special = serveSpecialRows(specifier);
   if (special !== null) {
     return { url: pathToFileURL(special).href, shortCircuit: true };
+  }
+  // Spec-side bare dsh imports must share ONE physical copy with the
+  // vendored graph: the spec copy lives under .seam-run/<pid>/, whose
+  // ancestor walk lands on runtime/dsh/node_modules — the RUNTIME VENDOR
+  // face — while the vendored packages resolve their siblings through
+  // external/node_modules (the farm) — two module instances of one logical
+  // package, and every cross-module instanceof gate between the spec and
+  // the vendored code fails (compaction's ManualCompactionError, goal's
+  // GoalError — 2026-10-22). Re-anchor ONLY the enumerated names: the
+  // blanket form hijacked tool-web, whose spec-side import MUST keep the
+  // runtime-vendor face (the host-integrated dsh-web the suite exercises —
+  // the raw npm face fails 3 turndown rows). Each name here carries a
+  // proven two-face split; new names join with their row's evidence.
+  const FARM_ANCHORED_DSH = new Set([
+    '@deepseek-ai/dsh-compaction',
+    '@deepseek-ai/dsh-compaction-basic',
+    '@deepseek-ai/dsh-command-compact',
+    '@deepseek-ai/dsh-goal',
+    '@deepseek-ai/dsh-command-goal',
+  ]);
+  if (FARM_ANCHORED_DSH.has(specifier) && context.parentURL?.includes('/.seam-run/')) {
+    try {
+      return await nextResolve(specifier, {
+        ...context,
+        parentURL: pathToFileURL(pathResolve(ROOT, 'external/node_modules/_pin.js')).href,
+      });
+    } catch { /* not farm-served; fall through */ }
   }
   return nextResolve(specifier, context);
 }

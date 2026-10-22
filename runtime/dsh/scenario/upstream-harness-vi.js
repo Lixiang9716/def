@@ -104,7 +104,12 @@ const viApi = {
   stubEnv(name, value) {
     if (!viApi._envStubs) viApi._envStubs = {};
     if (!(name in viApi._envStubs)) viApi._envStubs[name] = process.env[name];
-    process.env[name] = value;
+    // Real vitest DELETES the key when the stubbed value is undefined; the
+    // assignment form coerced undefined to the string "undefined" under
+    // real Node, and the vendored env resolvers then read a path named
+    // "undefined" (shell-env / home-paths DSH_HOME=undefined rows).
+    if (value === undefined) delete process.env[name];
+    else process.env[name] = value;
   },
   unstubAllEnvs() {
     for (const [name, value] of Object.entries(viApi._envStubs ?? {})) {

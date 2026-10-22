@@ -39,6 +39,7 @@ import {
   _mountWorkspace,
   _wsMkdir,
   _wsWriteFile,
+  _wsTruncate,
   _wsRm,
   _wsRename,
   _wsLink,
@@ -58,7 +59,7 @@ import { open } from 'upstream/shims/fs-promises-fh.js';
 export { open };
 // The FileHandle module's handle-member faces (an ESM cycle: fh imports
 // this module; call-time reads only).
-export { _wsChmod, _wsWriteFile, _wsAt };
+export { _wsChmod, _wsWriteFile, _wsTruncate, _wsAt };
 
 /** Re-exported so the composition that mounts fs-local pins the workspace
  * through the same seam the sync face serves. */
@@ -473,9 +474,7 @@ export const truncate = async (path, len) => {
   if (typeof path !== 'string' || !Number.isInteger(len) || len < 0) {
     throw new TypeError('truncate: (path, len) with a non-negative integer len');
   }
-  const data = await readFile(path);
-  if (data.byteLength <= len) return undefined;
-  await writeFile(path, data.subarray(0, len));
+  await _wsTruncate(path, len);
   return undefined;
 };
 

@@ -187,6 +187,9 @@ export const wsWriteFile = (path, bytes, mode) => {
   const existing = state.files.get(canonical);
   if (existing !== undefined) {
     existing.bytes = bytes;
+    // A materialized write replaces any sparse tail wholesale (node: writes
+    // go through the file, so nothing trailing-zero stays unmaterialized).
+    existing.sparseTail = 0;
     existing.mtimeNs = bumpClock(state);
     if (typeof mode === 'number') existing.mode = mode;
     defineWrittenModule(path, canonical, bytes);
@@ -198,6 +201,58 @@ export const wsWriteFile = (path, bytes, mode) => {
   defineWrittenModule(path, canonical, bytes);
   notifyWatches(canonical);
   wsMirrorWriteReal(canonical, bytes);
+  return canonical;
+};
+
+/** The full byte view of a file entry: zeros where a truncate-grow tail was
+ * never materialized. node's ftruncate is sparse — recording the tail
+ * instead of allocating it keeps a 1 GiB grow from materializing inside the
+ * memory store — and every read path funnels through this one helper, so
+ * the zeros answer on read like node's. */
+export const wsMaterialize = (file) => {
+  const tail = file.sparseTail ?? 0;
+  if (tail === 0) return file.bytes;
+  const full = new Uint8Array(file.bytes.length + tail);
+  full.set(file.bytes, 0);
+  return full;
+};
+
+/** truncate(path, len) over the workspace — node ftruncate semantics: grow
+ * pads with zeros (recorded sparse, see wsMaterialize), shrink cuts. The
+ * real-disk mirror follows the shrink (small files) so seam children never
+ * read stale tails; a sparse GROW has no byte-true mirror without
+ * materializing it, so it stays VFS-only like every >8 MiB payload. */
+export const wsTruncateAt = (path, len) => {
+  const at = wsAt(path);
+  if (at === null) {
+    throw new Error(`node:fs.truncate: path outside the writable workspace root: ${path}${wsRootHint(path)}`);
+  }
+  const { state } = at;
+  const canonical = wsResolveSymlinkChain(state, at.path);
+  wsRequireDirWrite(state, canonical, 'truncate');
+  const file = state.files.get(canonical);
+  if (file === undefined) {
+    const error = new Error(`ENOENT: no such file or directory, truncate '${canonical}'`);
+    error.code = 'ENOENT';
+    error.errno = -2;
+    error.syscall = 'truncate';
+    error.path = canonical;
+    throw error;
+  }
+  const total = file.bytes.length + (file.sparseTail ?? 0);
+  if (total !== len) {
+    if (len <= file.bytes.length) {
+      file.bytes = file.bytes.subarray(0, len);
+      file.sparseTail = 0;
+      wsMirrorWriteReal(canonical, file.bytes);
+    } else {
+      // Covers both grow-from-materialized and shrink-INTO-the-tail: the
+      // kept prefix stays, the tail absorbs the difference.
+      file.sparseTail = len - file.bytes.length;
+    }
+    file.mtimeNs = bumpClock(state);
+  }
+  notifyWatches(canonical);
   return canonical;
 };
 

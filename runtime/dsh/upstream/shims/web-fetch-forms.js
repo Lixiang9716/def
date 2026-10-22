@@ -123,19 +123,33 @@ export class FormData {
   #normalized(name, value, filename) {
     // On a host with a NATIVE Blob (plain Node), the vendored clients
     // construct the native class while this FormData is the shim face —
-    // accept either realm's Blob (an object with the Blob shape suffices;
-    // the qjs single-realm case is the instanceof fast path).
-    const blobLike = typeof value !== 'string'
-      && (value instanceof Blob
-        || (typeof value === 'object' && value !== null
-          && typeof value.array === 'function' && typeof value.size === 'number'));
-    if (typeof value !== 'string' && !blobLike) {
+    // accept either realm's Blob. `array` alone is the shim Blob's private
+    // surface, and probing ONLY it rejected every native Blob (the
+    // DeepSeek file upload rows died on "value must be a string or a
+    // Blob", 2026-10-22) — the both-realms probe checks a member each
+    // realm exposes over the shared Blob shape.
+    const isString = typeof value === 'string';
+    const shimBlob = !isString && value instanceof Blob;
+    const nativeBlob = !isString && !shimBlob
+      && typeof value === 'object' && value !== null
+      && typeof value.size === 'number'
+      && (typeof value.arrayBuffer === 'function' || typeof value.bytes === 'function');
+    if (!isString && !shimBlob && !nativeBlob) {
       throw new TypeError('FormData: value must be a string or a Blob');
+    }
+    if (nativeBlob && typeof globalThis.File === 'function') {
+      // A native-realm Blob wraps into the NATIVE File — its constructor
+      // clones Blob-part bytes synchronously, so the W3C
+      // append-Blob-under-a-filename construct crosses the realm boundary
+      // with eager bytes/name/type and reads back instanceof the native
+      // globals the specs assert.
+      const name2 = typeof filename === 'string' ? filename : 'blob';
+      return { name: String(name), value: new globalThis.File([value], name2, { type: value.type }), filename: undefined };
     }
     // Appending a Blob under a filename wraps it into a File (the W3C
     // formData construct; the DeepSeek upload path sets Blobs with names
     // and the suite reads them back as File instances).
-    const fileLike = !(typeof value === 'string') && !(value instanceof File);
+    const fileLike = !isString && !(value instanceof File);
     if (fileLike || (value instanceof File && filename !== undefined)) {
       const name2 = typeof filename === 'string' ? filename : (value instanceof File ? value.name : 'blob');
       return { name: String(name), value: new File([value], name2, { type: value.type }), filename: undefined };

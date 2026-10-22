@@ -1,1 +1,50 @@
-{}
+{
+  "ssh__ssh__tests__helper-failure-settlement": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-capability": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-timeout": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__stream-lifetime": {
+    "class": "d-contract",
+    "note": "qjs serves the deliberate node:tls refusal (no socket seam — a TLS transport is a desktop host capability, D2); the node leg drives the real TLS transport. qjs-red/node-green by frozen contract."
+  },
+  "ssh__ssh__tests__helper-lifecycle": {
+    "class": "d-contract",
+    "note": "One visible failure is 'leaked helper allocations', but its root is the same node:tls refusal: the TLS listener never completes, so close-join sees allocations nothing can release. qjs-red/node-green by frozen contract (cascade signature, 2026-10-22 evidence)."
+  },
+  "session__session-persistence-jsonl__tests__content-admission": {
+    "class": "d-contract",
+    "note": "The jsonl persistence spine loads its worker module (worker.js) — worker_threads-class ability the qjs host declares unavailable by design ('stored log is corrupt: cannot load module worker.js'); the node leg runs the real worker. qjs-red/node-green by frozen contract (D-b worker decision)."
+  },
+  "session__session-persistence-jsonl__tests__multi-edge-publication": {
+    "class": "d-contract",
+    "note": "Same worker-module refusal as the persistence rows; its two JsonlGenerationSourceChangedError instanceof rows are cascades (drift rejection lives behind the worker). qjs-red/node-green by frozen contract."
+  },
+  "session__session-persistence-jsonl__tests__v2-ptc-migration": {
+    "class": "d-contract",
+    "note": "The migration verifier drives the persistence worker; qjs answers the worker-module refusal by design. qjs-red/node-green by frozen contract."
+  },
+  "session__session-persistence-jsonl__tests__v2-system-migration": {
+    "class": "d-contract",
+    "note": "The migration verifier drives the persistence worker; qjs answers the worker-module refusal by design. qjs-red/node-green by frozen contract."
+  },
+  "preset__agent-presets__tests__shipped-root": {
+    "class": "c-delta",
+    "note": "The dsh-mobile host intentionally ships its own `mobile` preset (runtime/dsh/presets-mobile, synthesized into the generated probe seed); the vendored roster assertion enumerates exactly the upstream four (cordis/minimal/ptc/standard) and cannot pass on this host. qjs 5/1 vs node 6/0 — a real host-vs-upstream-contract finding, kept as a documented delta."
+  },
+  "subprocess__subprocess-local__tests__spawn-runner": {
+    "class": "both-red",
+    "note": "Structural both-legs red in kind: the inlined spawnRunnerInvocation branches on import.meta.url ending .ts, and a single-file transpile pins it to the built-entry limb, so the assertion's source-form tsx/esm URL (registry-served, double-encoded %252F) can never appear. Upstream is green only inside its monorepo layout."
+  },
+  "typert__generator__tests__type-model": {
+    "class": "both-red",
+    "note": "Both legs red (qjs 3/54, node 10/47): the analyzer drives a REAL typescript strict program over fixture workspaces that lack ambient declarations (TS2503 NodeJS namespace et al); the node leg's real tsc resolves further (10 passes vs 3) but neither leg is green. Real generator-delta diagnostics, documented per leg."
+  }
+}

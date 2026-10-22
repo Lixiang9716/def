@@ -269,6 +269,13 @@ const hoistCreateRequireJson = (source, rel) => {
  * never silently (rule 5). */
 export const IDENTITY_BARE_REWRITES = new Map([
   ['../src/connection.ts', '@deepseek-ai/dsh-lsp-stdio'],
+  // agent-presets composition-inventory: the spec inlines ../src/mount.ts,
+  // whose module-global `mounts` Set is read by the inlined livePresetMounts
+  // while ctx.agentPresets.mount records into the VENDORED lib's private
+  // Set — two empty-vs-populated answers for one logical registry. The lib
+  // exports livePresetMounts verbatim (lib/index.js), and the only other
+  // corpus file with this relative spelling is not in the transpiled corpus.
+  ['../src/mount.ts', '@deepseek-ai/dsh-agent-presets'],
 ]);
 
 export const rewriteIdentityImports = (source) => {
