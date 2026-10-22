@@ -7,7 +7,7 @@ import { register } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { dirname, join, resolve as pathResolve } from 'node:path';
 import { symlinkSync } from 'node:fs';
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 
 const ROOT = pathResolve(new URL('../..', import.meta.url).pathname);
 register('./smoke-hooks.mjs', import.meta.url);
@@ -31,8 +31,22 @@ globalThis.__dshModuleDefine = (name, source) => {
 // `internal.import`) never register and the specs resolve the RAW vendored
 // lib, whose no-internals path leaves loader.internal undefined (measured:
 // the preset mount/inventory rows, 2026-10-21).
+//
+// The bridges parent (npm-bridges.js) cannot simply be imported here — its
+// pi-ai fragment reads the host-C `__dshBundleRequire` seam at module load,
+// which plain Node does not carry — and the C fragment's OTHER rows must not
+// register on this leg at all: they are qjs-side substitutes for real
+// packages (the undici/http/child_process faces), and the Tier-2 discipline
+// makes the REAL packages the reference here. So the fragment is imported
+// for its side effects and enumerated, and exactly ONE row is taken: the
+// loader subclass — the vendored dsh packages import the loader bare, and
+// without it every Loader is raw (internal.import undefined), which loses
+// the loader tree-base semantics the preset mount/inventory rows exercise.
 await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/runtime-modules.js')));
-await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/npm-bridges-c.js')));
+const { BRIDGES_C } = await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/npm-bridges-c.js')));
+for (const [name, source] of BRIDGES_C) {
+  if (name === '@deepseek-ai/cordis-plugin-loader') globalThis.__dshModuleDefine(name, source);
+}
 
 const unhandled = [];
 process.on('unhandledRejection', (reason) => {
@@ -63,6 +77,19 @@ try {
 } catch (error) {
   if (error?.code !== 'EEXIST') throw error;
 }
+// The pty rows (terminal-activity) require node-pty from the SPEC COPY's
+// ancestor chain, which never reaches external/node_modules — the vendored
+// package is linked at the work root's runtime/dsh node_modules so the same
+// pinned bytes the farm serves resolve there too.
+const ptyDir = readdirSync(pathResolve(ROOT, 'external/npm')).find((e) => e.startsWith('node-pty@'));
+if (ptyDir) {
+  try {
+    mkdirSync(join(WORK_RUNTIME_DSH, 'node_modules'), { recursive: true });
+    symlinkSync(pathResolve(ROOT, 'external/npm', ptyDir), join(WORK_RUNTIME_DSH, 'node_modules/node-pty'), 'dir');
+  } catch (error) {
+    if (error?.code !== 'EEXIST') throw error;
+  }
+}
 process.chdir(WORK_RUNTIME_DSH);
 
 // Fixture seeding — the NODE leg's half of the qjs driver's
@@ -70,6 +97,29 @@ process.chdir(WORK_RUNTIME_DSH);
 // '/assets/…') map one way onto the work root, runtime/dsh/<path>.
 const { seedSpecFixtures } = await import(pathToFileURL(pathResolve(ROOT, 'test/upstream-suite/seed-fixtures.mjs')).href);
 await seedSpecFixtures(pathResolve(ROOT, 'runtime/dsh/upstream-tests', spec), WORK_RUNTIME_DSH);
+
+// Bundle-root support files the fixture path-math reaches OUTSIDE
+// upstream-tests/: the qjs leg's staged fs falls through to the real bundle
+// tree for these — the control spec's helper math resolves
+// `../../subprocess/src/control.ts` against import.meta.url, and its fixture
+// child then imports that file in a REAL spawned node — so the work root
+// mirrors exactly those leaves. Same source-face equivalence the resolve
+// hook's serveSpecialRows applies to the import face; enumerated (not a
+// wholesale tree copy) so per-spec isolation stays strict.
+// EACH leaf lands at BOTH work-root spellings: the qjs staged URL clamps at
+// the bundle root (`<work>/runtime/dsh/<rel>`), while Node's URL math from
+// the real spec copy resolves one level higher (`<work>/runtime/<rel>`) —
+// the child must find the leaf wherever each leg's math lands (measured:
+// the control child exits 1 on the missing helper, EPIPE on the parent's
+// first write).
+const SUPPORT_FALLTHROUGH = ['subprocess/src/control.ts'];
+for (const rel of SUPPORT_FALLTHROUGH) {
+  for (const base of [WORK_RUNTIME_DSH, join(WORK, 'runtime')]) {
+    const dst = join(base, rel);
+    mkdirSync(dirname(dst), { recursive: true });
+    copyFileSync(pathResolve(ROOT, 'runtime/dsh', rel), dst);
+  }
+}
 
 // The staged spec runs from its WORK copy: import.meta.url then sits inside
 // the work root, so the spec's import-relative fixture reads land on the
@@ -80,6 +130,14 @@ const specSrc = pathResolve(ROOT, 'runtime/dsh/upstream-tests', spec);
 const specCopy = join(WORK_RUNTIME_DSH, 'upstream-tests', spec);
 mkdirSync(dirname(specCopy), { recursive: true });
 copyFileSync(specSrc, specCopy);
+// Shared transpile-output siblings the specs reach by URL math beside the
+// spec copy (worker.js — the persistence worker the worker_threads rows
+// spawn via `new URL('./worker.js', import.meta.url)`): the qjs staged fs
+// serves them from the staged tree, so the work root mirrors them too.
+for (const sibling of ['worker.js']) {
+  const src = pathResolve(ROOT, 'runtime/dsh/upstream-tests', sibling);
+  if (existsSync(src)) copyFileSync(src, join(WORK_RUNTIME_DSH, 'upstream-tests', sibling));
+}
 
 // The web faces: the vendored closure expects the DOM faces the qjs host
 // presents, and the harness and the product boot must agree on the same
