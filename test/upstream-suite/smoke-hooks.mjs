@@ -173,7 +173,22 @@ export async function resolve(specifier, context, nextResolve) {
     '@deepseek-ai/dsh-goal',
     '@deepseek-ai/dsh-command-goal',
   ]);
-  if (FARM_ANCHORED_DSH.has(specifier) && context.parentURL?.includes('/.seam-run/')) {
+  // STEM-scoped too: dsh-goal's two faces differ in behavior (the
+  // runtime-vendor face carries the structured codes the tool-goal spec
+  // asserts — the same disease that scoped this rule away from the
+  // blanket form), so only the command/compaction specs whose instanceof
+  // gates PROVED the split re-anchor; the tool specs keep the
+  // runtime-vendor face (measured: tool-goal lost GOAL_INVALID_OBJECTIVE
+  // under the name-only scope, 2026-10-22).
+  const FARM_ANCHORED_STEMS = ['compaction__command-compact', 'compaction__compaction-basic', 'goal__command-goal'];
+  if (FARM_ANCHORED_DSH.has(specifier)
+      && context.parentURL?.includes('/.seam-run/')) {
+    // The staged spec FILE is `<family-stem>__tests__<name>.spec.mjs` —
+    // the family stem is a PREFIX, not the whole filename.
+    const stemMatched = FARM_ANCHORED_STEMS.some((stem) => context.parentURL?.includes(`/${stem}__`));
+    if (!stemMatched && process.env.R2PROBE !== '1') {
+      return nextResolve(specifier, context);
+    }
     try {
       return await nextResolve(specifier, {
         ...context,

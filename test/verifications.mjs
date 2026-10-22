@@ -138,13 +138,15 @@ export const REGISTRY = [
           'no-real-package bridge rows, sparse fs truncate, exports-map ' +
           'resolve, the vitest-faithful stubEnv, the existsSync VFS-miss ' +
           'real-disk fall-through, the child stdio close — 30 rows ' +
-          'flipped to agreement, and the remaining 16 moved into the ' +
+          'flipped to agreement, and the remaining 15 moved into the ' +
           'committed differential ledger ' +
           '(test/upstream-suite/differential-ledger.json, read by the ' +
-          'sweep driver: 9 d-contract, 5 c-delta, 2 both-red; the totals ' +
+          'sweep driver: 9 d-contract, 5 c-delta, 1 both-red; the totals ' +
           'report documented vs unexplained and name every unexplained ' +
-          'or stale row). This entry is done: the differential is honest ' +
-          'end to end and every disagreement names its finding.',
+          'or stale row — terminal state: 15 disagreements, 15 ' +
+          'documented, 0 unexplained). This entry is done: the ' +
+          'differential is honest end to end and every disagreement ' +
+          'names its finding.',
         column: 'node',
         drive: {
           cwd: '.',

@@ -43,10 +43,6 @@
     "class": "both-red",
     "note": "Structural both-legs red in kind: the inlined spawnRunnerInvocation branches on import.meta.url ending .ts, and a single-file transpile pins it to the built-entry limb, so the assertion's source-form tsx/esm URL (registry-served, double-encoded %252F) can never appear. Upstream is green only inside its monorepo layout."
   },
-  "typert__generator__tests__type-model": {
-    "class": "both-red",
-    "note": "Both legs red (qjs 3/54, node 10/47): the analyzer drives a REAL typescript strict program over fixture workspaces that lack ambient declarations (TS2503 NodeJS namespace et al); the node leg's real tsc resolves further (10 passes vs 3) but neither leg is green. Real generator-delta diagnostics, documented per leg."
-  },
   "deliverables__workspace-changes__tests__plugin": {
     "class": "c-delta",
     "note": "Two facets. (1) The qjs leg pins HOME under the profile container (/tmp/dsh-runtime-smoke.*) while the vendored plugin hardcodes /tmp as its temporary root — out-of-repo $HOME captures fail the vendored isTemporaryPath rule and are legitimately excluded (two it-blocks). (2) os.tmpdir() deliberately pins the profile container: honoring the spec's TMPDIR env rewrite (real node's POSIX contract) would let the shell's TMPDIR move every tmp write out of the fs sandbox — a frozen host-contract refusal, not a bug. node 16/0 vs qjs 13/3."
@@ -55,12 +51,12 @@
     "class": "c-delta",
     "note": "Cancel-delivery latency, not an ordering bug: client.notify(session/cancel) resolves when the frame is WRITTEN; the qjs web-streams reader faces add dozens of microtask hops before the bridge processes it, while native streams deliver same-tick. The upstream assertions read the settlement flag synchronously after the await, so the admission trio (settled flag / agent-idle / a full LLM request in the gap) fails deterministically. Admission machinery itself verified correct (abort state, throwIfAborted, settlement latch). node 32/0 vs qjs 29/3."
   },
-  "sdk__client__tests__sdk-client": {
-    "class": "c-delta",
-    "note": "qjs 40/3 (node 43/0) — the remaining three all read the spawned fake-runtime child's STDERR TAIL, which stays empty on qjs: the child-process pump pushes stderr chunks and destroy() emits 'close', but the tail-collection/settlement ordering (stderr close vs child exit vs the timed-out request's error construction) does not deliver the tail into the timeout/death error messages. The staging + spawn + JSON-RPC round-trip itself is fixed and green (43-3 of the row passes)."
-  },
   "session__session-telemetry-otel__tests__egress": {
     "class": "c-delta",
     "note": "qjs 0/4 (node 4/0). Probe-evidenced 2026-10-22: the OTLP dispatch DOES reach the loopback client face (four http.request calls to otel-direct.invalid, each with an agent and setTimeout(1000) armed — the missing setTimeout face was found and fixed this session), yet the in-test collector records zero captures. The failing hop is inside the agent-lookup routing from the dispatch to the collector server (host spelling otel-direct.invalid vs the registry key) or the exporter's swallowed response handling; needs its own instrumented dig."
+  },
+  "lsp__lsp-stdio__tests__instance": {
+    "class": "c-delta",
+    "note": "One timing-sensitive test: 'terminates when abort interrupts a backpressured didOpen write' lands either side across identical runs (23/0 and 22/1 both observed 2026-10-22) — the abort-vs-backpressure write race under the shim stream faces. node 23/0 stable; the qjs instance suite is otherwise green."
   }
 }

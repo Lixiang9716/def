@@ -7,7 +7,7 @@ import { register, registerHooks } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { basename, dirname, join, resolve as pathResolve } from 'node:path';
 import { symlinkSync } from 'node:fs';
-import { copyFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 
 const ROOT = pathResolve(new URL('../..', import.meta.url).pathname);
 register('./smoke-hooks.mjs', import.meta.url);
@@ -73,6 +73,11 @@ const { BRIDGES_B } = await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/
 // convert the load failure into an error finish chunk and the rows see empty
 // streams. These are the cordis-plugin-loader class: registered because the
 // real thing does not exist, not instead of it.
+// cross-spawn deliberately NOT here: a REAL cross-spawn is vendored and
+// farm-linked, and the mcp-stdio spawn family (lsp lifecycle, tool-goal,
+// webhook...) needs its arg-escaping semantics — the registration would
+// hijack it with the raw node spawn (measured: lsp lifecycle node 11/20).
+// The qjs runtime takes the same-name bridge row from its own boot.
 const HARNESS_BRIDGE_ROWS = new Set([
   '@deepseek-ai/cordis-plugin-loader',
   'openai',
@@ -181,15 +186,33 @@ for (const sibling of ['worker.js']) {
 const STAGED_SIBLINGS = [
   // sdk-client's fakeLaunch spawns node <specDir>/fake-runtime.ts.
   ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/sdk/client/tests/fake-runtime.ts', join(WORK_RUNTIME_DSH, 'upstream-tests')],
+  // lsp-stdio's scriptable fake LSP server (connection/lifecycle/instance
+  // spawn `node <specDir>/fixture-server.ts`).
+  ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/lsp/lsp-stdio/tests/fixture-server.ts', join(WORK_RUNTIME_DSH, 'upstream-tests')],
   // acp bridge's fixture-server.ts lives at <work>/mcp/mcp-client/tests/ in
   // the flat layout; it imports @modelcontextprotocol/server + zod, which
   // resolve only through the farm — a node_modules link in that dir.
   ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/mcp/mcp-client/tests/fixture-server.ts', join(WORK, 'mcp/mcp-client/tests')],
+  // the browser-use composition's MCP fixture (spawned by the mcp client
+  // as `node mcp-fixture.mjs` beside the spec copy)
+  ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/experimental/browser-use-runtime/tests/mcp-fixture.mjs', join(WORK_RUNTIME_DSH, 'upstream-tests')],
+  // the webhook spec's source-introspection: `new URL('../src/brand.ts',
+  // import.meta.url)` resolves at <work>/runtime/dsh/src/ — mirror the
+  // package's whole src tree there (the qjs package-source staging
+  // precedent; the webhook runtime spec reads its own production sources)
+  ['external/dsh-tests@dsh-v0.1.6-alpha.2/packages/webhook/webhook/src', join(WORK_RUNTIME_DSH, 'src')],
 ];
 for (const [src, dir] of STAGED_SIBLINGS) {
   const from = pathResolve(ROOT, src);
   if (!existsSync(from)) continue;
   mkdirSync(dir, { recursive: true });
+  if (statSync(from).isDirectory()) {
+    // A source tree (the webhook spec's source-introspection joins
+    // ../src/*.ts beside the spec copy — the qjs leg's package-source
+    // staging precedent): mirror the whole directory, verbatim.
+    cpSync(from, dir, { recursive: true });
+    continue;
+  }
   copyFileSync(from, join(dir, basename(from)));
   if (dir.endsWith('mcp/mcp-client/tests')) {
     try {

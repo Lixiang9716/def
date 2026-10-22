@@ -18,7 +18,7 @@
  */
 // buffer.js is a leaf (outside the stream family this header guards):
 // push() coerces string chunks node-style (default utf8 encoding).
-import { encodeUtf8 } from 'upstream/shims/buffer.js';
+import { DshBuffer } from 'upstream/shims/buffer.js';
 
 export class MiniStream {
   #listeners = new Map();
@@ -78,8 +78,12 @@ export class MiniStream {
     // node coerces string chunks through the stream's default encoding
     // (utf8); the verbatim store left every downstream Buffer face
     // (subarray, TextDecoder) dying on a bare string — the BrowserTerminal
-    // fixture rows end() PassThroughs with strings (2026-10-22).
-    if (typeof chunk === 'string') chunk = encodeUtf8(chunk);
+    // fixture rows end() PassThroughs with strings (2026-10-22). The
+    // coercion is DshBuffer, NOT a bare Uint8Array: a bare array's
+    // String() is the decimal code list (the cmdline echo assertion read
+    // '123,34,106,...'), while the DshBuffer face answers utf8 like the
+    // pump's own chunks.
+    if (typeof chunk === 'string') chunk = DshBuffer.from(chunk, 'utf8');
     // Flowing chunks go straight to 'data' listeners; the queue keeps a copy
     // for the iterator face (nothing in the corpus consumes both on one
     // stream — node would route exclusively, we over-deliver rather than

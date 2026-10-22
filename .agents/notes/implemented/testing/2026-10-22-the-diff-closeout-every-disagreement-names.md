@@ -47,14 +47,16 @@ every unexplained/stale row):
   nullary face flushes one U+FFFD; stream push coerces strings;
   `readableLength` exists; the loopback ClientRequest gained `setTimeout`
   (the OTLP exporter calls it unconditionally).
-- **16 documented rows**: 9 d-contract (5 ssh TLS refusals, 4 persistence
+- **15 documented rows**: 9 d-contract (5 ssh TLS refusals, 4 persistence
   worker refusals — qjs answers by design), 5 c-delta (shipped-root's
   intentional `mobile` preset; workspace-changes' /tmp-HOME exclusion +
   the tmpdir container pin; acp turns' cancel-delivery microtask depth;
-  sdk-client's stderr-tail settlement; otel egress' agent-lookup capture
-  hop, probe-evidenced), 2 both-red (spawn-runner's `.ts` branch pinned by
-  single-file transpile; typert type-model's real-tsc strictness, qjs 3/54
-  vs node 10/47).
+  otel egress' agent-lookup capture hop, probe-evidenced; lsp instance's
+  abort-vs-backpressure write race), 1 both-red (spawn-runner's `.ts`
+  branch pinned by single-file transpile). typert type-model and
+  sdk-client left the ledger the same day: the first re-agreed under the
+  final tree, the second's stderr-tail trio was the string-chunk disease
+  the DshBuffer coercion fixed.
 
 ## Alternatives considered
 
