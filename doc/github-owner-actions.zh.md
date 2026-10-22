@@ -9,7 +9,7 @@
 流,但下面的开关是 owner 的手。
 
 下文的仓库状态事实是 2026-10-13 用 API 只读核验的
-(`gh api repos/Lixiang9716/dsh-mobile` 与
+(`gh api repos/Lixiang9716/def` 与
 `gh api .../branches/main/protection`);当天未能复验的条目各自标注了
 更早的日期。若时日已过,动手前先重查:
 

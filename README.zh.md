@@ -9,7 +9,7 @@
   本仓库 <strong>dsh-mobile</strong> 是它背后的开源移动宿主：一份核心，三部手机，一切在本地。</p>
 
   <p>
-    <a href="https://lixiang9716.github.io/dsh-mobile/">项目主页</a> ·
+    <a href="https://lixiang9716.github.io/def/">项目主页</a> ·
     <a href="#%E7%8E%B0%E7%8A%B6%E9%80%9F%E8%A7%88">现状速览</a> ·
     <a href="#quickstart">Quickstart</a> ·
     <a href="README.md">English</a>
@@ -57,7 +57,7 @@ Harness 运行时——完整搬上手机，覆盖三个移动平台（Android�
 ## Quickstart
 
 ```sh
-git clone https://github.com/Lixiang9716/dsh-mobile
+git clone https://github.com/Lixiang9716/def
 cd dsh-mobile
 build/build.sh --list          # 各平台及其工具链需求
 build/build.sh android         # sync → compile → 模拟器上的日志验证 e2e
@@ -66,7 +66,7 @@ build/build.sh android         # sync → compile → 模拟器上的日志验�
 - 一份门面驱动所有平台："build" 永远是 **sync → compile → test**——与该平台 CI 完全相同的
   三步。iOS 只能在 macOS 上编译；工具链缺失时响亮失败，点名缺什么、去哪装。
 - 手头没有移动端工具链？core CLI 是最便宜的验证载体：`build/build.sh compile core` 构建出
-  各平台内嵌的那个 C 宿主。完全没有工具链？[项目主页](https://lixiang9716.github.io/dsh-mobile/)
+  各平台内嵌的那个 C 宿主。完全没有工具链？[项目主页](https://lixiang9716.github.io/def/)
   用一页诚实的话讲清这个项目是什么。
 - 在对应模拟器/仿真器上启动构建出的应用，它会进入交互席——官方 Web Client 由回环 carrier
   服务。
@@ -139,7 +139,7 @@ MIT
 ## Star History
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date" />
 </picture>

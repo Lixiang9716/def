@@ -12,7 +12,7 @@ The agent can prepare files and workflows, but the switches below are the
 owner's hands.
 
 Repository-state facts below were verified read-only via the API on
-2026-10-13 (`gh api repos/Lixiang9716/dsh-mobile` and
+2026-10-13 (`gh api repos/Lixiang9716/def` and
 `gh api .../branches/main/protection`); items that could not be re-verified
 that day carry their own older date. Re-check before acting if time has
 passed:

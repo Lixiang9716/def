@@ -10,7 +10,7 @@
   one core, three phones, everything on-device.</p>
 
   <p>
-    <a href="https://lixiang9716.github.io/dsh-mobile/">Project site</a> ·
+    <a href="https://lixiang9716.github.io/def/">Project site</a> ·
     <a href="#what-works-today">What works today</a> ·
     <a href="#quickstart">Quickstart</a> ·
     <a href="README.zh.md">简体中文</a>
@@ -70,7 +70,7 @@ residency is checkpoint/resume, not desktop-grade.
 ## Quickstart
 
 ```sh
-git clone https://github.com/Lixiang9716/dsh-mobile
+git clone https://github.com/Lixiang9716/def
 cd dsh-mobile
 build/build.sh --list          # platforms and what each toolchain needs
 build/build.sh android         # sync → compile → log-verified e2e on the emulator
@@ -81,7 +81,7 @@ build/build.sh android         # sync → compile → log-verified e2e on the em
   toolchain fails loud, naming the tool and how to get it.
 - No mobile toolchain at hand? The core CLI is the cheapest proof vehicle:
   `build/build.sh compile core` builds the C host the platforms embed. No toolchain at
-  all? The [project site](https://lixiang9716.github.io/dsh-mobile/) tells you what the
+  all? The [project site](https://lixiang9716.github.io/def/) tells you what the
   project is — in one honest page.
 - Launch the built app on its simulator/emulator and it boots into the interactive
   seat — the official Web Client served on the loopback carrier.
@@ -158,7 +158,7 @@ MIT
 ## Star History
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Lixiang9716/dsh-mobile&type=Date" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Lixiang9716/def&type=Date" />
 </picture>
