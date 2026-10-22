@@ -45,6 +45,16 @@ const serveSpecialRows = (specifier) => {
       'external/npm/@deepseek-ai/dsh-subprocess-local@0.1.6-alpha.2/lib/index.js',
     );
   }
+  // The subprocess control fixture's spawned child imports the package's
+  // monorepo SOURCE ('…/subprocess/src/control.ts'); the npm tarball ships
+  // lib/ only, so serve the vendored lib for that shape (the same
+  // source-face equivalence the qjs loader's bare map applies).
+  if (/(^|\/)subprocess\/src\/control\.ts$/.test(specifier)) {
+    return pathResolve(
+      ROOT,
+      'external/npm/@deepseek-ai/dsh-subprocess-local@0.1.6-alpha.2/lib/index.js',
+    );
+  }
   return null;
 };
 

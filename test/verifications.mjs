@@ -119,7 +119,12 @@ export const REGISTRY = [
           '(the remaining 12 need per-family fixture seeding, loader ' +
           'internals wiring, a node-pty vendor row, and the resolve ' +
           'semantics fix). Divergence is the leg finding its differential ' +
-          'value; treat qjs as the only counting leg.',
+          'value; treat qjs as the only counting leg. The fixture seeding ' +
+          '(2026-10-21, per-process work roots — isolation over leakage) ' +
+          'then landed 24 more rows: 63 -> 58 -> 46, and five ' +
+          'leakage-blessed rows flipped to NO under the correct isolation ' +
+          '(shipped-root, typert type-model, computer-use composition, ' +
+          'inspector host ×2) — fresh triage rows.',
         column: 'node',
         drive: {
           cwd: '.',
