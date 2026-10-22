@@ -23,6 +23,17 @@ globalThis.__dshModuleDefine = (name, source) => {
   writeFileSync(pathResolve(REG_DIR, encodeURIComponent(name) + '.mjs'), source);
 };
 
+// Execute the shim tables so their __dshModuleDefine rows land as
+// registration files BEFORE the spec loads: the qjs boot imports
+// runtime-modules.js and the bridges family for exactly this, and the node
+// harness imports nothing that would run them — without it the
+// cordis-plugin-loader rows (npm-bridges-c's subclass with a working
+// `internal.import`) never register and the specs resolve the RAW vendored
+// lib, whose no-internals path leaves loader.internal undefined (measured:
+// the preset mount/inventory rows, 2026-10-21).
+await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/runtime-modules.js')));
+await import(pathToFileURL(pathResolve(ROOT, 'runtime/dsh/upstream/shims/npm-bridges-c.js')));
+
 const unhandled = [];
 process.on('unhandledRejection', (reason) => {
   unhandled.push(String(reason?.message ?? reason).slice(0, 200));
