@@ -123,11 +123,14 @@ export const REGISTRY = [
           '(2026-10-21, per-process work roots — isolation over leakage) ' +
           'then landed 24 more rows: 63 -> 58 -> 46, and five ' +
           'leakage-blessed rows flipped to NO under the correct isolation ' +
-          '(shipped-root, typert type-model, computer-use composition, ' +
           'inspector host ×2) — fresh triage rows. The node harness now ' +
           'executes the shim tables + bridges family (2026-10-21): mount ' +
-          '14/39 -> 51/2, inventory all-fail -> 9/3 inside their rows; the ' +
-          'final surface is 46 rows, every one naming a mechanism.',
+          '14/39 -> 51/2, inventory all-fail -> 9/3 inside their rows. The ' +
+          'b-closeout (2026-10-22) then vendored the node-pty pair ' +
+          '(controller flips: node 55/0), moved the typert resolve face to ' +
+          'the staged-fs read, and re-measured: 63 -> 42, with the same ' +
+          'five leakage-blessed rows NO under the correct isolation — ' +
+          'the final surface, every row naming a mechanism.',
         column: 'node',
         drive: {
           cwd: '.',

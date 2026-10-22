@@ -15,7 +15,7 @@
  * expects as `base`.
  */
 
-import { existsSync } from 'upstream/shims/fs.js';
+import { existsSync, readFileSync } from 'upstream/shims/fs.js';
 import { fileURLToPath } from 'upstream/shims/url.js';
 import { makeRequire, bareCjsPackages } from 'upstream/shims/cjs-loader.js';
 
@@ -94,12 +94,12 @@ const makeResolveFace = (base) => {
         // Real Node resolve() answers the package ENTRY, not the manifest —
         // callers import fileURL(resolve(specifier)) and importing a
         // manifest dies on the host loader (the typert loader row). The
-        // bundle-read seam serves the manifest bytes; an unparseable or
+        // read goes through THIS shim's staged fs view so workspace-written
+        // fixture manifests resolve on both legs; an unparseable or
         // entry-less manifest answers itself.
         let entry = manifest;
         try {
-          const text = globalThis.__dshBundleRequire?.(base, manifest);
-          const main = String(JSON.parse(text).main ?? 'index.js').replace(/^\.\//, '');
+          const main = String(JSON.parse(readFileSync(manifest, 'utf8')).main ?? 'index.js').replace(/^\.\//, '');
           const candidate = `${dir}/${request}/${main}`;
           if (existsSync(candidate)) entry = candidate;
         } catch { /* fall through — answer the manifest */ }
