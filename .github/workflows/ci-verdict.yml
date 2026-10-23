@@ -78,14 +78,17 @@ jobs:
           # settling window, measured from the first poll that could see ANY
           # expected check (or from the start, when nothing was ever seen).
           ABSENT_GRACE_SECONDS="${ABSENT_GRACE_SECONDS:-120}"
-          # `gates` always runs; the three platform legs are path-filtered and
-          # may legitimately be absent, and so is `pages-demo` (pages.yml's
-          # path filter: the demo chain runs only when the lynx client or the
+          # `gates` always runs; so do the cold-seat jobs (#663: pull_request,
+          # no path filter — the materialization gate must judge every PR, and
+          # its two check runs are named after the job ids, `gate` and
+          # `rejection`). The three platform legs are path-filtered and may
+          # legitimately be absent, and so is `pages-demo` (pages.yml's path
+          # filter: the demo chain runs only when the lynx client or the
           # workflow itself moves — review round on #277: the leg shipped
           # without a line here, so its absence could never be named).
           # `ci-verdict` itself is deliberately NOT in this list: it is
           # in_progress while it judges.
-          EXPECTED="gates ios-e2e android-e2e harmonyos-build pages-demo"
+          EXPECTED="gates ios-e2e android-e2e harmonyos-build pages-demo gate rejection"
           SNAP="$(mktemp)"
           RAW="$(mktemp)"
           trap 'rm -f "$SNAP" "$RAW"' EXIT
