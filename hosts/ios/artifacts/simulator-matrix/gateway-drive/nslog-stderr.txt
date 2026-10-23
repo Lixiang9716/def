@@ -1,133 +1,167 @@
-objc[59881]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x1076ec310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x1077a0398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
-2026-10-12 01:22:31.241 DSHHost[59881:798842] dsh.runtime.log: {"data":[{"scenario":"host.launch","event":"ish.rootfs.declared","env":"DSH_ISH_ROOTFS","rootfs":"\/Users\/lixiang\/Library\/Developer\/CoreSimulator\/Devices\/A4AE41BF-026A-441E-85DF-F53522996073\/data\/Containers\/Data\/Application\/EA14ADEA-08A5-4CC3-8C1E-AF8D8A1DDE3B\/Documents\/profiles\/default\/ish-rootfs"}],"level":"info","module":"dsh.host","message":"launch env declares the guest userland"}
-2026-10-12 01:22:31.335 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"runtime.created","engine":"quickjs-ng","engineVersion":"0.17.0"}]}
-2026-10-12 01:22:31.335 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"sink.bound"}]}
-2026-10-12 01:22:31.335 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"gateway.negotiated","version":"gateway@1"}]}
-2026-10-12 01:22:31.335 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"package.loaded","name":"@deepseek-ai/dsh-util-crypto","version":"0.1.6-alpha.2"}]}
-2026-10-12 01:22:31.336 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"crypto.shim.ok","uuid":"0bef4d22-1263-4e23-b7d0-ed16a7f565aa","v4":true}]}
-2026-10-12 01:22:31.336 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"base64.shim.ok","input":"hello","b64":"aGVsbG8="}]}
-2026-10-12 01:22:31.336 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"shims.selftest","textDecoder":"utf8+multibyte ok","bufferSingleByte":"ascii/latin1 ok","fileURLToPath":"relative+absolute ok","fsPromises":"rmdir+symlink linked"}]}
-2026-10-12 01:22:31.336 DSHHost[59881:798842] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"scenario.complete","status":"pass"}]}
-2026-10-12 01:22:32.084 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"runtime.created","engine":"quickjs-ng","engineVersion":"0.17.0"}]}
-2026-10-12 01:22:32.219 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.listening","transport":"tcp","loopback":true}]}
-2026-10-12 01:22:33.454 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.http.served","paths":["/","/carrier-page.js"],"count":2}]}
-2026-10-12 01:22:33.455 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.ws.connected","state":"open"}]}
-2026-10-12 01:22:33.493 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.ws.echo","matched":true,"transport":"ws"}]}
-2026-10-12 01:22:33.494 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.push.delivered","transport":"ws"}]}
-2026-10-12 01:22:33.495 DSHHost[59881:798925] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"scenario.complete","status":"pass"}]}
-2026-10-12 01:22:34.114 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"gateway.negotiated","version":"gateway@1"}]}
-2026-10-12 01:22:34.115 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"descriptor.declared","available":35,"unavailable":2}]}
-2026-10-12 01:22:34.115 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for event","data":[{"name":"host.info"}]}
-2026-10-12 01:22:34.117 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
-2026-10-12 01:22:34.118 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"probe.txt"}]}
-2026-10-12 01:22:34.118 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
-2026-10-12 01:22:34.123 DSHHost[59881:798799] dsh.gateway.audit: {"outcome":"ok","verdict":"granted","ts":"2026-10-11T17:22:34Z","primitive":"fsWrite","caller":"dsh.runtime.scenario"}
-2026-10-12 01:22:34.125 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.write.ok","written":17}]}
-2026-10-12 01:22:34.126 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"probe.txt"}]}
-2026-10-12 01:22:34.126 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
-2026-10-12 01:22:34.128 DSHHost[59881:798799] dsh.gateway.audit: {"ts":"2026-10-11T17:22:34Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"fsRead"}
-2026-10-12 01:22:34.130 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:34.130 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.read.ok","bytes":17,"matches":true}]}
-2026-10-12 01:22:34.130 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"user:nowhere","path":"x"}]}
-2026-10-12 01:22:34.130 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
-2026-10-12 01:22:34.131 DSHHost[59881:798799] dsh.gateway.audit: {"ts":"2026-10-11T17:22:34Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"denied","primitive":"fsRead"}
-2026-10-12 01:22:34.131 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"fsRead"}]}
-2026-10-12 01:22:34.131 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.denied","code":"denied"}]}
-2026-10-12 01:22:34.131 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:56452/gateway-e2e/bytes","method":"GET"}]}
-2026-10-12 01:22:34.131 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
-2026-10-12 01:22:34.191 DSHHost[59881:798842] dsh.gateway.audit: {"ts":"2026-10-11T17:22:34Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"httpFetch"}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.status","status":200,"loopback":true}]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":90}]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":4}]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:34.191 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
-2026-10-12 01:22:34.230 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":90}]}
-2026-10-12 01:22:34.230 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":4}]}
-2026-10-12 01:22:34.230 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
-2026-10-12 01:22:34.230 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":4}]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.body","chunks":2,"totalBytes":64}]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:56452/gateway-e2e/slow","method":"GET"}]}
-2026-10-12 01:22:34.231 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
-2026-10-12 01:22:34.556 DSHHost[59881:798842] dsh.gateway.audit: {"ts":"2026-10-11T17:22:34Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"httpFetch"}
-2026-10-12 01:22:34.556 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:5","buffered":0}]}
-2026-10-12 01:22:34.556 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:34.556 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:5"}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.gateway.audit: {"ts":"2026-10-11T17:22:34Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"httpFetch.abort"}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:5","buffered":0}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"cancelled","primitive":"httpFetch"}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.aborted","code":"cancelled"}]}
-2026-10-12 01:22:34.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentPicker"}]}
-2026-10-12 01:22:34.872 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:34.873 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:34.873 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:34.873 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:35.189 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:35.189 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:35.189 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:35.189 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:35.513 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:35.513 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:35.514 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:35.514 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:35.837 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:35.838 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:35.838 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:35.838 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:36.198 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":70}]}
-2026-10-12 01:22:36.198 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":5}]}
-2026-10-12 01:22:36.199 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
-2026-10-12 01:22:36.199 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:22:36.202 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":31}]}
-2026-10-12 01:22:36.203 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":5}]}
-2026-10-12 01:22:36.203 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
-2026-10-12 01:23:22.702 DSHHost[59881:798774] dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T17:23:22Z","caller":"dsh.runtime.scenario","primitive":"presentPicker"}
-2026-10-12 01:23:22.708 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"picker.granted","mode":"file","path":"notes.txt","scopeOpaque":true}]}
-2026-10-12 01:23:22.709 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.persist"}]}
-2026-10-12 01:23:22.726 DSHHost[59881:801012] dsh.gateway.audit: {"ts":"2026-10-11T17:23:22Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"fsScope.persist"}
-2026-10-12 01:23:22.728 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.scope.persist","refOpaque":true}]}
-2026-10-12 01:23:22.728 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
-2026-10-12 01:23:22.730 DSHHost[59881:801012] dsh.gateway.audit: {"ts":"2026-10-11T17:23:22Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"fsScope.resolve"}
-2026-10-12 01:23:22.730 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"user:3D5A63F2-87DF-4631-A46F-BC5961B38908","path":"notes.txt"}]}
-2026-10-12 01:23:22.730 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
-2026-10-12 01:23:22.731 DSHHost[59881:801012] dsh.gateway.audit: {"ts":"2026-10-11T17:23:22Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"fsRead"}
-2026-10-12 01:23:22.731 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":56}]}
-2026-10-12 01:23:22.732 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.scope.resolve","scopeOpaque":true,"reads":true}]}
-2026-10-12 01:23:22.732 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentApproval"}]}
-2026-10-12 01:23:24.187 DSHHost[59881:798774] dsh.gateway.audit: {"ts":"2026-10-11T17:23:24Z","primitive":"presentApproval","caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted"}
-2026-10-12 01:23:24.187 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"approval.approved","approved":true,"remember":false}]}
-2026-10-12 01:23:24.188 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainSet"}]}
-2026-10-12 01:23:24.215 DSHHost[59881:800653] dsh.gateway.audit: {"ts":"2026-10-11T17:23:24Z","primitive":"keychainSet","caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted"}
-2026-10-12 01:23:24.215 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"keychainGet","data":[{"ref":"dsh.host/cred"}]}
-2026-10-12 01:23:24.215 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainGet"}]}
-2026-10-12 01:23:24.216 DSHHost[59881:800653] dsh.gateway.audit: {"ts":"2026-10-11T17:23:24Z","primitive":"keychainGet","caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted"}
-2026-10-12 01:23:24.216 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
-2026-10-12 01:23:24.216 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"keychain.roundtrip","set":true,"match":true}]}
-2026-10-12 01:23:24.216 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainSet"}]}
-2026-10-12 01:23:24.217 DSHHost[59881:800653] dsh.gateway.audit: {"ts":"2026-10-11T17:23:24Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"keychainSet"}
-2026-10-12 01:23:24.217 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"keychainGet","data":[{"ref":"dsh.host/cred"}]}
-2026-10-12 01:23:24.218 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainGet"}]}
-2026-10-12 01:23:24.218 DSHHost[59881:800653] dsh.gateway.audit: {"ts":"2026-10-11T17:23:24Z","primitive":"keychainGet","caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted"}
-2026-10-12 01:23:24.218 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"keychain.deleted","gone":true}]}
-2026-10-12 01:23:24.218 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"notify"}]}
-2026-10-12 01:23:26.701 DSHHost[59881:801012] dsh.gateway.audit: {"ts":"2026-10-11T17:23:26Z","caller":"dsh.runtime.scenario","verdict":"granted","outcome":"ok","primitive":"notify"}
-2026-10-12 01:23:26.701 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"notify.scheduled","idOpaque":true}]}
-2026-10-12 01:23:26.701 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for app.state","data":[{"state":"background"}]}
-2026-10-12 01:23:27.067 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":42}]}
-2026-10-12 01:23:28.557 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":42}]}
-2026-10-12 01:23:28.558 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"app.state","state":"background"}]}
-2026-10-12 01:23:28.558 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for event","data":[{"name":"notify.response"}]}
-2026-10-12 01:23:34.344 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":73}]}
-2026-10-12 01:23:34.344 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"notify.response","idMatches":true}]}
-2026-10-12 01:23:34.344 DSHHost[59881:799052] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for app.state","data":[{"state":"foreground"}]}
-2026-10-12 01:23:34.345 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"app.state","state":"foreground"}]}
-2026-10-12 01:23:34.345 DSHHost[59881:799052] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"scenario.complete","status":"pass"}]}
+objc[87584]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x105790310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x10580c398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+2026-10-23 16:13:59.018 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"runtime.created","engine":"quickjs-ng","engineVersion":"0.17.0"}]}
+2026-10-23 16:13:59.019 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"sink.bound"}]}
+2026-10-23 16:13:59.019 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"gateway.negotiated","version":"gateway@1"}]}
+2026-10-23 16:13:59.019 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"package.loaded","name":"@deepseek-ai/dsh-util-crypto","version":"0.1.6-alpha.2"}]}
+2026-10-23 16:13:59.019 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"crypto.shim.ok","uuid":"6383ee68-487c-4dc0-92b4-f9b43aa5c447","v4":true}]}
+2026-10-23 16:13:59.019 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"base64.shim.ok","input":"hello","b64":"aGVsbG8="}]}
+2026-10-23 16:13:59.020 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"shims.selftest","textDecoder":"utf8+multibyte ok","bufferSingleByte":"ascii/latin1 ok","fileURLToPath":"relative+absolute ok","fsPromises":"rmdir+symlink linked"}]}
+2026-10-23 16:13:59.020 DSHHost[87584:33881506] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"boot.verification","event":"scenario.complete","status":"pass"}]}
+2026-10-23 16:13:59.966 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"runtime.created","engine":"quickjs-ng","engineVersion":"0.17.0"}]}
+2026-10-23 16:13:59.977 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.listening","transport":"tcp","loopback":true}]}
+2026-10-23 16:14:01.576 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.http.served","paths":["/","/carrier-page.js"],"count":2}]}
+2026-10-23 16:14:01.577 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.ws.connected","state":"open"}]}
+2026-10-23 16:14:01.590 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.ws.echo","matched":true,"transport":"ws"}]}
+2026-10-23 16:14:01.628 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"carrier.push.delivered","transport":"ws"}]}
+2026-10-23 16:14:01.628 DSHHost[87584:33881624] dsh.runtime.log: {"level":"info","module":"m1.carrier","message":"e2e","data":[{"scenario":"carrier.loopback","event":"scenario.complete","status":"pass"}]}
+2026-10-23 16:14:02.817 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"gateway.negotiated","version":"gateway@1"}]}
+2026-10-23 16:14:02.818 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"descriptor.declared","available":37,"unavailable":2}]}
+2026-10-23 16:14:02.818 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for event","data":[{"name":"host.info"}]}
+2026-10-23 16:14:02.822 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+2026-10-23 16:14:02.822 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"probe.txt"}]}
+2026-10-23 16:14:02.823 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+2026-10-23 16:14:02.867 DSHHost[87584:33881513] dsh.gateway.audit: {"outcome":"ok","ts":"2026-10-23T08:14:02Z","caller":"dsh.runtime.scenario","verdict":"granted","primitive":"fsWrite"}
+2026-10-23 16:14:02.870 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.write.ok","written":17}]}
+2026-10-23 16:14:02.870 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"probe.txt"}]}
+2026-10-23 16:14:02.871 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+2026-10-23 16:14:02.876 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsRead"}
+2026-10-23 16:14:02.878 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:02.878 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.read.ok","bytes":17,"matches":true}]}
+2026-10-23 16:14:02.878 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"user:nowhere","path":"x"}]}
+2026-10-23 16:14:02.878 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+2026-10-23 16:14:02.879 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"denied","caller":"dsh.runtime.scenario","primitive":"fsRead"}
+2026-10-23 16:14:02.879 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"denied","primitive":"fsRead"}]}
+2026-10-23 16:14:02.879 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.denied","code":"denied"}]}
+2026-10-23 16:14:02.879 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"durable/.keep"}]}
+2026-10-23 16:14:02.879 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
+2026-10-23 16:14:02.880 DSHHost[87584:33881513] dsh.gateway.audit: {"outcome":"ok","ts":"2026-10-23T08:14:02Z","caller":"dsh.runtime.scenario","verdict":"granted","primitive":"fsWrite"}
+2026-10-23 16:14:02.880 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsPublishAtomic","data":[{"scope":"app","path":"durable/probe.txt","bytes":17}]}
+2026-10-23 16:14:02.880 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsPublishAtomic"}]}
+2026-10-23 16:14:02.881 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsPublishAtomic"}
+2026-10-23 16:14:02.882 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.publish.ok","written":17}]}
+2026-10-23 16:14:02.882 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"durable/probe.txt"}]}
+2026-10-23 16:14:02.883 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+2026-10-23 16:14:02.884 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsRead"}
+2026-10-23 16:14:02.885 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:02.885 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.publish.readback.ok","matches":true}]}
+2026-10-23 16:14:02.885 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsSync","data":[{"scope":"app","path":"durable/probe.txt","kind":"file"}]}
+2026-10-23 16:14:02.886 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsSync"}]}
+2026-10-23 16:14:02.886 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsSync"}
+2026-10-23 16:14:02.887 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.sync.file.ok"}]}
+2026-10-23 16:14:02.887 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsSync","data":[{"scope":"app","path":"durable","kind":"dir"}]}
+2026-10-23 16:14:02.887 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsSync"}]}
+2026-10-23 16:14:02.888 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"fsSync"}
+2026-10-23 16:14:02.888 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.sync.dir.ok"}]}
+2026-10-23 16:14:02.888 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsPublishAtomic","data":[{"scope":"app","path":"no-such-parent/x.txt","bytes":17}]}
+2026-10-23 16:14:02.888 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsPublishAtomic"}]}
+2026-10-23 16:14:02.888 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"io","caller":"dsh.runtime.scenario","primitive":"fsPublishAtomic"}
+2026-10-23 16:14:02.888 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsPublishAtomic"}]}
+2026-10-23 16:14:02.889 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.publish.missing-parent","code":"io"}]}
+2026-10-23 16:14:02.889 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsSync","data":[{"scope":"app","path":"durable/probe.txt","kind":"dir"}]}
+2026-10-23 16:14:02.889 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsSync"}]}
+2026-10-23 16:14:02.889 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"io","caller":"dsh.runtime.scenario","primitive":"fsSync"}
+2026-10-23 16:14:02.889 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsSync"}]}
+2026-10-23 16:14:02.889 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.sync.kind-mismatch","code":"io"}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.fs-durable","message":"fsPublishAtomic","data":[{"scope":"app","path":"../escape.txt","bytes":17}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsPublishAtomic"}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881513] dsh.gateway.audit: {"ts":"2026-10-23T08:14:02Z","verdict":"granted","outcome":"invalid","caller":"dsh.runtime.scenario","primitive":"fsPublishAtomic"}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"invalid","primitive":"fsPublishAtomic"}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.publish.invalid","code":"invalid"}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:49665/gateway-e2e/bytes","method":"GET"}]}
+2026-10-23 16:14:02.890 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+2026-10-23 16:14:02.995 DSHHost[87584:33881513] dsh.gateway.audit: {"outcome":"ok","ts":"2026-10-23T08:14:02Z","caller":"dsh.runtime.scenario","verdict":"granted","primitive":"httpFetch"}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.status","status":200,"loopback":true}]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:12","buffered":0}]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":91}]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":12}]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:02.996 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:12","buffered":0}]}
+2026-10-23 16:14:03.041 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":91}]}
+2026-10-23 16:14:03.042 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":12}]}
+2026-10-23 16:14:03.042 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
+2026-10-23 16:14:03.043 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:03.043 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:12","buffered":0}]}
+2026-10-23 16:14:03.052 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+2026-10-23 16:14:03.053 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":12}]}
+2026-10-23 16:14:03.053 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:03.053 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.body","chunks":2,"totalBytes":64}]}
+2026-10-23 16:14:03.053 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:49665/gateway-e2e/slow","method":"GET"}]}
+2026-10-23 16:14:03.053 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+2026-10-23 16:14:03.429 DSHHost[87584:33881454] dsh.gateway.audit: {"outcome":"ok","ts":"2026-10-23T08:14:03Z","caller":"dsh.runtime.scenario","verdict":"granted","primitive":"httpFetch"}
+2026-10-23 16:14:03.429 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:13","buffered":0}]}
+2026-10-23 16:14:03.430 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:03.430 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:03.430 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:03.430 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:03.430 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch abort","data":[{"bodyId":"body:13"}]}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.gateway.audit: {"outcome":"ok","ts":"2026-10-23T08:14:03Z","caller":"dsh.runtime.scenario","verdict":"granted","primitive":"httpFetch.abort"}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:13","buffered":0}]}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"cancelled","primitive":"httpFetch"}]}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"http.aborted","code":"cancelled"}]}
+2026-10-23 16:14:03.431 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentPicker"}]}
+2026-10-23 16:14:03.731 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:03.732 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:03.732 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:03.733 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:04.011 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:04.011 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:04.011 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:04.011 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:04.368 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:04.368 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:04.368 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:04.368 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:04.691 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:04.692 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:04.692 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:04.692 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:05.025 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":71}]}
+2026-10-23 16:14:05.026 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.body","bodyId":13}]}
+2026-10-23 16:14:05.026 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":24}]}
+2026-10-23 16:14:05.026 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:05.029 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
+2026-10-23 16:14:05.029 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":13}]}
+2026-10-23 16:14:05.029 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+2026-10-23 16:14:45.588 DSHHost[87584:33881429] dsh.gateway.audit: {"caller":"dsh.runtime.scenario","primitive":"presentPicker","outcome":"ok","verdict":"granted","ts":"2026-10-23T08:14:45Z"}
+2026-10-23 16:14:45.593 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"picker.granted","mode":"file","path":"notes.txt","scopeOpaque":true}]}
+2026-10-23 16:14:45.593 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.persist"}]}
+2026-10-23 16:14:45.611 DSHHost[87584:33883260] dsh.gateway.audit: {"caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted","ts":"2026-10-23T08:14:45Z","primitive":"fsScope.persist"}
+2026-10-23 16:14:45.613 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.scope.persist","refOpaque":true}]}
+2026-10-23 16:14:45.613 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
+2026-10-23 16:14:45.617 DSHHost[87584:33883260] dsh.gateway.audit: {"caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted","ts":"2026-10-23T08:14:45Z","primitive":"fsScope.resolve"}
+2026-10-23 16:14:45.617 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"user:EA287DA8-5636-4F96-AB9E-3733E4CA13AD","path":"notes.txt"}]}
+2026-10-23 16:14:45.617 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+2026-10-23 16:14:45.619 DSHHost[87584:33883260] dsh.gateway.audit: {"caller":"dsh.runtime.scenario","outcome":"ok","verdict":"granted","ts":"2026-10-23T08:14:45Z","primitive":"fsRead"}
+2026-10-23 16:14:45.620 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":56}]}
+2026-10-23 16:14:45.620 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"fs.scope.resolve","scopeOpaque":true,"reads":true}]}
+2026-10-23 16:14:45.621 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"presentApproval"}]}
+2026-10-23 16:14:50.034 DSHHost[87584:33881429] dsh.gateway.audit: {"outcome":"ok","primitive":"presentApproval","caller":"dsh.runtime.scenario","ts":"2026-10-23T08:14:50Z","verdict":"granted"}
+2026-10-23 16:14:50.042 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"approval.approved","approved":true,"remember":false}]}
+2026-10-23 16:14:50.043 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainSet"}]}
+2026-10-23 16:14:50.104 DSHHost[87584:33883982] dsh.gateway.audit: {"verdict":"granted","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"keychainSet","ts":"2026-10-23T08:14:50Z"}
+2026-10-23 16:14:50.104 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"keychainGet","data":[{"ref":"dsh.host/cred"}]}
+2026-10-23 16:14:50.104 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainGet"}]}
+2026-10-23 16:14:50.106 DSHHost[87584:33883982] dsh.gateway.audit: {"primitive":"keychainGet","verdict":"granted","caller":"dsh.runtime.scenario","outcome":"ok","ts":"2026-10-23T08:14:50Z"}
+2026-10-23 16:14:50.106 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decode","data":[{"chars":44}]}
+2026-10-23 16:14:50.107 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"keychain.roundtrip","set":true,"match":true}]}
+2026-10-23 16:14:50.107 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainSet"}]}
+2026-10-23 16:14:50.111 DSHHost[87584:33883982] dsh.gateway.audit: {"outcome":"ok","verdict":"granted","ts":"2026-10-23T08:14:50Z","primitive":"keychainSet","caller":"dsh.runtime.scenario"}
+2026-10-23 16:14:50.112 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"keychainGet","data":[{"ref":"dsh.host/cred"}]}
+2026-10-23 16:14:50.112 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"keychainGet"}]}
+2026-10-23 16:14:50.112 DSHHost[87584:33883982] dsh.gateway.audit: {"primitive":"keychainGet","verdict":"granted","caller":"dsh.runtime.scenario","outcome":"ok","ts":"2026-10-23T08:14:50Z"}
+2026-10-23 16:14:50.113 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"keychain.deleted","gone":true}]}
+2026-10-23 16:14:50.113 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"notify"}]}
+2026-10-23 16:14:54.160 DSHHost[87584:33881517] dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-23T08:14:54Z","primitive":"notify","caller":"dsh.runtime.scenario"}
+2026-10-23 16:14:54.165 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"notify.scheduled","idOpaque":true}]}
+2026-10-23 16:14:54.165 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for app.state","data":[{"state":"background"}]}
+2026-10-23 16:14:54.502 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":42}]}
+2026-10-23 16:14:56.361 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":42}]}
+2026-10-23 16:14:56.362 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"app.state","state":"background"}]}
+2026-10-23 16:14:56.363 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for event","data":[{"name":"notify.response"}]}
+2026-10-23 16:15:03.476 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":73}]}
+2026-10-23 16:15:03.476 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"notify.response","idMatches":true}]}
+2026-10-23 16:15:03.477 DSHHost[87584:33881844] dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait for app.state","data":[{"state":"foreground"}]}
+2026-10-23 16:15:03.477 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"app.state","state":"foreground"}]}
+2026-10-23 16:15:03.477 DSHHost[87584:33881844] dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"scenario.complete","status":"pass"}]}

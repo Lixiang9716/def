@@ -382,9 +382,29 @@ ios_harness_leg() {
         return 0
     fi
     mx "harness leg 1/2: run-ios.sh (gateway binding, the full UI drive)"
-    test/e2e/run-ios.sh --udid "$IOS_UDID" \
-        --art-dir "$m/gateway-drive" \
-        || { archive_failed_dir ios gateway-drive; record ios gateway-drive FAIL "run-ios.sh exited non-zero — its dir moved to /tmp for diagnosis"; return 1; }
+    if ! test/e2e/run-ios.sh --udid "$IOS_UDID" \
+        --art-dir "$m/gateway-drive"; then
+        # #515's remedy, applied to the UI-driven gateway leg (measured live
+        # 2026-10-23: one green, one red on identical trees — the iOS 26
+        # remote picker sheet swallows the folder tap or resets to the
+        # locations grid). An ENVIRONMENT red — boot+carrier green, gateway
+        # dead at the picker walk or the watchdog — earns ONE honest retry;
+        # a product red never does. Attempt-1's dir moves aside first: the
+        # canonical path carries only the run that produced the verdict.
+        if grep -q "rt: sequence boot=PASS carrier=PASS gateway=FAIL" \
+                "$m/gateway-drive/logs.txt" 2>/dev/null \
+                && { grep -q "gateway watchdog" "$m/gateway-drive/logs.txt" 2>/dev/null \
+                    || grep -q "browse walk could not reach" "$m/gateway-drive/logs.txt" 2>/dev/null; }; then
+            mx "gateway-drive: environment red (picker walk/watchdog) — one honest retry (#515 remedy)"
+            rm -rf "$m/gateway-drive.attempt1"
+            mv "$m/gateway-drive" "$m/gateway-drive.attempt1"
+            test/e2e/run-ios.sh --udid "$IOS_UDID" \
+                --art-dir "$m/gateway-drive" \
+                || { archive_failed_dir ios gateway-drive; record ios gateway-drive FAIL "run-ios.sh exited non-zero twice — its dir moved to /tmp for diagnosis"; return 1; }
+        else
+            archive_failed_dir ios gateway-drive; record ios gateway-drive FAIL "run-ios.sh exited non-zero — its dir moved to /tmp for diagnosis"; return 1
+        fi
+    fi
     record ios gateway-drive PASS "4 verdicts green + receipt (boot, carrier, gateway binding, audit)"
 
     mx "harness leg 2/2: run-ios-device-plane.sh (the v1.5.0 capability ladder)"

@@ -1,0 +1,23 @@
+{
+  "title": "v0.0.3 release precheck: full feature-test, bump PR, tag",
+  "created": "2026-10-23T07:28:50+00:00",
+  "rules": {
+    "hash": "7343012b2198772324fba287934a1a75c34ba324ac63a6b02011f7a918aacc5a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "f82fd8f701ede3670258f45639736b8983c22a18532bb368d1a5c4297a177c5d"
+    }
+  },
+  "checklist": [
+    "[x] Full gate matrix green locally (gov run --every-gate)",
+    "[x] iOS legs green: build ios (debug e2e) + build ios --release (release feature pass)",
+    "[x] core leg green (build core)",
+    "[x] Upstream sweep green (tools/test/sweep.mjs)",
+    "[x] Simulator matrix ios green (run-simulator-matrix.sh --platform ios)",
+    "bump-version.py 0.0.3: four version files + CHANGELOG, PR merged with gates green (android/harmony via CI dev legs)",
+    "tag v0.0.3 pushed; release-ios/android/harmony workflows green"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0277"
+}

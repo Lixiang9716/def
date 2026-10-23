@@ -1,10 +1,10 @@
 {
-  "host": "iOS iPhone 17 Pro simulator (A3ACF715-974C-4B6D-8523-2D498C8E5E3F, iOS 26.5)",
+  "host": "iOS dsh-iphone simulator (A4AE41BF-026A-441E-85DF-F53522996073, iOS 26.5)",
   "engine": "quickjs-ng",
-  "engineVersion": "0.17.0+fork-tostring+async-context+tc39",
+  "engineVersion": "0.17.0+fork-tostring+async-context+tc39+promise-mark",
   "phase": "M2 gateway binding \u2014 the native UI legs the gateway scenario blocks on (notification permission alert, banner tap, approval dialog, Files-document picker search) are driven LIVE on the simulator while the gateway/fs/http primitives answer over the real JS bridge, one-to-one against all four scenario manifests",
-  "launchConfiguration": "default DSHSpike scenario drive (boot -> carrier -> gateway binding -> audit); picker target pre-staged at Documents/gateway-e2e/notes.txt, stage-once per the provider index-settle recipe",
-  "tree": "origin/main 4ce060906607 (dirty working tree at receipt time)",
+  "launchConfiguration": "default DSHHost scenario drive (boot -> carrier -> gateway binding -> audit); picker target pre-staged at Documents/gateway-e2e/notes.txt, stage-once per the provider index-settle recipe",
+  "tree": "origin/main 2b1392c0412b (dirty working tree at receipt time)",
   "scenarios": [
     {
       "id": "boot.verification",
@@ -21,13 +21,13 @@
     {
       "id": "gateway.binding",
       "checker": "test/e2e/scenarios/gateway-binding.json",
-      "events": 19,
+      "events": 26,
       "result": "pass"
     },
     {
       "id": "gateway.audit",
       "checker": "test/e2e/scenarios/gateway-audit.json",
-      "events": 16,
+      "events": 24,
       "result": "pass"
     }
   ],
@@ -41,6 +41,6 @@
     "screens/05b-picker-results.png",
     "screens/06-picker-selected.png"
   ],
-  "timestamp": "2026-09-27T23:09:24+08:00",
+  "timestamp": "2026-10-23T16:22:04+08:00",
   "exitCode": 0
 }

@@ -97,13 +97,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","messag
 {"audit":"timerSchedule","outcome":"invalid"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"timer.schedule.invalid","primitive":"timerSchedule","audit":"timerSchedule","state":"rejected","code":"invalid"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.listen.ok","primitive":"socketListen","state":"ok"}]}
-{"audit":"socket.listen","direction":"inbound","grant":"socket.listen.loopback","scope":"loopback","port":50179,"outcome":"granted"}
+{"audit":"socket.listen","direction":"inbound","grant":"socket.listen.loopback","scope":"loopback","port":63195,"outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"socket.listen.ok","primitive":"socketListen","audit":"socket.listen","state":"ok","code":null}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.connect.ok","primitive":"socketConnect","state":"ok"}]}
-{"audit":"socket.connect","direction":"outbound","grant":"socket.connect.loopback","peer":"127.0.0.1:50179","outcome":"granted"}
+{"audit":"socket.connect","direction":"outbound","grant":"socket.connect.loopback","peer":"127.0.0.1:63195","outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.probe","cell":"socket.connect.ok","primitive":"socketConnect","audit":"socket.connect","state":"ok","code":null}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"poll for accept","data":[{"serverId":"srv:1"}]}
-{"audit":"socket.accept","direction":"inbound","grant":"socket.listen.loopback","serverId":"srv:1","connectionId":"conn:3","peer":"127.0.0.1:50180","outcome":"granted"}
+{"audit":"socket.accept","direction":"inbound","grant":"socket.listen.loopback","serverId":"srv:1","connectionId":"conn:3","peer":"127.0.0.1:63196","outcome":"granted"}
 dsh.runtime.log: {"level":"info","module":"dsh.gateway.audit.invariant","message":"e2e","data":[{"scenario":"gateway.audit-invariant","event":"audit.host","cell":"socket.accept","audit":"socket.accept","hostInitiated":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway.audit.invariant","message":"cell fire","data":[{"cell":"socket.write.ok","primitive":"socketWrite","state":"ok"}]}
 {"audit":"socket.write","outcome":"ok"}
