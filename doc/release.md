@@ -48,7 +48,10 @@ Two ways in, one build path:
        packages/release/bump-version.py X.Y.Z            # or --dry-run first
 
    It prints the version the commits since the last tag imply as a hint — a
-   person makes the call — writes `version.txt`, the iOS `Info.plist`, the
+   person makes the call — writes `version.txt`, the iOS `project.yml`
+   (`CFBundleShortVersionString` — the xcodegen generation source; the
+   generated `App/Info.plist` follows it at gen time and is never the place
+   to write), the
    Android `versionName` and the HarmonyOS `versionName`, and prepends the
    release's `CHANGELOG.md` section from those commits. **Read the changelog**;
    that is the part a human owns.
@@ -114,7 +117,7 @@ they cannot drift:
 | Host | File | Field |
 | --- | --- | --- |
 | — | `version.txt` | the source of truth |
-| iOS | `hosts/ios/App/Info.plist` | `CFBundleShortVersionString` |
+| iOS | `hosts/ios/project.yml` | `CFBundleShortVersionString` (xcodegen regenerates `App/Info.plist` from it) |
 | Android | `hosts/android/app/build.gradle.kts` | `versionName` |
 | HarmonyOS | `hosts/harmony/AppScope/app.json5` | `versionName` |
 

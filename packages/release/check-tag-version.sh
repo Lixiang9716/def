@@ -37,10 +37,12 @@ check "version.txt" "$want"
 
 # The four files are kept in step by packages/release/bump-version.py, which
 # writes them together; a bump that missed one — or a tag chosen by hand — is
-# exactly what this catches.
-ios=$(sed -n '/<key>CFBundleShortVersionString<\/key>/{n;s/.*<string>\([^<]*\)<\/string>.*/\1/p;}' \
-  hosts/ios/App/Info.plist | head -1)
-check "hosts/ios/App/Info.plist CFBundleShortVersionString" "$ios"
+# exactly what this catches. The iOS face is project.yml (the xcodegen
+# generation source): the generated App/Info.plist is rewritten from it on
+# every gen.sh, so the plist is a follower, never the source.
+ios=$(sed -n 's/^[[:space:]]*CFBundleShortVersionString:[[:space:]]*"\([^"]*\)".*/\1/p' \
+  hosts/ios/project.yml | head -1)
+check "hosts/ios/project.yml CFBundleShortVersionString" "$ios"
 
 android=$(sed -n 's/^[[:space:]]*versionName[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
   hosts/android/app/build.gradle.kts | head -1)
@@ -57,4 +59,4 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-echo "tag/version check: $tag == version.txt == Info.plist == build.gradle.kts == app.json5"
+echo "tag/version check: $tag == version.txt == project.yml == build.gradle.kts == app.json5"

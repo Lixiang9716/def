@@ -31,10 +31,18 @@ REPO = Path(__file__).resolve().parents[2]
 
 # (path, human label, regex whose group 2 is the version). version.txt's
 # regex is unused — it holds the version alone.
+#
+# The iOS face is hosts/ios/project.yml — the xcodegen generation source —
+# NOT the generated App/Info.plist: xcodegen rewrites that file from
+# project.yml on every gen.sh (any gate or build runs it), so a version
+# written straight into the plist is silently reverted minutes later.
+# Measured live on the first v0.0.3 tag attempt, 2026-10-23: the bump's
+# plist edit did not survive to the commit, and check-tag-version refused
+# the tag — exactly the drift it exists to catch.
 EDITS = [
     ("version.txt", "the version stream's source of truth", r"(?s)^(.*)$"),
-    ("hosts/ios/App/Info.plist", "CFBundleShortVersionString",
-     r"(<key>CFBundleShortVersionString</key>\s*<string>)([^<]*)(</string>)"),
+    ("hosts/ios/project.yml", "CFBundleShortVersionString (the xcodegen generation source)",
+     r'(CFBundleShortVersionString:\s*")([^"]*)(")'),
     ("hosts/android/app/build.gradle.kts", "versionName",
      r'(\bversionName\s*=\s*")([^"]*)(")'),
     ("hosts/harmony/AppScope/app.json5", "versionName",
@@ -54,10 +62,11 @@ def die(msg: str) -> None:
 
 def git(*args: str) -> str:
     """Run git in the repo; fail loud rather than returning a half-answer."""
-    proc = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True,
-                          text=True, encoding="utf-8", errors="replace")
+    proc = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True, encoding="utf-8", errors="replace")
     if proc.returncode != 0:
-        die(f"git {' '.join(args)}: {(proc.stderr or proc.stdout).strip()}")
+        argv = " ".join(args)
+        detail = (proc.stderr or proc.stdout).strip()
+        die(f"git {argv}: {detail}")
     return proc.stdout
 
 
@@ -170,8 +179,7 @@ def prepend_changelog(section: str) -> None:
     head, sep, rest = old.partition("\n\n")
     # Newest release first: the section goes directly under the title.
     if sep:
-        changelog.write_text(f"{head}{sep}{section}\n{rest.lstrip()}",
-                             encoding="utf-8")
+        changelog.write_text(f"{head}{sep}{section}\n{rest.lstrip()}", encoding="utf-8")
     else:
         changelog.write_text(f"{section}\n{old}", encoding="utf-8")
 
@@ -213,8 +221,7 @@ def main() -> int:
               "you meant it.", file=sys.stderr)
 
     planned = plan_edits(args.version)
-    section = render_section(args.version, commits,
-                             datetime.date.today().isoformat())
+    section = render_section(args.version, commits, datetime.date.today().isoformat())
     if args.dry_run:
         print_plan(planned, base, args.version, section, commits, scope)
         return 0
