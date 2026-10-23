@@ -20,7 +20,7 @@
 
 | # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
 |---|---|---|---|---|---|
-| 2.1 | **v0.0.3 发布**：全量 feature-test 预检 → `bump.py` + 打 tag（D12–D14 管线）→ TestFlight · APK 走 GitHub Releases（自签）· Harmony 旁载 | launch sprint 2026-09-30 零阻塞，此后无公开构建；woaiys3（513★）证明 GitHub Releases 发 APK 可行。下一个 tag 按 `doc/github-owner-actions.md` 是 v0.0.3。发布需明确 go | M | 🔒 | open |
+| 2.1 | **v0.0.3 发布**：全量 feature-test 预检 → `bump.py` + 打 tag（D12–D14 管线）→ APK/HAP/IPA 走 GitHub Releases（未签名，自签安装） | 2026-10-23 cut：预检全绿（28/28 门、core、sweep、矩阵 3/3、iOS debug+release——[release-regression-v0.0.3.md](doc/release-checks/release-regression-v0.0.3.zh.md)）；列车沿途抓修三个真缺陷（#666 fs-durable 落盘、#669 版本真源=project.yml、#670 release-ios 缺 gen 步）。owner 委托 go（你给 go → tag）。TestFlight 未尝试（需 owner 的 Apple 侧工作） | M | 🔒 | done 2026-10-23 |
 | 2.2 | Pages 英雄视频（≤ 60 秒）：对话 → 生成插件 → 当场插入 → 玻璃卡面 | Pages 缺"它能干什么"的证据；闭环已通（#427、#599） | S | — | open |
 | 2.3 | Google Play 2SV 解卡 | 2026-10-07 起卡在 owner 手机端 | S | 🔧 | blocked |
 | 2.4 | Marketplace v0 真部署：服务器凭据 + `deploy/marketplace/deploy-local.sh`；IdP 按 owner-actions 文档同为 STANDBY | 6/6 已落，只差凭据 | S | 🔧 | blocked |
@@ -138,7 +138,7 @@
 1. ✅ §1 AOCI approve/apply（owner）+ 认知收口 PR（61 源，关 T-0268）——2026-10-21 落地。
 2. 🟢 落本 plan（`docs/plan-2026-10` 开 `docs(plan)` PR）+ "证据卫生"小车队：#633（3.8）+ #627（3.4）+ #628（3.11）+ tree 行（3.10）——文件互不相碰。
 3. ✅ 3.1 已分类（2026-10-21：101 行 = a 58 / b 15 / c 24 / d 4）→ §3.2 #626 修复连同重基线（预期变化：58 条 a 类翻转）。
-4. 🟢 2.1 发布预检 → v0.0.3 go（owner）→ 2.2 视频。
+4. ✅ 2.1 收官——v0.0.3 已于 2026-10-23 cut（沿途修复 #666/#669/#670）→ 下一步 2.2 视频。
 5. 🧭 4.1 → 4.2 MCP 主线（2–3 个会话）。
 6. 🟠 5.x 契约、6.x 文档、7.1 GenUI 评审——按 owner 优先级，互不阻塞。
 7. 👀 3.16 周扫首次 Node 驱动跑（2026-10-26）。

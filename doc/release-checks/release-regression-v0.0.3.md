@@ -96,6 +96,31 @@ remedy (classify before retrying); the recorded run needed no retry.
   follow-up: #667 (embed-by-existing for the bundle root; a CI home for
   the leg; the picker-walk repair).
 
+## The tag attempts' catches (after this precheck, same day)
+
+The cut itself surfaced two more defects the precheck could not see — both
+fixed on main before any package shipped; the tag guard refused three
+attempts and no bad package ever existed:
+
+1. **The version stream had two writers for the iOS field (#669)**: the
+   bump wrote `App/Info.plist`, and xcodegen — run by every gen.sh (any
+   gate or build) — regenerates that plist from `hosts/ios/project.yml`,
+   where #655 had pinned `0.1.0`. The bump's plist edit never survived to
+   a commit; `check-tag-version.sh` refused the tag naming every
+   mismatch. Fix: the stream writes project.yml (the generation source);
+   the guard guards sources.
+2. **`release-ios.yml` lost the D9 flip's gen step (#670)**: the Xcode
+   project has been a gitignored generated artifact since #402
+   (2026-10-07); dev/ios installs xcodegen and runs gen.sh ("the flip's
+   fresh-clone proof"), the release pipeline never did — broken for 16
+   days, CI-invisible because CI's ios leg IS dev/ios. Fix: the two steps
+   mirrored into the release pipeline; the iOS package rebuilt via
+   `workflow_dispatch` with `release_tag: v0.0.3` (doc/release.md
+   recovery #5 — the tag stays on its reviewed commit).
+
+`release/android` and `release/harmony` succeeded on the first correct
+tag attempt; the three assets ride the v0.0.3 release.
+
 ## Blockers
 
 None.

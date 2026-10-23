@@ -42,7 +42,7 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
 
 | # | Item | Why / entry | Size | Gate | Status |
 |---|---|---|---|---|---|
-| 2.1 | **v0.0.3 release**: full feature-test precheck → `bump.py` + tag (D12–D14 train) → TestFlight · APK on GitHub Releases (self-sign) · Harmony sideload | Launch sprint 2026-09-30 = zero blockers; no public build since; woaiys3 (513★) proves GitHub-Releases APK distribution. Next tag per `doc/github-owner-actions.md` is v0.0.3. Release needs explicit go. | M | 🔒 | open |
+| 2.1 | **v0.0.3 release**: full feature-test precheck → `bump.py` + tag (D12–D14 train) → APK/HAP/IPA on GitHub Releases (unsigned, self-sign to install) | Cut 2026-10-23: precheck all green (28/28 gates, core, sweep, matrix 3/3, iOS debug+release — [release-regression-v0.0.3.md](doc/release-checks/release-regression-v0.0.3.md)); the train caught and fixed three real defects (#666 fs-durable staging, #669 version source = project.yml, #670 release-ios missing gen.sh). Owner delegated the go (你给 go → tag). TestFlight not attempted (needs owner Apple work). | M | 🔒 | done 2026-10-23 |
 | 2.2 | Hero video (≤ 60 s) on Pages: chat → generated plugin → live insert → glass card | Pages lacks a "what it does" proof; loop works (#427, #599) | S | — | open |
 | 2.3 | Google Play 2SV unblock | Stuck on the owner's phone since 2026-10-07 | S | 🔧 | blocked |
 | 2.4 | Marketplace v0 real deploy: server credentials + `deploy/marketplace/deploy-local.sh`; IdP also STANDY per owner-actions doc | 6/6 program landed, credentials missing | S | 🔧 | blocked |
@@ -159,7 +159,7 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
 1. ✅ §1 AOCI approve/apply (owner) + the cognition closeout PR (61 sources, closes T-0268) — landed 2026-10-21.
 2. 🟢 Land this plan (`docs(plan)` PR from `docs/plan-2026-10`) + the "evidence hygiene" mini-convoy: #633 (3.8) + #627 (3.4) + #628 (3.11) + tree-line (3.10) — disjoint files.
 3. ✅ 3.1 classified (2026-10-21: 101 rows = a 58 / b 15 / c 24 / d 4) → §3.2 the #626 fix with its re-baseline (expected delta: the 58 a-rows flipping).
-4. 🟢 2.1 release precheck → v0.0.3 go (owner) → 2.2 video.
+4. ✅ 2.1 done — v0.0.3 cut 2026-10-23 (three defects fixed en route: #666/#669/#670) → 2.2 video is next.
 5. 🧭 4.1 → 4.2 MCP mainline (2–3 sessions).
 6. 🟠 5.x contracts, 6.x docs, 7.1 GenUI review — owner's priority call, mutually independent.
 7. 👀 3.16 weekly-sweep first Node run (2026-10-26).
