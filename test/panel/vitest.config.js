@@ -65,6 +65,26 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/fs@0.1.6-alpha.2/lib/index.js', import.meta.url)),
       },
       {
+        find: '@deepseek-ai/dsh-typert-protocol',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/typert-protocol@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
+        find: '@deepseek-ai/dsh-attachment',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/attachment@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
+        find: '@deepseek-ai/dsh-brand',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/brand@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
+        find: '@deepseek-ai/dsh-invariants',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/invariants@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
+        find: '@deepseek-ai/dsh-util-crypto',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/util-crypto@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
         find: '@deepseek-ai/dsh-util-values',
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/util-values@0.1.6-alpha.2/lib/index.js', import.meta.url)),
       },

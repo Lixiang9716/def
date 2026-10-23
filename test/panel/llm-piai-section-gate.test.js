@@ -74,7 +74,7 @@ vi.mock('../../runtime/dsh/gateway.js', async () =>
 // by the vitest globalSetup (provision-farm.mjs →
 // spine/provision-modules.mjs) from the materialized vendored closure.
 vi.mock('@deepseek-ai/dsh-llm', async () =>
-  await import('../../runtime/dsh/node_modules/@deepseek-ai/dsh-llm/lib/index.js'));
+  await import('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/llm@0.1.6-alpha.2/lib/index.js'));
 
 // The dsh-root-relative spellings the in-graph runtime modules import (the
 // quickjs loader's bare map on device) — re-pointed at the same real files
@@ -105,7 +105,7 @@ let Context, SettingsMemory, mountGatewayLlm, mountPiAiSection, PIAI_SECTION_NS,
 
 if (FARM_READY) {
   beforeAll(async () => {
-    ({ Context } = await import('../../runtime/dsh/node_modules/@deepseek-ai/cordis/lib/index.js'));
+    ({ Context } = await import('../../hosts/android/app/src/main/assets/dsh/vendor/npm/cordis@4.0.2/lib/index.js'));
     ({ SettingsMemory } = await import('../../runtime/dsh/upstream/settings-memory.js'));
     ({ mountGatewayLlm } = await import('../../runtime/dsh/upstream/llm-gateway-mount.js'));
     ({ mountPiAiSection, PIAI_SECTION_NS } = await import('../../runtime/dsh/upstream/llm-piai-mount.js'));
