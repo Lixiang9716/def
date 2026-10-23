@@ -1,0 +1,135 @@
+name: cold-seat
+# The cold-seat materialization gate (plan §3.7): a fresh worktree — cut from
+# git, never from a cache or an artifact — must reach one green upstream spec
+# on BOTH legs (QuickJS CLI + plain-Node reference) through the full cold
+# chain: ensure-seat --verify (rsync the manifest's trees from this checkout,
+# sync verbs, provisions) -> transpile -> CLI build -> qjs leg -> node leg.
+# Every failure names its missing face (farm / submodule / dsh-tests vendor /
+# node-pty binding / transpile products); exit 0 is the only green. The
+# 2026-10-22 cold-seat pty regression is the class of failure this catches.
+#
+# Two parallel jobs, no needs between them:
+#   gate      — the gate itself on a fresh worktree.
+#   rejection — rule 6's rejection case: the same materialization, then
+#               --self-test, which runs the full gate (green), breaks a farm
+#               link, requires the checks to go red NAMING the farm, restores
+#               with ensure-seat, and requires green. A gate that cannot go
+#               red proves nothing.
+on:
+  pull_request:
+  workflow_dispatch:
+# Superseded runs cancel: a newer push's verdict is the branch's state
+# (the c-core group shape).
+concurrency:
+  group: cold-seat-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  gate:
+    runs-on: ubuntu-24.04-arm
+    # Local measurement (2026-10-23, darwin-arm64): the gate end-to-end on a
+    # fresh worktree against a materialized primary is 144s; with this job's
+    # checkout + primary re-verify the local-equivalent job is ~4 min — x2 is
+    # ~8 by the budget rule. The margin up to 15 covers the one case a dev
+    # seat cannot produce: a cache-cold CI primary fetching the vendored
+    # closure (~190 pin faces) through the registry. 15 stays under the
+    # 25-minute ceiling this workflow's plan sets.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The provision's clone-submodule clones the corpus FROM this
+          # checkout (offline, by design) — a bare primary leaves it nothing
+          # to clone and every seat would red on the submodule face.
+          submodules: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install govrail
+        # ensure-seat --verify probes bundle-files + closures through gov;
+        # the pin mirrors gov.yml's.
+        run: pip install govrail==0.52.0
+      - name: Cache the vendored trees
+        # Same pattern as weekly-sweep/gov.yml: the vendored trees are
+        # untracked by design (D6), materialized by sha256-pinned ensure
+        # scripts, cached keyed on the pin tables themselves. The cache is
+        # an accelerator, never a source of truth — and nothing below reads
+        # the SEAT's trees from it: the seat is materialized by rsync from
+        # this checkout, which is what the gate is proving.
+        uses: actions/cache@v6
+        with:
+          path: |
+            external/quickjs-ng
+            external/zstd
+            external/wasm3
+            external/dsh
+            external/npm
+            external/dsh-tests@dsh-v0.1.6-alpha.2
+          key: cold-seat-${{ hashFiles('external/ensure*.sh') }}
+      - name: Materialize the primary checkout
+        # The gate's ensure-seat materializes the SEAT by rsync FROM this
+        # checkout — a cold primary would turn every manifest row into a
+        # loud-but-nonfatal SKIP (ensure-seat.sh:69-71) and the manifest
+        # would never actually be exercised. Materializing the primary is
+        # this job's setup, exactly the sequence the other workflows run;
+        # the ensure scripts are idempotent and pin-stamped.
+        run: |
+          external/ensure.sh
+          external/ensure-dsh.sh
+          external/ensure-dsh-tests.sh
+      - name: Cut the cold-seat worktree
+        # From git — never from a cache or an artifact. The
+        # materialization-completeness claim is about a fresh worktree.
+        run: git worktree add --detach "$RUNNER_TEMP/cold-seat" HEAD
+      - name: Run the cold-seat gate
+        # Stage markers ([gate k/7]) and the face-naming verdicts land in
+        # this step's log, preserved on red.
+        run: sh build/cold-seat-gate.sh "$RUNNER_TEMP/cold-seat"
+
+  rejection:
+    runs-on: ubuntu-24.04-arm
+    # The self-test measured 152s locally (three gate passes + the
+    # ensure-seat restore); with the same front matter the local-equivalent
+    # job is ~4.5 min — x2 is ~9. The same cache-cold margin as the gate job
+    # applies, plus one full warm gate cycle; 20 stays under the 25-minute
+    # ceiling.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install govrail
+        run: pip install govrail==0.52.0
+      - name: Cache the vendored trees
+        uses: actions/cache@v6
+        with:
+          path: |
+            external/quickjs-ng
+            external/zstd
+            external/wasm3
+            external/dsh
+            external/npm
+            external/dsh-tests@dsh-v0.1.6-alpha.2
+          key: cold-seat-${{ hashFiles('external/ensure*.sh') }}
+      - name: Materialize the primary checkout
+        run: |
+          external/ensure.sh
+          external/ensure-dsh.sh
+          external/ensure-dsh-tests.sh
+      - name: Cut the cold-seat worktree
+        run: git worktree add --detach "$RUNNER_TEMP/cold-seat" HEAD
+      - name: Run the rejection self-test
+        # The same materialization, then the rejection case: --self-test's
+        # first phase IS the full gate, so this one invocation materializes
+        # the same way the gate job does before it proves the gate can go
+        # red for the right reason and return to green. Exit 0 requires both
+        # directions actually observed.
+        run: sh build/cold-seat-gate.sh "$RUNNER_TEMP/cold-seat" --self-test

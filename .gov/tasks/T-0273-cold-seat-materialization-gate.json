@@ -1,0 +1,22 @@
+{
+  "title": "cold-seat materialization gate",
+  "created": "2026-10-23T03:50:04+00:00",
+  "rules": {
+    "hash": "7343012b2198772324fba287934a1a75c34ba324ac63a6b02011f7a918aacc5a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "f82fd8f701ede3670258f45639736b8983c22a18532bb368d1a5c4297a177c5d"
+    }
+  },
+  "checklist": [
+    "research: the cold-seat materialization surface and the 2026-10-22 pty regression class (plan \u00a73.7)",
+    "gate authoring: build/cold-seat-gate.sh, .github/workflows/cold-seat.yml, and the Agent Note",
+    "local green run: sh build/cold-seat-gate.sh <worktree-root> exits 0 (7/7 steps green)",
+    "rejection self-test: --self-test observes red naming face 'farm', then green after the ensure-seat restore",
+    "plan flip: plan.md \u00a73.7 moved from open/queued to its landed state",
+    "PR + CI green: the cold-seat workflow passes on the PR (no merge \u2014 close the card with a green receipt before push)"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0273"
+}
