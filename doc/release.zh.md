@@ -40,7 +40,9 @@
        packages/release/bump-version.py X.Y.Z            # 或先 --dry-run 看一眼
 
    它会把"上一个标签以来的提交所隐含的版本号"作为提示打印出来(决定权在人),
-   然后改写 `version.txt`、iOS 的 `Info.plist`、Android 的 `versionName` 和
+   然后改写 `version.txt`、iOS 的 `project.yml`(`CFBundleShortVersionString`
+   ——xcodegen 的生成源;生成的 `App/Info.plist` 在 gen 时跟随它,绝不是写入
+   的地方)、Android 的 `versionName` 和
    HarmonyOS 的 `versionName`,并从这些提交生成该版本的 `CHANGELOG.md` 小节。
    **要审的是 changelog**;那才是人负责的部分。
 3. **用一个普通 pull request 提交并合并它。** 人或 agent 开的 PR 会正常拿到必需的
@@ -93,7 +95,7 @@
 | 宿主 | 文件 | 字段 |
 | --- | --- | --- |
 | — | `version.txt` | 事实来源 |
-| iOS | `hosts/ios/App/Info.plist` | `CFBundleShortVersionString` |
+| iOS | `hosts/ios/project.yml` | `CFBundleShortVersionString`(xcodegen 由此再生 `App/Info.plist`) |
 | Android | `hosts/android/app/build.gradle.kts` | `versionName` |
 | HarmonyOS | `hosts/harmony/AppScope/app.json5` | `versionName` |
 

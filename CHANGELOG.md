@@ -146,6 +146,7 @@ All notable changes to this project are recorded here.
 
 ### Bug Fixes
 
+* **release:** the version stream's iOS face moves to project.yml — xcodegen owns the generated Info.plist, and a plist-side bump never survives gen (#669)
 * **ios:** stage fs-durable.js — the gateway drive's missing module (#666)
 * **test:** the diff-closeout — every disagreement names its finding (#661)
 * **test:** the b-closeout — node-pty vendors, the typert staged read, and the final 42-row surface (#660)
@@ -279,6 +280,7 @@ All notable changes to this project are recorded here.
 
 ### Other Changes
 
+* **release:** cut v0.0.3 (#668)
 * **verdict:** judge the cold-seat gate in ci-verdict (#665)
 * **test:** the cold-seat materialization gate (#663)
 * **plan:** queue the follow-up waves — currency flips + 3.18/3.19 (#662)
