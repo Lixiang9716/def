@@ -73,14 +73,8 @@ vi.mock('../../runtime/dsh/gateway.js', async () =>
 // aliases can never close their dependency closure. The farm is provisioned
 // by the vitest globalSetup (provision-farm.mjs →
 // spine/provision-modules.mjs) from the materialized vendored closure.
-vi.mock('@deepseek-ai/cordis', async () =>
-  await import('../../runtime/dsh/node_modules/@deepseek-ai/cordis/lib/index.js'));
-vi.mock('@deepseek-ai/schemastery', async () =>
-  await import('../../runtime/dsh/node_modules/@deepseek-ai/schemastery/lib/index.mjs'));
 vi.mock('@deepseek-ai/dsh-llm', async () =>
   await import('../../runtime/dsh/node_modules/@deepseek-ai/dsh-llm/lib/index.js'));
-vi.mock('@deepseek-ai/dsh-settings', async () =>
-  await import('../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js'));
 
 // The dsh-root-relative spellings the in-graph runtime modules import (the
 // quickjs loader's bare map on device) — re-pointed at the same real files

@@ -65,6 +65,14 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/fs@0.1.6-alpha.2/lib/index.js', import.meta.url)),
       },
       {
+        find: '@deepseek-ai/dsh-util-values',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/util-values@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
+        find: '@deepseek-ai/dsh-llm',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/llm@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
         find: '@deepseek-ai/dsh-settings',
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/settings@0.1.6-alpha.2/lib/index.js', import.meta.url)),
       },
