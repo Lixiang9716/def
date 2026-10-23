@@ -85,6 +85,26 @@ picker 走查、notes 选中)。precheck 的第一次矩阵跑中观察到一次
   撞)。CI 五周全绿,因为这条腿只在本地跑。类的跟进:#667(bundle 根级
   embed-by-existing;给这条腿一个 CI 的家;picker 走查的修复)。
 
+## 打 tag 阶段的捕获(预检之后、同一天)
+
+cut 本身又暴露两个预检看不见的缺陷——都在任何包流出前修完;tag 守卫三次
+拒绝,坏包从未存在:
+
+1. **版本流对 iOS 字段有两个写入者(#669)**:bump 写 `App/Info.plist`,
+   而每次 gen.sh(任何门或构建都会跑)的 xcodegen 会按
+   `hosts/ios/project.yml` 再生该 plist——#655 在那里钉了 `0.1.0`。
+   bump 对 plist 的写入从未活到提交;`check-tag-version.sh` 拒绝 tag 并
+   逐项点名失配。修法:版本流改写 project.yml(生成源);守卫守源。
+2. **`release-ios.yml` 丢了 D9 翻转的 gen 步(#670)**:Xcode 工程自
+   #402(2026-10-07)起就是 gitignore 的生成物;dev/ios 装 xcodegen 并跑
+   gen.sh("翻转的新鲜克隆证明"),release 管线却从未跟上——坏了 16 天,
+   CI 看不见,因为 CI 的 ios 腿就是 dev/ios。修法:两步镜像进 release
+   管线;iOS 包经 `workflow_dispatch` 带 `release_tag: v0.0.3` 重建
+   (doc/release.md 恢复路径 #5——tag 停在被评审过的提交上)。
+
+`release/android` 与 `release/harmony` 在第一次正确的 tag 上即成功;
+三个资产都挂在 v0.0.3 release 上。
+
 ## 阻塞项
 
 无。
