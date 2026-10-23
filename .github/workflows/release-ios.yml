@@ -205,6 +205,20 @@ jobs:
           test/e2e/ensure-official-dist.sh
           test/e2e/ensure-client-bundles.sh
 
+      - name: Install xcodegen
+        run: |
+          brew install xcodegen
+          xcodegen --version
+
+      - name: Generate the dsh bundle + Xcode project (gen.sh)
+        # The D9 flip (contract/proposals/2026-09-29-generated-bundles.md):
+        # App/Generated/ and DSHHost.xcodeproj/ are gitignored build output,
+        # absent from a fresh checkout until gen.sh runs — the dev/ios
+        # pipeline has carried this step since the flip; the release pipeline
+        # never did, and the first tag attempt since #402 died at xcodebuild
+        # with "DSHHost.xcodeproj does not exist" (2026-10-23, v0.0.3).
+        run: sh hosts/ios/gen.sh
+
       - name: Build the release .app (device + simulator, unsigned)
         run: |
           set -o pipefail
