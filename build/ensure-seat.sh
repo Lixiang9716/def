@@ -71,6 +71,11 @@ for tree in $TREES; do
         continue
     fi
     echo "ensure-seat: rsync $tree"
+    # rsync 3.x (CI, 3.2.7) refuses to create nested destination parents;
+    # macOS's rsync silently does — which is why this only ever failed on
+    # CI: a fresh worktree lacks the untracked parent chain of the vendored
+    # tree (runtime/dsh/vendor/) (#663).
+    mkdir -p "$(dirname "$dst")"
     rsync -a --delete "$src" "$dst"
 done
 
