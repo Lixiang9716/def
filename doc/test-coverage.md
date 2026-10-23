@@ -2,6 +2,29 @@
 
 English | [简体中文](test-coverage.zh.md)
 
+## The four layers (D20)
+
+Every test artifact in this repo declares exactly one layer, enforced by the
+`test-taxonomy` gate over `test/taxonomy.json` — the registry's legs carry
+`kind` too (`node test/verifications.mjs --list`). The layers ask different
+questions and never substitute for each other:
+
+| Layer | The question it answers | Executes the system? | Examples |
+| --- | --- | --- | --- |
+| **static** | do shape, declarations and committed evidence agree? | never | code-size, shellcheck, pairing, the e2e-matrix evidence audit |
+| **unit (UT)** | does this one module behave, alone, in seconds? | one module | the panel vitest suite, tool tests |
+| **integration** | does the composed runtime behave, headless? | the full runtime, no app shell | the core CLI proof legs, the 681-spec upstream sweep, the MCP proof leg |
+| **e2e** | does the installed package's real user path behave? | the shipped artifact, via UI or launch arg | gateway-drive, device-plane, boot-carrier, the host E2E runners |
+
+Litmus tests: static survives deleting the product; unit runs one module;
+integration runs the composed runtime headless; e2e runs the package a user
+would install. **Evidence audits are not a layer** — they are the
+enforcement mode over e2e's committed evidence, which is why the
+`e2e-matrix` gate is named e2e yet never boots the app. "CI green" must
+always name which layers actually ran: the 2026-10-23 release precheck
+caught a true e2e leg broken for five weeks under CI green that never
+included it (D20 carries the full story).
+
 This repo's real behavior-coverage net does not run through a coverage
 tool: 681 upstream official specs pressed against the QuickJS runtime and
 the self-built shims, plus the e2e evidence matrix and the gov gates.

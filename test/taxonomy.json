@@ -1,0 +1,2681 @@
+{
+ "kinds": [
+  "static",
+  "unit",
+  "integration",
+  "e2e"
+ ],
+ "entries": [
+  {
+   "path": ".github/workflows/c-core.yml",
+   "kind": "integration",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/ci-verdict.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/cold-seat.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/dev-android.yml",
+   "kind": "e2e",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/dev-harmonyos.yml",
+   "kind": "e2e",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/dev-ios.yml",
+   "kind": "e2e",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/gov.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/marketplace-publish.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/pages.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/release-android.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/release-harmony.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/release-ios.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/static-analysis.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/supply-audit.yml",
+   "kind": "static",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/vendor-repro.yml",
+   "kind": "integration",
+   "note": "CI workflow"
+  },
+  {
+   "path": ".github/workflows/weekly-sweep.yml",
+   "kind": "integration",
+   "note": "CI workflow"
+  },
+  {
+   "path": "gate:actionlint",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:archive",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:asset-mirrors",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:bundle-files",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:check",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:closures",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:code-size",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:conflict-markers",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:coverage-floor",
+   "kind": "unit",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:descriptor-parity",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:doc-crosslinks",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:e2e-matrix",
+   "kind": "static",
+   "note": "gates.json gate (evidence audit — does not run the app)"
+  },
+  {
+   "path": "gate:logging",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:note-presence",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:notes",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:pairing",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:panel-tests",
+   "kind": "unit",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:perf-budget",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:plane",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:quickjs-boot-parse",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:self-test",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:shellcheck-warn",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:staging-check",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:staging-generated",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:task",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:test-taxonomy",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:transport-tokens",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:vendoring-repro",
+   "kind": "integration",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "gate:verify-decisions",
+   "kind": "static",
+   "note": "gates.json gate"
+  },
+  {
+   "path": "hosts/android/ci/run-android-full.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-ble.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-calendar-live.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-camera-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-card-player.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-create-card.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-device-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-dsh-e2e.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-live-llm.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-mic-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-page-open.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-perf-turn-latency.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-release-seat.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-session-persist-midturn.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-session-persist-restart.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-shell-turn.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-upgrade-matrix.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-upstream-parity.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/android/ci/run-upstream-suite.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-ble.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-camera-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-card-player.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-create-card.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-device-parity.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-device-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-host-e2e.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-live-llm.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-mic-plane.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-next-web-mount.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-real-agent.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-real-create.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-session-persist-restart.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-shell-turn.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-upstream-parity.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-upstream-suite.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/harmony/ci/run-whale-mount.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "hosts/ios/ci/run-shell-turn.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
+   "path": "presentation/lynx-client/tests/adapter.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/driver-loop.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/fold.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/mux.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/seam.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/wire-edge.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "presentation/lynx-client/tests/wire.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "runtime/dsh/ci/anthropic-forwarder.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/check-parity-resolution.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/fs-watch-idle-dsh-util-crypto.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/fs-watch-idle-gateway.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/fs-watch-idle-hooks.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/fs-watch-idle-probe.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/llm-chaos-read-idle.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/market-rollback-index.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/market-test-indexes.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/mock-llm-server.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/mock-market-hosting.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/mock-market-server.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/mock-mcp-server.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/mock-open-design-server.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/parity-compare.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/parity-node-gateway.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/parity-node-hooks.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/parity-reference.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-appshell-spec-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-byok-piai-anthropic.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-dsh-shell-js-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-gateway-audit-invariant.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-leak-canary.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-chaos-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-piai-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-piai-live.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-piai-probe.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-piai-user-endpoint.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-llm-toolargs-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-marketplace-install-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-marketplace-ui-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-mcp-streamable-http-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-models-directory-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-office-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-onboarding-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-open-design-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-perf-baseline.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-perf-turn-latency.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-plugin-forms-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-seam-inventory-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-security-byok-leak.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-security-gateway-fuzz.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-security-jail.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-security-manifest-forgery.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-session-multi-stress-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-session-persist-midturn-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-session-persistence-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-session-preset-join-node.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-settings-surfaces-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-shim-exposure-probe.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-shim-exposure-sweep.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-soak-aging.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-starvation.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-upstream-boot-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-upstream-compaction-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-upstream-e2e.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-upstream-parity.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/run-upstream-suite-sweep.sh",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/ci/web-plugins-payload.mjs",
+   "kind": "integration",
+   "note": "headless runtime proof leg"
+  },
+  {
+   "path": "test/e2e/check.mjs",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/classify.mjs",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/ensure-client-bundles.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/ensure-official-dist.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/ios-ui.py",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/junit.mjs",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/lynx-mount.mjs",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/matrix-register.mjs",
+   "kind": "e2e",
+   "note": "the matrix orchestrator (drives L3 legs, audits evidence)"
+  },
+  {
+   "path": "test/e2e/matrix.mjs",
+   "kind": "e2e",
+   "note": "the matrix orchestrator (drives L3 legs, audits evidence)"
+  },
+  {
+   "path": "test/e2e/matrix.sh",
+   "kind": "e2e",
+   "note": "the matrix orchestrator (drives L3 legs, audits evidence)"
+  },
+  {
+   "path": "test/e2e/run-android-next-web-mount.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-cli-lynx-mount.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-agent-flow.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-ble.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-boot-carrier.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-camera-plane-device.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-camera-plane.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-card-player.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-create-card.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-device-plane.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-install-ui.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-live-llm.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-live-session.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-live-write.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-mic-plane.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-next-web-mount.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-official-web-mount.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-session-mock-llm.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-session-persist-restart.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios-upstream-parity.sh",
+   "kind": "integration",
+   "note": "headless runtime parity runner"
+  },
+  {
+   "path": "test/e2e/run-ios-upstream-suite.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-ios.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-mic-plane-device.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/run-socket-seam.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/selftest.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/ui-probe.mjs",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/e2e/write-receipt.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
+   "path": "test/panel/android-jni-surface.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/api-handler-respond.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-a2ui.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-catalog.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-coverage.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-fourth-app.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-mock.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-render.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-surfaces.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/appshell-validate.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/cli-preset-seed.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/composer-boot-context-window.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/disk-watermark-guard.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/ed25519.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fastcheck/llm-sse-fuzz.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fastcheck/parser-syntax.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fastcheck/path-shim.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fastcheck/provider-cassettes.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fastcheck/semver-range.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fetch-gateway-bridge.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fs-readdir-real-fallback.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/fs-stat-metadata-face.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/install-path-traversal.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/llm-retry-pacing.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/llm-route-context-window.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/llm-transport-read-idle.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/marketplace-core.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/marketplace-resolver.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/onboarding-core.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/plugin-inventory-probe.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/plugin-manager-tool.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/plugin-manager-write-legs.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/preset-health.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/retry-telemetry.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/scenario-verdict.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/shell-js-applets.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/shell-js-support.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/shell-js.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/shell-wasm.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/spine/composer-journal.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/spine/journal-migration.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/spine/queue-boundary-stress.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/spine/session-delete.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/spine/watchdog-abort-wire.test.mjs",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/timers-gateway-seam.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/tool-deadline.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/tool-fs-outside-root-order.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/turn-evidence.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/turn-failure.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/turn-recovery.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/turn-watchdog.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/web-search-keyless.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/workspace-registry-tier.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/upstream-suite/cancel-dissect-probe.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/generation.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/restart-dissect-probe.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/seed-fixtures.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/session-preset-join-gateway-node.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/session-preset-join-hooks.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/session-preset-join-url-vfs.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/session-preset-join.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/smoke-hooks.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/smoke.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/tc39-probe.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/upstream-suite/transpile.mjs",
+   "kind": "integration",
+   "note": "upstream-suite L2 machinery"
+  },
+  {
+   "path": "test/verifications.mjs",
+   "kind": "integration",
+   "note": "the verification registry (this PR adds kind per leg)"
+  },
+  {
+   "path": "test/web-client-v2-suite/tests/appshell-core.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "test/web-client-v2-suite/tests/mux.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "test/web-client-v2-suite/tests/timeline.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "test/web-client-v2-suite/tests/wire.test.js",
+   "kind": "unit",
+   "note": "node-side test"
+  },
+  {
+   "path": "tools/check-staging.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/dev-web-carrier/appshell-m3.test.mjs",
+   "kind": "integration",
+   "note": "composes the full carrier boot wire and asserts loopback behavior"
+  },
+  {
+   "path": "tools/dev-web-carrier/appshell-m4-safety.test.mjs",
+   "kind": "integration",
+   "note": "composes the full carrier boot wire and asserts loopback behavior"
+  },
+  {
+   "path": "tools/dev-web-carrier/appshell-morph.test.mjs",
+   "kind": "integration",
+   "note": "composes the full carrier boot wire and asserts loopback behavior"
+  },
+  {
+   "path": "tools/dev-web-carrier/appshell-swarm.test.mjs",
+   "kind": "integration",
+   "note": "composes the full carrier boot wire and asserts loopback behavior"
+  },
+  {
+   "path": "tools/dev-web-carrier/axe-sweep.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/dev-web-carrier/onboarding-route.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/dev-web-carrier/plugins-route.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/dev-web-carrier/visual-diff.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/gen-marketplace-index.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/publisher-token.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/test/sweep-cli.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/test/sweep-freshness.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/test/sweep-ledger.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  },
+  {
+   "path": "tools/test/sweep.test.mjs",
+   "kind": "unit",
+   "note": "node tooling unit tests"
+  }
+ ],
+ "scenarios": [
+  {
+   "path": "test/e2e/scenarios/agent-flow.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/stage-spine-closure.sh",
+    "test/e2e/run-ios-agent-flow.sh",
+    "test/e2e/write-receipt.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-absent-audit.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app gateway-audit drive; carried by committed evidence (doc/e2e-matrix.md)"
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-absent.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-audit.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app gateway-audit drive; carried by committed evidence (doc/e2e-matrix.md)"
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-device.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-live-empty-audit.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app gateway-audit drive; carried by committed evidence (doc/e2e-matrix.md)"
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-live-empty.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-mock-audit.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app gateway-audit drive; carried by committed evidence (doc/e2e-matrix.md)"
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble-mock.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-ble.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-camera-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-camera-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-camera-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-camera-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-capability-binding.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/stage-spine-closure.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-compactweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app scenario; carried by committed evidence"
+  },
+  {
+   "path": "test/e2e/scenarios/android-composer-live-write.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/stage-spine-closure.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-device-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-device-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-device-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-device-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-mic-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-mic-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-officialweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-perf-turn-latency.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-perf-turn-latency.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-session-live-read.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/stage-spine-closure.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-session-persist-midturn.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-session-persist-midturn.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-session-persist-restart.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-session-persist-restart.sh",
+    "hosts/android/ci/run-upgrade-matrix.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/android-v2web-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-android-next-web-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/appshell-m3.json",
+   "kind": "integration",
+   "drivenBy": [
+    "tools/dev-web-carrier/appshell-m3.test.mjs"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/appshell-m4.json",
+   "kind": "integration",
+   "drivenBy": [
+    "tools/dev-web-carrier/appshell-m4-safety.test.mjs"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/appshell-morph.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/vendor-official.sh",
+    "tools/dev-web-carrier/appshell-morph.test.mjs"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/appshell-spec.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-appshell-spec-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/appshell-swarm.json",
+   "kind": "integration",
+   "drivenBy": [
+    "tools/dev-web-carrier/appshell-swarm.test.mjs"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/boot-verification.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-dsh-e2e.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/byok-anthropic-wire.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-byok-piai-anthropic.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/camera-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-camera-plane.sh",
+    "test/e2e/run-ios-camera-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/camera-plane-capture-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-camera-plane-device.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/camera-plane-capture.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-camera-plane.sh",
+    "hosts/harmony/ci/run-camera-plane.sh",
+    "test/e2e/run-ios-camera-plane-device.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/camera-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-camera-plane.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-camera-plane.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/card-player-android.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-card-player.sh",
+    "test/e2e/run-ios-card-player.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/card-player-harmony.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-card-player.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/card-player.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-card-player.sh",
+    "hosts/harmony/ci/run-card-player.sh",
+    "hosts/harmony/ci/run-create-card.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/carrier-loopback.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-boot-carrier.sh",
+    "test/e2e/run-ios.sh",
+    "test/e2e/selftest.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/compactweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app scenario; carried by committed evidence"
+  },
+  {
+   "path": "test/e2e/scenarios/composer-live-write.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/create-calendar-live.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-calendar-live.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/create-card-harmony.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-create-card.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/create-card.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-create-card.sh",
+    "hosts/android/ci/run-session-persist-restart.sh",
+    "hosts/harmony/ci/run-create-card.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/device-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-device-plane.sh",
+    "test/e2e/run-ios-device-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/device-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-ble.sh",
+    "hosts/android/ci/run-camera-plane.sh",
+    "hosts/android/ci/run-card-player.sh",
+    "hosts/android/ci/run-create-card.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/dsh-shell-js.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-shell-turn.sh",
+    "hosts/harmony/ci/vendor-official.sh",
+    "runtime/dsh/ci/run-dsh-shell-js-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/gateway-audit-invariant.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-gateway-audit-invariant.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/gateway-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/run-ble.sh",
+    "hosts/android/ci/run-camera-plane.sh",
+    "hosts/android/ci/run-device-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/gateway-binding.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios.sh",
+    "test/e2e/selftest.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/gateway-bridge-smoke.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-dsh-e2e.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-ble-device.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-ble-live-empty.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app gateway-audit drive; carried by committed evidence (doc/e2e-matrix.md)"
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-ble-mock.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-ble.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-capability-binding.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-compactweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app scenario; carried by committed evidence"
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-composer-live-write.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-device-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-device-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-httpfetch-streaming.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-mic-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-mic-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-officialweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-host-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-session-live-read.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-session-persist-restart.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-session-persist-restart.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/harmony-v2web-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-next-web-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/install-carrier-evidence.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-install-ui.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/install-from-http.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-install-ui.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/install-full-cycle.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-install-ui.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/install-verified-tarball.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app scenario; carried by committed evidence"
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-denied-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-denied.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-device.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-live-empty-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-live-empty.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-mock-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble-mock.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ios-ble.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-ble.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/leak-canary.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-leak-canary.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-malformed-sse.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-no-headers.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-oversized.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-toolargs-deep-nesting.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-toolargs-missing-field.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-toolargs-oversized.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-toolargs-type-error.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-chaos-truncation.json",
+   "kind": "integration",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "dynamic/no static consumer — runtime-vs-mock semantics"
+  },
+  {
+   "path": "test/e2e/scenarios/llm-live-stream-carrier.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-live-llm.sh",
+    "hosts/harmony/ci/run-live-llm.sh",
+    "test/e2e/run-ios-live-llm.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-live-stream-device.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-live-llm.sh",
+    "hosts/harmony/ci/run-live-llm.sh",
+    "test/e2e/run-ios-live-llm.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-live-stream.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-live-llm.sh",
+    "hosts/harmony/ci/run-live-llm.sh",
+    "hosts/harmony/ci/run-real-agent.sh",
+    "hosts/harmony/ci/run-real-create.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-piai-live-real.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-llm-piai-live.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-piai-live.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-llm-piai-e2e.sh",
+    "runtime/dsh/ci/run-llm-piai-live.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-piai-probe.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-byok-piai-anthropic.sh",
+    "runtime/dsh/ci/run-llm-piai-e2e.sh",
+    "runtime/dsh/ci/run-llm-piai-probe.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-piai-user-endpoint-skip.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-llm-piai-user-endpoint.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/llm-piai-user-endpoint.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-llm-piai-e2e.sh",
+    "runtime/dsh/ci/run-llm-piai-user-endpoint.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/lynx-mount-stub.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-cli-lynx-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/lynx-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-cli-lynx-mount.sh",
+    "tools/dev-web-carrier/lynx-mode.mjs"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/marketplace-install.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-marketplace-install-e2e.sh",
+    "runtime/dsh/ci/run-perf-baseline.sh",
+    "runtime/dsh/ci/run-security-manifest-forgery.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/marketplace-ui-flow.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-marketplace-ui-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/mcp-streamable-http.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-mcp-streamable-http-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/mic-plane-audit.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-mic-plane.sh",
+    "hosts/harmony/ci/run-mic-plane.sh",
+    "test/e2e/run-ios-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/mic-plane.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-mic-plane.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-card-player.sh",
+    "hosts/harmony/ci/run-mic-plane.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/models-directory.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-models-directory-e2e.sh",
+    "runtime/dsh/ci/run-onboarding-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/office.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/vendor-official.sh",
+    "runtime/dsh/ci/run-office-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/officialweb-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "test/e2e/run-ios-official-web-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/onboarding-flow.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-onboarding-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/open-design.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/vendor-official.sh",
+    "runtime/dsh/ci/run-open-design-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/perf-baseline.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-perf-baseline.sh",
+    "runtime/dsh/ci/run-perf-turn-latency.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/perf-turn-latency.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-perf-turn-latency.sh",
+    "runtime/dsh/ci/run-perf-turn-latency.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/plugin-forms.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-plugin-forms-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/real-agent-loop.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-real-agent.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/resource-starvation-heap.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-starvation.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/resource-starvation-journal.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-starvation.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/seam-inventory.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-seam-inventory-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/security-byok-leak.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-byok-piai-anthropic.sh",
+    "runtime/dsh/ci/run-llm-piai-user-endpoint.sh",
+    "runtime/dsh/ci/run-security-byok-leak.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/security-gateway-fuzz.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-gateway-audit-invariant.sh",
+    "runtime/dsh/ci/run-security-gateway-fuzz.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/security-jail.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-security-jail.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/security-manifest-forgery.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-security-manifest-forgery.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/session-live-read.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/session-mock-llm.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-dsh-e2e.sh",
+    "hosts/android/ci/stage-spine-closure.sh",
+    "hosts/harmony/ci/run-host-e2e.sh",
+    "hosts/harmony/ci/run-whale-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/session-multi-stress.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-session-multi-stress-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/session-persist-restart.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-session-persist-restart.sh",
+    "hosts/android/ci/run-upgrade-matrix.sh",
+    "hosts/harmony/ci/run-session-persist-restart.sh",
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/session-persistence-midturn.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-session-persist-midturn-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/settings-surfaces.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/stage-spine-closure.sh",
+    "runtime/dsh/ci/run-settings-surfaces-e2e.sh",
+    "test/e2e/run-cli-lynx-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/shim-exposure-probe.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-shim-exposure-probe.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/soak-aging.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-soak-aging.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/socket-seam-local.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-socket-seam.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/surface-pomodoro.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/vendor-official.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ui-client-swap.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-session-mock-llm.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/ui-occlusion.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-android-full.sh",
+    "test/e2e/selftest.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/upstream-compaction.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-upstream-compaction-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/upstream-parity-cli.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-upstream-parity.sh",
+    "test/e2e/run-ios-upstream-parity.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/upstream-parity.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/logcat-capture.sh",
+    "hosts/android/ci/run-upstream-parity.sh",
+    "hosts/harmony/ci/run-device-parity.sh",
+    "hosts/harmony/ci/run-upstream-parity.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/upstream-session.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-upstream-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/upstream-web-boot.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-upstream-boot-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/userland-shell-local.json",
+   "kind": "e2e",
+   "drivenBy": [],
+   "orphan": true,
+   "note": "in-app scenario; carried by committed evidence"
+  },
+  {
+   "path": "test/e2e/scenarios/v2web-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-next-web-mount.sh",
+    "test/e2e/run-android-next-web-mount.sh",
+    "test/e2e/run-ios-next-web-mount.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/webclient-mount.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-session-mock-llm.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  }
+ ]
+}

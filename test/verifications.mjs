@@ -2,9 +2,10 @@
 /**
  * verifications.mjs — the verification registry and its query CLI.
  *
- * One table registers every verification leg: which leg the counts answer
- * on (countsFrom), what the leg needs, where it can run, and where the
- * evidence lives. The registry holds only CONFIRMED facts — every runner,
+ * One table registers every verification leg: which TAXONOMY LAYER it
+ * answers on (kind: static|unit|integration|e2e — doc/test-coverage.md),
+ * which leg the counts answer on (countsFrom), what the leg needs, where it
+ * can run, and where the evidence lives. The registry holds only CONFIRMED facts — every runner,
  * status and reason below is backed by a named file on this tree today.
  * The unified test driver that re-runs these legs grows here, in this
  * file, as it lands.
@@ -68,6 +69,7 @@ const qjsLegArgv = (name) => [
 export const REGISTRY = [
   {
     name: 'upstream-sweep',
+    kind: 'integration',
     what: 'the FULL upstream dsh-tests suite sweep, both legs',
     countsFrom:
       'the qjs leg — tools/test/sweep.mjs (the Node sweep driver; runtime/dsh/ci/' +
@@ -187,6 +189,7 @@ export const REGISTRY = [
   },
   {
     name: 'ios-boot-carrier',
+    kind: 'e2e',
     what: 'iOS boot.verification + carrier.loopback in one simulator launch',
     countsFrom:
       'the single-attempt runner — test/e2e/run-ios-boot-carrier.sh (called ' +
@@ -207,6 +210,7 @@ export const REGISTRY = [
   },
   {
     name: 'panel',
+    kind: 'unit',
     what: 'the panel vitest suite (the Node-testable appshell/presentation faces)',
     countsFrom: 'vitest — "npm test" in test/panel ("test": "vitest run")',
     legs: [{ id: 'vitest', status: 'live', runner: 'npm test in test/panel (vitest run)' }],
@@ -215,6 +219,7 @@ export const REGISTRY = [
   },
   {
     name: 'harmony-host-e2e',
+    kind: 'e2e',
     what: 'the HarmonyOS host E2E harness ladder (8 scenarios + verdict receipts)',
     countsFrom: 'the host E2E runner — hosts/harmony/ci/run-host-e2e.sh',
     legs: [{ id: 'harness', status: 'live', runner: 'hosts/harmony/ci/run-host-e2e.sh' }],
@@ -223,6 +228,7 @@ export const REGISTRY = [
   },
   {
     name: 'mcp-streamable-http',
+    kind: 'integration',
     what:
       'the vendored MCP client over the streamable-HTTP transport on gateway httpFetch ' +
       '(scenario mcp.streamable-http against a Node mock MCP server on loopback)',
@@ -276,7 +282,7 @@ const printList = () => {
   for (const e of REGISTRY) {
     const dead = e.legs.filter((l) => l.status === 'dead').length;
     const deadNote = dead > 0 ? ` (${dead} dead leg(s) — see --why)` : '';
-    console.log(`${e.name} — counts from ${e.countsFrom}${deadNote}`);
+    console.log(`[${e.kind}] ${e.name} — counts from ${e.countsFrom}${deadNote}`);
   }
 };
 
