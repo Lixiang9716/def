@@ -1,0 +1,30 @@
+{
+  "title": "version-stream gate: the four version sources agree, checked on every run",
+  "created": "2026-10-23T13:45:09+00:00",
+  "rules": {
+    "hash": "06c93b1ef5c5e3e9277d3958aaa56ff5ce49e528798cdd1fd82d82bc9497a592",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "cebd40121812b27116d982d2281a1394bccb8fd584845a74915df514928e124b"
+    }
+  },
+  "checklist": [
+    "packages/release/check-version-stream.sh with built-in rejection proof",
+    "gate version-stream wired (seal accepted with recorded authority)",
+    "clean-build issue filed (the stale Release-iphonesimulator artifact finding)",
+    "landed-work cards T-0266/T-0267/T-0272 formally closed with receipts",
+    "gov run green; PR merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0279",
+  "repins": [
+    {
+      "ts": "2026-10-23T14:01:38+00:00",
+      "by": "lixiang@192.168.21.11",
+      "from": "82e82d6599abb23c644c8813f75cc0f81a4f19a3ac2850be335869c47709fb64",
+      "to": "06c93b1ef5c5e3e9277d3958aaa56ff5ce49e528798cdd1fd82d82bc9497a592",
+      "reason": "Created before this seat's verify-plane --write re-based the plane for the gate this very card tracks; repinning at creation-time completion."
+    }
+  ]
+}
