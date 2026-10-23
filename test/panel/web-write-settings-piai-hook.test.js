@@ -148,6 +148,18 @@ const expectUnarmed = () => {
   expect(bridgeLines()).toEqual([]);
 };
 
+import { existsSync } from 'node:fs';
+
+// This suite boots the REAL pi-ai mount: it needs the materialized vendored
+// closure (external/ensure-dsh.sh / build/ensure-seat.sh). On bare checkouts
+// (fresh clone, the gov pre-push copy) it skip-louds — the same honest
+// posture as the device legs, never a fake pass.
+const CLOSURE_READY = existsSync(new URL('../../runtime/dsh/vendor/npm/cordis@4.0.2/lib/index.js', import.meta.url));
+const describeGate = CLOSURE_READY ? describe : describe.skip;
+if (!CLOSURE_READY) {
+  console.warn('[llm-piai-section-gate] vendored closure not materialized — run external/ensure-dsh.sh; skipping the real-mount suite');
+}
+
 describe('a settings write OUTSIDE the pi-ai section', () => {
   it('never arms the bridge', async () => {
     collectSink();
