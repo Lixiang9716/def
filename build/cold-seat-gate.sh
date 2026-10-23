@@ -56,13 +56,20 @@ SELF_TEST=0
 WT=""
 WT_ARG=""
 
-# The one gated spec, and why it is this one: the smallest corpus spec that
-# exercises the two hardest seams on BOTH legs — a real PTY spawn (the node
-# leg through the vendored node-pty binding, the qjs leg through the forkpty
-# shim) and node:module createLazyRequire through the shim table — at ~3s
-# wall across both legs, 55/0 assertions each (measured 2026-10-23; the
-# candidate comparison lives in today's Agent Note under implemented/process/).
-SPEC_NAME='api__terminal-controller__tests__controller.spec.mjs'
+# The one gated spec, and why it is this one: this gate verifies
+# MATERIALIZATION COMPLETENESS — farm resolution (imports through
+# external/node_modules), node:module resolution incl. the node-pty binding's
+# require face (the face #660 broke; gate 4 still statically probes the
+# binding), the same-package fixtures, transpile products, dsh-cli, both
+# legs — not runtime semantics. api__terminal-controller__tests__retention is
+# the smallest same-package spec green on BOTH legs on linux CI (13/0 qjs +
+# node, weekly-sweep run 39110205498) and seat-measured here. The
+# first-cut candidate, controller, is retired: its interactive-shell case's
+# cleanup reads /proc through node:fs, which the qjs harness's real-disk seam
+# refuses outside the workspace root (loop-r) — it has never been green on
+# linux CI (the same sweep shows it TIMEOUT-OR-ERROR on both legs). Swapping
+# back awaits a runtime /proc face (dsh-mobile issue, linked from the PR).
+SPEC_NAME='api__terminal-controller__tests__retention.spec.mjs'
 # The sweep's own per-leg cap (test/verifications.mjs, upstream-sweep
 # drive.legTimeoutMs). One attempt, no retry: a gate has no flake budget.
 LEG_TIMEOUT=90

@@ -39,8 +39,9 @@ evidence of its value.
   own 90s per-leg cap via a poll watchdog (no coreutils `timeout` on macOS).
   Exit 0 is the only green; every failure names its face — a bare timeout is
   never a verdict. The one gated spec is
-  `api__terminal-controller__tests__controller.spec.mjs` (choice argued under
-  Alternatives).
+  `api__terminal-controller__tests__retention.spec.mjs` (choice argued under
+  Alternatives; the first-cut controller was retired on linux-CI evidence —
+  see Alternatives).
 - The submodule face is fatal at the GATE, not left to transpile: transpile
   only warns on an absent submodule and shrinks `manifest.json` to a partial
   corpus while exiting 0 (transpile.mjs:121), so a shrunk corpus could go
@@ -83,23 +84,38 @@ evidence of its value.
 
 ## Alternatives considered
 
-- The gated spec. Two candidates survived the first cut, both measured on
-  both legs (2026-10-23): `api__terminal-controller__tests__controller`
-  (68 KB transpiled, 3.05s both legs, 55/0 twice) and
-  `subprocess__subprocess-local__tests__control` (111 KB with its fixtures
-  module, 5.16s, 6/0 twice). Controller exercises the two hardest seams for
-  real on BOTH legs: a genuine PTY spawn (node leg through the vendored
-  node-pty binding — the exact face of the 2026-10-22 regression — qjs leg
-  through the forkpty shim) and `node:module` createLazyRequire resolving
-  through the shim table. Its fixture-seeding face is structurally absent
-  (no `.fixtures.js` sibling exists to seed). Control carries a real
-  fixture-seeding face (four `.fixtures.js` files, seeded and consumed by a
-  real child process), but its node:module face is dormant on darwin (all
-  koffi/resolve call sites are win32/linux-gated) — the classic "imported
-  but never executed" trap — and it costs 1.7×. Controller won: smaller,
-  faster, and both of its hard seams are genuinely executed; the face it
-  lacks has no referent to seed. If the gate's intent ever shifts to weight
-  fixture seeding, control is the swap.
+- The gated spec. Three candidates were measured; the gate v1 gates
+  `api__terminal-controller__tests__retention` (13/0 on both legs, the
+  smallest same-package spec green on BOTH legs on linux CI — weekly-sweep
+  run 39110205498 — and seat-measured on 2026-10-23).
+  - `api__terminal-controller__tests__controller`, the first cut (68 KB
+    transpiled, 3.05s both legs, 55/0 twice on darwin), exercised the two
+    hardest seams for real on BOTH legs: a genuine PTY spawn (node leg
+    through the vendored node-pty binding — the exact face of the
+    2026-10-22 regression — qjs leg through the forkpty shim) and
+    `node:module` createLazyRequire through the shim table. It is RETIRED
+    on linux evidence this gate surfaced on its first CI round: its
+    interactive-shell case's cleanup path (`terminate` → `stopDescendants`
+    → `snapshot`) lists `/proc` through `node:fs`, and the qjs harness's
+    real-disk seam deliberately refuses any readdir outside the workspace
+    root (`shims/fs-readdir.js:108-141`, the loop-r containment), so the
+    vendored package's catch-all (`runner-launch-DGV26RBf.js:422-428`
+    turns any throw into "Cannot inspect processes") fails the case —
+    54/1 on this PR's CI round and TIMEOUT-OR-ERROR on BOTH legs in
+    main's own weekly sweep (run 39110205498): it has never been green on
+    linux CI. Pinning it would make this gate permanently red. The gate's
+    duty is materialization completeness, not runtime semantics; the live
+    PTY-spawn face is a v1 known boundary — retention still crosses the
+    node-pty binding's require/resolution face (what #660 broke) and gate
+    4 statically probes the binding. Swapping controller back in awaits a
+    runtime /proc face (dsh-mobile issue, linked from the PR).
+  - `subprocess__subprocess-local__tests__control` (111 KB with its
+    fixtures module, 5.16s, 6/0 twice): carries a real fixture-seeding
+    face (four `.fixtures.js` files, seeded and consumed by a real child
+    process), but its node:module face is dormant on darwin (all
+    koffi/resolve call sites are win32/linux-gated) — the classic
+    "imported but never executed" trap — and it costs 1.7×. If the gate's
+    intent ever shifts to weight fixture seeding, control is the swap.
 - Red observation through the FULL gate (repair included): rejected by
   construction — the repair phase provably heals the very faces the gate
   exists to catch, so a planted defect can never survive to a check. The
