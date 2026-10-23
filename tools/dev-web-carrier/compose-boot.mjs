@@ -86,7 +86,10 @@ export const buildResolutionScope = (stageDir, repoRoot) => {
     symlinkSync(pkgDir, at, 'dir');
   };
   for (const entry of readdirSync(join(repoRoot, VENDOR_NPM), { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-    if (entry.isDirectory() && !entry.name.startsWith('@')) link(join(repoRoot, VENDOR_NPM, entry.name));
+    // test/panel/spine's journal-resolution shadow layer lives at
+    // external/npm/node_modules — a directory, not a vendored package;
+    // walking into it dies reading its absent package.json.
+    if (entry.isDirectory() && entry.name !== 'node_modules' && !entry.name.startsWith('@')) link(join(repoRoot, VENDOR_NPM, entry.name));
   }
   for (const entry of readdirSync(join(repoRoot, VENDOR_NPM, '@deepseek-ai'), { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     link(join(repoRoot, VENDOR_NPM, '@deepseek-ai', entry.name));
