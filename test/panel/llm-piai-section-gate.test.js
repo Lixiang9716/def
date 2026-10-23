@@ -14,22 +14,19 @@
  * ctx.inject(['settings']).
  *
  * THE HARNESS: the REAL vendored closure at seam level — a real cordis
- * Context (farm copy, see below) + SettingsMemory + the REAL LlmRuntime with
- * its live-route directory row (mountGatewayLlm, boot.js:455's leg) + the
- * REAL pi-ai plugin. This is boot.js minus the rows the gate does not touch
+ * Context + SettingsMemory + the REAL LlmRuntime with its live-route
+ * directory row (mountGatewayLlm, boot.js:455's leg) + the REAL pi-ai
+ * plugin. This is boot.js minus the rows the gate does not touch
  * (sessions/agent/tools/presets...), the same composition order boot uses
- * (mountGatewayLlm → mountSpine's SettingsMemory → the gate line). The
- * panel-vitest aliases serve seam tests and stub what a full spine needs
- * (dsh-llm-stub, dsh-tools-stub, plugin-mount-stub) — so this file
- * RE-POINTS the aliased @deepseek-ai faces at the SAME farm copies
- * (runtime/dsh/node_modules — the spine suite's farm, provisioned by
- * test/panel/spine/provision-modules.mjs) the vendored packages themselves
- * load: one cordis, one schemastery, one dsh-llm across the whole graph —
- * the dsh-llm-stub rule (alias what the suite cannot resolve) with the
- * resolution aimed at the closure instead of a double.
+ * (mountGatewayLlm → SettingsMemory → the gate line). One identity per
+ * vendored face across the whole graph: the @deepseek-ai faces resolve
+ * through the runtime bare-map farm (runtime/dsh/node_modules, provisioned
+ * by test/panel/spine/provision-modules.mjs + the vitest globalSetup
+ * provision-farm.mjs), so cordis' Service/Context, schemastery's Schema and
+ * the dsh-llm classes are module-singletons everywhere.
  *
  * Coverage:
- *   (1) a piaiSection=true boot answers settings.describe WITH the
+ *   (1) a piaiSection=true boot answers settings.describe with the
  *       "llm-pi-ai" namespace, its schema JSON-serializable (the wire view
  *       the Models page consumes, web-write-settings.js:103), the section
  *       value's providers starting EMPTY (zero routes staged — the empty
@@ -39,8 +36,7 @@
  *       fails the boot LOUD and names BOTH sides: pi-ai declares every
  *       installed catalog id the moment it mounts (pi-ai lib
  *       directoryEntries — settingsNs "llm-pi-ai"), the vendored registry
- *       refuses the duplicate (LlmError DUPLICATE_DIRECTORY, "configurable
- *       provider … is already declared", llm lib commit), and
+ *       refuses the duplicate (DUPLICATE_DIRECTORY), and
  *       sectionCollision (llm-piai-mount.js:341) rebuilds it naming the
  *       colliding catalog id AND the live row (provider + its llm-* settings
  *       ns) plus the two ways out;
@@ -51,7 +47,8 @@
  *       E2E manifest android-composer-live-write.json's upstream/services
  *       record: eight services, no "credentials").
  */
-import { describe, it, expect, vi } from 'vitest';
+import { existsSync } from 'node:fs';
+import { describe, beforeAll, it, expect, vi } from 'vitest';
 import { workspace } from './gateway-shim.js';
 
 // The dsh host's node:buffer is the repo shim carrying encodeUtf8/decodeUtf8;
@@ -71,28 +68,23 @@ vi.mock('node:buffer', async (importOriginal) => ({
 vi.mock('../../runtime/dsh/gateway.js', async () =>
   await import('./gateway-shim.js'));
 
-// The panel aliases point the vendored faces at seam copies (hosts/android
-// staged bytes); this graph needs ONE identity per vendored face — so
-// cordis' Service/Context, schemastery's Schema, and the dsh-llm
-// LlmError/LlmRuntime classes are module-singletons across the whole test
-// graph. The faces load from the TRACKED vendored files (a fresh clone and
-// the gov-prepush copy have no runtime/dsh/node_modules provision, and the
-// farm's absolute symlink drags main-checkout bytes into the subject).
-// The vendored REAL files, not the spine farm's gitignored provision: a
-// fresh clone and the gov-prepush copy have no runtime/dsh/node_modules,
-// and the farm's absolute symlink drags MAIN-checkout bytes into the test
-// subject. One tracked instance per face keeps the module-singleton
-// identity the graph needs.
+// The runtime bare-map farm is the ONE resolution home for the @deepseek-ai
+// faces: the staged packages import each other by bare name, so single-file
+// aliases can never close their dependency closure. The farm is provisioned
+// by the vitest globalSetup (provision-farm.mjs →
+// spine/provision-modules.mjs) from the materialized vendored closure.
 vi.mock('@deepseek-ai/cordis', async () =>
-  await import('../../runtime/dsh/vendor/npm/cordis@4.0.2/lib/index.js'));
+  await import('../../runtime/dsh/node_modules/@deepseek-ai/cordis/lib/index.js'));
 vi.mock('@deepseek-ai/schemastery', async () =>
-  await import('../../runtime/dsh/vendor/npm/schemastery@3.18.2/lib/index.mjs'));
+  await import('../../runtime/dsh/node_modules/@deepseek-ai/schemastery/lib/index.mjs'));
 vi.mock('@deepseek-ai/dsh-llm', async () =>
-  await import('../../runtime/dsh/vendor/dsh/llm@0.1.6-alpha.2/lib/index.js'));
+  await import('../../runtime/dsh/node_modules/@deepseek-ai/dsh-llm/lib/index.js'));
+vi.mock('@deepseek-ai/dsh-settings', async () =>
+  await import('../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js'));
 
 // The dsh-root-relative spellings the in-graph runtime modules import (the
-// quickjs loader's bare map on device) — vitest.config.js aliases only part
-// of the family; re-point the rest at the same real files.
+// quickjs loader's bare map on device) — re-pointed at the same real files
+// the farm links.
 vi.mock('upstream/llm-transport.js', async () =>
   await import('../../runtime/dsh/upstream/llm-transport.js'));
 vi.mock('upstream/llm-route.js', async () =>
@@ -102,24 +94,30 @@ vi.mock('upstream/web-write-settings.js', async () =>
 vi.mock('upstream/llm-piai-mount.js', async () =>
   await import('../../runtime/dsh/upstream/llm-piai-mount.js'));
 
-import { existsSync } from 'node:fs';
-
-// This suite boots the REAL pi-ai mount: it needs the materialized vendored
-// closure (external/ensure-dsh.sh / build/ensure-seat.sh). On bare checkouts
-// (fresh clone, the gov pre-push copy) it skip-louds — the same honest
-// posture as the device legs, never a fake pass.
-const CLOSURE_READY = existsSync(new URL('../../runtime/dsh/vendor/npm/cordis@4.0.2/lib/index.js', import.meta.url));
-const describeGate = CLOSURE_READY ? describe : describe.skip;
-if (!CLOSURE_READY) {
-  console.warn('[llm-piai-section-gate] vendored closure not materialized — run external/ensure-dsh.sh; skipping the real-mount suite');
+// The suite boots the REAL pi-ai mount over the runtime bare-map farm — it
+// needs the materialized vendored closure (external/ensure-dsh.sh;
+// provision-farm.mjs in the vitest globalSetup provisions the farm). Bare
+// checkouts (fresh clone, the gov pre-push copy) skip loud — the same honest
+// posture as the device legs, never a fake pass. The module loads live
+// INSIDE the guarded wrapper: a bare checkout must reach the skip, never an
+// import error.
+const FARM_READY = existsSync(new URL('../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js', import.meta.url));
+if (!FARM_READY) {
+  console.warn('[llm-piai-section-gate] the runtime bare-map farm is not provisioned — run external/ensure-dsh.sh; skipping the real-mount suite');
 }
+const d = FARM_READY ? describe : describe.skip;
 
-const { Context } = await import('../../runtime/dsh/vendor/npm/cordis@4.0.2/lib/index.js');
-const { SettingsMemory } = await import('../../runtime/dsh/upstream/settings-memory.js');
-const { mountGatewayLlm } = await import('../../runtime/dsh/upstream/llm-gateway-mount.js');
-const { mountPiAiSection, PIAI_SECTION_NS } =
-  await import('../../runtime/dsh/upstream/llm-piai-mount.js');
-const { CredentialsStore } = await import('../../runtime/dsh/upstream/credentials-store.js');
+let Context, SettingsMemory, mountGatewayLlm, mountPiAiSection, PIAI_SECTION_NS, CredentialsStore;
+
+if (FARM_READY) {
+  beforeAll(async () => {
+    ({ Context } = await import('../../runtime/dsh/node_modules/@deepseek-ai/cordis/lib/index.js'));
+    ({ SettingsMemory } = await import('../../runtime/dsh/upstream/settings-memory.js'));
+    ({ mountGatewayLlm } = await import('../../runtime/dsh/upstream/llm-gateway-mount.js'));
+    ({ mountPiAiSection, PIAI_SECTION_NS } = await import('../../runtime/dsh/upstream/llm-piai-mount.js'));
+    ({ CredentialsStore } = await import('../../runtime/dsh/upstream/credentials-store.js'));
+  });
+}
 
 /** The live-route leg (boot.js:455's mountGatewayLlm over the loopback mock
  * shape): registers the gateway adapter AND commits the directory's ONE
@@ -141,7 +139,7 @@ const seedCredentialStore = (store) => {
   workspace.set('app/credentials.json', new TextEncoder().encode(JSON.stringify(store)));
 };
 
-describeGate('the gate mounts (llm.piaiSection === true) — settings carries the serializable section', () => {
+d('the gate mounts (llm.piaiSection === true) — settings carries the serializable section', () => {
   it('settings.describe carries the llm-pi-ai namespace with a serializable schema', async () => {
     // 'bigmodel' names no built-in catalog id — the seat's live route keeps
     // its row and the catalog declares around it without a collision.
@@ -170,10 +168,9 @@ describeGate('the gate mounts (llm.piaiSection === true) — settings carries th
       namespace: PIAI_SECTION_NS,
     }]]);
   });
-
 });
 
-describeGate('the gate mounts — the catalog declares whole and the live row survives', () => {
+d('the gate mounts — the catalog declares whole and the live row survives', () => {
   it('declares the whole built-in catalog in the configurable-provider directory', async () => {
     const ctx = await bootLlmPlane('bigmodel', 'glm-5.3-flash');
     await mountPiAiSection(ctx, () => {});
@@ -199,10 +196,9 @@ describeGate('the gate mounts — the catalog declares whole and the live row su
       .toEqual([{ provider: 'bigmodel', displayName: 'OpenAI 兼容',
         settingsNs: 'llm-bigmodel', settingsPath: ['providers', 'default'] }]);
   });
-
 });
 
-describeGate('the gate mounts — the credentials service is the app-scope credentials.json', () => {
+d('the gate mounts — the credentials service is the app-scope credentials.json', () => {
   it('mounts the credentials service under the gate — the store IS the app-scope credentials.json', async () => {
     const ctx = await bootLlmPlane('bigmodel', 'glm-5.3-flash');
     await mountPiAiSection(ctx, () => {});
@@ -234,7 +230,7 @@ describeGate('the gate mounts — the credentials service is the app-scope crede
   });
 });
 
-describeGate('the gate collides with a live catalog-id route — boot fails loud naming BOTH', () => {
+d('the gate collides with a live catalog-id route — boot fails loud naming BOTH', () => {
   it('a live route named "deepseek" rejects the section mount naming the catalog id and the live row', async () => {
     // The live route took a BUILT-IN catalog id: the plugin's catalog-wide
     // declaration meets the live route's held row and the vendored registry
@@ -265,7 +261,7 @@ describeGate('the gate collides with a live catalog-id route — boot fails loud
   });
 });
 
-describe('the gate absent — the boot shape is the status quo', () => {
+d('the gate absent — the boot shape is the status quo', () => {
   it('no llm-pi-ai namespace, the directory still the ONE live-route row, no credentials service', async () => {
     // The pinned default-boot shape (android-composer-live-write.json's
     // upstream/services record): provider "mock", eight MOUNTED_SERVICES.
@@ -274,8 +270,8 @@ describe('the gate absent — the boot shape is the status quo', () => {
     const view = ctx.get('settings').describe({ redactSecrets: true });
     expect(view.find((d) => d.ns === PIAI_SECTION_NS)).toBeUndefined();
 
-    // 目录仍 1 行: the configurable-provider directory holds exactly the
-    // live route's row — no catalog declaration without the gate.
+    // The configurable-provider directory holds exactly the live route's
+    // row — no catalog declaration without the gate.
     const directory = ctx.get('llm').listConfigurableProviders();
     expect(directory).toHaveLength(1);
     expect(directory[0]).toEqual({ provider: 'mock', displayName: 'OpenAI 兼容',

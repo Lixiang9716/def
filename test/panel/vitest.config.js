@@ -16,7 +16,7 @@ export default defineConfig({
     // The #323 deadline suite exercises the vendored @deepseek-ai/dsh-timeout;
     // the vendor trees are untracked, so globalSetup stages the pinned
     // package into .vendored/ from the tracked mirror (see provision-vendor.mjs).
-    globalSetup: ['./provision-vendor.mjs'],
+    globalSetup: ['./provision-vendor.mjs', './provision-farm.mjs'],
   },
   resolve: {
     alias: [
@@ -65,9 +65,23 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/fs@0.1.6-alpha.2/lib/index.js', import.meta.url)),
       },
       {
+        find: '@deepseek-ai/dsh-settings',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/settings@0.1.6-alpha.2/lib/index.js', import.meta.url)),
+      },
+      {
         find: '@deepseek-ai/cordis',
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/npm/cordis@4.0.2/lib/index.js', import.meta.url)),
       },
+      // The dsh-root-relative spellings the runtime's own sources import
+      // (the device's bare map resolves them; plain node/vitest needs the
+      // map too) — resolved wholesale against the TRACKED android staged
+      // copies and the runtime's own directories, so a fresh clone and the
+      // gov-prepush copy need no materialized vendor. The exact aliases
+      // above keep precedence.
+      { find: /^vendor\//, replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/', import.meta.url)) },
+      { find: /^upstream\//, replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/', import.meta.url)) },
+      { find: /^web-live\//, replacement: fileURLToPath(new URL('../../runtime/dsh/web-live/', import.meta.url)) },
+      { find: /^system-plugins\//, replacement: fileURLToPath(new URL('../../system-plugins/', import.meta.url)) },
       {
         find: '@deepseek-ai/schemastery',
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/npm/schemastery@3.18.2/lib/index.mjs', import.meta.url)),
