@@ -29,6 +29,14 @@ enum BundleStager {
                   under: root)
         try write("gateway.js", data: resData(dsh_runtime_res_gateway_js),
                   under: root)
+        // The durable-fs pair's module (gateway-binding.js imports it at the
+        // top level since v1.11.0): missing here made the gateway drive die
+        // with `cannot load module 'fs-durable.js'` — measured live on the
+        // v0.0.3 release precheck, 2026-10-23. The bytes were always in
+        // SpikeBundle.c; Android and HarmonyOS stage whole directories and
+        // never missed it.
+        try write("fs-durable.js", data: resData(dsh_runtime_res_fs_durable_js),
+                  under: root)
         try write("manifest.json", data: resData(dsh_runtime_res_manifest_json),
                   under: root)
         try write("registry.js", data: resData(dsh_runtime_res_registry_js), under: root)
