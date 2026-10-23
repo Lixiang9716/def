@@ -33,6 +33,23 @@ const launchEnvRows = (route) => ({
   ...(route.piai === undefined ? {} : { [deriveByokRef(route.provider)]: route.apiKey }),
 });
 
+/** The llm face, forwarded WHOLE (see the header note): the route verbatim
+ * plus the BYOK-models gate (upstream/boot.js) — the seat's config asks for
+ * the pi-ai section explicitly; absent keeps the object byte-identical. */
+const llmRows = (cfg, route, extras) => ({
+  baseURL: route.baseURL,
+  apiKey: route.apiKey,
+  provider: route.provider,
+  model: route.model,
+  contextWindow: route.contextWindow,
+  userEndpoint: route.userEndpoint,
+  adapterName: route.adapterName,
+  transportLabel: route.transportLabel,
+  onWire: (info) => extras.onEvent('llm/request/built', info),
+  onSse: (info) => extras.onEvent('llm/sse', info),
+  ...(cfg.byokModels === true ? { piaiSection: true } : {}),
+});
+
 export const bootOptions = (cfg, route, root, extras) => ({
   scenario: extras.scenario,
   agentId: extras.agentId,
@@ -70,16 +87,5 @@ export const bootOptions = (cfg, route, root, extras) => ({
     env: launchEnvRows(route),
     argv: ['dsh', '--profile', 'mobile'],
   },
-  llm: {
-    baseURL: route.baseURL,
-    apiKey: route.apiKey,
-    provider: route.provider,
-    model: route.model,
-    contextWindow: route.contextWindow,
-    userEndpoint: route.userEndpoint,
-    adapterName: route.adapterName,
-    transportLabel: route.transportLabel,
-    onWire: (info) => extras.onEvent('llm/request/built', info),
-    onSse: (info) => extras.onEvent('llm/sse', info),
-  },
+  llm: llmRows(cfg, route, extras),
 });

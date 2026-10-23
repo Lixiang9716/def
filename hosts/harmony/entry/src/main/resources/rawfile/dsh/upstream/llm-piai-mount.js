@@ -33,6 +33,7 @@
  * proves the gate and the bridge.
  */
 import { createLogger } from '../logger.js';
+import { CredentialsStore } from './credentials-store.js';
 
 const log = createLogger('dsh.llm-piai-mount');
 
@@ -237,4 +238,116 @@ const replaceSection = async (settings, providers) => {
       await Promise.resolve();
     }
   }
+};
+
+/**
+ * The section-WRITE leg of the egress bridge (web-write-settings.js's
+ * makeSettingsWrite): one COMMITTED write to the pi-ai section replaces the
+ * plugin's provider rows (its section watcher re-registers the routes), so
+ * the bridge re-arms against the NEW row set before the write's view is
+ * answered — the third install path, after the boot mount
+ * (mountPiAiProviders) and the byok rebind (rebindPiAiProviders). The rows
+ * are read back through the same face the rebind's before-capture uses
+ * (`settings.get(PIAI_SECTION_NS)`), and the arm decision is the same
+ * installEgressBridge the other two paths share: a loopback-only row set
+ * arms nothing, and the honesty line rides the wired logger exactly like
+ * the rebind leg's ('llm/piai-bridge'). The caller keeps this hook uncaught:
+ * a write whose rows cannot arm the bridge fails the write loud (rule 5),
+ * never a view the runtime cannot serve.
+ * @param settings - the mounted settings service (the write's own demand).
+ */
+export const installEgressBridgeForSection = async (settings) => {
+  const providers = settings.get(PIAI_SECTION_NS)?.providers ?? {};
+  const bridge = await installEgressBridge(providers);
+  if (bridge !== null) log.info('llm/piai-bridge', bridge);
+};
+
+/**
+ * The GATED pi-ai SECTION leg (the byok composition's boot row): mount the
+ * vendored multi-protocol plugin over an EMPTY base layer — the rebind
+ * precedent's `mountPlugin(ctx, {})` — so the plugin owns its
+ * `"${PIAI_SECTION_NS}"` settings section and a web Models page drives the
+ * multi-protocol family through that section, while boot itself stages ZERO
+ * routes. Zero routes is the point: this leg runs NEITHER
+ * `demandUserEndpoints` (nothing dials yet) NOR `demandRoutesLanded`
+ * (nothing is configured to land) — the route-carrying mounts' guards
+ * reject exactly the shape this leg exists to create.
+ *
+ * The gate also mounts the one service pi-ai's own reads depend on and the
+ * default boot does not carry: `credentials` (the same-dir credentials-store.js
+ * — @deepseek-ai/dsh-credentials is outside the device closure, so the gate
+ * scopes a cordis `Service`, NOT a plugin mount, and the pinned
+ * MOUNTED_SERVICES byte list stays untouched). pi-ai resolves a route
+ * credential through `ctx.get('credentials')` BEFORE the process launch
+ * environment, and its auth store reads through readRecord/listRecords —
+ * the store file is the app-scope credentials.json the web write surface
+ * serves (web-write-llm.js STORE_PATH).
+ *
+ * @param ctx - the boot context (llm + settings already mounted; the
+ *   plugin's apply injects `settings` itself to install its section, so a
+ *   missing settings service fails named here rather than mounting
+ *   section-less).
+ * @param onEvent - the boot observability hook; emits `llm/piai-section`
+ *   once, after the empty-base mount proved clean.
+ * @throws named, BOTH sides, when the mount collides in the
+ *   configurable-provider directory: the plugin declares EVERY installed
+ *   catalog id (39 built-ins — deepseek, anthropic, google, ...) the moment
+ *   it mounts, and the vendored registry refuses a provider the live boot
+ *   route's row already holds (LlmError DUPLICATE_DIRECTORY). The rethrow
+ *   names the colliding catalog id and the live route row and offers the
+ *   two ways out (rename the staged provider, or turn the gate off).
+ */
+export const mountPiAiSection = async (ctx, onEvent) => {
+  if (ctx.get('settings') === undefined) {
+    throw new Error('llm-piai-mount: the pi-ai section mount needs the settings service — '
+      + `the plugin installs its "${PIAI_SECTION_NS}" section through ctx.inject(['settings'])`);
+  }
+  // The credentials seam mounts FIRST, so the plugin's credential reads
+  // answer through it from the first section write on (gate-scoped by
+  // contract — never on the default boot). The Service base SELF-PROVIDES
+  // during construction (cordis reflect.provide inside `super(ctx, name)` —
+  // the same registration every vendored service rides); measured on the
+  // vendored cordis@4.0.2: an explicit `ctx.set('credentials', …)` throws
+  // `cannot set property "credentials" without provide` (nothing provides
+  // the name in the device closure), and a `ctx.provide('credentials',
+  // new CredentialsStore(ctx))` wrapper throws `service "credentials" has
+  // been registered` — the constructor already provided it.
+  new CredentialsStore(ctx); // the Service base self-provides as "credentials"
+  // Rule 5: a construction that somehow failed to register must fail HERE —
+  // pi-ai's credential reads would otherwise fall through to the process
+  // launch environment quietly (the fallback the gate exists to shadow).
+  if (!(ctx.get('credentials') instanceof CredentialsStore)) {
+    throw new Error('llm-piai-mount: the credentials store did not register as "credentials"');
+  }
+  try {
+    await mountPlugin(ctx, {}); // the empty base layer (the rebind precedent)
+  } catch (error) {
+    if (!/DUPLICATE_DIRECTORY|already declared/.test(String(error?.message))) throw error;
+    throw sectionCollision(error, ctx);
+  }
+  onEvent('llm/piai-section', {
+    plugin: '@deepseek-ai/dsh-llm-pi-ai',
+    namespace: PIAI_SECTION_NS,
+  });
+};
+
+/** Rebuild a directory collision as the named error (rule 5): the vendored
+ * registry throws `configurable provider "<id>" is already declared` when
+ * the plugin's catalog-wide directory meets an already-held declaration —
+ * at boot-gate time that holder is the live route's row. Name both sides —
+ * the colliding catalog id and the live row (its provider and its `llm-*`
+ * settings ns) — plus the two ways out. An error whose shape we cannot
+ * positively read is not ours to relabel: rethrown verbatim. */
+const sectionCollision = (error, ctx) => {
+  const id = /configurable provider "([^"]+)" is already declared/
+    .exec(String(error?.message))?.[1];
+  if (id === undefined) return error;
+  const row = ctx.get('llm')?.listConfigurableProviders?.()
+    ?.find((entry) => entry.provider === id);
+  return new Error('llm-piai-mount: the pi-ai section mount collided with the live llm route — '
+    + `pi-ai catalog id "${id}" is already declared in the configurable-provider directory by `
+    + (row
+      ? `the live route's row (provider "${row.provider}", settings ns "${row.settingsNs}")`
+      : `the live route's declaration of provider "${id}"`)
+    + ' — rename the staged provider or turn the pi-ai section gate off');
 };

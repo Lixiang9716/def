@@ -90,6 +90,15 @@ export default defineConfig({
       // relative 'upstream/web-write-llm.js' (the quickjs loader's bare map
       // on device) — the same alias precedent as the four rows above.
       { find: 'upstream/web-write-llm.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/web-write-llm.js', import.meta.url)) },
+      // The pi-ai section-write hook suite drives upstream/web-write-settings.js
+      // for real; the hook chain imports the dsh-root-relative
+      // 'upstream/llm-piai-mount.js' and that mount dynamic-imports
+      // 'upstream/fetch-gateway-bridge.js' — the same quickjs-loader spelling
+      // the row above covers (an absent gate never pays the dynamic load,
+      // but this suite arms the bridge for real, so the specifier must
+      // resolve under plain node).
+      { find: 'upstream/llm-piai-mount.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/llm-piai-mount.js', import.meta.url)) },
+      { find: 'upstream/fetch-gateway-bridge.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/fetch-gateway-bridge.js', import.meta.url)) },
       { find: 'upstream/web-write-marketplace.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/web-write-marketplace.js', import.meta.url)) },
       { find: 'upstream/web-write-plugin-manager.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/web-write-plugin-manager.js', import.meta.url)) },
       { find: 'upstream/web-write-cordis.js', replacement: fileURLToPath(new URL('../../runtime/dsh/upstream/web-write-cordis.js', import.meta.url)) },

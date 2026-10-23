@@ -612,6 +612,11 @@
    "note": "headless runtime proof leg"
   },
   {
+   "path": "runtime/dsh/ci/run-models-byok-add-e2e.sh",
+   "kind": "integration",
+   "note": "the models-byok-add E2E runner"
+  },
+  {
    "path": "runtime/dsh/ci/run-models-directory-e2e.sh",
    "kind": "integration",
    "note": "headless runtime proof leg"
@@ -745,6 +750,11 @@
    "path": "runtime/dsh/ci/web-plugins-payload.mjs",
    "kind": "integration",
    "note": "headless runtime proof leg"
+  },
+  {
+   "path": "runtime/dsh/scenario/models-byok-add.js",
+   "kind": "integration",
+   "note": "headless runtime scenario: BYOK add flow against a loopback mock"
   },
   {
    "path": "test/e2e/check.mjs",
@@ -992,6 +1002,11 @@
    "note": "panel vitest suite"
   },
   {
+   "path": "test/panel/credentials-store.test.js",
+   "kind": "unit",
+   "note": "credentials-store vitest suite"
+  },
+  {
    "path": "test/panel/disk-watermark-guard.test.js",
    "kind": "unit",
    "note": "panel vitest suite"
@@ -1045,6 +1060,11 @@
    "path": "test/panel/install-path-traversal.test.js",
    "kind": "unit",
    "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/llm-piai-section-gate.test.js",
+   "kind": "integration",
+   "note": "composes the real cordis boot plane and asserts the piaiSection gate"
   },
   {
    "path": "test/panel/llm-retry-pacing.test.js",
@@ -1188,6 +1208,11 @@
   },
   {
    "path": "test/panel/web-search-keyless.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/web-write-settings-piai-hook.test.js",
    "kind": "unit",
    "note": "panel vitest suite"
   },
@@ -2325,6 +2350,15 @@
    ],
    "orphan": false,
    "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/models-byok-add.json",
+   "kind": "integration",
+   "drivenBy": [
+    "runtime/dsh/ci/run-models-byok-add-e2e.sh"
+   ],
+   "orphan": false,
+   "note": "driven by its runner; committed evidence in runtime/dsh/artifacts/macos-cli-models-byok-add"
   },
   {
    "path": "test/e2e/scenarios/models-directory.json",

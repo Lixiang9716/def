@@ -118,6 +118,7 @@ RESOURCES = [
     ("upstream_llm_read_idle_js", DSH / "upstream" / "llm-read-idle.js"),
     ("upstream_llm_retry_pacing_js", DSH / "upstream" / "llm-retry-pacing.js"),
     ("upstream_llm_gateway_mount_js", DSH / "upstream" / "llm-gateway-mount.js"),
+    ("upstream_credentials_store_js", DSH / "upstream" / "credentials-store.js"),
     ("upstream_llm_piai_mount_js", DSH / "upstream" / "llm-piai-mount.js"),
     ("upstream_fetch_gateway_bridge_js", DSH / "upstream" / "fetch-gateway-bridge.js"),
     ("upstream_tool_present_js", DSH / "upstream" / "tool-present.js"),
