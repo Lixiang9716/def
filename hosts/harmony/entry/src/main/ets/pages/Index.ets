@@ -190,6 +190,7 @@ const BUNDLE_FILES: string[] = [
   'upstream/boot-session-persistence.js',
   'upstream/boot-subagent-rows.js',
   'upstream/boot.js',
+  'upstream/credentials-store.js',
   'upstream/fetch-gateway-bridge.js',
   'upstream/llm-gateway-mount.js',
   'upstream/llm-piai-mount.js',

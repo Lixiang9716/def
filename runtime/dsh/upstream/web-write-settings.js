@@ -11,6 +11,7 @@
  * is a RemoteError, not a silent empty answer.
  */
 import Schema from '@deepseek-ai/schemastery';
+import { installEgressBridgeForSection, PIAI_SECTION_NS } from 'upstream/llm-piai-mount.js';
 import { deriveKeyRef } from 'upstream/web-write-llm.js';
 
 /** One registered namespace → the wire namespaceView (the controller's
@@ -109,11 +110,19 @@ export const makeDescribeSettings = (ctx, ensureNamespaces) => async () => {
 };
 
 /** One claimed settings-write endpoint (update/mutate): run the vendored
- * write, then answer with the namespace's wire view. */
+ * write, then answer with the namespace's wire view. A COMMITTED write to the
+ * pi-ai section replaces the plugin's provider rows (its section watcher
+ * re-registers the routes), so the fetch→gateway egress bridge re-arms
+ * against the NEW row set before the view is answered — the same seam the
+ * boot mount and the byok rebind install; the page's section write is the
+ * third path a declared non-loopback row arrives by. The hook runs only
+ * after `run` resolved (a rejected write never arms anything) and stays
+ * uncaught: a row that cannot bridge fails the write loud (rule 5). */
 export const makeSettingsWrite = (ctx, ensureNamespaces, run) => async (args) => {
   await ensureNamespaces();
   const settings = demandSettings(ctx);
   await run(settings, args);
+  if (String(args.ns) === PIAI_SECTION_NS) await installEgressBridgeForSection(settings);
   const descriptor = settings.describe({ redactSecrets: true })
     .find((d) => d.ns === String(args.ns));
   return wireNamespaceView(descriptor);

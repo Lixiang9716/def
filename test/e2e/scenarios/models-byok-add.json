@@ -1,0 +1,123 @@
+{
+  "scenario": "models.byok-add",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "byok.collision",
+      "match": {
+        "catalogId": "deepseek",
+        "route": "deepseek",
+        "settingsNs": "llm-deepseek",
+        "failedLoud": true
+      }
+    },
+    {
+      "event": "byok.section",
+      "match": {
+        "ns": "llm-pi-ai",
+        "baseProviders": 0,
+        "userLayer": false,
+        "protocols": [
+          "openai-completions",
+          "openai-responses",
+          "anthropic-messages"
+        ]
+      }
+    },
+    {
+      "event": "byok.directory.staged",
+      "match": {
+        "providers": [
+          "mock"
+        ],
+        "dormant": 39,
+        "acme": false
+      }
+    },
+    {
+      "event": "byok.save",
+      "match": {
+        "ns": "llm-pi-ai",
+        "op": "set providers/acme",
+        "api": "openai-completions",
+        "baseURLHost": "127.0.0.1",
+        "models": 1,
+        "baseIntact": true
+      }
+    },
+    {
+      "event": "byok.directory.acme",
+      "match": {
+        "provider": "acme",
+        "settingsNs": "llm-pi-ai",
+        "settingsPath": [
+          "providers",
+          "acme"
+        ],
+        "declared": true,
+        "displayName": "Acme (BYOK)"
+      }
+    },
+    {
+      "event": "byok.credential",
+      "match": {
+        "ref": "ACME_API_KEY",
+        "beforeConfigured": false,
+        "afterConfigured": true,
+        "routeStaged": true,
+        "leaked": false
+      }
+    },
+    {
+      "event": "byok.wire",
+      "match": {
+        "path": "/v1/chat/completions",
+        "model": "acme-large",
+        "stream": true,
+        "credential": "store"
+      }
+    },
+    {
+      "event": "byok.stream",
+      "match": {
+        "text": "Hello from acme",
+        "finish": "stop",
+        "transported": "in-process-loopback"
+      }
+    },
+    {
+      "event": "byok.bridge.armed",
+      "match": {
+        "installed": true,
+        "hosts": [
+          "localhost"
+        ]
+      }
+    },
+    {
+      "event": "byok.bridge.stream",
+      "match": {
+        "text": "Bridged through the gateway",
+        "finish": "stop",
+        "transported": "gateway",
+        "credential": "store"
+      }
+    },
+    {
+      "event": "byok.cleanup",
+      "match": {
+        "cleared": true
+      }
+    },
+    {
+      "event": "models.byok-add/completed",
+      "match": {
+        "status": "pass",
+        "upstream": "0.1.6-alpha.2",
+        "surface": "the models 设置页 BYOK add: pi-ai section + protocol union + page save + credential store + loopback dial + the bridge variant"
+      }
+    }
+  ]
+}

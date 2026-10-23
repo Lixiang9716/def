@@ -36,9 +36,11 @@ import { providerSettingsNs } from 'upstream/web-write-settings.js';
 import { mountWebPlane } from 'upstream/web-search-keyless.js';
 // The llm row split at the file-size gate (2026-10-11, the llm-pi-ai leg):
 // the gateway mount (llm-gateway-mount.js) and the GATED multi-protocol
-// mount (llm-piai-mount.js) both register into the ONE vendored LlmRuntime.
+// mount (llm-piai-mount.js) both register into the ONE vendored LlmRuntime;
+// the same module's BYOK-models section gate (mountPiAiSection) joins the
+// group (2026-10-23).
 import { mountGatewayLlm } from 'upstream/llm-gateway-mount.js';
-import { mountPiAiProviders } from 'upstream/llm-piai-mount.js';
+import { mountPiAiProviders, mountPiAiSection } from 'upstream/llm-piai-mount.js';
 import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
@@ -372,7 +374,11 @@ const mountSpine = async (ctx, identity) => {
  *   piaiProviders? (the vendored @deepseek-ai/dsh-llm-pi-ai plugin's providers
  *   dict — the GATED multi-protocol row: an absent field mounts nothing, a
  *   present one registers one LlmAdapter for every named route besides the
- *   gateway route above)};
+ *   gateway route above),
+ *   piaiSection? (the BYOK-models gate: true mounts the vendored
+ *   @deepseek-ai/dsh-llm-pi-ai plugin over an EMPTY base — the catalog
+ *   directory, its "llm-pi-ai" settings section, and the mobile credentials
+ *   service; absent = the byte-identical existing shape)};
  *   required, no transport-free fallback.
  * @param options.systemPrompt - optional override seam: {personaPrefix} —
  *   the vendored SystemPrompt's own config (the prompt's persona section),
@@ -464,6 +470,10 @@ export async function bootUpstream(options) {
   await mountSpine(ctx, identity);
   await mountModelSelectionPlane(ctx, agentRoute, options.sessionId);
   if (llm.piaiProviders !== undefined) await mountPiAiProviders(ctx, llm.piaiProviders, onEvent);
+  // The BYOK-MODELS gate (llm-piai-mount.js): the pi-ai section over an EMPTY
+  // base — the catalog directory + the "llm-pi-ai" settings section + the
+  // credentials service, zero routes. Absent = the default boot byte-identical.
+  if (llm.piaiSection === true) await mountPiAiSection(ctx, onEvent);
 
   onEvent('upstream/services', {
     kernel: '@deepseek-ai/cordis@4.0.2',
