@@ -27,7 +27,8 @@
       "transport-tokens",
       "shellcheck-warn",
       "actionlint",
-      "perf-budget"
+      "perf-budget",
+      "test-taxonomy"
     ],
     "quick": [
       "notes",
@@ -471,6 +472,14 @@
         "self-test"
       ],
       "timeoutMs": 120000
+    },
+    {
+      "id": "test-taxonomy",
+      "command": [
+        "node",
+        "tools/check-test-taxonomy.mjs",
+        "--self-test"
+      ]
     }
   ]
 }

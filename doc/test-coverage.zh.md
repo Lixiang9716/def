@@ -2,6 +2,27 @@
 
 [English](test-coverage.md) | 简体中文
 
+[English](test-coverage.md) | 简体中文
+
+## 四层(D20)
+
+本仓每个测试产物都声明且仅声明一个层级,由 `test-taxonomy` 门对照
+`test/taxonomy.json` 强制;注册表的腿同样带 `kind`
+(`node test/verifications.mjs --list`)。四层回答不同的问题,永远不能互相顶替:
+
+| 层级 | 回答的问题 | 是否执行被测系统 | 例子 |
+| --- | --- | --- | --- |
+| **static(静态)** | 形状、声明、已提交证据是否一致? | 从不 | code-size、shellcheck、pairing、e2e-matrix 证据审计 |
+| **unit(UT)** | 这个模块单独、秒级、确定性地跑,行为对吗? | 单模块 | panel vitest 套件、工具测试 |
+| **integration(集成)** | 拼装后的运行时,无头跑,行为对吗? | 完整运行时,无 app 壳 | core CLI proof legs、681 条上游 sweep、MCP proof leg |
+| **e2e(端到端)** | 装进设备的包,用户真实路径对吗? | 出货物,经 UI 或 launch 参数 | gateway-drive、device-plane、boot-carrier、各宿主 E2E runner |
+
+试金石:static 在删掉产品代码后仍能运行;unit 只跑一个模块;integration
+无头跑拼装运行时;e2e 跑用户会安装的那个包。**证据审计不是一个层**——它是
+e2e 已提交证据的执法模式,所以 `e2e-matrix` 门名字里带 e2e 却从不启动 app。
+"CI 绿"必须说明实际跑的是哪几层:2026-10-23 发布预检抓到一条真 e2e 腿坏了
+五周,而 CI 一直绿——因为 CI 从没包含它(D20 记录全案)。
+
 本仓真实的行为覆盖网不经过任何覆盖率工具:681 个上游官方 spec 压在
 QuickJS 运行时与自研 shims 上,外加 e2e 证据矩阵与 gov 门。行覆盖只在一条
 轴上补充这张网——**我们自研代码中 Node 可测的面**。本页是它的契约:测什么、
