@@ -17,7 +17,7 @@ import { describe, beforeAll, it, expect, vi, afterEach } from 'vitest';
 // groups run FIRST and the arming group runs LAST — the bridge never comes
 // back down.
 
-vi.mock('../../runtime/dsh/gateway.js', () => ({
+vi.mock('../../../runtime/dsh/gateway.js', () => ({
   httpFetch: vi.fn(),
   keychainGet: vi.fn(async () => null),
   fsRead: vi.fn(async () => {
@@ -36,14 +36,14 @@ vi.mock('node:buffer', async (importOriginal) => ({
 }));
 
 const { installWebFetchValues } =
-  await import('../../runtime/dsh/upstream/shims/web-fetch-values.js');
+  await import('../../../runtime/dsh/upstream/shims/web-fetch-values.js');
 const { makeSettingsWrite } =
-  await import('../../runtime/dsh/upstream/web-write-settings.js');
+  await import('../../../runtime/dsh/upstream/web-write-settings.js');
 const { PIAI_SECTION_NS } =
-  await import('../../runtime/dsh/upstream/llm-piai-mount.js');
+  await import('../../../runtime/dsh/upstream/llm-piai-mount.js');
 const { fetchGatewayBridgeInstalled, fetchGatewayBridgeHosts } =
-  await import('../../runtime/dsh/upstream/fetch-gateway-bridge.js');
-const { httpFetch } = await import('../../runtime/dsh/gateway.js');
+  await import('../../../runtime/dsh/upstream/fetch-gateway-bridge.js');
+const { httpFetch } = await import('../../../runtime/dsh/gateway.js');
 
 // The bridge wraps WHATEVER fetch global is live (installFetchGatewayBridge
 // refuses a missing one) — install the REAL shim face first so the wrapped

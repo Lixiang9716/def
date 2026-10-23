@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 // needs the materialized vendored closure (external/ensure-dsh.sh;
 // provision-farm.mjs in the vitest globalSetup). Bare checkouts skip loud —
 // the same honest posture as the device legs, never a fake pass.
-const FARM_READY = existsSync(new URL('../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js', import.meta.url));
+const FARM_READY = existsSync(new URL('../../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js', import.meta.url));
 const describeFarm = FARM_READY ? describe : describe.skip;
 if (!FARM_READY) {
   console.warn('[credentials-store] the runtime bare-map farm is not provisioned — run external/ensure-dsh.sh; skipping the real-mount suite');
@@ -40,7 +40,7 @@ const seam = vi.hoisted(() => {
   return { workspace, reads };
 });
 
-vi.mock('../../runtime/dsh/gateway.js', () => ({
+vi.mock('../../../runtime/dsh/gateway.js', () => ({
   fsRead: vi.fn(async (scope, path) => {
     seam.reads.push([scope, path]);
     const bytes = seam.workspace.get(`${scope}/${path}`);
@@ -65,7 +65,7 @@ vi.mock('node:buffer', async (importOriginal) => ({
 }));
 
 const { CredentialsStore } =
-  await import('../../runtime/dsh/upstream/credentials-store.js');
+  await import('../../../runtime/dsh/upstream/credentials-store.js');
 const { Context } = await import('@deepseek-ai/cordis');
 
 const encodeStore = (value) =>

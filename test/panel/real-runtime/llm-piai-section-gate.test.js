@@ -49,7 +49,7 @@
  */
 import { existsSync } from 'node:fs';
 import { describe, beforeAll, it, expect, vi } from 'vitest';
-import { workspace } from './gateway-shim.js';
+import { workspace } from '../gateway-shim.js';
 
 // The dsh host's node:buffer is the repo shim carrying encodeUtf8/decodeUtf8;
 // desktop node has neither (the llm-route-context-window.test.js precedent).
@@ -65,8 +65,8 @@ vi.mock('node:buffer', async (importOriginal) => ({
 // mocked BY PATH (the llm-route-context-window precedent, which swaps the
 // same module for handler doubles). The shim's in-memory workspace IS the
 // seeded store below — the same module instance this file imports directly.
-vi.mock('../../runtime/dsh/gateway.js', async () =>
-  await import('./gateway-shim.js'));
+vi.mock('../../../runtime/dsh/gateway.js', async () =>
+  await import('../gateway-shim.js'));
 
 // The runtime bare-map farm is the ONE resolution home for the @deepseek-ai
 // faces: the staged packages import each other by bare name, so single-file
@@ -74,19 +74,19 @@ vi.mock('../../runtime/dsh/gateway.js', async () =>
 // by the vitest globalSetup (provision-farm.mjs →
 // spine/provision-modules.mjs) from the materialized vendored closure.
 vi.mock('@deepseek-ai/dsh-llm', async () =>
-  await import('../../hosts/android/app/src/main/assets/dsh/vendor/dsh/llm@0.1.6-alpha.2/lib/index.js'));
+  await import('../../../hosts/android/app/src/main/assets/dsh/vendor/dsh/llm@0.1.6-alpha.2/lib/index.js'));
 
 // The dsh-root-relative spellings the in-graph runtime modules import (the
 // quickjs loader's bare map on device) — re-pointed at the same real files
 // the farm links.
 vi.mock('upstream/llm-transport.js', async () =>
-  await import('../../runtime/dsh/upstream/llm-transport.js'));
+  await import('../../../runtime/dsh/upstream/llm-transport.js'));
 vi.mock('upstream/llm-route.js', async () =>
-  await import('../../runtime/dsh/upstream/llm-route.js'));
+  await import('../../../runtime/dsh/upstream/llm-route.js'));
 vi.mock('upstream/web-write-settings.js', async () =>
-  await import('../../runtime/dsh/upstream/web-write-settings.js'));
+  await import('../../../runtime/dsh/upstream/web-write-settings.js'));
 vi.mock('upstream/llm-piai-mount.js', async () =>
-  await import('../../runtime/dsh/upstream/llm-piai-mount.js'));
+  await import('../../../runtime/dsh/upstream/llm-piai-mount.js'));
 
 // The suite boots the REAL pi-ai mount over the runtime bare-map farm — it
 // needs the materialized vendored closure (external/ensure-dsh.sh;
@@ -95,7 +95,7 @@ vi.mock('upstream/llm-piai-mount.js', async () =>
 // posture as the device legs, never a fake pass. The module loads live
 // INSIDE the guarded wrapper: a bare checkout must reach the skip, never an
 // import error.
-const FARM_READY = existsSync(new URL('../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js', import.meta.url));
+const FARM_READY = existsSync(new URL('../../../runtime/dsh/node_modules/@deepseek-ai/dsh-settings/lib/index.js', import.meta.url));
 if (!FARM_READY) {
   console.warn('[llm-piai-section-gate] the runtime bare-map farm is not provisioned — run external/ensure-dsh.sh; skipping the real-mount suite');
 }
@@ -105,11 +105,11 @@ let Context, SettingsMemory, mountGatewayLlm, mountPiAiSection, PIAI_SECTION_NS,
 
 if (FARM_READY) {
   beforeAll(async () => {
-    ({ Context } = await import('../../hosts/android/app/src/main/assets/dsh/vendor/npm/cordis@4.0.2/lib/index.js'));
-    ({ SettingsMemory } = await import('../../runtime/dsh/upstream/settings-memory.js'));
-    ({ mountGatewayLlm } = await import('../../runtime/dsh/upstream/llm-gateway-mount.js'));
-    ({ mountPiAiSection, PIAI_SECTION_NS } = await import('../../runtime/dsh/upstream/llm-piai-mount.js'));
-    ({ CredentialsStore } = await import('../../runtime/dsh/upstream/credentials-store.js'));
+    ({ Context } = await import('../../../hosts/android/app/src/main/assets/dsh/vendor/npm/cordis@4.0.2/lib/index.js'));
+    ({ SettingsMemory } = await import('../../../runtime/dsh/upstream/settings-memory.js'));
+    ({ mountGatewayLlm } = await import('../../../runtime/dsh/upstream/llm-gateway-mount.js'));
+    ({ mountPiAiSection, PIAI_SECTION_NS } = await import('../../../runtime/dsh/upstream/llm-piai-mount.js'));
+    ({ CredentialsStore } = await import('../../../runtime/dsh/upstream/credentials-store.js'));
   });
 }
 
