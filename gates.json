@@ -28,7 +28,8 @@
       "shellcheck-warn",
       "actionlint",
       "perf-budget",
-      "test-taxonomy"
+      "test-taxonomy",
+      "version-stream"
     ],
     "quick": [
       "notes",
@@ -478,6 +479,14 @@
       "command": [
         "node",
         "tools/check-test-taxonomy.mjs",
+        "--self-test"
+      ]
+    },
+    {
+      "id": "version-stream",
+      "command": [
+        "sh",
+        "packages/release/check-version-stream.sh",
         "--self-test"
       ]
     }
