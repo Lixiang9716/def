@@ -221,7 +221,7 @@ const boot = async (env) => {
     cwd: root, onEvent: () => {},
     container: { cwd: root, tmpdir: `${root}/.tmp`, home: `${root}/home`,
       env: { [KEY_REF]: DECOY }, argv: ['dsh', '--profile', 'mobile'] },
-    llm: { baseURL: UNDIALED_BASE, apiKey: 'staged-model-key', provider: 'mock',
+    llm: { baseURL: UNDIALED_BASE, apiKey: 'staged-model-key', kind: 'mock', provider: 'mock',
       model: 'mock-1', piaiSection: true },
   });
   let guard = 0;

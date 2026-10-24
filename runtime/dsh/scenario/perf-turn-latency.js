@@ -80,7 +80,7 @@ const bootPhase = async (env) => {
     container: { cwd: '/perf-ws', tmpdir: '/perf-ws/.tmp', home: '/perf-ws/home',
       env: {}, argv: ['dsh', '--profile', 'mobile'] },
     llm: { baseURL: env.DSH_MOCK_LLM_URL, apiKey: env.DSH_MOCK_LLM_KEY,
-      provider: 'mock', model: 'mock-1',
+      provider: 'mock', kind: 'mock', model: 'mock-1',
       onSse: (info) => {
         emit('llm/sse', info);
         if (typeof info?.delta === 'string') {

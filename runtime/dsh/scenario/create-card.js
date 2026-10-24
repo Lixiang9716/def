@@ -85,6 +85,7 @@ if (!globalThis.__dshGatewayNegotiate('gateway@1')) {
       baseURL: 'http://127.0.0.1:9/never-dialed',
       apiKey: 'unused',
       provider: 'mock',
+      kind: 'mock',
       model: 'mock-1',
     },
   });

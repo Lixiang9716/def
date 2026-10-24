@@ -69,7 +69,7 @@ const boot = async () => {
     container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
       env: {}, argv: ['dsh', '--profile', 'mobile'] },
     systemPrompt: { personaPrefix: '' },
-    llm: { baseURL: BASE_URL, apiKey: STAGED_KEY, provider: 'mock',
+    llm: { baseURL: BASE_URL, apiKey: STAGED_KEY, kind: 'mock', provider: 'mock',
       model: 'probe-1', onRequestBody: () => {} },
   });
   let guard = 0;

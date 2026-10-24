@@ -80,7 +80,7 @@ const bootOptions = (providersRow, onEvent) => ({
   container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
     env: {}, argv: ['dsh', '--profile', 'mobile'] },
   llm: {
-    baseURL: UNDIALED_BASE, apiKey: 'bridge-probe-undialed', provider: 'mock', model: 'mock-1',
+    baseURL: UNDIALED_BASE, apiKey: 'bridge-probe-undialed', provider: 'mock', kind: 'mock', model: 'mock-1',
     piaiProviders: { [ROUTE]: providersRow },
   },
 });
@@ -183,12 +183,12 @@ const byokPhase = async (forwarder, servedKey) => {
     cwd: ROOT, onEvent: () => {},
     container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
       env: { ANTHROPIC_API_KEY: servedKey }, argv: ['dsh', '--profile', 'mobile'] },
-    llm: { baseURL: UNDIALED_BASE, apiKey: servedKey, provider: 'mock', model: 'mock-1' },
+    llm: { baseURL: UNDIALED_BASE, apiKey: servedKey, kind: 'mock', provider: 'mock', model: 'mock-1' },
   });
   // The unbind seam's factory (the composer seat registers the same shape).
   registerBootRouteFactory(ctx, () => bootRouteOf({ mockLlmUrl: UNDIALED_BASE, apiKey: servedKey }));
   const surface = createWriteSurface(ctx, () => {}, {
-    root: ROOT, provider: 'mock', model: 'mock-1', baseURL: UNDIALED_BASE,
+    root: ROOT, provider: 'mock', kind: 'mock', model: 'mock-1', baseURL: UNDIALED_BASE,
     routeKind: 'mock',
     spine: () => [], stagedPlugins: () => [], fullCoverage: true,
   });

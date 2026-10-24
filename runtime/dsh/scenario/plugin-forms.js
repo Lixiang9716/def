@@ -112,7 +112,7 @@ const bootPhase = async () => {
     },
     llm: {
       baseURL: env.DSH_MOCK_LLM_URL, apiKey: env.DSH_MOCK_LLM_KEY,
-      provider: 'mock', model: 'mock-1',
+      provider: 'mock', kind: 'mock', model: 'mock-1',
     },
     // The composition host plane (jobs/tokenMeter/userQuestions/shell rows)
     // is what the production serve boot composes — mirror it so the jobs

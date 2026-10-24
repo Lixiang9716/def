@@ -12,6 +12,15 @@
       }
     },
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "kind": "mock",
+        "reason": "no-credential-fallback",
+        "provider": "mock",
+        "face": "llm"
+      }
+    },
+    {
       "event": "llm/runtime",
       "match": {
         "provider": "mock",
@@ -19,15 +28,6 @@
         "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
         "transport": "gateway httpFetch → carrier scripted chat-completions (E2E determinism boundary, mirrors the CLI mock server)",
         "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
-      }
-    },
-    {
-      "event": "llm.producer.bound",
-      "match": {
-        "kind": "mock",
-        "reason": "no-credential-fallback",
-        "provider": "mock",
-        "face": "llm"
       }
     },
     {

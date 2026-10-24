@@ -78,7 +78,7 @@ const liveBoot = async (servedKey, baseURL, model) => (await bootUpstream({
   container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
     env: { [KEY_ENV]: servedKey }, argv: ['dsh', '--profile', 'mobile'] },
   llm: {
-    baseURL: UNDIALED_BASE, apiKey: 'undialed-gateway-route', kind: 'mock', provider: 'mock', model: 'mock-1',
+    baseURL: UNDIALED_BASE, apiKey: 'undialed-gateway-route', kind: 'mock', provider: 'mock', kind: 'mock', model: 'mock-1',
     piaiProviders: {
       anthropic: {
         displayName: 'Anthropic (live)',

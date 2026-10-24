@@ -139,7 +139,7 @@ const bootPhase = async (env, baseURL, captures) => {
       env, argv: ['dsh', '--profile', 'mobile'],
     },
     llm: {
-      baseURL: UNDIALED_BASE, apiKey: FIXTURE_KEY, provider: 'mock', model: 'mock-1',
+      baseURL: UNDIALED_BASE, apiKey: FIXTURE_KEY, provider: 'mock', kind: 'mock', model: 'mock-1',
       piaiProviders: {
         [ROUTE]: {
           displayName: 'pi-ai test route',
