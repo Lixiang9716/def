@@ -115,6 +115,12 @@ vendor/npm/jpeg-js@0.4.4=../../external/npm/jpeg-js@0.4.4
 vendor/npm/fflate@0.8.2/lib/index.cjs=../../external/npm/fflate@0.8.2/lib/index.cjs
 vendor/npm/@noble/hashes@2.3.0=../../external/npm/@noble/hashes@2.3.0
 vendor/npm/@earendil-works/pi-ai@0.85.1=../../external/npm/@earendil-works/pi-ai@0.85.1
+# The BYOK pi-ai mount chain (#686): the interactive seats’ piaiSection
+# gate loads the vendored plugin, whose bare imports reach launch-environment
+# directly; credentials (TREES above) and the SDK dist (the row above) were
+# already embedded. The vendored probe’s npm face serves both names.
+vendor/npm/@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2=../../external/npm/@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2
+vendor/npm/@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2=../../external/npm/@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2
 # The OFFICE row's whole plugin dir, the upstream shims (a shim joins the
 # embed by existing, not by list edit), and the scenario/web-live whole-dir
 # rows (same rule). The shell seat is dsh-shell-js's since 2026-10-11 — the

@@ -989,6 +989,27 @@ if [ "$MODE" != "check" ]; then
     cp "runtime/dsh/$PIAI_DIR/dist/providers/data/.manifest.json" \
         "$RAW/$PIAI_DIR/dist/providers/data/manifest.json"
 fi
+
+# The BYOK pi-ai mount chain's npm faces (#686): the interactive seats'
+# piaiSection gate loads the vendored @deepseek-ai/dsh-llm-pi-ai plugin,
+# whose bare imports reach @deepseek-ai/dsh-launch-environment directly
+# (credentials and the SDK dist stage above/below). Same js+json face rule
+# as the pi-ai block; BUNDLE_FILES policy rows in Index.ets must mirror
+# these two trees.
+for PIAI_NPKG in dsh-llm-pi-ai dsh-launch-environment; do
+    PIAI_NPKG_DIR="vendor/npm/@deepseek-ai/$PIAI_NPKG@0.1.6-alpha.2"
+    if [ "$MODE" != "check" ] && [ ! -d "runtime/dsh/$PIAI_NPKG_DIR" ]; then
+        echo "::error::vendor-official: $PIAI_NPKG_DIR absent — external/ensure-dsh.sh materializes the pin" >&2
+        exit 1
+    fi
+    if [ "$MODE" != "check" ]; then
+        (cd "runtime/dsh/$PIAI_NPKG_DIR" && find . -type f \( -name '*.js' -o -name '*.json' \) ! -name '.*') |
+            while IFS= read -r rel; do
+                mkdir -p "$RAW/$PIAI_NPKG_DIR/$(dirname "$rel")"
+                cp "runtime/dsh/$PIAI_NPKG_DIR/$rel" "$RAW/$PIAI_NPKG_DIR/$rel"
+            done
+    fi
+done
 webclient_files() {
     (cd "presentation/web-client-$1" && find . -type f) |
         while IFS= read -r rel; do echo "webclient/dsh-web-client-$1/${rel#./}"; done
