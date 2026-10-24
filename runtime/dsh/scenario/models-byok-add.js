@@ -147,8 +147,8 @@ const collisionPhase = async () => {
       cwd: ROOT, onEvent: () => {},
       container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
         env: {}, argv: ['dsh', '--profile', 'mobile'] },
-      llm: { baseURL: UNDIALED_BASE, apiKey: 'staged-model-key', provider: 'deepseek',
-        model: 'deepseek-chat', piaiSection: true },
+      llm: { kind: 'staged', baseURL: UNDIALED_BASE, apiKey: 'staged-model-key',
+        provider: 'deepseek', model: 'deepseek-chat', piaiSection: true },
     });
     fail('the pi-ai section mount collided with the live route and nobody said so');
   } catch (error) {
