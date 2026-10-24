@@ -10,7 +10,7 @@
  */
 import { LlmRuntime, attributionHeaders } from '@deepseek-ai/dsh-llm';
 import { createGatewayLlmAdapter } from 'upstream/llm-transport.js';
-import { registerRouteDisposer, registerDirectoryHandle, registerProducer, reasonOfRoute } from 'upstream/llm-route.js';
+import { registerRouteDisposer, registerDirectoryHandle, registerProducer, registerProducerSink, reasonOfRoute } from 'upstream/llm-route.js';
 import { providerSettingsNs } from 'upstream/web-write-settings.js';
 
 /** Mount the llm service over the gateway adapter for ONE provider route. */
@@ -47,8 +47,8 @@ export const mountGatewayLlm = async (ctx, llm, onEvent) => {
   }]));
   // The producer registry row + the bound event: which producer serves this
   // face and why — one structure, emitted where the bind happens.
-  const record = registerProducer(ctx, llm, reason);
-  onEvent('llm.producer.bound', { ...record });
+  registerProducerSink(ctx, (record) => onEvent('llm.producer.bound', { ...record }));
+  registerProducer(ctx, llm, reason);
   onEvent('llm/runtime', {
     provider: llm.provider,
     model: llm.model,

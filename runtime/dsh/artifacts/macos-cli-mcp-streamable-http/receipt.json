@@ -6,7 +6,7 @@
   "scenario": "mcp.streamable-http",
   "mock": "runtime/dsh/ci/mock-mcp-server.mjs (node-side, zero-dependency Streamable HTTP MCP server on real loopback TCP; its per-request telemetry is mock-server-stdout.txt)",
   "checker": "test/e2e/scenarios/mcp-streamable-http.json",
-  "events": 16,
+  "events": 17,
   "proves": [
     "the vendored @modelcontextprotocol/client@2.0.0 runs VERBATIM inside quickjs-ng: Client and StreamableHTTPClientTransport load from the pinned vendor closure with zero upstream edits (D6), and the initialize handshake, notifications/initialized, tools/list and tools/call on the wire are the library's own JSON-RPC shapes",
     "the transport bridge is composition, not a fork: upstream/mcp-http-transport.js hands the vendored StreamableHTTPClientTransport the gateway fetch (gatewayFetch, upstream/fetch-gateway-bridge.js) through the library's public fetch option — the only seam it exposes and the only one used",

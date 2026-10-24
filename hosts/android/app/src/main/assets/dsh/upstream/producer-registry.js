@@ -36,11 +36,21 @@ export const producerRecord = (route, reason) => ({
   reason,
 });
 
-/** Register (or re-register on rebind/restore) the boot's live producer.
- * Returns the record so bind sites emit it verbatim. */
+/** The event sink one boot registers (proposal §3: the bound event fires at
+ * EVERY bind site — boot, rebind, restore, the gate mount — and llm-route's
+ * seam sites hold no onEvent of their own; the boot site hands one in). */
+const producerSinks = new Map();
+
+export const registerProducerSink = (ctx, emit) => {
+  producerSinks.set(ctx, emit);
+};
+
+/** Register (or re-register on rebind/restore) the boot's live producer and
+ * emit llm.producer.bound through the boot's sink. Returns the record. */
 export const registerProducer = (ctx, route, reason) => {
   const record = producerRecord(route, reason);
   producerRegistry.set(ctx, record);
+  producerSinks.get(ctx)?.(record);
   return record;
 };
 

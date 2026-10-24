@@ -49,7 +49,7 @@ import { rebindPiAiProviders } from './llm-piai-mount.js';
 import { providerSettingsNs } from './web-write-settings.js';
 import { registerProducer, reasonOfRoute } from 'upstream/producer-registry.js';
 export {
-  producerRecord, registerProducer, producerOf, reasonOfRoute,
+  producerRecord, registerProducer, registerProducerSink, producerOf, reasonOfRoute,
 } from 'upstream/producer-registry.js';
 
 const log = createLogger('dsh.llm-route');
