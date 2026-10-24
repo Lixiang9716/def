@@ -5,6 +5,16 @@
   },
   "expect": [
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "id": "mock:loopback",
+        "face": "llm",
+        "kind": "mock",
+        "reason": "no-credential-fallback",
+        "provider": "mock"
+      }
+    },
+    {
       "event": "llm/runtime",
       "match": {
         "provider": "mock",

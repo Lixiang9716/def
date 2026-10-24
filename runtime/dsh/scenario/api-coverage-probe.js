@@ -86,7 +86,8 @@ const boot = async () => {
       customSkillDirs: [`${ROOT}/skills`] },
     commands: true, goals: true, fileReferences: true,
     llm: { baseURL: 'http://127.0.0.1:1/v1', apiKey: 'probe', provider: 'mock',
-      model: 'probe-1', onRequestBody: () => {} },
+ kind: 'mock',
+            model: 'probe-1', onRequestBody: () => {} },
   });
   let guard = 0;
   while ((ctx.agents.get(SESSION_ID) === undefined || ctx.sessions.get(SESSION_ID) === undefined)

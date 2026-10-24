@@ -5,6 +5,13 @@
   },
   "expect": [
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
       "event": "llm/runtime",
       "match": {
         "provider": "mock",
@@ -79,15 +86,26 @@
     {
       "event": "web/boot/rows",
       "match": {
-        "kinds": ["global", "script", "script-preload", "script-src"],
+        "kinds": [
+          "global",
+          "script",
+          "script-preload",
+          "script-src"
+        ],
         "preloadCount": 1,
         "facadeIsQueueScript": true,
         "bootstrapScriptPreloaded": true,
         "graphGlobalLastRow": true,
         "recoveryDefaults": true,
         "pluginRowsSample": [
-          { "id": "@deepseek-ai/dsh-client-modules", "urlIsSingleCombo": true },
-          { "id": "@deepseek-ai/dsh-client-ui-renderer", "urlIsSingleCombo": true }
+          {
+            "id": "@deepseek-ai/dsh-client-modules",
+            "urlIsSingleCombo": true
+          },
+          {
+            "id": "@deepseek-ai/dsh-client-ui-renderer",
+            "urlIsSingleCombo": true
+          }
         ]
       }
     },

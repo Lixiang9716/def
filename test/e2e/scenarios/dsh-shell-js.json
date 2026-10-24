@@ -1,251 +1,258 @@
 {
- "scenario": "dsh-shell-js",
- "extract": {
-  "prefix": "dsh.runtime.log:"
- },
- "expect": [
-  {
-   "event": "llm/runtime",
-   "match": {
-    "provider": "mock",
-    "model": "mock-1",
-    "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
-    "transport": "gateway httpFetch → loopback chat-completions mock server",
-    "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
-   }
+  "scenario": "dsh-shell-js",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
   },
-  {
-   "event": "upstream/profile",
-   "match": {
-    "profile": "mobile",
-    "root": "empty (patch layers compose over it)",
-    "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
-    "layers": [
-     "session",
-     "agent",
-     "system-prompt",
-     "tools",
-     "session-projection",
-     "settings",
-     "agent-loop"
-    ]
-   }
-  },
-  {
-   "event": "upstream/services",
-   "match": {
-    "kernel": "@deepseek-ai/cordis@4.0.2",
-    "services": [
-     "sessions",
-     "agents",
-     "systemPrompt",
-     "tools",
-     "sessionProjections",
-     "settings",
-     "agentLoop",
-     "llm"
-    ],
-    "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
-   }
-  },
-  {
-   "event": "session/created",
-   "match": {
-    "sessionId": "s-dsh-shell-js-0001"
-   }
-  },
-  {
-   "event": "agent/created",
-   "match": {
-    "id": "main",
-    "sessionId": "s-dsh-shell-js-0001"
-   }
-  },
-  {
-   "event": "shell/offered",
-   "match": {
-    "tools": 1
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "WHO=dsh; echo \"hello from ${WHO}-shell, $WHO in double quotes\""
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": "hello from dsh-shell, dsh in double quotes\n"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "echo '$WHO stays literal in single quotes'"
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": "$WHO stays literal in single quotes\n"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "echo beta-line > notes.txt"
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": ""
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "echo alpha-line >> notes.txt"
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": ""
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "cat notes.txt"
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": "beta-line\nalpha-line\n"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/persisted",
-   "match": {
-    "name": "notes.txt",
-    "bytes": 21
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "cat notes.txt | sort | head -n 1"
-   }
-  },
-  {
-   "event": "shell/stdout",
-   "match": {
-    "stdout": "alpha-line\n"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 0
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "echo \"nested $(echo boom) is refused\""
-   }
-  },
-  {
-   "event": "shell/refused",
-   "match": {
-    "exitCode": 2,
-    "missing": "command substitution"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 2
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "chmod +x notes.txt"
-   }
-  },
-  {
-   "event": "shell/refused",
-   "match": {
-    "exitCode": 2,
-    "missing": "permission primitive"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 2
-   }
-  },
-  {
-   "event": "shell/call",
-   "match": {
-    "command": "no-such-applet --version"
-   }
-  },
-  {
-   "event": "shell/refused",
-   "match": {
-    "exitCode": 127,
-    "missing": "program"
-   }
-  },
-  {
-   "event": "shell/exit",
-   "match": {
-    "exitCode": 127
-   }
-  },
-  {
-   "event": "upstream/completed",
-   "match": {
-    "status": "pass",
-    "upstream": "0.1.6-alpha.2",
-    "shellJs": "system-plugins/dsh-shell-js over the gateway fs primitives"
-   }
-  }
- ]
+  "expect": [
+    {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → loopback chat-completions mock server",
+        "userAgent": "deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)",
+        "layers": [
+          "session",
+          "agent",
+          "system-prompt",
+          "tools",
+          "session-projection",
+          "settings",
+          "agent-loop"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2",
+        "services": [
+          "sessions",
+          "agents",
+          "systemPrompt",
+          "tools",
+          "sessionProjections",
+          "settings",
+          "agentLoop",
+          "llm"
+        ],
+        "llm": "vendored LlmRuntime + gateway adapter (provider \"mock\")"
+      }
+    },
+    {
+      "event": "session/created",
+      "match": {
+        "sessionId": "s-dsh-shell-js-0001"
+      }
+    },
+    {
+      "event": "agent/created",
+      "match": {
+        "id": "main",
+        "sessionId": "s-dsh-shell-js-0001"
+      }
+    },
+    {
+      "event": "shell/offered",
+      "match": {
+        "tools": 1
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "WHO=dsh; echo \"hello from ${WHO}-shell, $WHO in double quotes\""
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": "hello from dsh-shell, dsh in double quotes\n"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "echo '$WHO stays literal in single quotes'"
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": "$WHO stays literal in single quotes\n"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "echo beta-line > notes.txt"
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": ""
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "echo alpha-line >> notes.txt"
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": ""
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "cat notes.txt"
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": "beta-line\nalpha-line\n"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/persisted",
+      "match": {
+        "name": "notes.txt",
+        "bytes": 21
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "cat notes.txt | sort | head -n 1"
+      }
+    },
+    {
+      "event": "shell/stdout",
+      "match": {
+        "stdout": "alpha-line\n"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 0
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "echo \"nested $(echo boom) is refused\""
+      }
+    },
+    {
+      "event": "shell/refused",
+      "match": {
+        "exitCode": 2,
+        "missing": "command substitution"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 2
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "chmod +x notes.txt"
+      }
+    },
+    {
+      "event": "shell/refused",
+      "match": {
+        "exitCode": 2,
+        "missing": "permission primitive"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 2
+      }
+    },
+    {
+      "event": "shell/call",
+      "match": {
+        "command": "no-such-applet --version"
+      }
+    },
+    {
+      "event": "shell/refused",
+      "match": {
+        "exitCode": 127,
+        "missing": "program"
+      }
+    },
+    {
+      "event": "shell/exit",
+      "match": {
+        "exitCode": 127
+      }
+    },
+    {
+      "event": "upstream/completed",
+      "match": {
+        "status": "pass",
+        "upstream": "0.1.6-alpha.2",
+        "shellJs": "system-plugins/dsh-shell-js over the gateway fs primitives"
+      }
+    }
+  ]
 }

@@ -84,7 +84,8 @@ const bootPhase = async (env) => {
       baseURL: env.DSH_MOCK_LLM_URL,
       apiKey: env.DSH_MOCK_LLM_KEY,
       provider: 'mock',
-      model: 'mock-1',
+ kind: 'mock',
+            model: 'mock-1',
     },
   });
   // The plugin is BOOT-MOUNTED since the owner decision (2026-10-18): the
