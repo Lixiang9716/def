@@ -204,6 +204,10 @@ enum BundleStager {
         // 2026-10-01. Android stages the same file in its assets.
         try write("upstream/llm-route.js",
                   data: resData(dsh_runtime_res_upstream_llm_route_js), under: root)
+        // The producer registry (producer-registry v1): llm-route imports it
+        // statically — the loaders' bare map resolves it bundle-root-relative.
+        try write("upstream/producer-registry.js",
+                  data: resData(dsh_runtime_res_upstream_producer_registry_js), under: root)
         // The coverage plane's two late rounds (web-write-coverage.js imports
         // both; the same live measurement caught the gap): the plugin
         // marketplace face and the BYOK onboarding runtime legs.

@@ -100,7 +100,7 @@ const bootPhase = async (env) => {
       cwd: root, tmpdir: `${root}/tmp`, home: `${root}/home`,
       env, argv: ['dsh', '--profile', 'mobile'],
     },
-    llm: { baseURL: UNDIALED_BASE, apiKey: UNDIALED_KEY, provider: 'mock', model: 'mock-1' },
+    llm: { baseURL: UNDIALED_BASE, apiKey: UNDIALED_KEY, kind: 'mock', provider: 'mock', model: 'mock-1' },
   });
   return ctx;
 };

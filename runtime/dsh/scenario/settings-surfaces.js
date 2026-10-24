@@ -113,6 +113,7 @@ const bootPhase = async (env) => {
       baseURL: env.DSH_SETTINGS_LLM_BASEURL,
       apiKey: 'unused-settings-proof',
       provider: 'mock',
+      kind: 'mock',
       model: 'mock-1',
     },
   });

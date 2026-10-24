@@ -140,7 +140,13 @@ const routeModelRows = (llmRoute) => (
  * manifests pin it byte-identical. */
 export const shellLoadHandlers = (llmRoute) => ({
   'credentials/describe': async () => ({
-    [llmRoute.provider]: {
+    [llmRoute.provider]: llmRoute.kind === 'mock' ? {
+      // The honest producer face (producer-registry v1): a mock route
+      // serves no credential — the shell row dies with the coverage one.
+      configured: false,
+      source: 'mock route — no credential is served',
+      writable: false,
+    } : {
       configured: true,
       source: 'staged profile credential (profiles/default/llm)',
       writable: false,
@@ -151,7 +157,8 @@ export const shellLoadHandlers = (llmRoute) => ({
     routableProviders: [llmRoute.provider],
     groups: [{
       id: llmRoute.provider,
-      name: llmRoute.provider,
+      name: llmRoute.kind === 'mock'
+        ? `${llmRoute.provider} (scripted demo)` : llmRoute.provider,
       models: routeModelRows(llmRoute),
     }],
     // The desktop controller's buildModelCatalog ALWAYS carries the

@@ -1,30 +1,110 @@
 {
   "scenario": "llm.piai-user-endpoint",
-  "extract": { "prefix": "dsh.runtime.log:" },
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
   "expect": [
-    { "event": "bridge/negative.fatal", "match": { "route": "anthropic", "declared": false } },
-    { "event": "llm/runtime", "match": {
-      "provider": "mock", "model": "mock-1",
-      "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
-      "transport": "gateway httpFetch → loopback chat-completions mock server" } },
-    { "event": "upstream/profile", "match": {
-      "profile": "mobile",
-      "root": "empty (patch layers compose over it)",
-      "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)" } },
-    { "event": "llm/piai-bridge", "match": { "installed": true, "hosts": ["localhost"] } },
-    { "event": "llm/piai", "match": {
-      "plugin": "@deepseek-ai/dsh-llm-pi-ai",
-      "routes": ["anthropic"],
-      "protocols": ["anthropic-messages"] } },
-    { "event": "upstream/services", "match": { "kernel": "@deepseek-ai/cordis@4.0.2" } },
-    { "event": "bridge/dial.refused", "optional": true,
-      "match": { "status": 401, "providerErrorType": "authentication_error" } },
-    { "event": "bridge/dial.refused", "optional": true,
-      "match": { "status": 403, "providerErrorType": "forbidden" } },
-    { "event": "bridge/dial.refused", "optional": true,
-      "match": { "status": 400, "providerErrorType": "invalid_request_error" } },
-    { "event": "bridge/byok.saved", "match": { "mode": "byok", "provider": "anthropic" } },
-    { "event": "bridge/byok.refused", "match": { "keyAccepted": false, "transportStructured": true } },
-    { "event": "bridge.flow/completed", "match": { "status": "pass" } }
+    {
+      "event": "bridge/negative.fatal",
+      "match": {
+        "route": "anthropic",
+        "declared": false
+      }
+    },
+    {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
+      "event": "llm/runtime",
+      "match": {
+        "provider": "mock",
+        "model": "mock-1",
+        "service": "vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)",
+        "transport": "gateway httpFetch → loopback chat-completions mock server"
+      }
+    },
+    {
+      "event": "upstream/profile",
+      "match": {
+        "profile": "mobile",
+        "root": "empty (patch layers compose over it)",
+        "upstream": "0.1.6-alpha.2 (vendored verbatim, sha256-pinned)"
+      }
+    },
+    {
+      "event": "llm/piai-bridge",
+      "match": {
+        "installed": true,
+        "hosts": [
+          "localhost"
+        ]
+      }
+    },
+    {
+      "event": "llm/piai",
+      "match": {
+        "plugin": "@deepseek-ai/dsh-llm-pi-ai",
+        "routes": [
+          "anthropic"
+        ],
+        "protocols": [
+          "anthropic-messages"
+        ]
+      }
+    },
+    {
+      "event": "upstream/services",
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2"
+      }
+    },
+    {
+      "event": "bridge/dial.refused",
+      "optional": true,
+      "match": {
+        "status": 401,
+        "providerErrorType": "authentication_error"
+      }
+    },
+    {
+      "event": "bridge/dial.refused",
+      "optional": true,
+      "match": {
+        "status": 403,
+        "providerErrorType": "forbidden"
+      }
+    },
+    {
+      "event": "bridge/dial.refused",
+      "optional": true,
+      "match": {
+        "status": 400,
+        "providerErrorType": "invalid_request_error"
+      }
+    },
+    {
+      "event": "bridge/byok.saved",
+      "match": {
+        "mode": "byok",
+        "provider": "anthropic"
+      }
+    },
+    {
+      "event": "bridge/byok.refused",
+      "match": {
+        "keyAccepted": false,
+        "transportStructured": true
+      }
+    },
+    {
+      "event": "bridge.flow/completed",
+      "match": {
+        "status": "pass"
+      }
+    }
   ]
 }

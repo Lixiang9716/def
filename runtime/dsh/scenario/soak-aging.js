@@ -76,7 +76,7 @@ const boot = async () => {
     container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
       env: {}, argv: ['dsh', '--profile', 'mobile'] },
     systemPrompt: { personaPrefix: '' },
-    llm: { baseURL: MOCK_URL, apiKey: ENV.DSH_MOCK_LLM_KEY, provider: 'mock', model: 'mock-1' },
+    llm: { baseURL: MOCK_URL, apiKey: ENV.DSH_MOCK_LLM_KEY, kind: 'mock', provider: 'mock', model: 'mock-1' },
   });
   let guard = 0;
   while ((ctx.agents.get('s-soak-aging') === undefined) && guard++ < 10000) {

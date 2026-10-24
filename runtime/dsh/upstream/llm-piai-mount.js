@@ -33,6 +33,7 @@
  * proves the gate and the bridge.
  */
 import { createLogger } from '../logger.js';
+import { registerProducer } from './llm-route.js';
 import { CredentialsStore } from './credentials-store.js';
 
 const log = createLogger('dsh.llm-piai-mount');
@@ -325,10 +326,18 @@ export const mountPiAiSection = async (ctx, onEvent) => {
     if (!/DUPLICATE_DIRECTORY|already declared/.test(String(error?.message))) throw error;
     throw sectionCollision(error, ctx);
   }
+  // The producer registry row: the section gate is itself a bind site —
+  // the pi-ai producers (the 39-row catalog plus the user's section rows)
+  // serve this face from here on, and the census answer says so.
+  const record = registerProducer(ctx, {
+    kind: 'pi-ai', provider: PIAI_SECTION_NS, model: undefined,
+    userEndpoint: true,
+  }, 'gate:piaiSection');
   onEvent('llm/piai-section', {
     plugin: '@deepseek-ai/dsh-llm-pi-ai',
     namespace: PIAI_SECTION_NS,
   });
+  onEvent('llm.producer.bound', { ...record });
 };
 
 /** Rebuild a directory collision as the named error (rule 5): the vendored

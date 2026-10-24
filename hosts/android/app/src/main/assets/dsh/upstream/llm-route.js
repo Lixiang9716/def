@@ -47,6 +47,10 @@ import { createLogger } from '../logger.js';
 import { createGatewayLlmAdapter } from './llm-transport.js';
 import { rebindPiAiProviders } from './llm-piai-mount.js';
 import { providerSettingsNs } from './web-write-settings.js';
+import { registerProducer, reasonOfRoute } from 'upstream/producer-registry.js';
+export {
+  producerRecord, registerProducer, producerOf, reasonOfRoute,
+} from 'upstream/producer-registry.js';
 
 const log = createLogger('dsh.llm-route');
 
@@ -326,34 +330,17 @@ const byokOrMock = async (cfg) => {
   return credential === null ? mockRoute(cfg) : byokRoute(credential);
 };
 
-// ---- the rebind / unbind seams ---------------------------------------------
-
-/** The seam registries, keyed by the boot CONTEXT — never by the llm
- * runtime service object: `ctx.get('llm')` hands out a FRESH wrapper per
- * access (measured 2026-10-01 on the CLI dsh host: two gets of the same
- * mounted service fail `===` while carrying the same target state), so a
- * runtime-keyed map misses every lookup made through a later get. The ctx
- * is the one object every seam site holds by reference — bootUpstream's
- * return value, handed to the write surface and the installers unchanged.
- * Deliberately STRONG Maps: a process holds ONE boot context and a handful
- * of seam entries, so references for the process lifetime are the honest
- * shape. */
+// The seam registries, keyed by the boot CONTEXT — never by the llm
+// runtime service object: ctx.get('llm') hands out a FRESH wrapper per
+// access, so a runtime-keyed map misses every lookup made through a later
+// get. The ctx is the one object every seam site holds by reference.
+// Deliberately STRONG Maps: a process holds ONE boot context and a handful
+// of seam entries, so references for the process lifetime are the honest
+// shape. (The producer registry itself lives in producer-registry.js,
+// split from here at the code-size gate, 2026-10-24.)
 const routeDisposers = new Map();
-/** The boot-route factories: the ONE registration the installer
- * (composer-web-live, the scenario legs) makes with the runtime.config it
- * resolved the boot route from. */
-const bootRouteFactories = new Map();
-/** The vendored configurable-provider DIRECTORY handles (boot.js hands its
- * registration over; a rebind/restore atomically replaces the row — the
- * vendored handle's own `.replace`). */
 const directoryHandles = new Map();
-
-/** boot.js hands its adapter registration's disposer over at mount, so a
- * rebind can replace the boot route's adapter (the vendored registry throws
- * DUPLICATE_ADAPTER on a plain second registration). */
-export const registerRouteDisposer = (ctx, disposer) => {
-  routeDisposers.set(ctx, disposer);
-};
+const bootRouteFactories = new Map();
 
 /** The installer registers how to re-derive the BOOT route (staged → mock,
  * never byok) from the runtime.config it holds. Absent, an onboarding/clear
@@ -366,6 +353,10 @@ export const registerBootRouteFactory = (ctx, factory) => {
 /** boot.js hands its configurable-provider directory registration over, so a
  * route swap moves the models 设置页 row with it (display-only; the turn
  * path reads the adapter registry, not the directory). */
+export const registerRouteDisposer = (ctx, disposer) => {
+  routeDisposers.set(ctx, disposer);
+};
+
 export const registerDirectoryHandle = (ctx, handle) => {
   directoryHandles.set(ctx, handle);
 };
@@ -399,6 +390,7 @@ export const rebindLlmRoute = async (ctx, credential) => {
   const route = byokRoute(credential);
   const previous = routeDisposers.get(ctx);
   if (previous !== undefined) await previous();
+  registerProducer(ctx, route, 'byok-credential');
   if (route.piai !== undefined) {
     // The plugin serves the route — and its directory declares the provider
     // row itself, so the boot handle's row withdraws first (a second
@@ -437,6 +429,7 @@ export const mountByokPiaiRoute = async (ctx, route) => {
   }
   const previous = routeDisposers.get(ctx);
   if (previous !== undefined) await previous();
+  registerProducer(ctx, route, 'byok-credential');
   directoryHandles.get(ctx)?.replace([]);
   routeDisposers.set(ctx, await rebindPiAiProviders(ctx, { [route.provider]: route.piai }));
   return route;
@@ -462,6 +455,7 @@ export const restoreBootRoute = async (ctx) => {
   const route = factory();
   const previous = routeDisposers.get(ctx);
   if (previous !== undefined) await previous();
+  registerProducer(ctx, route, reasonOfRoute(route));
   routeDisposers.set(ctx, runtime.registerAdapter([route.provider], createGatewayLlmAdapter({
     baseURL: route.baseURL,
     apiKey: route.apiKey,

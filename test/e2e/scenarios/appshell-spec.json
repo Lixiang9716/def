@@ -1,62 +1,103 @@
 {
   "scenario": "appshell.spec",
-  "extract": { "prefix": "dsh.runtime.log:" },
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
   "expect": [
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
       "event": "llm/runtime",
-      "match": { "provider": "mock", "model": "mock-1" }
+      "match": {
+        "provider": "mock",
+        "model": "mock-1"
+      }
     },
     {
       "event": "upstream/profile",
-      "match": { "profile": "mobile" }
+      "match": {
+        "profile": "mobile"
+      }
     },
     {
       "event": "upstream/services",
-      "match": { "kernel": "@deepseek-ai/cordis@4.0.2" }
+      "match": {
+        "kernel": "@deepseek-ai/cordis@4.0.2"
+      }
     },
     {
       "event": "session/created",
-      "match": { "sessionId": "s-appshell-spec-0001" }
+      "match": {
+        "sessionId": "s-appshell-spec-0001"
+      }
     },
     {
       "event": "agent/created",
-      "match": { "id": "main", "sessionId": "s-appshell-spec-0001" }
+      "match": {
+        "id": "main",
+        "sessionId": "s-appshell-spec-0001"
+      }
     },
     {
       "event": "appshell/offered",
-      "match": { "tools": 3 }
+      "match": {
+        "tools": 3
+      }
     },
     {
       "event": "appshell/turn/submitted",
-      "match": { "input": "变成微信" }
+      "match": {
+        "input": "变成微信"
+      }
     },
     {
       "event": "appshell/render/tool-called",
-      "match": { "name": "appshell_render" }
+      "match": {
+        "name": "appshell_render"
+      }
     },
     {
       "event": "appshell/render/echoed",
-      "match": { "ok": true, "title": "微信" }
+      "match": {
+        "ok": true,
+        "title": "微信"
+      }
     },
     {
       "event": "appshell/turn/completed",
-      "match": { "text": "表面已就绪" }
+      "match": {
+        "text": "表面已就绪"
+      }
     },
     {
       "event": "appshell/update/forged-refused",
-      "match": { "ok": false, "error": "unknown-surface" }
+      "match": {
+        "ok": false,
+        "error": "unknown-surface"
+      }
     },
     {
       "event": "appshell/update/accepted",
-      "match": { "ok": true }
+      "match": {
+        "ok": true
+      }
     },
     {
       "event": "appshell/catalog/served",
-      "match": { "vocabulary": true }
+      "match": {
+        "vocabulary": true
+      }
     },
     {
       "event": "appshell/completed",
-      "match": { "status": "pass" }
+      "match": {
+        "status": "pass"
+      }
     }
   ]
 }

@@ -108,7 +108,8 @@ const bootPhase = async (captures, env) => {
     llm: {
       baseURL: env.DSH_MOCK_LLM_URL,
       apiKey: env.DSH_MOCK_LLM_KEY,
-      provider: 'mock',
+      kind: 'mock',
+      provider: 'mock', kind: 'mock',
       model: 'mock-1',
       onWire: (info) => { captures.wire = info; emit('llm/request/built', info); },
       onSse: (info) => { captures.sse.push(info); emit('llm/sse', info); },

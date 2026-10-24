@@ -87,9 +87,19 @@ const makeLlmHandlers = (ctx) => {
 
 /** One describe row: a wire-configured ref reads from the store; the staged
  * route's ref names the staged credential; anything else is absent. */
-const describeOne = (routeRef, ref, store) => {
+const describeOne = (routeRef, ref, store, routeKind) => {
   if (store[ref] !== undefined) return { configured: true, writable: true };
   if (ref === routeRef) {
+    // The honest producer face (producer-registry v1): a mock route serves
+    // no credential — the census's gap #3 green dot dies here. A staged or
+    // byok route keeps its configured answer.
+    if (routeKind === 'mock') {
+      return {
+        configured: false,
+        source: 'mock route — no credential is served',
+        writable: true,
+      };
+    }
     return {
       configured: true,
       source: 'staged profile credential (profiles/default/llm)',
@@ -117,7 +127,7 @@ const makeCredentialDescribeHandler = (llmRoute) => {
     }
     const store = await readStore();
     return Object.fromEntries(
-      refs.map((ref) => [ref, describeOne(routeRef, ref, store)]));
+      refs.map((ref) => [ref, describeOne(routeRef, ref, store, llmRoute.kind)]));
   };
 };
 

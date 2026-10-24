@@ -154,7 +154,7 @@ const boot = async () => {
     cwd: ROOT, onEvent: () => {},
     container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
       env: { ANTHROPIC_API_KEY: CANARY }, argv: ['dsh', '--profile', 'mobile'] },
-    llm: { baseURL: UNDIALED_BASE, apiKey: CANARY, provider: 'mock', model: 'mock-1' },
+    llm: { baseURL: UNDIALED_BASE, apiKey: CANARY, kind: 'mock', provider: 'mock', model: 'mock-1' },
   });
   let guard = 0;
   while ((ctx.agents.get(SESSION_ID) === undefined) && guard++ < 10000) await Promise.resolve();

@@ -70,7 +70,7 @@ const bootPhase = async () => {
     },
     llm: {
       baseURL: env.DSH_MOCK_LLM_URL, apiKey: env.DSH_MOCK_LLM_KEY,
-      provider: 'mock', model: 'mock-1',
+      provider: 'mock', kind: 'mock', model: 'mock-1',
     },
     // The production serve seat's identity: every product plane on,
     // including the skills plane (the harmony-composer spelling: dshHome on

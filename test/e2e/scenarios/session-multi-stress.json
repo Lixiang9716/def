@@ -5,6 +5,13 @@
   },
   "expect": [
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
       "event": "llm/runtime",
       "match": {
         "provider": "mock",
@@ -70,7 +77,11 @@
       "event": "stress/round",
       "match": {
         "round": 1,
-        "started": ["s-stress-alpha", "s-stress-beta", "s-stress-gamma"]
+        "started": [
+          "s-stress-alpha",
+          "s-stress-beta",
+          "s-stress-gamma"
+        ]
       }
     },
     {
@@ -118,7 +129,10 @@
       "event": "stress/round",
       "match": {
         "round": 2,
-        "started": ["s-stress-alpha", "s-stress-beta"],
+        "started": [
+          "s-stress-alpha",
+          "s-stress-beta"
+        ],
         "inserted": "s-stress-delta"
       }
     },

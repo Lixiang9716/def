@@ -119,6 +119,7 @@ const bootPhase = async (cfg) => {
       baseURL: cfg.mockLlmUrl,
       apiKey: cfg.apiKey,
       provider: 'mock',
+      kind: 'mock',
       model: 'mock-1',
       adapterName: 'scripted loopback chat-completions (carrier mock-llm endpoint)',
       transportLabel: 'gateway httpFetch → carrier scripted chat-completions '

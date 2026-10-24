@@ -62,7 +62,7 @@ const boot = async () => {
     container: { cwd: ROOT, tmpdir: `${ROOT}/.tmp`, home: `${ROOT}/home`,
       env: {}, argv: ['dsh', '--profile', 'mobile'] },
     systemPrompt: { personaPrefix: '' },
-    llm: { baseURL: 'http://127.0.0.1:1', apiKey: 'unused', provider: 'mock', model: 'mock-1' },
+    llm: { baseURL: 'http://127.0.0.1:1', apiKey: 'unused', kind: 'mock', provider: 'mock', model: 'mock-1' },
   });
   let guard = 0;
   while ((ctx.agents.get('s-marketplace-boot') === undefined) && guard++ < 10000) {

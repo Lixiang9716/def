@@ -5,6 +5,13 @@
   },
   "expect": [
     {
+      "event": "llm.producer.bound",
+      "match": {
+        "face": "llm",
+        "provider": "mock"
+      }
+    },
+    {
       "event": "llm/runtime",
       "match": {
         "provider": "mock",
@@ -47,7 +54,9 @@
     {
       "event": "skills/listed",
       "match": {
-        "names": ["greeter"],
+        "names": [
+          "greeter"
+        ],
         "source": "custom",
         "provider": "filesystem"
       }
@@ -77,7 +86,9 @@
     {
       "event": "catalog/published",
       "match": {
-        "entries": ["greeter"]
+        "entries": [
+          "greeter"
+        ]
       }
     },
     {

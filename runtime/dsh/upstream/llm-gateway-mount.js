@@ -10,7 +10,7 @@
  */
 import { LlmRuntime, attributionHeaders } from '@deepseek-ai/dsh-llm';
 import { createGatewayLlmAdapter } from 'upstream/llm-transport.js';
-import { registerRouteDisposer, registerDirectoryHandle } from 'upstream/llm-route.js';
+import { registerRouteDisposer, registerDirectoryHandle, registerProducer, reasonOfRoute } from 'upstream/llm-route.js';
 import { providerSettingsNs } from 'upstream/web-write-settings.js';
 
 /** Mount the llm service over the gateway adapter for ONE provider route. */
@@ -33,15 +33,27 @@ export const mountGatewayLlm = async (ctx, llm, onEvent) => {
   // The directory handle rides the same seam: a rebind/restore atomically replaces the
   // models 设置页 row. Both registries key on the boot CONTEXT — ctx.get('llm') hands
   // out a fresh wrapper per access, so the service object is not an identity.
+  // The honest directory face (producer-registry v1): a mock route never
+  // renders as a configured "OpenAI 兼容" provider — the census's gap #3.
+  const reason = reasonOfRoute(llm);
+  const isMock = llm.kind === 'mock';
   registerDirectoryHandle(ctx, runtime.registerConfigurableProviders([{
     provider: llm.provider,
-    displayName: llm.displayName ?? 'OpenAI 兼容',
+    displayName: isMock
+      ? 'scripted demo endpoint (mock)'
+      : llm.displayName ?? 'OpenAI 兼容',
     settingsNs: providerSettingsNs(llm.provider),
     settingsPath: ['providers', 'default'],
   }]));
+  // The producer registry row + the bound event: which producer serves this
+  // face and why — one structure, emitted where the bind happens.
+  const record = registerProducer(ctx, llm, reason);
+  onEvent('llm.producer.bound', { ...record });
   onEvent('llm/runtime', {
     provider: llm.provider,
     model: llm.model,
+    kind: llm.kind,
+    reason,
     service: 'vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)',
     transport: llm.transportLabel
       ?? 'gateway httpFetch → loopback chat-completions mock server',

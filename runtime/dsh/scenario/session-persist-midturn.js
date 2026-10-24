@@ -91,6 +91,7 @@ const bootPhase = async (env, hooks) => {
       baseURL: env.DSH_MOCK_LLM_URL,
       apiKey: env.DSH_MOCK_LLM_KEY,
       provider: 'mock',
+      kind: 'mock',
       model: 'mock-1',
       onSse: (info) => {
         emit('llm/sse', info);

@@ -1,0 +1,22 @@
+{
+  "title": "producer registry v1: LLM producers register, the mock face turns honest",
+  "created": "2026-10-24T03:38:39+00:00",
+  "rules": {
+    "hash": "06c93b1ef5c5e3e9277d3958aaa56ff5ce49e528798cdd1fd82d82bc9497a592",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "9e5b678b7a67fd04baa67e6e14ff29490dc2097cd9b4193b7f5f572cb3b33d4d"
+    }
+  },
+  "checklist": [
+    "[x] The producer record + registerProducer table (llm-route.js, context-keyed)",
+    "[x] Four registration sites emit llm.producer.bound with kind+reason (resolveLlmRoute/bootRouteOf/rebindLlmRoute/restoreBootRoute + the piaiSection mount)",
+    "[x] The four join legs read kind: mock displayName honest, credentials/describe configured:false, modelCatalog scripted-demo label, llm/runtime gains kind+reason",
+    "[x] E2E trio (scenario+manifest+runner) pins llm.producer.bound one-to-one; panel assertions for the table",
+    "[x] E2E manifests that pin the old mock rows updated in the same PR",
+    "gov run green; PR merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0280"
+}

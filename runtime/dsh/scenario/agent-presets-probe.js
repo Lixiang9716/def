@@ -38,7 +38,7 @@ const { ctx } = await bootUpstream({
     argv: ['dsh', '--profile', 'mobile'],
   },
   llm: {
-    baseURL: 'http://127.0.0.1:1', apiKey: 'probe', provider: 'mock', model: 'mock-1',
+    baseURL: 'http://127.0.0.1:1', apiKey: 'probe', kind: 'mock', provider: 'mock', kind: 'mock', model: 'mock-1',
   },
 });
 

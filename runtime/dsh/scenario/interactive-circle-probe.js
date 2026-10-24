@@ -50,7 +50,7 @@ try {
     skills: { dshHome: '/tmp/.probe-home', agentsHome: '/tmp/.probe-home/.agents',
       customSkillDirs: ['/tmp/.probe-skills'] },
     commands: globalThis.__PROBE_COMMANDS === true,
-    llm: { baseURL: 'http://127.0.0.1:1/v1', apiKey: 'probe', provider: 'mock', model: 'probe-1',
+    llm: { baseURL: 'http://127.0.0.1:1/v1', apiKey: 'probe', kind: 'mock', provider: 'mock', model: 'probe-1',
       onRequestBody: () => {} },
   });
 
