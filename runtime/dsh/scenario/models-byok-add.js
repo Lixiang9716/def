@@ -75,6 +75,7 @@
  */
 import { createLogger } from 'logger.js';
 import { fsScope } from 'gateway.js';
+import { producerOf } from '../upstream/llm-route.js';
 import { createUserMessage } from '@deepseek-ai/dsh-llm';
 import { bootUpstream } from 'upstream/boot.js';
 import { createWriteSurface } from 'upstream/web-write.js';
@@ -331,7 +332,7 @@ const directoryAcmePhase = async (api) => {
  * describe (absent) → set → describe (configured; the value never comes
  * back). The store file is the SAME app-scope credentials.json the gate's
  * CredentialsStore reads. */
-const credentialPhase = async (api) => {
+const credentialPhase = async (ctx, api) => {
   const refs = [KEY_REF, 'MOCK_API_KEY'];
   const before = await api['credentials/describe']({ refs });
   demand(before[KEY_REF].configured === false,
@@ -340,6 +341,13 @@ const credentialPhase = async (api) => {
     && before.MOCK_API_KEY.source !== undefined,
     `the staged route's ref lost its staged badge: ${JSON.stringify(before)}`);
   await api['credentials/set']({ ref: KEY_REF, value: launchCanary });
+  // Gap#2: the key half's compose now fires — the profile half was already
+  // saved, so credentials/set completes the pair and rebinds. The registry
+  // row must flip to the composed byok producer (the census's dead-end fix,
+  // pinned live).
+  const boundRow = producerOf(ctx);
+  demand(boundRow?.kind === 'pi-ai' && boundRow?.reason === 'gate:piaiSection',
+    `registry row after the completed compose: ${JSON.stringify(boundRow)}`);
   const after = await api['credentials/describe']({ refs });
   demand(after[KEY_REF].configured === true
     && after[KEY_REF].source === undefined
@@ -438,7 +446,7 @@ try {
   await directoryStagedPhase(api);
   await savePhase(api, record.baseURL);
   await directoryAcmePhase(api);
-  await credentialPhase(api);
+  await credentialPhase(ctx, api);
   await dialPhase(ctx, record);
   await bridgePhase(ctx, api, env.DSH_BYOK_BRIDGE_BASE_URL);
   await cleanupPhase(api);

@@ -26,7 +26,7 @@ import { createFollowStreams } from 'upstream/web-write-streams.js';
 import {
   makeNamespaceGuard,
   makeDescribeSettings,
-  makeSettingsWrite,
+  makeSettingsWrite, makeSettingsWriteHandlers,
 } from 'upstream/web-write-settings.js';
 import { makePluginInventoryApiEntries } from 'upstream/web-write-inventory.js';
 // The marketplace opt-in's VALIDATION (marketplaceOf) lives with the shape's
@@ -41,6 +41,7 @@ import {
   COVERAGE_ENDPOINTS, COVERAGE_STREAMS,
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
+import { readStore as readCredentialStore } from './web-write-llm.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the
@@ -73,9 +74,7 @@ import {
 import { seedWorkspace } from 'upstream/web-write-workspace.js';
 // The preset-join observability line's logger (the adapter's only log face).
 import { createLogger } from 'logger.js';
-
 const log = createLogger('web-write');
-
 export { COVERAGE_ENDPOINTS, COVERAGE_STREAMS };
 
 /** The /api endpoints this surface claims (the generated TypertRemoteMap
@@ -406,12 +405,7 @@ const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       // (upstream/web-write-subagents.js).
       ...makeSubagentHandlers(ctx),
       'settings/describe': makeDescribeSettings(ctx, ensureNamespaces),
-      'settings/update': makeSettingsWrite(ctx, ensureNamespaces,
-        (settings, args) => settings.update(
-          String(args.ns), args.patch, args.expectedRevision)),
-      'settings/mutate': makeSettingsWrite(ctx, ensureNamespaces,
-        (settings, args) => settings.mutate(
-          String(args.ns), args.ops, args.expectedRevision)),
+      ...makeSettingsWriteHandlers(ctx, deps, ensureNamespaces),
       // The Agent 预设 panel (contract parity with the desktop shell): the
       // presets service is the REAL vendored @deepseek-ai/dsh-agent-presets,
       // mounted by boot.js — these handlers forward, they do not reimplement.

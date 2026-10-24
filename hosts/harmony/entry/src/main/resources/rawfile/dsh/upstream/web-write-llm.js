@@ -23,6 +23,7 @@
  */
 import { encodeUtf8, decodeUtf8 } from 'node:buffer';
 import { fsRead, fsWrite } from '../gateway.js';
+import { tryRebindFromSavedState } from './web-write-onboarding.js';
 
 /** The store: one JSON object `{ref: value}` at the app scope ROOT — flat,
  * so every host that grants the v1.1.0 fs write primitives can hold it (the
@@ -48,7 +49,7 @@ const unavailable = (message) => (
 /** Read the store. An absent file is an empty store (nothing configured
  * through the wire yet); a file that fails to PARSE fails loud — rule 5, a
  * misconfiguration discovered late is a defect now. */
-const readStore = async () => {
+export const readStore = async () => {
   let raw;
   try {
     raw = (await fsRead('app', STORE_PATH)).bytes;
@@ -132,7 +133,7 @@ const makeCredentialDescribeHandler = (llmRoute) => {
 };
 
 /** The credential WRITE legs (wire: set/unset → void). */
-const makeCredentialWriteHandlers = () => ({
+const makeCredentialWriteHandlers = (ctx, routeView) => ({
   'credentials/set': async (args) => {
     const ref = demandRef(args?.ref, 'credentials/set');
     const value = args?.value;
@@ -142,6 +143,12 @@ const makeCredentialWriteHandlers = () => ({
     const store = await readStore();
     store[ref] = value;
     await writeStore(store);
+    // Gap#2: the key half just landed — if the profile half is already
+    // saved, this completes the compose and rebinds (the census's dead-end
+    // fix). Incomplete stays the honest unconfigured state.
+    await tryRebindFromSavedState(ctx, {
+      settings: ctx?.get?.('settings'), store, routeView,
+    });
     return {};
   },
   'credentials/unset': async (args) => {
@@ -167,6 +174,6 @@ const OPEN_GATE = {
 export const buildLlmCoverageApi = (ctx, deps) => ({
   ...makeLlmHandlers(ctx),
   'credentials/describe': makeCredentialDescribeHandler(deps.llmRoute),
-  ...makeCredentialWriteHandlers(),
+  ...makeCredentialWriteHandlers(ctx, deps.llmRoute),
   ...OPEN_GATE,
 });

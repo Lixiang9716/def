@@ -28,6 +28,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.web.plugin-manager","message":"w
 dsh.runtime.log: {"level":"debug","module":"dsh.web.cordis","message":"cordis legs assembled","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"models.directory","message":"e2e","data":[{"scenario":"models.directory","event":"models.directory","providers":1,"provider":"mock","settingsNs":"llm-mock","settingsPath":["providers","default"],"canOpenPresetDirectory":false}]}
 dsh.runtime.log: {"level":"info","module":"models.directory","message":"e2e","data":[{"scenario":"models.directory","event":"models.mirror","ns":"llm-mock","writable":true,"hasDocument":false,"baseModel":"probe-1","baseKeyEnv":"MOCK_API_KEY","userLayer":false,"revision":0}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
 dsh.runtime.log: {"level":"info","module":"models.directory","message":"e2e","data":[{"scenario":"models.directory","event":"models.mirror.write","ns":"llm-mock","op":"set providers/default/model","userWins":true,"baseIntact":true,"revision":1}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"credentials.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}

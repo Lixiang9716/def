@@ -12,7 +12,9 @@
  */
 import Schema from '@deepseek-ai/schemastery';
 import { installEgressBridgeForSection, PIAI_SECTION_NS } from 'upstream/llm-piai-mount.js';
-import { deriveKeyRef } from 'upstream/web-write-llm.js';
+import { tryRebindFromSavedState } from './web-write-onboarding.js';
+import { readStore as readCredentialStore, deriveKeyRef } from './web-write-llm.js';
+export { readCredentialStore };
 
 /** One registered namespace → the wire namespaceView (the controller's
  * own descriptor shape: ns/schema/value/base?/user?/applies/secrets/
@@ -75,22 +77,41 @@ const registerProviderNamespace = (settings, llmRoute) => {
 export const makeNamespaceGuard = (ctx, llmRoute) => {
   const registered = new Set();
   let ready = null;
-  const register = () => ctx.plugin({
-    name: 'mobile web composition settings namespaces (ui-onboarding + provider route)',
-    async apply(fiberCtx) {
-      const settings = fiberCtx.get('settings');
-      settings?.register('ui-onboarding',
+  // DIRECT service calls, not ctx.plugin: a plugin apply re-fires every
+  // injected callback on the context — the pi-ai plugin's
+  // ctx.inject(['settings']) included — and its installSection then
+  // re-registers 'llm-pi-ai' over a live registration ('already
+  // registered', measured live 2026-10-24). The namespaces this guard owns
+  // land on the MOUNTED settings service; the service is present whenever
+  // this guard is constructed (web-write.js builds it after boot).
+  const register = async () => {
+    const settings = ctx.get('settings');
+    if (settings === undefined) return;
+    if (!registered.has('ui-onboarding')) {
+      settings.register('ui-onboarding',
         Schema.object({ welcomeNoticeVersion: Schema.string() }));
-      if (settings !== undefined && llmRoute !== undefined) {
-        registered.add(llmRoute.provider);
-        registerProviderNamespace(settings, llmRoute);
-      }
-    },
-  }).then(() => undefined);
+      registered.add('ui-onboarding');
+    }
+    if (llmRoute !== undefined && !registered.has(llmRoute.provider)) {
+      registered.add(llmRoute.provider);
+      registerProviderNamespace(settings, llmRoute);
+    }
+  };
   return () => {
     ready ??= register();
     return ready.then(() => {
       if (ctx.get('settings') === undefined || llmRoute === undefined) return;
+      // The pi-ai section's namespace is registered by the PLUGIN's own
+      // apply (ctx.inject(['settings'])) — a host-side register here is the
+      // 'already registered' collision (measured live on the models-byok-add
+      // leg, 2026-10-24: the compose rebind remounts pi-ai, then this guard
+      // fired for the swapped provider... whose ns IS llm-pi-ai).
+      if (llmRoute.provider === 'mock' || llmRoute.kind === 'mock') {
+        // mock routes never rebind, but a compose-completed byok route can
+        // hand a provider named like anything — the skip condition is the
+        // SECTION namespace itself, not the provider name.
+      }
+      if (llmRoute.kind === 'mock') return; // the mock face: plugin/ns absent
       if (registered.has(llmRoute.provider)) return;
       registered.add(llmRoute.provider);
       registerProviderNamespace(ctx.get('settings'), llmRoute);
@@ -122,11 +143,33 @@ export const makeDescribeSettings = (ctx, ensureNamespaces) => async () => {
  * third path a declared non-loopback row arrives by. The hook runs only
  * after `run` resolved (a rejected write never arms anything) and stays
  * uncaught: a row that cannot bridge fails the write loud (rule 5). */
-export const makeSettingsWrite = (ctx, ensureNamespaces, run) => async (args) => {
+/** The update/mutate pair with the Gap#2 compose tail (routeView +
+ * credential store): web-write.js spreads this instead of building the two
+ * rows inline. */
+export const makeSettingsWriteHandlers = (ctx, deps, ensureNamespaces) => ({
+  'settings/update': makeSettingsWrite(ctx, ensureNamespaces,
+    (settings, args) => settings.update(
+      String(args.ns), args.patch, args.expectedRevision),
+    deps.llmRoute, readCredentialStore),
+  'settings/mutate': makeSettingsWrite(ctx, ensureNamespaces,
+    (settings, args) => settings.mutate(
+      String(args.ns), args.ops, args.expectedRevision),
+    deps.llmRoute, readCredentialStore),
+});
+
+export const makeSettingsWrite = (ctx, ensureNamespaces, run, routeView, readCredentialStore) => async (args) => {
   await ensureNamespaces();
   const settings = demandSettings(ctx);
   await run(settings, args);
   if (String(args.ns) === PIAI_SECTION_NS) await installEgressBridgeForSection(settings);
+  // Gap#2: a committed write on a provider route's namespace is the PROFILE
+  // half of the Models-page save — with the key already stored this
+  // completes the compose and rebinds (either save order converges here).
+  if (/^llm-[a-z0-9-]+$/.test(String(args.ns)) && String(args.ns) !== PIAI_SECTION_NS) {
+    await tryRebindFromSavedState(ctx, {
+      settings, store: await readCredentialStore(), routeView,
+    });
+  }
   const descriptor = settings.describe({ redactSecrets: true })
     .find((d) => d.ns === String(args.ns));
   return wireNamespaceView(descriptor);
