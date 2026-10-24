@@ -1,0 +1,24 @@
+{
+  "title": "the device pi-ai closure: stage the BYOK plugin chain on all three hosts (#686)",
+  "created": "2026-10-24T14:27:12+00:00",
+  "rules": {
+    "hash": "06c93b1ef5c5e3e9277d3958aaa56ff5ce49e528798cdd1fd82d82bc9497a592",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "9e5b678b7a67fd04baa67e6e14ff29490dc2097cd9b4193b7f5f572cb3b33d4d"
+    }
+  },
+  "checklist": [
+    "measure the import graph: mountPiAiSection \u2192 dsh-llm-pi-ai \u2192 bare deps, transitive",
+    "C bare-map rows for @earendil-works/pi-ai (+ subpaths the plugin imports) in src/dsh_runtime_host.c",
+    "android: stage-spine-closure rows (credentials dsh-face, dsh-llm-pi-ai npm-face, pi-ai dist if the map needs it)",
+    "iOS: gen_bundle_header TREES row for the plugin",
+    "harmony: plugin staging + loader/bundle rows",
+    "regen embeds (gen-staging-emit --emit), closures gate green",
+    "panel real-runtime + byok e2e legs green locally",
+    "android page-open pin green locally on the emulator"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0283"
+}

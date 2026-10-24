@@ -83,7 +83,10 @@ stage_pkg() {
 # The iOS embedder's TREES list: the verbatim spine packages (D9), the
 # Agent 预设 closure (2026-09-22 settings-surfaces leg), and the FILE-TOOLS
 # row (vendored fs-local backend + upstream file tools), plus the SKILL row
-# (the agent-flow E2E's vendored skill family).
+# (the agent-flow E2E's vendored skill family). credentials rides for the
+# BYOK pi-ai mount (#686: the plugin's settings-section chain resolves the
+# '@deepseek-ai/dsh-credentials' bare name through the vendored probe's
+# dsh face — external/dsh/credentials is that face's materialization).
 for pkg in agent agent-loop agent-presets atomic-write \
          attachment brand chunked-list fs \
          fs-local home-paths llm sandbox \
@@ -93,6 +96,22 @@ for pkg in agent agent-loop agent-presets atomic-write \
          tool-todo tools typert-protocol util-values; do
     say "staging vendor/dsh/$pkg@$VER"
     stage_pkg "$DSH/../../external/dsh/$pkg@$VER" "$ASSETS/vendor/dsh/$pkg@$VER"
+done
+
+# The BYOK pi-ai mount chain's npm faces (#686): the interactive seats'
+# piaiSection gate loads the vendored @deepseek-ai/dsh-llm-pi-ai plugin,
+# whose bare imports reach @deepseek-ai/dsh-launch-environment directly and
+# @deepseek-ai/dsh-credentials through the dsh-face row above. Both npm
+# packages stage through the same stage_pkg shape (LICENSE + package.json +
+# lib/** minus .d.ts); the vendored probe's npm face serves the bare names
+# (vendor/npm/@deepseek-ai/dsh-<pkg>@<ver>). The SDK dist itself (pi-ai
+# @0.85.1) and the runtime bridges (upstream/shims/npm-bridges-pi-ai*.js)
+# already stage below/above — the bridge rows own the '@earendil-works'
+# specifier space at runtime.
+for npkg in dsh-llm-pi-ai dsh-launch-environment; do
+    say "staging vendor/npm/@deepseek-ai/$npkg@$VER"
+    stage_pkg "$DSH/../../external/npm/@deepseek-ai/$npkg@$VER" \
+              "$ASSETS/vendor/npm/@deepseek-ai/$npkg@$VER"
 done
 
 # The MOBILE PRESET'S SHELL SURFACE — the iOS embedder's npm-face block
