@@ -47,7 +47,7 @@ import { keychainSet, httpFetch } from '../gateway.js';
 import { streamChat } from '../llm.js';
 import {
   BYOK_REF, BYOK_PROVIDERS, decodeCredential, encodeCredential,
-  validateCredential, rebindLlmRoute, restoreBootRoute,
+  validateCredential, rebindLlmRoute, restoreBootRoute, deriveByokRef,
 } from 'upstream/llm-route.js';
 
 const badRequest = (message) => (
@@ -85,6 +85,89 @@ const makeStatusHandler = (llmRoute) => async () => {
     };
   }
   return { mode: 'mock', provider: llmRoute.provider, model: llmRoute.model };
+};
+
+/** The Models-page save compose (Gap#2, the mock census's dead-end fix):
+ * the official settings-models page persists a provider profile through
+ * settings.mutate (ns 'llm-<provider>', the whole profile at
+ * providers.<route>) and the key through credentials/set — two independent
+ * wire calls in either order. After EITHER half commits, try to compose
+ * the serving credential from the saved state: the section's first
+ * baseURL-carrying row + the store's key under the row's apiKeyEnv (else
+ * the derived ref). Incomplete (no profile yet, or no key yet) is the
+ * page's honest unconfigured state — no rebind, no error. Complete-but-
+ * invalid fails loud naming the field (rule 5: a saved state that can
+ * never serve must not save silently). A complete compose persists through
+ * the SAME keychain ref + rebind seam onboarding/save rides, so the
+ * producer registry flips to byok and llm.producer.bound fires (the sink).
+ * Idempotent: a re-compose of the same state rebinds the same route. */
+export const tryRebindFromSavedState = async (ctx, { settings, store, routeView }) => {
+  // DYNAMIC imports: this helper is called from web-write-llm's
+  // credentials/set, and web-write-onboarding's static imports of
+  // llm-route would close a load-time cycle the qjs loader resolves
+  // differently than Node (BYOK_PROVIDERS reads as uninitialized). At call
+  // time every module is fully initialized — the cycle is harmless then.
+  const { rebindLlmRoute, deriveByokRef, encodeCredential, validateCredential } =
+    await import('upstream/llm-route.js');
+  if (settings === undefined) return false;
+  const sections = settings.describe({ redactSecrets: true });
+  for (const section of sections) {
+    if (!/^llm-[a-z0-9-]+$/.test(String(section.ns))) continue;
+    // The pi-ai section's rows are PLUGIN-served: its section watcher
+    // re-registers the routes itself — a gateway rebind here would double-
+    // register (and the dial would hit the wrong adapter). Compose only
+    // the plain provider namespaces (gateway flavor).
+    if (String(section.ns) === 'llm-pi-ai') continue;
+    const provider = String(section.ns).slice('llm-'.length);
+    for (const [routeKey, row] of Object.entries(section.value?.providers ?? {})) {
+      const composed = await composeRow(ctx, provider, row, store, routeView);
+      if (composed !== null) return composed === true;
+    }
+  }
+  return false;
+};
+
+/** Compose ONE saved row into a serving credential (or null when the row
+ * is an in-progress draft: no endpoint, no model, or no key yet). A
+ * complete row persists through the keychain + rebind seam and returns
+ * true. Throws loud on a complete-but-invalid row (rule 5). */
+const composeRow = async (ctx, provider, row, store, routeView) => {
+  if (typeof row?.baseURL !== 'string' || row.baseURL.length === 0) return null;
+  const ref = typeof row.apiKeyEnv === 'string' && row.apiKeyEnv.length > 0
+    ? row.apiKeyEnv : deriveByokRef(provider);
+  const apiKey = store?.[ref];
+  if (typeof apiKey !== 'string' || apiKey.length === 0) return null; // no key yet
+  // Two saved row shapes exist: the gateway-flavor rows carry `model`
+  // (one serving model); the pi-ai section rows carry `models` (a roster —
+  // the compose serves its first entry, the page's own default).
+  const model = typeof row.model === 'string' && row.model.length > 0
+    ? row.model
+    : Array.isArray(row.models) && row.models.length > 0
+      ? row.models[0]?.id
+      : undefined;
+  if (typeof model !== 'string' || model.length === 0) return null;
+  const credential = {
+    baseURL: row.baseURL, apiKey, provider, model,
+    ...(row.contextWindow === undefined
+      ? (Array.isArray(row.models) && row.models[0]?.contextWindow !== undefined
+        ? { contextWindow: row.models[0].contextWindow } : {})
+      : { contextWindow: row.contextWindow }),
+  };
+  const invalid = validateCredential(credential);
+  if (invalid !== null) {
+    throw { remote: true, code: 'gateway/unavailable',
+      message: `llm-${provider}: the saved profile cannot serve — ${invalid.error.field}: ${invalid.error.why}` };
+  }
+  await keychainSet(BYOK_REF, encodeCredential(credential));
+  const route = await rebindLlmRoute(ctx, credential);
+  if (routeView !== undefined) {
+    routeView.provider = credential.provider;
+    routeView.model = credential.model;
+    routeView.baseURL = credential.baseURL;
+    routeView.kind = 'byok';
+    routeView.contextWindow = route.contextWindow;
+  }
+  return true;
 };
 
 /** The save leg: persist into the keychain, then rebind, then point the
@@ -183,5 +266,11 @@ export const openOnboardingStream = (ctx, deps, post, msg) => {
 };
 
 /** The provider presets the panel renders (re-exported so the wire facts
- * stay in one runtime home; the page mirrors them for inline UI). */
-export const onboardingProviders = BYOK_PROVIDERS;
+ * stay in one runtime home; the page mirrors them for inline UI). A LAZY
+ * getter: the module sits in llm-route's load cycle (web-write-llm's
+ * credentials/set compose imports this module), and a top-level read of
+ * BYOK_PROVIDERS executes before llm-route finishes initializing — the qjs
+ * loader surfaces that as 'not initialized'. Evaluated at access time, the
+ * binding is always settled. */
+let _providersCache;
+export const onboardingProviders = () => (_providersCache ??= BYOK_PROVIDERS);

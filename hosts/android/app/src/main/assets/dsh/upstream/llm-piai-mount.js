@@ -33,6 +33,7 @@
  * proves the gate and the bridge.
  */
 import { createLogger } from '../logger.js';
+import { registerRouteDisposer } from './llm-route.js';
 import { registerProducer } from './llm-route.js';
 import { CredentialsStore } from './credentials-store.js';
 
@@ -131,7 +132,7 @@ const mountPlugin = async (ctx, providers) => {
   // and the bridges register when boot.js imports npm-bridges.js — before
   // any mount body runs. An absent gate never pays the load.
   const PiAi = await import('@deepseek-ai/dsh-llm-pi-ai');
-  await ctx.plugin(PiAi, { providers });
+  pluginFiber = await ctx.plugin(PiAi, { providers });
   const runtime = ctx.get('llm');
   if (runtime === undefined) throw new Error('llm-piai-mount: the llm service vanished before the pi-ai mount');
   return runtime;
@@ -298,28 +299,30 @@ export const installEgressBridgeForSection = async (settings) => {
  *   names the colliding catalog id and the live route row and offers the
  *   two ways out (rename the staged provider, or turn the gate off).
  */
+/** Mount the gate-scoped credentials store. The Service base SELF-PROVIDES
+ * during construction (cordis reflect.provide inside `super(ctx, name)` —
+ * the same registration every vendored service rides); measured on the
+ * vendored cordis@4.0.2: an explicit `ctx.set('credentials', …)` throws
+ * `cannot set property "credentials" without provide` (nothing provides
+ * the name in the device closure), and a `ctx.provide('credentials',
+ * new CredentialsStore(ctx))` wrapper throws `service "credentials" has
+ * been registered` — the constructor already provided it. Rule 5: a
+ * construction that somehow failed to register fails HERE — pi-ai's
+ * credential reads would otherwise fall through to the process launch
+ * environment quietly (the fallback the gate exists to shadow). */
+const mountCredentialsStore = (ctx) => {
+  new CredentialsStore(ctx);
+  if (!(ctx.get('credentials') instanceof CredentialsStore)) {
+    throw new Error('llm-piai-mount: the credentials store did not register as "credentials"');
+  }
+};
+
 export const mountPiAiSection = async (ctx, onEvent) => {
   if (ctx.get('settings') === undefined) {
     throw new Error('llm-piai-mount: the pi-ai section mount needs the settings service — '
       + `the plugin installs its "${PIAI_SECTION_NS}" section through ctx.inject(['settings'])`);
   }
-  // The credentials seam mounts FIRST, so the plugin's credential reads
-  // answer through it from the first section write on (gate-scoped by
-  // contract — never on the default boot). The Service base SELF-PROVIDES
-  // during construction (cordis reflect.provide inside `super(ctx, name)` —
-  // the same registration every vendored service rides); measured on the
-  // vendored cordis@4.0.2: an explicit `ctx.set('credentials', …)` throws
-  // `cannot set property "credentials" without provide` (nothing provides
-  // the name in the device closure), and a `ctx.provide('credentials',
-  // new CredentialsStore(ctx))` wrapper throws `service "credentials" has
-  // been registered` — the constructor already provided it.
-  new CredentialsStore(ctx); // the Service base self-provides as "credentials"
-  // Rule 5: a construction that somehow failed to register must fail HERE —
-  // pi-ai's credential reads would otherwise fall through to the process
-  // launch environment quietly (the fallback the gate exists to shadow).
-  if (!(ctx.get('credentials') instanceof CredentialsStore)) {
-    throw new Error('llm-piai-mount: the credentials store did not register as "credentials"');
-  }
+  mountCredentialsStore(ctx);
   try {
     await mountPlugin(ctx, {}); // the empty base layer (the rebind precedent)
   } catch (error) {
@@ -329,15 +332,28 @@ export const mountPiAiSection = async (ctx, onEvent) => {
   // The producer registry row: the section gate is itself a bind site —
   // the pi-ai producers (the 39-row catalog plus the user's section rows)
   // serve this face from here on, and the census answer says so.
+
   registerProducer(ctx, {
     kind: 'pi-ai', provider: PIAI_SECTION_NS, model: undefined,
     userEndpoint: true,
   }, 'gate:piaiSection');
+  // The gate mount joins the route-disposer registry (the same Map every
+  // rebind site rides): a later rebindLlmRoute disposes the plugin instance
+  // — its settings scope cleanup deletes the 'llm-pi-ai' registration
+  // (settings/index.js register's cleanup) — instead of leaving it to
+  // collide with the plugin's own re-apply. Without this, a Models-page
+  // compose on a gate-mounted boot died at 'settings namespace "llm-pi-ai"
+  // is already registered' (measured live, 2026-10-24).
   onEvent('llm/piai-section', {
     plugin: '@deepseek-ai/dsh-llm-pi-ai',
     namespace: PIAI_SECTION_NS,
   });
+  registerRouteDisposer(ctx, async () => {
+    pluginFiber?.dispose?.();
+  });
 };
+let pluginFiber;
+export const PIAI_PLUGIN_NAME = '@deepseek-ai/dsh-llm-pi-ai';
 
 /** Rebuild a directory collision as the named error (rule 5): the vendored
  * registry throws `configurable provider "<id>" is already declared` when
