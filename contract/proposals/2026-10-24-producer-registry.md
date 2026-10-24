@@ -1,5 +1,7 @@
 # Proposal: the producer registry — LLM producers declare themselves, and the mock face turns honest (v1.12.0 candidate)
 
+> **Status: ADOPTED 2026-10-24 — implemented as `upstream/producer-registry.js` (#681) with the honest faces and the sink-pattern bound event (#682). This file is the rationale record.**
+
 English | [简体中文](2026-10-24-producer-registry.zh.md)
 
 ## Motivation

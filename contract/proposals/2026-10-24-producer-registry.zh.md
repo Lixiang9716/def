@@ -1,5 +1,7 @@
 # 提案:生产者登记表——LLM 生产者自报身份,mock 诚实亮明(v1.12.0 候选)
 
+> **状态:ADOPTED 2026-10-24——已实现为 `upstream/producer-registry.js`(#681),诚实面与 sink 模式 bound 事件随 #682 落地。本文件是理由记录。**
+
 [English](2026-10-24-producer-registry.md) | 简体中文
 
 ## 动机
