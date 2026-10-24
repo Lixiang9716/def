@@ -1,5 +1,7 @@
-# The device pi-ai closure stages the BYOK mount chain's missing bytes
+# Agent Note: the device pi-ai closure stages the BYOK mount chain’s missing bytes
 
+Status: implemented
+Related: #686, #685
 ## Problem
 
 PR #685 flips `byokModels: true` on for the interactive seats (Android/iOS/Harmony).
