@@ -107,6 +107,8 @@ TREES = [
     ("vendor/npm/fflate@0.8.2/lib/index.cjs", DSH / ".." / ".." / "external" / "npm" / "fflate@0.8.2" / "lib" / "index.cjs"),
     ("vendor/npm/@noble/hashes@2.3.0", DSH / ".." / ".." / "external" / "npm" / "@noble" / "hashes@2.3.0"),
     ("vendor/npm/@earendil-works/pi-ai@0.85.1", DSH / ".." / ".." / "external" / "npm" / "@earendil-works" / "pi-ai@0.85.1"),
+    ("vendor/npm/@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2", DSH / ".." / ".." / "external" / "npm" / "@deepseek-ai" / "dsh-llm-pi-ai@0.1.6-alpha.2"),
+    ("vendor/npm/@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2", DSH / ".." / ".." / "external" / "npm" / "@deepseek-ai" / "dsh-launch-environment@0.1.6-alpha.2"),
     ("system-plugins/dsh-office", DSH / "system-plugins" / "dsh-office"),
     ("system-plugins/dsh-appshell", DSH / "system-plugins" / "dsh-appshell"),
     ("system-plugins/dsh-ble", DSH / "system-plugins" / "dsh-ble"),
