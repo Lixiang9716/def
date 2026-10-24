@@ -54,7 +54,11 @@ const registerProviderNamespace = (settings, llmRoute) => {
       }),
     }),
   }), {
-    base: { providers: { default: {
+    // The honest producer face (producer-registry v1, census gap #3 leg b):
+    // a mock route pre-fills NOTHING — the edit form must not present the
+    // scripted loopback as a user-configurable endpoint. Staged/byok routes
+    // keep their facts as the base layer (the page edits over them).
+    base: llmRoute.kind === 'mock' ? { providers: {} } : { providers: { default: {
       baseURL: llmRoute.baseURL,
       model: llmRoute.model,
       apiKeyEnv: deriveKeyRef(llmRoute.provider),

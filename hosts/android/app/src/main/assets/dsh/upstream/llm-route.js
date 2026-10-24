@@ -49,7 +49,7 @@ import { rebindPiAiProviders } from './llm-piai-mount.js';
 import { providerSettingsNs } from './web-write-settings.js';
 import { registerProducer, reasonOfRoute } from 'upstream/producer-registry.js';
 export {
-  producerRecord, registerProducer, producerOf, reasonOfRoute,
+  producerRecord, registerProducer, registerProducerSink, producerOf, reasonOfRoute,
 } from 'upstream/producer-registry.js';
 
 const log = createLogger('dsh.llm-route');
@@ -365,9 +365,13 @@ export const registerDirectoryHandle = (ctx, handle) => {
  * mount (provider/displayName/settingsNs/settingsPath). */
 export const directoryRowFor = (route) => ({
   provider: route.provider,
-  displayName: route.displayName
-    ?? BYOK_PROVIDERS[route.provider]?.displayName
-    ?? 'OpenAI 兼容',
+  // The honest producer face rides EVERY row builder: a restored mock boot
+  // route (onboarding/clear on a fresh install) re-renders its directory row
+  // through HERE, not through llm-gateway-mount — without the kind read the
+  // 'scripted demo endpoint' honesty would regress on exactly that leg.
+  displayName: route.kind === 'mock'
+    ? 'scripted demo endpoint (mock)'
+    : route.displayName ?? BYOK_PROVIDERS[route.provider]?.displayName ?? 'OpenAI 兼容',
   settingsNs: providerSettingsNs(route.provider),
   settingsPath: ['providers', 'default'],
 });
