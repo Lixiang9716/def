@@ -130,8 +130,8 @@ const bootPhase = async (env) => {
       baseURL: env.DSH_MOCK_LLM_URL,
       apiKey: env.DSH_MOCK_LLM_KEY,
       provider: 'mock',
- kind: 'mock',
-            model: 'mock-1',
+      kind: 'mock',
+      model: 'mock-1',
     },
   });
   log.debug('boot phase done', { root });

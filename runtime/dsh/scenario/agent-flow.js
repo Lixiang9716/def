@@ -148,8 +148,8 @@ const bootPhase = async (facts) => {
       baseURL: facts.mockLlmUrl,
       apiKey: facts.mockLlmKey,
       provider: 'mock',
- kind: 'mock',
-            model: 'mock-1',
+      kind: 'mock',
+      model: 'mock-1',
       onRequestBody: (body) => wireBodies.push(body),
     },
   });
