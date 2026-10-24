@@ -201,6 +201,7 @@ const BUNDLE_FILES: string[] = [
   'upstream/model-selection-holder.js',
   'upstream/model-selection-projection.js',
   'upstream/preset-mobile-rows.js',
+  'upstream/producer-registry.js',
   'upstream/retry-telemetry.js',
   'upstream/settings-memory.js',
   'upstream/shims/anthropic-client.js',

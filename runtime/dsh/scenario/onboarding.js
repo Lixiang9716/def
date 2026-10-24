@@ -25,7 +25,7 @@
 import { createLogger } from 'logger.js';
 import { bootUpstream } from 'upstream/boot.js';
 import { createWriteSurface } from 'upstream/web-write.js';
-import { resolveLlmRoute, bootRouteOf, registerBootRouteFactory } from 'upstream/llm-route.js';
+import { resolveLlmRoute, bootRouteOf, registerBootRouteFactory, producerOf } from 'upstream/llm-route.js';
 import { keychainGet } from 'gateway.js';
 
 const SCENARIO = 'onboarding.flow';
@@ -154,7 +154,7 @@ const runProbe = async (surface, hub, streamId, args) => {
 
 /** The save: keychain persist + live rebind + route mutation. The status
  * answer afterwards carries NO credential material. */
-const savePhase = async (api) => {
+const savePhase = async (ctx, api) => {
   // Unary handlers take payload.args directly (the deliverApiRequest
   // unwrap); the page's rpc wraps {args: draft} on the wire.
   await api['onboarding/save'](BYOK_CREDENTIAL);
@@ -165,6 +165,13 @@ const savePhase = async (api) => {
     'the status answer leaked the key');
   emit('onboarding.saved', { mode: status.mode, provider: status.provider });
   emit('onboarding.detect.after', { mode: status.mode, configured: true });
+  // The producer registry's live answer (producer-registry v1): the save
+  // rebinds, so the boot context's row is the byok producer with its reason.
+  const bound = producerOf(ctx);
+  demand(bound?.kind === 'byok' && bound?.reason === 'byok-credential'
+    && bound?.provider === 'deepseek',
+    `registry row after save: ${JSON.stringify(bound)}`);
+  emit('onboarding.producer.bound', { kind: bound.kind, reason: bound.reason, provider: bound.provider });
 };
 
 /** The models 设置页 directory follows the live route (the B29 round): the
@@ -254,6 +261,12 @@ const clearPhase = async (ctx, api) => {
     && directory[0].provider === 'mock' && directory[0].settingsNs === 'llm-mock',
     `directory after clear: ${JSON.stringify(directory)}`);
   emit('onboarding.clear', { mode: status.mode, provider: status.provider });
+  // The registry row restored with the route (producer-registry v1): the
+  // clear rebinds back to the boot mock producer, reason and all.
+  const restored = producerOf(ctx);
+  demand(restored?.kind === 'mock' && restored?.reason === 'no-credential-fallback',
+    `registry row after clear: ${JSON.stringify(restored)}`);
+  emit('onboarding.producer.restored', { kind: restored.kind, reason: restored.reason });
   emit('onboarding.directory.restored', {
     provider: directory[0].provider, settingsNs: directory[0].settingsNs,
   });
@@ -284,7 +297,7 @@ try {
   const { api, dispose } = surface;
   await detectPhase(api);
   await probePhase(surface, hub);
-  await savePhase(api);
+  await savePhase(ctx, api);
   await directoryByokPhase(api);
   await relaunchPhase();
   await firstTurnPhase(ctx, api);
