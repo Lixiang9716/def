@@ -161,6 +161,7 @@ const bootPhase = async (cfg, containerRoot) => {
       argv: ['dsh', '--profile', 'mobile'],
     },
     llm: {
+      kind: 'staged',
       baseURL: cfg.baseUrl,
       apiKey: cfg.apiKey,
       provider: 'bigmodel',

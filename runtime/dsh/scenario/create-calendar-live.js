@@ -127,6 +127,7 @@ const spineOptions = (cfg, containerRoot) => ({
     argv: ['dsh', '--profile', 'mobile'],
   },
   llm: {
+    kind: 'staged',
     baseURL: cfg.baseUrl,
     apiKey: cfg.apiKey,
     provider: typeof cfg.provider === 'string' && cfg.provider.length > 0
