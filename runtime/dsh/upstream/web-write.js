@@ -84,8 +84,7 @@ export { COVERAGE_ENDPOINTS, COVERAGE_STREAMS };
  * snapshot (pluginInventory/list), and the settings namespaces. */
 export const WRITE_ENDPOINTS = [
   // The app bridge: the page calls a mounted plugin's exported service
-  // (plugin-mount's mountedServices registry) — the generated app's
-  // frontend reaches its own backend through this claim.
+  // (the generated app's frontend reaches its backend through this claim).
   'app/service-call',
   'session.list', 'session/list', 'session/create', 'session/prompt',
   // The teardown leg (web-write-session-delete.js): running refuses.
@@ -289,9 +288,8 @@ const makeCreateSession = (ctx, deps) => async (args) => {
       meta: { cwd },
     });
     deps.agentDisposes.set(sessionId, handle.dispose);
-    // The seat's preset-join opt-in (joinCreatedSessionToDefault). A request
-    // MAY name the preset (the creation flow's appgen sessions) — unknown ids
-    // refuse loud at mount.
+    // The seat's preset-join opt-in; a request MAY name the preset (the
+    // creation flow's appgen sessions) — unknown ids refuse loud at mount.
     if (deps.presetJoin === true) {
       await joinCreatedSessionToDefault(ctx, sessionId, request.preset);
     }
