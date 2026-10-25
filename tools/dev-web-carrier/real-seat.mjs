@@ -27,7 +27,6 @@ const DIST_ROOT = join(REPO_ROOT, 'presentation/official-web/dist');
 const WS_ROOT = join(REPO_ROOT, 'tmp/hero-seat/workspace');
 const COOKIE_NAME = 'dsh-dev-carrier';
 
-// ---- args ----
 const plugins = new PluginsRoute(
   stagedDescriptors(REPO_ROOT).map((d) => ({
     id: d.loaderName,
@@ -45,14 +44,11 @@ if (args.llm !== 'staged' && args.llm !== 'mock') {
   throw new Error(`real-seat: --llm want staged|mock, got '${args.llm}'`);
 }
 
-// ---- workspace (the profile container the boot demands) ----
+// ---- workspace + the harness globals (before the runtime import) ----
 for (const d of [WS_ROOT, join(WS_ROOT, 'home'), join(WS_ROOT, '.tmp')]) mkdirSync(d, { recursive: true });
-
-// ---- the harness globals, BEFORE the runtime import ----
 const queue = [];
 let wake = null;
 let dispatch = null;
-const posted = [];
 const muxSockets = new Map(); // streamId → ws
 const apiWaiters = new Map(); // rpcId → (result) => void
 let bootRows = null;
@@ -66,8 +62,16 @@ globalThis.__dshBusOnMessage = (line) => {
   wake?.();
   wake = null;
 };
+// The app card plane: mounted plugins post card.* frames on the bus; the
+// plane forwards them to pages subscribed through the mux endpoint
+// app/cards (the web face of the native CardPlayerSurface contract).
+const cards = createCardPlane((streamId, frame) => {
+  muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
+});
+
 globalThis.__dshBusPost = (line) => {
   const msg = JSON.parse(line);
+  if (typeof msg.type === 'string' && msg.type.startsWith('card.')) cards.forward(msg);
   console.log('[real-seat] bus post:', msg.type);
   switch (msg.type) {
     case 'web.boot': bootRows = msg; console.log('[real-seat] runtime revs:', JSON.stringify(msg.plugins)); plugins?.applyRuntimeRevs(msg.plugins); bootReady(); return;
@@ -80,7 +84,6 @@ globalThis.__dshBusPost = (line) => {
     case 'mux.item': console.log('[real-seat] mux.item stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?') + ' value=' + JSON.stringify(msg.value)?.slice(0, 200)); muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
     case 'mux.end': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'end', streamId: msg.streamId })); return;
     case 'mux.error': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'error', streamId: msg.streamId, error: msg.error })); return;
-    default: posted.push(msg);
   }
 };
 globalThis.__dshComplete = (ok, reason) => {
@@ -118,20 +121,16 @@ if (args.llm === 'mock') {
   console.log(`[real-seat] mock LLM on ${mockHandle.baseURL}`);
 }
 
-// ---- the host seams (test/panel/spine/spine-seams.mjs): bundle reads,
-// async-context slots, node timers, and the gateway dispatch (loud-fail +
-// staged httpFetch). Then the two wire stagers: the loopback mock rides
-// http://127.0.0.1, the staged real key rides https (stageRealHttpFetch). ----
+// ---- the host seams (spine-seams.mjs) + the wire stagers: the loopback
+// mock rides http://127.0.0.1, the staged real key rides https ----
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
-// The REAL proc seams + the HOST gateway: this seat's fs IS the host disk,
-// so the shims' fallbacks answer truthfully and plugin writes land.
 installProcSeams();
 installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 {
   const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
-  globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
+  globalThis.Buffer.fromBytes ??= (b) => DshBuffer.fromBytes(b);
 }
 installHostGateway(join(WS_ROOT, 'app-scope'));
 
@@ -245,14 +244,12 @@ const webPluginDelivery = () => {
 };
 const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
-// ---- the preset plane (T-0218 leg 4's Node face): the vendored tree
-// materializes under the workspace (the ws seam serves it), the synthesized
-// mobile preset copied beside the shipped four, the farm node_modules
-// linked for the composition's upward package walk. ----
+// ---- the preset plane: the vendored tree + the synthesized presets
+// materialize under the workspace (the ws seam serves them), the farm
+// node_modules linked for the upward package walk. The VFS seed keys at
+// the WORKSPACE vendor root (the mount's async readFile has no real-disk
+// twin — underVFS is the read path). ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
-// The presets VFS seed (the third delivery), keyed at the WORKSPACE vendor
-// root — the mount's async readFile has no real-disk twin, so underVFS is
-// what makes the workspace copy readable.
 const realRoot = `${WS_VENDOR}/`;
 const presetsSeedSetup = async () => {
   const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
@@ -395,7 +392,6 @@ dispatch = (msg) => {
   switch (msg.type) {
     case 'api.claim': console.log('[real-seat] api claimed:', (msg.endpoints ?? []).join(', ')); return;
     case 'mux.claim': console.log('[real-seat] mux claimed:', (msg.endpoints ?? []).join(', ')); return;
-    default: posted.push(msg);
   }
 };
 // drain whatever queued before resident
@@ -483,8 +479,14 @@ server.on('upgrade', (req, socket) => {
     if (msg.type === 'open' && typeof msg.streamId === 'string') {
       console.log('[real-seat] mux.open stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?'));
       muxSockets.set(msg.streamId, ws);
+      if (msg.endpoint === 'app/cards') {
+        // The seat owns this endpoint: replay the live cards, then stream.
+        cards.subscribe(msg.streamId);
+        return;
+      }
       deliver({ type: 'mux.open', streamId: msg.streamId, endpoint: msg.endpoint ?? '', payload: msg.payload });
     } else if (msg.type === 'cancel' && typeof msg.streamId === 'string') {
+      cards.prune(msg.streamId);
       deliver({ type: 'mux.cancel', streamId: msg.streamId });
     }
   });

@@ -42,6 +42,7 @@ import {
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
 import { readStore as readCredentialStore } from './web-write-llm.js';
+import { mountedServiceOf } from 'plugin-mount.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the
@@ -82,6 +83,10 @@ export { COVERAGE_ENDPOINTS, COVERAGE_STREAMS };
  * legs: the 预设 panel's roster (agentPresets/*), the 插件 list's read-only
  * snapshot (pluginInventory/list), and the settings namespaces. */
 export const WRITE_ENDPOINTS = [
+  // The app bridge: the page calls a mounted plugin's exported service
+  // (plugin-mount's mountedServices registry) — the generated app's
+  // frontend reaches its own backend through this claim.
+  'app/service-call',
   'session.list', 'session/list', 'session/create', 'session/prompt',
   // The teardown leg (web-write-session-delete.js): running refuses.
   'session/cancel', 'session/delete',
@@ -296,6 +301,30 @@ const makeCreateSession = (ctx, deps) => async (args) => {
   return { sessionId };
 };
 
+/** The app bridge's call arm: route one client service call to the mounted
+ * plugin's exported service object (plugin-mount mountedServices). Args:
+ * {pluginId, method, args} — the method receives the args object and MUST
+ * return JSON-safe data; a missing plugin/method refuses with
+ * app/service-not-found (never a silent undefined). */
+export const makeAppServiceCall = () => async (args) => {
+  const pluginId = args?.pluginId;
+  const method = args?.method;
+  if (typeof pluginId !== 'string' || pluginId.length === 0
+    || typeof method !== 'string' || method.length === 0) {
+    throw remoteError('gateway/bad-request',
+      'app/service-call needs pluginId and method', {});
+  }
+  const service = mountedServiceOf(pluginId);
+  const fn = service ? service[method] : undefined;
+  if (typeof fn !== 'function') {
+    throw remoteError('app/service-not-found',
+      `no service method "${method}" on mounted plugin "${pluginId ?? ''}"`,
+      { pluginId, method });
+  }
+  const value = await fn(args?.args ?? {});
+  return { value: value === undefined ? null : value };
+};
+
 const makePromptSession = (ctx) => async (args) => {
   const request = args?.request ?? args;
   if (request === null || typeof request !== 'object'
@@ -383,6 +412,7 @@ const makeCancelSession = (ctx) => async (args) => {
 const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       'session.list': makeListSessions(ctx),
       'session/list': makeListSessions(ctx),
+      'app/service-call': makeAppServiceCall(),
       'session/create': makeCreateSession(ctx, deps),
       'session/prompt': makePromptSession(ctx),
       'session/cancel': makeCancelSession(ctx),
