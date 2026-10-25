@@ -285,6 +285,27 @@ const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 // four, and the farm node_modules linked where the composition's upward
 // package walk lands. ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
+// The presets VFS seed (the third delivery): the generated manifest keyed
+// at the REAL vendor root (VFS_ROOTS.push) — the presets service's scan and
+// composition reads both answer through underVFS(real-root keys).
+const realRoot = `${join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2')}/`;
+const presetsSeedSetup = async () => {
+  const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
+  shim.VFS_ROOTS.push(realRoot);
+  const seed = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/scenario/agent-presets-probe-seed.js')).href);
+  const files = {};
+  for (const [path, file] of Object.entries(seed.default)) {
+    const tail = path.slice('/vendor/dsh/agent-presets@0.1.6-alpha.2'.length);
+    files[`${realRoot}${tail.replace(/^\/+/, '')}`] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
+  }
+  return { type: 'agentPresets.seed', files };
+};
+const deliverPresetsSeed = async () => {
+  const delivery = await presetsSeedSetup();
+  deliver(delivery);
+  console.log(`[real-seat] presets VFS seeded: ${Object.keys(delivery.files).length} files`);
+};
+
 const materializePresetsPlane = () => {
   const vendored = join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2');
   cpSync(vendored, WS_VENDOR, { recursive: true });
@@ -327,6 +348,7 @@ const runtimeModule = await import(composerURL);
 console.log('[real-seat] runtime imported — delivering runtime.config');
 deliver({ type: 'runtime.config', ...cfg });
 deliverWebPluginsNow();
+deliverPresetsSeed();
 console.log('[real-seat] resident when the boot graph lands');
 
 // ---- wait for the runtime's boot graph, then compose the served rows ----
