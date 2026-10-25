@@ -42,7 +42,7 @@ import {
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
 import { readStore as readCredentialStore } from './web-write-llm.js';
-import { makeAppServiceCall } from './web-write-app.js';
+import { makeAppServiceCall } from 'upstream/web-write-app.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the

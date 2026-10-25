@@ -534,6 +534,7 @@ upstream/tool-present.js
 upstream/turn-recovery.js
 upstream/turn-watchdog.js
 upstream/web-search-keyless.js
+upstream/web-write-app.js
 upstream/web-write-catalog.js
 upstream/web-write-cordis.js
 upstream/web-write-coverage.js

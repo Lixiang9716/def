@@ -318,6 +318,7 @@ const BUNDLE_FILES: string[] = [
   'upstream/web-write-streams.js',
   'upstream/web-write-subagents.js',
   'upstream/web-write-workspace.js',
+  'upstream/web-write-app.js',
   'upstream/web-write.js',
   'upstream/wire-logger.js',
   'vendor/dsh/agent-instructions@0.1.6-alpha.2/lib/index.js',
