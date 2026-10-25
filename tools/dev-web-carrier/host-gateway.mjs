@@ -1,128 +1,35 @@
 // dsh:logging-exempt (node-side driver: console IS the product)
 /**
- * host-gateway.mjs — the recording seat's HOST gateway primitives: the fs
- * family + keychain the vendored packages reach through
- * globalThis.__dshGatewayCall when the plugin plane writes (the device C
- * host implements these natively; the panel's spine-seams loud-fails them
- * by design). Paths are scope-relative POSIX, refused on escape (the
- * gateway-audit invariant); scope 'app' is the only granted scope.
+ * host-gateway.mjs — the recording seat's HOST gateway primitives, UNIFIED
+ * on the runtime's own shim world: the fs family + keychain the vendored
+ * packages reach through globalThis.__dshGatewayCall delegate to the SAME
+ * upstream/shims/fs.js module instance the runtime uses, so the jsshell
+ * applets, the model's file tools, and the plugin-mount registry all see
+ * ONE file world. (The 2026-10-26 split: the shell applets read real disk
+ * through this module while the write tool wrote the shim mirror — two
+ * inconsistent worlds the model diagnosed as "不同的文件系统".)
+ *
+ * Scope 'app' maps to <workspace>/app-scope in the shim's workspace
+ * spelling; the shim's own root pin + read twins enforce containment and
+ * serve real disk. The mount pipeline's registry writes ride the same
+ * face, so a mount survives restarts through the shim's wsMirrorWriteReal.
  */
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const require_ = createRequire(import.meta.url);
-const { join, resolve, dirname, sep } = require_('node:path');
-const fs = require_('node:fs');
+const { join } = require_('node:path');
 
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
-
-/** Resolve one scope-relative POSIX path under the scope root, or fail.
- * Not-found rides code 'io' — the device host's spelling, and the only
- * code the runtime reads as the fresh-roster answer. */
-const locate = (root, scope, path) => {
-  if (scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(scope)} is not granted`);
-  if (typeof path !== 'string' || path.length === 0) fail('invalid', 'gateway fs: path must be a non-empty string');
-  const full = resolve(root, `./${path.replaceAll('/', sep)}`);
-  if (full !== root && !full.startsWith(root + sep)) fail('invalid', `gateway fs: path escapes the scope: ${path}`);
-  return full;
-};
-
-const kindOf = (full) => {
-  try {
-    return fs.statSync(full).isDirectory() ? 'dir' : 'file';
-  } catch {
-    return undefined;
-  }
-};
-
-const readArms = (root) => {
-  const at = (scope, path) => locate(root, scope, path);
-  return {
-    fsRead: (a) => {
-      const full = at(a.scope, a.path);
-      if (kindOf(full) !== 'file') fail('io', `fsRead: ${a.path} is not a file`);
-      return { bytesB64: fs.readFileSync(full).toString('base64'), mtime: fs.statSync(full).mtimeMs };
-    },
-    fsStat: (a) => {
-      const full = at(a.scope, a.path);
-      const kind = kindOf(full);
-      if (kind === undefined) fail('io', `fsStat: ${a.path} not found`);
-      return { kind, size: fs.statSync(full).size, mtime: fs.statSync(full).mtimeMs };
-    },
-    fsList: (a) => {
-      const full = at(a.scope, a.path);
-      if (kindOf(full) !== 'dir') fail('io', `fsList: ${a.path} is not a directory`);
-      const entries = fs.readdirSync(full, { withFileTypes: true })
-        .sort((x, y) => x.name.localeCompare(y.name))
-        .map((e) => ({ name: e.name, kind: e.isDirectory() ? 'dir' : 'file' }));
-      return { entries };
-    },
-    keychainGet: (a) => {
-      const file = join(root, '.keychain', `${a.ref}.b64`);
-      return fs.existsSync(file) ? { secretB64: fs.readFileSync(file, 'utf8') } : null;
-    },
-  };
-};
-
-const writeArms = (root) => {
-  const at = (scope, path) => locate(root, scope, path);
-  return {
-    fsWrite: (a) => {
-      const full = at(a.scope, a.path);
-      const bytes = typeof a.bytesB64 === 'string'
-        ? Buffer.from(a.bytesB64, 'base64') : fail('invalid', 'fsWrite: bytesB64 must be a string');
-      fs.mkdirSync(dirname(full), { recursive: true });
-      if (a.append === true) fs.appendFileSync(full, bytes);
-      else if (a.create === false && !fs.existsSync(full)) fail('io', `fsWrite: ${a.path} does not exist`);
-      else fs.writeFileSync(full, bytes);
-      return { written: bytes.length };
-    },
-    fsMkdir: (a) => {
-      fs.mkdirSync(at(a.scope, a.path), { recursive: true });
-      return {};
-    },
-    fsRemove: (a) => {
-      const full = at(a.scope, a.path);
-      if (!fs.existsSync(full)) {
-        if (a.missing === 'error') fail('io', `fsRemove: ${a.path} not found`);
-        return { removed: false };
-      }
-      fs.rmSync(full, { recursive: a.recursive === true });
-      return { removed: true };
-    },
-    fsRename: (a) => {
-      const to = at(a.scope, a.to);
-      fs.mkdirSync(dirname(to), { recursive: true });
-      fs.renameSync(at(a.scope, a.from), to);
-      return {};
-    },
-    keychainSet: (a) => {
-      fs.mkdirSync(join(root, '.keychain'), { recursive: true });
-      fs.writeFileSync(join(root, '.keychain', `${a.ref}.b64`), String(a.secretB64 ?? ''));
-      return {};
-    },
-    // The mount checkpoint (plugin-mount.js §4): a native dialog on hosts
-    // that present one. The seat has no dialog surface — the owner-driven
-    // recording harness approves loudly instead; `{approved: false}` is the
-    // user-dismissal value the mount refuses on, never a seat answer.
-    presentApproval: (a) => {
-      console.log(`[real-seat] approval auto-approved: ${a?.title ?? ''}`);
-      return { approved: true };
-    },
-  };
-};
-
-const scopeArms = (root) => ({
-  'fsScope.persist': () => ({}),
-  'fsScope.resolve': (a) => ({ path: join(root, 'bookmarks', String(a.ref ?? '').replace(/^bkm:/, '')) }),
-});
 
 /** The REAL proc seams (the toolface runners' shape): this seat's fs IS
  * the host disk, so the shims' metadata/read fallbacks answer truthfully
  * for files created outside the runtime. */
 export const installProcSeams = () => {
+  const nodeFs = require_('node:fs');
   globalThis.__dshProcStatReal = (p) => {
     try {
-      const st = fs.statSync(p);
+      const st = nodeFs.statSync(p);
       return {
         isFile: st.isFile(), isSymbolicLink: st.isSymbolicLink(),
         size: Number(st.size), mode: Number(st.mode),
@@ -131,41 +38,109 @@ export const installProcSeams = () => {
     } catch { return null; }
   };
   globalThis.__dshProcReaddirReal = (p) => {
-    try { return fs.readdirSync(p); } catch { return null; }
+    try { return nodeFs.readdirSync(p); } catch { return null; }
   };
   globalThis.__dshProcReadReal = (p) => {
-    try { return fs.readFileSync(p).toString('base64'); } catch { return null; }
+    try { return nodeFs.readFileSync(p).toString('base64'); } catch { return null; }
   };
 };
 
-/** The bundle seam for THIS seat: the shell tool's vendor reads arrive with
- * a REAL absolute base (parser.js's MODULE_DIR is a disk path here, not the
- * device's '/…' spelling), so resolve base+request on the disk directly.
- * The panel seam's join(RUNTIME_DSH, …) doubles absolute bases and every
- * shelljs probe misses — the model's bash/shell tools then report
- * "vendor seam: cannot resolve 'shelljs'". */
+/** The shell applets' vendor reader (the shelljs/minimatch tree): the
+ * device spelling is '/vendor/…' under the runtime root — read there. */
 export const installBundleSeam = (runtimeDsh) => {
   globalThis.__dshBundleRequire = (base, request) => {
     const dir = base.slice(0, base.lastIndexOf('/'));
     const rel = request.replace(/^\.\//, '');
-    // Two base spellings share this seam: the seat's REAL absolute module
-    // dirs (parser.js) read on the disk directly; the loader bridges'
-    // device-relative spellings ('/vendor/…') read under the runtime root
-    // (the panel seam's own rule).
     try {
-      return fs.readFileSync(resolve(dir, rel), 'utf8');
-    } catch {
-      return fs.readFileSync(join(runtimeDsh, `${dir}/${rel}`.replace(/^\//, '')), 'utf8');
+      return require_('node:fs').readFileSync(require_('node:path').join(runtimeDsh, `${dir}/${rel}`.replace(/^\//, '')), 'utf8');
+    } catch (error) {
+      throw Object.assign(new Error(`bundle-read miss: ${error?.message ?? error}`), { code: 'io' });
     }
   };
 };
 
-export const installHostGateway = (scopeRoot) => {
-  fs.mkdirSync(scopeRoot, { recursive: true });
-  const arms = { ...readArms(scopeRoot), ...writeArms(scopeRoot), ...scopeArms(scopeRoot) };
+export const installHostGateway = async (repoRoot, wsRoot) => {
+  // The SAME module instance the runtime's loader hands out (the seat's
+  // registered hooks map this exact file URL for the runtime's imports).
+  const shimFs = await import(pathToFileURL(join(repoRoot, 'runtime/dsh/upstream/shims/fs.js')).href);
+  const keychain = new Map();
+
+  const appPath = (scope, path) => {
+    if (scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(scope)} is not granted`);
+    if (typeof path !== 'string' || path.length === 0) fail('invalid', 'gateway fs: path must be a non-empty string');
+    if (path.includes('..')) fail('invalid', `gateway fs: path escapes the scope: ${path}`);
+    return join(wsRoot, 'app-scope', path);
+  };
+
+  const readArms = {
+    fsRead: (a) => {
+      const full = appPath(a.scope, a.path);
+      let bytes;
+      try { bytes = shimFs.readFileSync(full); } catch (e) { fail('io', `fsRead: ${e?.message ?? e}`); }
+      return { bytesB64: Buffer.from(bytes).toString('base64'), mtime: 0 };
+    },
+    fsStat: (a) => {
+      const full = appPath(a.scope, a.path);
+      let st;
+      try { st = shimFs.statSync(full); } catch { fail('io', `fsStat: ${a.path} not found`); }
+      return { kind: st.isDirectory() ? 'dir' : 'file', size: Number(st.size), mtime: Number(st.mtimeMs) };
+    },
+    fsList: (a) => {
+      const full = appPath(a.scope, a.path);
+      let list;
+      try {
+        list = shimFs.readdirSync(full, { withFileTypes: true })
+          .sort((x, y) => x.name.localeCompare(y.name))
+          .map((e) => ({ name: e.name, kind: e.isDirectory() ? 'dir' : 'file' }));
+      } catch (e) { fail('io', `fsList: ${e?.message ?? e}`); }
+      return { entries: list };
+    },
+    keychainGet: (a) => {
+      const raw = keychain.get(a.ref);
+      return raw !== undefined ? { secretB64: raw } : null;
+    },
+  };
+
+  const writeArms = {
+    fsWrite: (a) => {
+      if (a.scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(a.scope)} is not granted`);
+      if (typeof a.bytesB64 !== 'string') fail('invalid', 'fsWrite: bytesB64 must be a string');
+      const bytes = Buffer.from(a.bytesB64, 'base64');
+      const full = appPath(a.scope, a.path);
+      shimFs.mkdirSync(join(full, '..'), { recursive: true });
+      shimFs.writeFileSync(full, bytes);
+      return { written: bytes.length };
+    },
+    fsMkdir: (a) => {
+      shimFs.mkdirSync(appPath(a.scope, a.path), { recursive: true });
+      return {};
+    },
+    fsRemove: (a) => {
+      const full = appPath(a.scope, a.path);
+      try {
+        shimFs.rmSync(full, { recursive: a.recursive === true });
+      } catch (e) {
+        if (a.missing === 'error') fail('io', `fsRemove: ${e?.message ?? e}`);
+      }
+      return {};
+    },
+    fsRename: (a) => {
+      shimFs.renameSync(appPath(a.scope, a.from), appPath(a.scope, a.to));
+      return {};
+    },
+    keychainSet: (a) => {
+      keychain.set(a.ref, String(a.secretB64 ?? ''));
+      return {};
+    },
+    presentApproval: (a) => {
+      console.log(`[real-seat] approval auto-approved: ${a?.title ?? ''}`);
+      return { approved: true };
+    },
+  };
+
   const orig = globalThis.__dshGatewayCall;
   globalThis.__dshGatewayCall = async (name, argsJson) => {
-    const arm = arms[name];
+    const arm = readArms[name] ?? writeArms[name];
     if (arm !== undefined) return arm(JSON.parse(argsJson));
     return orig(name, argsJson);
   };

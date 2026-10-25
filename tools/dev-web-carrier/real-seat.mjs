@@ -131,7 +131,7 @@ installProcSeams();
   globalThis.Buffer.fromBytes ??= (b) => DshBuffer.fromBytes(b);
 }
 installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
-installHostGateway(join(WS_ROOT, 'app-scope'));
+await installHostGateway(REPO_ROOT, WS_ROOT);
 
 // ---- the web.plugins delivery: the staged client bundles walked to b64
 // files (web-boot.js stageWebPlugins' shape) ----
