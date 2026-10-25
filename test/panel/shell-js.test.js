@@ -314,7 +314,7 @@ describe('shell-js: the plugin shape', () => {
 
   it('the tool registration carries the honest description and works end to end', async () => {
     const [shell] = activate();
-    expect(shell.name).toBe('shell');
+    expect(shell.name).toBe('jsshell');
     // The dialect disclosures (DECISION §6) the model reads before its
     // first command.
     expect(shell.description).toContain('JavaScript RegExp');
