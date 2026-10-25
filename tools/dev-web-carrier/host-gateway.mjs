@@ -32,23 +32,13 @@ const kindOf = (full) => {
   }
 };
 
-const armOf = (root) => {
+const readArms = (root) => {
   const at = (scope, path) => locate(root, scope, path);
   return {
     fsRead: (a) => {
       const full = at(a.scope, a.path);
       if (kindOf(full) !== 'file') fail('not-found', `fsRead: ${a.path} is not a file`);
       return { bytesB64: fs.readFileSync(full).toString('base64'), mtime: fs.statSync(full).mtimeMs };
-    },
-    fsWrite: (a) => {
-      const full = at(a.scope, a.path);
-      const bytes = typeof a.bytesB64 === 'string'
-        ? Buffer.from(a.bytesB64, 'base64') : fail('invalid', 'fsWrite: bytesB64 must be a string');
-      fs.mkdirSync(dirname(full), { recursive: true });
-      if (a.append === true) fs.appendFileSync(full, bytes);
-      else if (a.create === false && !fs.existsSync(full)) fail('not-found', `fsWrite: ${a.path} does not exist`);
-      else fs.writeFileSync(full, bytes);
-      return { written: bytes.length };
     },
     fsStat: (a) => {
       const full = at(a.scope, a.path);
@@ -63,6 +53,26 @@ const armOf = (root) => {
         .sort((x, y) => x.name.localeCompare(y.name))
         .map((e) => ({ name: e.name, kind: e.isDirectory() ? 'dir' : 'file' }));
       return { entries };
+    },
+    keychainGet: (a) => {
+      const file = join(root, '.keychain', `${a.ref}.b64`);
+      return fs.existsSync(file) ? { secretB64: fs.readFileSync(file, 'utf8') } : null;
+    },
+  };
+};
+
+const writeArms = (root) => {
+  const at = (scope, path) => locate(root, scope, path);
+  return {
+    fsWrite: (a) => {
+      const full = at(a.scope, a.path);
+      const bytes = typeof a.bytesB64 === 'string'
+        ? Buffer.from(a.bytesB64, 'base64') : fail('invalid', 'fsWrite: bytesB64 must be a string');
+      fs.mkdirSync(dirname(full), { recursive: true });
+      if (a.append === true) fs.appendFileSync(full, bytes);
+      else if (a.create === false && !fs.existsSync(full)) fail('not-found', `fsWrite: ${a.path} does not exist`);
+      else fs.writeFileSync(full, bytes);
+      return { written: bytes.length };
     },
     fsMkdir: (a) => {
       fs.mkdirSync(at(a.scope, a.path), { recursive: true });
@@ -83,12 +93,6 @@ const armOf = (root) => {
       fs.renameSync(at(a.scope, a.from), to);
       return {};
     },
-    'fsScope.persist': () => ({}),
-    'fsScope.resolve': (a) => ({ path: join(root, 'bookmarks', String(a.ref ?? '').replace(/^bkm:/, '')) }),
-    keychainGet: (a) => {
-      const file = join(root, '.keychain', `${a.ref}.b64`);
-      return fs.existsSync(file) ? { secretB64: fs.readFileSync(file, 'utf8') } : null;
-    },
     keychainSet: (a) => {
       fs.mkdirSync(join(root, '.keychain'), { recursive: true });
       fs.writeFileSync(join(root, '.keychain', `${a.ref}.b64`), String(a.secretB64 ?? ''));
@@ -97,9 +101,14 @@ const armOf = (root) => {
   };
 };
 
+const scopeArms = (root) => ({
+  'fsScope.persist': () => ({}),
+  'fsScope.resolve': (a) => ({ path: join(root, 'bookmarks', String(a.ref ?? '').replace(/^bkm:/, '')) }),
+});
+
 export const installHostGateway = (scopeRoot) => {
   fs.mkdirSync(scopeRoot, { recursive: true });
-  const arms = armOf(scopeRoot);
+  const arms = { ...readArms(scopeRoot), ...writeArms(scopeRoot), ...scopeArms(scopeRoot) };
   const orig = globalThis.__dshGatewayCall;
   globalThis.__dshGatewayCall = async (name, argsJson) => {
     const arm = arms[name];

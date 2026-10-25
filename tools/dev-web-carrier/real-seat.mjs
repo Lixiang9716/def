@@ -226,11 +226,13 @@ for (const pkg of MOBILE_PRESET_PACKAGES) {
 
 const webPluginDelivery = () => {
   const plugins = stagedDescriptors(REPO_ROOT).map((d) => {
+    const walked = {};
+    walkFiles(dirname(d.pkgJsonPath), '', walked);
     const files = {};
-    walkFiles(dirname(d.pkgJsonPath), '', files);
-    // the HTTP face serves the same bytes from disk (the page fetches the
-    // graph URLs over the origin; the runtime reads the VFS)
-    for (const [rel, file] of Object.entries(files)) {
+    for (const [rel, file] of Object.entries(walked)) {
+      files[`/web-plugins/${d.loaderName}${rel}`] = file;
+      // the HTTP face serves the same bytes from disk (the page fetches the
+      // graph URLs over the origin; the runtime reads the VFS)
       const dst = join(WS_ROOT, 'web-plugins', d.loaderName, rel);
       mkdirSync(dirname(dst), { recursive: true });
       writeFileSync(dst, Buffer.from(file.b64, 'base64'));
