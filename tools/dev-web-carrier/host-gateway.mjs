@@ -138,6 +138,28 @@ export const installProcSeams = () => {
   };
 };
 
+/** The bundle seam for THIS seat: the shell tool's vendor reads arrive with
+ * a REAL absolute base (parser.js's MODULE_DIR is a disk path here, not the
+ * device's '/…' spelling), so resolve base+request on the disk directly.
+ * The panel seam's join(RUNTIME_DSH, …) doubles absolute bases and every
+ * shelljs probe misses — the model's bash/shell tools then report
+ * "vendor seam: cannot resolve 'shelljs'". */
+export const installBundleSeam = (runtimeDsh) => {
+  globalThis.__dshBundleRequire = (base, request) => {
+    const dir = base.slice(0, base.lastIndexOf('/'));
+    const rel = request.replace(/^\.\//, '');
+    // Two base spellings share this seam: the seat's REAL absolute module
+    // dirs (parser.js) read on the disk directly; the loader bridges'
+    // device-relative spellings ('/vendor/…') read under the runtime root
+    // (the panel seam's own rule).
+    try {
+      return fs.readFileSync(resolve(dir, rel), 'utf8');
+    } catch {
+      return fs.readFileSync(join(runtimeDsh, `${dir}/${rel}`.replace(/^\//, '')), 'utf8');
+    }
+  };
+};
+
 export const installHostGateway = (scopeRoot) => {
   fs.mkdirSync(scopeRoot, { recursive: true });
   const arms = { ...readArms(scopeRoot), ...writeArms(scopeRoot), ...scopeArms(scopeRoot) };

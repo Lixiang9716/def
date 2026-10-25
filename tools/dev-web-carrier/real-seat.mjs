@@ -12,7 +12,7 @@
  */
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
-import { installHostGateway, installProcSeams } from './host-gateway.mjs';
+import { installBundleSeam, installHostGateway, installProcSeams } from './host-gateway.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -130,6 +130,7 @@ else seams.stageRealHttpFetch();
 // truthfully and the plugin plane's writes land (the device C host
 // implements these natively; the panel seam loud-fails them by design).
 installProcSeams();
+installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 {
   const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
   globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
@@ -293,7 +294,10 @@ const cfg = {
   sessionId: 's-hero-0001',
   cwd: WS_ROOT,
   containerRoot: WS_ROOT,
-  container: { cwd: WS_ROOT, tmpdir: `${WS_ROOT}/.tmp`, home: `${WS_ROOT}/home`, env: {}, argv: ['dsh', '--profile', 'mobile'] },
+  // fsScopeRoot == the container (real-create's bare-spelling posture):
+  // boot-options builds the container from it — __dshProfileScopeRoot, the
+  // shell tool's workspace gate (cwd must start with the scope root).
+  fsScopeRoot: WS_ROOT,
   llm,
   mockLlmUrl: args.llm === 'mock' ? llm.baseURL : undefined,
   apiKey: args.llm === 'mock' ? 'hero-mock-key' : llm.apiKey,
