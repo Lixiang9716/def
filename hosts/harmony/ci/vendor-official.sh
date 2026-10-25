@@ -937,6 +937,14 @@ if [ "$MODE" != "check" ]; then
        "$RAW/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/mobile/preset.yml"
     cp "runtime/dsh/presets-mobile/mobile/agent.cordis.yml" \
        "$RAW/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/mobile/agent.cordis.yml"
+    # The APPGEN preset (the app-generation mode): the same synthesis rule,
+    # staged at the presets/appgen/ rel (the seed enumerator walks the tree,
+    # so the roster carries it and the creation flow's preset join resolves).
+    mkdir -p "$RAW/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/appgen"
+    cp "runtime/dsh/presets-mobile/appgen/preset.yml" \
+       "$RAW/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/appgen/preset.yml"
+    cp "runtime/dsh/presets-mobile/appgen/agent.cordis.yml" \
+       "$RAW/vendor/dsh/agent-presets@0.1.6-alpha.2/presets/appgen/agent.cordis.yml"
 fi
 
 # The self-hosted web clients (presentation/web-client-{next,compact}):
@@ -1152,13 +1160,15 @@ done
 # The MOBILE preset doc's block twin (the stage block above): the same
 # tracked-check rule — untracked staged files SKIP, a drifted tracked one
 # fails the gate.
-for f in preset.yml agent.cordis.yml; do
-    rel="vendor/dsh/agent-presets@0.1.6-alpha.2/presets/mobile/$f"
+for preset in mobile appgen; do
+  for f in preset.yml agent.cordis.yml; do
+    rel="vendor/dsh/agent-presets@0.1.6-alpha.2/presets/$preset/$f"
     if [ -n "$TRACKED" ] && ! grep -qxF "$RAW/$rel" "$TRACKED_FILE"; then
         echo skip >> "$SKIPS_FILE"
         continue
     fi
-    cmp -s "runtime/dsh/presets-mobile/mobile/$f" "$RAW/$rel" || echo "$rel" >> "$DRIFT"
+    cmp -s "runtime/dsh/presets-mobile/$preset/$f" "$RAW/$rel" || echo "$rel" >> "$DRIFT"
+  done
 done
 # The web-client trees byte-verify against their presentation/ source (the
 # tracked-check rule above applies: untracked staged files SKIP, never drift).

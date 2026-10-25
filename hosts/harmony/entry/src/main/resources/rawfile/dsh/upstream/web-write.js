@@ -248,14 +248,14 @@ const makeListSessions = (ctx) => async () => {
  * the vendored service warns at `agent/created` — BEFORE this join runs — so
  * every page-created session logs that warn even when the join then covers
  * it; the paired line names what the session actually composed from. */
-const joinCreatedSessionToDefault = async (ctx, sessionId) => {
+const joinCreatedSessionToDefault = async (ctx, sessionId, presetId) => {
   const service = ctx.get('agentPresets');
   if (service === undefined) {
     throw remoteError('gateway/unavailable',
       'session.create presetJoin: the agentPresets service is not mounted', {});
   }
   const agent = ctx.agents.get(sessionId);
-  const preset = await service.mount(agent.ctx, undefined);
+  const preset = await service.mount(agent.ctx, presetId);
   log.debug('session preset joined', { sessionId, preset: preset?.id, agent: agent.id });
   return preset;
 };
@@ -289,8 +289,12 @@ const makeCreateSession = (ctx, deps) => async (args) => {
       meta: { cwd },
     });
     deps.agentDisposes.set(sessionId, handle.dispose);
-    // The seat's preset-join opt-in (joinCreatedSessionToDefault).
-    if (deps.presetJoin === true) await joinCreatedSessionToDefault(ctx, sessionId);
+    // The seat's preset-join opt-in (joinCreatedSessionToDefault). A request
+    // MAY name the preset (the creation flow's appgen sessions) — unknown ids
+    // refuse loud at mount.
+    if (deps.presetJoin === true) {
+      await joinCreatedSessionToDefault(ctx, sessionId, request.preset);
+    }
   } else if (live.session?.header?.cwd !== cwd) {
     throw remoteError('session/conflict',
       `session "${sessionId}" already exists at another directory`,
