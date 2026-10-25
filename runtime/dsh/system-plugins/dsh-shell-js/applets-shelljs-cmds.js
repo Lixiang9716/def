@@ -46,6 +46,7 @@ export const appletCat = async (argv, ctx) => {
  * the block so the author can fix the exact script). No DOM anywhere:
  * this is a compile-only probe, never an execution. */
 export const appletJscheck = async (argv) => {
+  log.debug('applet', { applet: 'jscheck' });
   if (argv.length === 0) {
     throw new ShellRefusal(2, 'jscheck: no file given');
   }
