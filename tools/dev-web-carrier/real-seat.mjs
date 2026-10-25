@@ -19,7 +19,7 @@
  */
 import { createServer } from 'node:http';
 import { randomBytes } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PluginsRoute } from './plugins-route.mjs';
@@ -276,36 +276,27 @@ const webPluginDelivery = () => {
 };
 const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
-/** The presets seed (the third device delivery): the vendored agent-presets
- * tree keyed at its VFS root — the roster walk reads ONLY the seeded view. */
-// The preset plane re-bases into the WORKSPACE (boot's agentPresetsBaseUrl
-// + agentPresetRoots — the Node face): the presets service reads its shipped
-// tree through the fs shim, and the shim only serves the workspace (ws seam
-// = real disk) plus the seeded VFS. The generated /vendor seed fed the VFS
-// face on dsh-cli; here the same bytes materialize under the workspace root
-// so the ws seam answers the walk with real files.
+// ---- the preset plane, re-based into the workspace (T-0218 leg 4's Node
+// face): the presets service reads its shipped tree through the fs shim,
+// and the shim only serves the workspace (ws seam = real disk) plus the
+// seeded VFS. The vendored tree materializes under the workspace root —
+// real files the ws seam serves — with the synthesized mobile preset
+// (AGENT_PRESETS_DEFAULT) copied from presets-mobile beside the shipped
+// four, and the farm node_modules linked where the composition's upward
+// package walk lands. ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
-const materializePresetsWorkspaceCopy = () => {
+const materializePresetsPlane = () => {
   const vendored = join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2');
-  const { cpSync } = require('node:fs');
   cpSync(vendored, WS_VENDOR, { recursive: true });
-  // node_modules resolution markers beside the composition rows: the
-  // generated seed's marker set, as real symlinks into the farm
-  const nm = join(WS_VENDOR, 'node_modules', '@deepseek-ai');
-  mkdirSync(nm, { recursive: true });
-  const seed = JSON.parse(readFileSync(join(staged, 'presets-seed-markers.json'), 'utf8'));
-  for (const marker of seed) {
-    const dst = join(WS_VENDOR, 'node_modules', ...marker.split('/'));
-    mkdirSync(dirname(dst), { recursive: true });
-    if (!existsSync(dst)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules', ...marker.split('/')), dst);
-  }
+  // AGENT_PRESETS_DEFAULT is the SYNTHESIZED mobile (T-0048): the vendored
+  // tree ships cordis/minimal/ptc/standard only
+  mkdirSync(join(WS_VENDOR, 'presets'), { recursive: true });
+  cpSync(join(REPO_ROOT, 'runtime/dsh/presets-mobile/mobile'), join(WS_VENDOR, 'presets', 'mobile'), { recursive: true });
   // the composition's upward package walk lands on the farm itself
   const wsNm = join(WS_ROOT, 'node_modules');
   if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
 };
-
-
-// ---- runtime.config, then the runtime import (main() runs at import) ----
+// ---- runtime.config, then the runtime import (main() runs at import) ----// ---- runtime.config, then the runtime import (main() runs at import) ----
 const WSArg = (p) => p; // the boot demands '/'-prefixed POSIX roots
 const cfg = {
   scenario: 'hero.seat',
@@ -329,13 +320,13 @@ const cfg = {
   settingsProbes: false, // the recording seat proves chat+create, not settings
 };
 
+materializePresetsPlane();
 const composerURL = pathToFileURL(join(REPO_ROOT, 'runtime/dsh/web-live/composer-web-live.js')).href;
 console.log('[real-seat] importing composer from', composerURL);
 const runtimeModule = await import(composerURL);
 console.log('[real-seat] runtime imported — delivering runtime.config');
 deliver({ type: 'runtime.config', ...cfg });
 deliverWebPluginsNow();
-await deliverPresetsSeed();
 console.log('[real-seat] resident when the boot graph lands');
 
 // ---- wait for the runtime's boot graph, then compose the served rows ----
