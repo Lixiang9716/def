@@ -204,15 +204,28 @@ const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
 /** The presets seed (the third device delivery): the vendored agent-presets
  * tree keyed at its VFS root — the roster walk reads ONLY the seeded view. */
-const PRESETS_VFS = '/vendor/dsh/agent-presets@0.1.6-alpha.2';
-const deliverPresetsSeed = async () => {
+/** The presets VFS seed: the generated manifest's bytes keyed at the REAL
+ * root the service reads. Under the farm resolution the vendored presets lib
+ * loads from runtime/dsh/vendor (real disk), so its SHIPPED_PRESET_ROOT is
+ * that real directory — the seat pushes it into the fs shim's VFS_ROOTS and
+ * rewrites the manifest keys onto it (the /vendor spelling is the dsh-cli
+ * face; this seat serves the same bytes at the path the service reads). */
+const presetsSeedSetup = async () => {
+  const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
+  const realRoot = `${join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2')}/`;
+  shim.VFS_ROOTS.push(realRoot);
   const seed = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/scenario/agent-presets-probe-seed.js')).href);
   const files = {};
   for (const [path, file] of Object.entries(seed.default)) {
-    files[path] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
+    const tail = path.slice('/vendor/dsh/agent-presets@0.1.6-alpha.2'.length);
+    files[`${realRoot}${tail}`] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
   }
-  deliver({ type: 'agentPresets.seed', files });
-  console.log(`[real-seat] presets seeded: ${Object.keys(files).length} files`);
+  return { type: 'agentPresets.seed', files };
+};
+const deliverPresetsSeed = async () => {
+  const delivery = await presetsSeedSetup();
+  deliver(delivery);
+  console.log(`[real-seat] presets seeded: ${Object.keys(delivery.files).length} files at the real vendor root`);
 };
 
 // ---- runtime.config, then the runtime import (main() runs at import) ----
@@ -332,7 +345,9 @@ const handleApi = (req, url, respond) => {
     const rpcId = `hero-${randomBytes(6).toString('hex')}`;
     let payload;
     try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return respond(400, 'text/plain', ''); }
+    console.log(`[real-seat] page -> ${url.pathname.slice('/api/'.length)}`);
     apiWaiters.set(rpcId, (result) => {
+      console.log(`[real-seat] <- ${url.pathname.slice('/api/'.length)} ok=${result.ok}${result.ok ? '' : ' err=' + JSON.stringify(result.error ?? {})}`);
       respond(200, 'application/json', JSON.stringify({ type: 'server-response', rpcId, result }));
     });
     deliver({ type: 'api.request', rpcId, endpoint: url.pathname.slice('/api/'.length), payload });
