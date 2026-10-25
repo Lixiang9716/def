@@ -19,6 +19,7 @@
  */
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
+import { installHostGateway } from './host-gateway.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -132,6 +133,10 @@ if (args.llm === 'mock') {
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
+// The HOST gateway: the fs family + keychain the plugin plane writes
+// through (the device C host implements these; the panel seam loud-fails
+// them). Scope root inside the workspace container, like the phone.
+installHostGateway(join(WS_ROOT, 'app-scope'));
 
 // ---- the web.plugins delivery: the staged client bundles, walked to
 // b64 files (web-boot.js stageWebPlugins' shape: plugins[] with
@@ -304,13 +309,25 @@ const cfg = {
   llm,
   mockLlmUrl: args.llm === 'mock' ? llm.baseURL : undefined,
   apiKey: args.llm === 'mock' ? 'hero-mock-key' : llm.apiKey,
+  // The staged route reads the FLAT config fields (the Android host's
+  // shape — llm-route.js stagedRoute); the nested `llm` above is seat-local.
+  ...(args.llm === 'staged' ? {
+    llmBaseUrl: llm.baseURL,
+    llmApiKey: llm.apiKey,
+    llmModel: llm.model,
+    llmProvider: llm.provider,
+  } : {}),
   commands: true,
   skills: {},
   goals: true,
   fileReferences: true,
   creation: true,
   presetJoin: true,
-  byokModels: true,
+  // The BYOK-models section mounts an empty pi-ai catalog whose 'deepseek'
+  // row collides with the STAGED route's own provider declaration (the
+  // mount refuses loudly). A staged key IS the configured state the section
+  // exists to produce — off when staged, on for the mock seat.
+  byokModels: args.llm === 'mock',
   agentPresetsBaseUrl: pathToFileURL(WS_VENDOR + '/').href,
   agentPresetRoots: [{ path: WS_VENDOR + '/presets/', trust: 'system' }],
   settingsProbes: false, // the recording seat proves chat+create, not settings
