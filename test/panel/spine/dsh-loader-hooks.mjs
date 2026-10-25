@@ -22,7 +22,12 @@ import { existsSync, readFileSync } from 'node:fs';
 // Anchored at THIS FILE, never process.cwd() — the suite runs from whatever
 // cwd the runner hands it.
 const HERE = pathResolve(fileURLToPath(import.meta.url), '..');
-const runtimeDsh = pathResolve(HERE, '..', '..', '..', 'runtime', 'dsh');
+// Seat override (2.2 real-seat): a linked worktree runs the same hooks from
+// its own tree — the anchor follows the env when the launcher points it
+// there; unset keeps the file-anchored default (the panel suite unchanged).
+const runtimeDsh = process.env.DSH_LOADER_RUNTIME_DSH !== undefined
+  ? pathResolve(process.env.DSH_LOADER_RUNTIME_DSH)
+  : pathResolve(HERE, '..', '..', '..', 'runtime', 'dsh');
 const runtimeRoot = pathToFileURL(pathResolve(runtimeDsh, '..')).href;
 const shim = (name) => pathToFileURL(join(runtimeDsh, 'upstream', 'shims', name)).href;
 const bufferShimUrl = pathToFileURL(join(HERE, 'node-buffer-shim.mjs')).href;
