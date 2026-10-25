@@ -1,5 +1,6 @@
 import { register } from 'node:module';
 import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const panel = join(here, '..', '..', 'test', 'panel', 'spine', 'dsh-loader-hooks.mjs');

@@ -9,7 +9,7 @@
  * other specifier delegates down the chain untouched).
  */
 import { join, dirname } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
