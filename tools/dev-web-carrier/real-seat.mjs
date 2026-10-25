@@ -218,7 +218,9 @@ const presetsSeedSetup = async () => {
   const files = {};
   for (const [path, file] of Object.entries(seed.default)) {
     const tail = path.slice('/vendor/dsh/agent-presets@0.1.6-alpha.2'.length);
-    files[`${realRoot}${tail}`] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
+    // single-slash join: the VFS keys are prefix-matched, and a doubled
+    // slash makes every readdir/read miss (the empty-roster class)
+    files[`${realRoot}${tail.replace(/^\/+/, '')}`] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
   }
   return { type: 'agentPresets.seed', files };
 };
