@@ -18,6 +18,7 @@
  * env:   DSH_LLM_BASE_URL DSH_LLM_API_KEY DSH_LLM_MODEL (staged mode)
  */
 import { createServer } from 'node:http';
+import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -129,51 +130,8 @@ if (args.llm === 'mock') {
 // staged httpFetch). Then the two wire stagers: the loopback mock rides
 // http://127.0.0.1, the staged real key rides https (stageRealHttpFetch). ----
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
-{
-  const { request: httpRequest } = createRequire(import.meta.url)('node:http');
-}
-if (args.llm === 'mock') {
-  const { createRequire } = await import('node:module');
-  const { request: httpRequest } = createRequire(import.meta.url)('node:http');
-  let bodySeq = 0;
-  const prefix = llm.baseURL;
-  seams.stagedHttp.set(`${prefix.split('/').slice(0, 3).join('/')}/`, (args) => new Promise((resolveStage, rejectStage) => {
-    const body = args.bodyB64 !== undefined ? Buffer.from(args.bodyB64, 'base64') : undefined;
-    const req = httpRequest(args.url, { method: args.method ?? 'POST', headers: args.headers ?? {} }, (res) => {
-      const bodyId = `body:mock-${++bodySeq}`;
-      // The gateway registers its stream-map entry in the microtask after
-      // resolveStage, but a loopback mock delivers headers + chunks in ONE
-      // I/O cycle — every event then beats the registration and drops
-      // (the read-idle watchdog aborts a perfectly streamed response).
-      // Defer the wire handoff one macrotask: bytes arriving meanwhile
-      // buffer in the paused socket until the data listeners attach.
-      setImmediate(() => {
-        resolveStage({ status: res.statusCode, headers: res.headers, bodyId });
-        // The relay starts only in a FRESH macrotask: the registration
-        // (the gateway's post-await continuation, two microtask ticks
-        // deep through the seam wrapper) drains before the first event.
-        // Bytes arriving meanwhile buffer in the paused socket.
-        setTimeout(() => {
-        void (async () => {
-          try {
-            for await (const chunk of res) {
-              globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.body', chunkB64: chunk.toString('base64') }));
-            }
-            globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.end' }));
-          } catch (error) {
-            globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.error', code: 'io', message: error?.message ?? 'response failed' }));
-          }
-        })();
-        }, 0);
-      });
-    });
-    req.on('error', (error) => rejectStage(Object.assign(error, { code: 'io' })));
-    if (body !== undefined) req.write(body);
-    req.end();
-  }));
-} else {
-  seams.stageRealHttpFetch();
-}
+if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
+else seams.stageRealHttpFetch();
 
 // ---- the web.plugins delivery: the staged client bundles, walked to
 // b64 files (web-boot.js stageWebPlugins' shape: plugins[] with
