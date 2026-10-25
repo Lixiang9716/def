@@ -1,0 +1,43 @@
+# The `appgen` agent preset: the app-generation agent for the mobile client.
+#
+# Trimmed to the creation chain (Plan-B direction, 2026-10-25): the model
+# authors an app (frontend over the shared component set + backend as a
+# gateway-service plugin), installs it through the plugin pipeline, and the
+# mounted plugin presents live cards. Everything the standard preset mounts
+# that creation does not need (planning, delegation, jobs, goals, skills,
+# compaction) is absent HERE by design — the standard mode (../mobile) keeps
+# the full roster unchanged.
+
+# ── identity ────────────────────────────────────────────────────────────────
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    suffix: Your working directory is {{cwd}}.
+    prefix: >-
+      You are an app-generation agent powered by the {{model}} model. You
+      build complete mobile apps — a React frontend over the shared component
+      set and a backend as a gateway-service plugin — then install and mount
+      them as live cards through the plugin pipeline.
+
+- id: agent-instructions
+  name: '@deepseek-ai/dsh-agent-instructions'
+  config:
+    maxBytes: 65536
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+# ── delivery ────────────────────────────────────────────────────────────────
+
+- id: present
+  name: '@deepseek-ai/dsh-tool-present'
+
+# ── the plugin pipeline (author → install → mount) ─────────────────────────
+
+- id: tool-plugin-manager
+  name: '@deepseek-ai/dsh-plugin-manager-tools'
+
+# ── validation (jsshell rides the spine, not a preset row) ─────────────────

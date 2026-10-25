@@ -279,10 +279,12 @@ const deliverPresetsSeed = async () => {
 const materializePresetsPlane = () => {
   const vendored = join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2');
   cpSync(vendored, WS_VENDOR, { recursive: true });
-  // AGENT_PRESETS_DEFAULT is the SYNTHESIZED mobile (T-0048): the vendored
-  // tree ships cordis/minimal/ptc/standard only
+  // The synthesized presets (the vendored tree ships cordis/minimal/ptc/
+  // standard only): mobile (T-0048) + appgen (the app-generation mode).
   mkdirSync(join(WS_VENDOR, 'presets'), { recursive: true });
-  cpSync(join(REPO_ROOT, 'runtime/dsh/presets-mobile/mobile'), join(WS_VENDOR, 'presets', 'mobile'), { recursive: true });
+  for (const preset of ['mobile', 'appgen']) {
+    cpSync(join(REPO_ROOT, 'runtime/dsh/presets-mobile', preset), join(WS_VENDOR, 'presets', preset), { recursive: true });
+  }
   // the composition's upward package walk lands on the farm itself
   const wsNm = join(WS_ROOT, 'node_modules');
   if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
