@@ -116,6 +116,28 @@ const scopeArms = (root) => ({
   'fsScope.resolve': (a) => ({ path: join(root, 'bookmarks', String(a.ref ?? '').replace(/^bkm:/, '')) }),
 });
 
+/** The REAL proc seams (the toolface runners' shape): this seat's fs IS
+ * the host disk, so the shims' metadata/read fallbacks answer truthfully
+ * for files created outside the runtime. */
+export const installProcSeams = () => {
+  globalThis.__dshProcStatReal = (p) => {
+    try {
+      const st = fs.statSync(p);
+      return {
+        isFile: st.isFile(), isSymbolicLink: st.isSymbolicLink(),
+        size: Number(st.size), mode: Number(st.mode),
+        mtimeMs: Math.trunc(Number(st.mtimeMs)),
+      };
+    } catch { return null; }
+  };
+  globalThis.__dshProcReaddirReal = (p) => {
+    try { return fs.readdirSync(p); } catch { return null; }
+  };
+  globalThis.__dshProcReadReal = (p) => {
+    try { return fs.readFileSync(p).toString('base64'); } catch { return null; }
+  };
+};
+
 export const installHostGateway = (scopeRoot) => {
   fs.mkdirSync(scopeRoot, { recursive: true });
   const arms = { ...readArms(scopeRoot), ...writeArms(scopeRoot), ...scopeArms(scopeRoot) };

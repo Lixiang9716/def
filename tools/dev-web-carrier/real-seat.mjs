@@ -2,24 +2,17 @@
 // dsh:logging-exempt (node-side driver: console IS the product)
 /**
  * real-seat.mjs — the dev carrier's REAL runtime seat: bootUpstream boots in
- * THIS Node process (composer-web-live's boot path — runtime.config → route
- * → spine → write surface → creation mount → resident), and the official
+ * THIS Node process (composer-web-live's boot path), and the official
  * client's wire (POST /api envelopes + WS /api/remote.mux + the boot-graph
  * index injection) bridges onto the same bus the device hosts deliver.
- *
- * The LLM route is --llm:
- *   staged  → a REAL endpoint (DSH_LLM_BASE_URL/DSH_LLM_MODEL/DSH_LLM_API_KEY,
- *             userEndpoint:true — the BYOK shape, key never rendered), or
- *   mock    → the loopback scripted chat-completions server (deterministic
- *             dry-run; ci/mock-llm-server.mjs, spawned here).
- *
+ * --llm staged → a REAL endpoint (the BYOK shape; env carries the key), or
+ * mock → the loopback scripted chat-completions server (deterministic).
  * usage: node --import <repo>/test/panel/spine/register.mjs \
- *             tools/dev-web-carrier/real-seat.mjs [--port N] [--llm staged|mock]
- * env:   DSH_LLM_BASE_URL DSH_LLM_API_KEY DSH_LLM_MODEL (staged mode)
+ *             tools/dev-web-carrier/real-seat.mjs [--llm staged|mock]
  */
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
-import { installHostGateway } from './host-gateway.mjs';
+import { installHostGateway, installProcSeams } from './host-gateway.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -27,7 +20,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PluginsRoute } from './plugins-route.mjs';
 import { stagedDescriptors } from './compose-boot.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
-import { createRequire } from 'node:module';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -133,49 +125,15 @@ if (args.llm === 'mock') {
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
-// The REAL proc seams: this seat's fs IS the host disk, so the shims'
-// metadata/read fallbacks answer truthfully for files created outside the
-// runtime (the toolface runners' shape — statSync/readdir/readFile base64).
-{
-  const { statSync, readdirSync } = await import('node:fs');
-  globalThis.__dshProcStatReal = (p) => {
-    try {
-      const st = statSync(p);
-      return {
-        isFile: st.isFile(), isSymbolicLink: st.isSymbolicLink(),
-        size: Number(st.size), mode: Number(st.mode),
-        mtimeMs: Math.trunc(Number(st.mtimeMs)),
-      };
-    } catch { return null; }
-  };
-  globalThis.__dshProcReaddirReal = (p) => {
-    try { return readdirSync(p); } catch { return null; }
-  };
-  globalThis.__dshProcReadReal = (p) => {
-    try { return readFileSync(p).toString('base64'); } catch { return null; }
-  };
-}
-// The device plants a Buffer global with the DshBuffer statics (web-shims'
-// byte bridge — its `typeof undefined` guard never fires under Node, where
-// Buffer already exists without them); the coverage family calls them.
+// The REAL proc seams + the HOST gateway (fs family + keychain): this
+// seat's fs IS the host disk, so the shims' metadata/read fallbacks answer
+// truthfully and the plugin plane's writes land (the device C host
+// implements these natively; the panel seam loud-fails them by design).
+installProcSeams();
 {
   const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
   globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
 }
-// The HOST gateway: the fs family + keychain the plugin plane writes
-// through (the device C host implements these; the panel seam loud-fails
-// them). Scope root inside the workspace container, like the phone.
-installHostGateway(join(WS_ROOT, 'app-scope'));
-// The device plants a Buffer global with the DshBuffer statics (web-shims'
-// byte bridge — its `typeof undefined` guard never fires under Node, where
-// Buffer already exists without them); the coverage family calls them.
-{
-  const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
-  globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
-}
-// The HOST gateway: the fs family + keychain the plugin plane writes
-// through (the device C host implements these; the panel seam loud-fails
-// them). Scope root inside the workspace container, like the phone.
 installHostGateway(join(WS_ROOT, 'app-scope'));
 
 // ---- the web.plugins delivery: the staged client bundles, walked to
@@ -329,14 +287,13 @@ const materializePresetsPlane = () => {
   if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
 };
 // ---- runtime.config, then the runtime import (main() runs at import) ----
-const WSArg = (p) => p; // the boot demands '/'-prefixed POSIX roots
 const cfg = {
   scenario: 'hero.seat',
   agentId: 'main',
   sessionId: 's-hero-0001',
-  cwd: WSArg(WS_ROOT),
-  containerRoot: WSArg(WS_ROOT),
-  container: { cwd: WSArg(WS_ROOT), tmpdir: WSArg(join(WS_ROOT, '.tmp')), home: WSArg(join(WS_ROOT, 'home')), env: {}, argv: ['dsh', '--profile', 'mobile'] },
+  cwd: WS_ROOT,
+  containerRoot: WS_ROOT,
+  container: { cwd: WS_ROOT, tmpdir: `${WS_ROOT}/.tmp`, home: `${WS_ROOT}/home`, env: {}, argv: ['dsh', '--profile', 'mobile'] },
   llm,
   mockLlmUrl: args.llm === 'mock' ? llm.baseURL : undefined,
   apiKey: args.llm === 'mock' ? 'hero-mock-key' : llm.apiKey,

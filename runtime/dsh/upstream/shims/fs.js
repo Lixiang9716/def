@@ -215,27 +215,36 @@ export { mountWorkspace };
 /** Read bytes: workspace file, or the seeded read-only view. A workspace
  * symlink resolves ONE hop before the lookup (a dangling link ENOENTs).
  * Throws ENOENT outside both views. */
+/** The mirrored-workspace arms of readAnyBytes (split at the size gate):
+ * the permission-gated file read and the EISDIR directory gate. */
+const readMirroredBytes = (resolved) => {
+  const file = wsFileAt(resolved);
+  if (file === undefined) return undefined;
+  // File-level read permission: the workspace tracks a mode per file, and
+  // a 0-bit mode is unreadable — EACCES like node (settings-file's
+  // fails-loud-at-boot test chmods the document to 0o000). Directory modes
+  // stay tracked-but-unenforced (the §3 note above): only FILE reads gate.
+  if (((file.mode ?? 0o644) & 0o444) === 0) {
+    const error = new Error(`EACCES: permission denied, open '${resolved}'`);
+    error.code = 'EACCES';
+    error.errno = -13;
+    error.syscall = 'open';
+    error.path = resolved;
+    throw error;
+  }
+  // The sparse truncate-grow tail answers zeros here, at the one read arm
+  // every read path funnels through (fs-promises readFile, FileHandle
+  // read/write/append — node's sparse read semantics).
+  return DshBuffer.fromBytes(wsMaterialize(file));
+};
+
+/** Read bytes: workspace file, or the seeded read-only view. A workspace
+ * symlink resolves ONE hop before the lookup (a dangling link ENOENTs).
+ * Throws ENOENT outside both views. */
 export const readAnyBytes = (path) => {
   const resolved = resolveWorkspaceSymlink(path);
-  const file = wsFileAt(resolved);
-  if (file !== undefined) {
-    // File-level read permission: the workspace tracks a mode per file, and
-    // a 0-bit mode is unreadable — EACCES like node (settings-file's
-    // fails-loud-at-boot test chmods the document to 0o000). Directory modes
-    // stay tracked-but-unenforced (the §3 note above): only FILE reads gate.
-    if (((file.mode ?? 0o644) & 0o444) === 0) {
-      const error = new Error(`EACCES: permission denied, open '${resolved}'`);
-      error.code = 'EACCES';
-      error.errno = -13;
-      error.syscall = 'open';
-      error.path = resolved;
-      throw error;
-    }
-    // The sparse truncate-grow tail answers zeros here, at the one read arm
-    // every read path funnels through (fs-promises readFile, FileHandle
-    // read/write/append — node's sparse read semantics).
-    return DshBuffer.fromBytes(wsMaterialize(file));
-  }
+  const mirrored = readMirroredBytes(resolved);
+  if (mirrored !== undefined) return mirrored;
   // Reading a DIRECTORY is EISDIR, like node's open(2) gate (measured
   // 2026-09-28: credentials-local mkdirs the document path and expects the
   // boot read to reject /EISDIR/, not to treat it as an absent document).
