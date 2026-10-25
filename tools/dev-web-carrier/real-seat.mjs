@@ -225,43 +225,32 @@ for (const pkg of MOBILE_PRESET_PACKAGES) {
 };
 
 const webPluginDelivery = () => {
-  const plugins = [];
-  for (const d of stagedDescriptors(REPO_ROOT)) {
-    const pkgDir = dirname(d.pkgJsonPath);
-    const diskDir = join(WS_ROOT, 'web-plugins', d.loaderName);
-    mkdirSync(diskDir, { recursive: true });
+  const plugins = stagedDescriptors(REPO_ROOT).map((d) => {
     const files = {};
-    walkFiles(pkgDir, '', files);
-    const keyed = {};
+    walkFiles(dirname(d.pkgJsonPath), '', files);
+    // the HTTP face serves the same bytes from disk (the page fetches the
+    // graph URLs over the origin; the runtime reads the VFS)
     for (const [rel, file] of Object.entries(files)) {
-      const vfsPath = `/web-plugins/${d.loaderName}${rel}`;
-      keyed[vfsPath] = file;
-      // the HTTP face serves the same bytes from disk (the page fetches
-      // the graph URLs over the origin; the runtime reads the VFS)
       const dst = join(WS_ROOT, 'web-plugins', d.loaderName, rel);
       mkdirSync(dirname(dst), { recursive: true });
       writeFileSync(dst, Buffer.from(file.b64, 'base64'));
     }
-    plugins.push({
+    return {
       loaderName: d.loaderName,
       pkgJsonPath: d.pkgJsonPath,
       entryPath: `${WS_ROOT}/web-plugins/${d.loaderName}/lib/client.js`,
-      files: keyed,
-    });
-  }
+      files,
+    };
+  });
   stageRuntimePlugins(plugins);
-   return { type: 'web.plugins', plugins };
+  return { type: 'web.plugins', plugins };
 };
 const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
-// ---- the preset plane, re-based into the workspace (T-0218 leg 4's Node
-// face): the presets service reads its shipped tree through the fs shim,
-// and the shim only serves the workspace (ws seam = real disk) plus the
-// seeded VFS. The vendored tree materializes under the workspace root —
-// real files the ws seam serves — with the synthesized mobile preset
-// (AGENT_PRESETS_DEFAULT) copied from presets-mobile beside the shipped
-// four, and the farm node_modules linked where the composition's upward
-// package walk lands. ----
+// ---- the preset plane (T-0218 leg 4's Node face): the vendored tree
+// materializes under the workspace (the ws seam serves it), the synthesized
+// mobile preset copied beside the shipped four, the farm node_modules
+// linked for the composition's upward package walk. ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
 // The presets VFS seed (the third delivery): the generated manifest keyed
 // at the WORKSPACE vendor root — the mount's async readFile has no
@@ -297,7 +286,7 @@ const materializePresetsPlane = () => {
   const wsNm = join(WS_ROOT, 'node_modules');
   if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
 };
-// ---- runtime.config, then the runtime import (main() runs at import) ----// ---- runtime.config, then the runtime import (main() runs at import) ----
+// ---- runtime.config, then the runtime import (main() runs at import) ----
 const WSArg = (p) => p; // the boot demands '/'-prefixed POSIX roots
 const cfg = {
   scenario: 'hero.seat',
