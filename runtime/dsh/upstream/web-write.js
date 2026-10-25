@@ -42,7 +42,7 @@ import {
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
 import { readStore as readCredentialStore } from './web-write-llm.js';
-import { mountedServiceOf } from 'plugin-mount.js';
+import { makeAppServiceCall } from './web-write-app.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the
@@ -299,30 +299,6 @@ const makeCreateSession = (ctx, deps) => async (args) => {
   streams.attachWorkspace(
     workspace ?? workspaces.get(seeded.workspaceId), sessionId);
   return { sessionId };
-};
-
-/** The app bridge's call arm: route one client service call to the mounted
- * plugin's exported service object (plugin-mount mountedServices). Args:
- * {pluginId, method, args} — the method receives the args object and MUST
- * return JSON-safe data; a missing plugin/method refuses with
- * app/service-not-found (never a silent undefined). */
-export const makeAppServiceCall = () => async (args) => {
-  const pluginId = args?.pluginId;
-  const method = args?.method;
-  if (typeof pluginId !== 'string' || pluginId.length === 0
-    || typeof method !== 'string' || method.length === 0) {
-    throw remoteError('gateway/bad-request',
-      'app/service-call needs pluginId and method', {});
-  }
-  const service = mountedServiceOf(pluginId);
-  const fn = service ? service[method] : undefined;
-  if (typeof fn !== 'function') {
-    throw remoteError('app/service-not-found',
-      `no service method "${method}" on mounted plugin "${pluginId ?? ''}"`,
-      { pluginId, method });
-  }
-  const value = await fn(args?.args ?? {});
-  return { value: value === undefined ? null : value };
 };
 
 const makePromptSession = (ctx) => async (args) => {

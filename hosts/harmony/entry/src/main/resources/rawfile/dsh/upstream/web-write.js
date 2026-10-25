@@ -42,6 +42,7 @@ import {
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
 import { readStore as readCredentialStore } from './web-write-llm.js';
+import { makeAppServiceCall } from './web-write-app.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the
@@ -82,6 +83,10 @@ export { COVERAGE_ENDPOINTS, COVERAGE_STREAMS };
  * legs: the 预设 panel's roster (agentPresets/*), the 插件 list's read-only
  * snapshot (pluginInventory/list), and the settings namespaces. */
 export const WRITE_ENDPOINTS = [
+  // The app bridge: the page calls a mounted plugin's exported service
+  // (plugin-mount's mountedServices registry) — the generated app's
+  // frontend reaches its own backend through this claim.
+  'app/service-call',
   'session.list', 'session/list', 'session/create', 'session/prompt',
   // The teardown leg (web-write-session-delete.js): running refuses.
   'session/cancel', 'session/delete',
@@ -383,6 +388,7 @@ const makeCancelSession = (ctx) => async (args) => {
 const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       'session.list': makeListSessions(ctx),
       'session/list': makeListSessions(ctx),
+      'app/service-call': makeAppServiceCall(),
       'session/create': makeCreateSession(ctx, deps),
       'session/prompt': makePromptSession(ctx),
       'session/cancel': makeCancelSession(ctx),
