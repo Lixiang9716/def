@@ -35,9 +35,10 @@ const plugins = new PluginsRoute(
   })),
 );
 
-const args = { port: 0, llm: 'staged' };
+const args = { port: 0, llm: 'staged', ui: 'official' };
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--port') args.port = Number(process.argv[++i]);
+  if (process.argv[i] === '--ui') args.ui = process.argv[++i];
   else if (process.argv[i] === '--llm') args.llm = process.argv[++i];
   else throw new Error(`real-seat: unknown argument '${process.argv[i]}'`);
 }
@@ -45,7 +46,7 @@ if (args.llm !== 'staged' && args.llm !== 'mock') {
   throw new Error(`real-seat: --llm want staged|mock, got '${args.llm}'`);
 }
 
-// ---- workspace + the harness globals (before the runtime import) ----
+// ---- workspace + harness globals ----
 for (const d of [WS_ROOT, join(WS_ROOT, 'home'), join(WS_ROOT, '.tmp')]) mkdirSync(d, { recursive: true });
 const queue = [];
 let wake = null;
@@ -63,9 +64,6 @@ globalThis.__dshBusOnMessage = (line) => {
   wake?.();
   wake = null;
 };
-// The app card plane: mounted plugins post card.* frames on the bus; the
-// plane forwards them to pages subscribed through the mux endpoint
-// app/cards (the web face of the native CardPlayerSurface contract).
 const cards = createCardPlane((streamId, frame) => {
   muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
 });
@@ -108,7 +106,7 @@ if (args.llm === 'staged' && (!llm.baseURL || !llm.apiKey)) {
   throw new Error('real-seat: staged mode needs DSH_LLM_BASE_URL + DSH_LLM_API_KEY');
 }
 
-// ---- the loopback mock (mock mode): a REAL scripted chat-completions server ----
+// ---- the loopback mock (mock mode): a scripted chat-completions server ----
 let mockHandle = null;
 if (args.llm === 'mock') {
   const { startMockLlmServer } = await import(pathToFileURL(join(REPO_ROOT, 'external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js')).href);
@@ -128,11 +126,11 @@ const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
 installProcSeams();
-installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 {
   const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
   globalThis.Buffer.fromBytes ??= (b) => DshBuffer.fromBytes(b);
 }
+installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 installHostGateway(join(WS_ROOT, 'app-scope'));
 
 // ---- the web.plugins delivery: the staged client bundles walked to b64
@@ -188,9 +186,8 @@ const stageRuntimePlugin = (plugins, pkg) => {
 /** The mobile composition's runtime plugin packages, staged beside the
  * client bundles (the 19-row preset join names them). */
 const stageRuntimePlugins = (plugins) => {
-// The mobile composition's RUNTIME plugin rows (the 19-row join): each
-// names a vendored package the loader must resolve — stage the package's
-// own files the same way the device's web-plugins staging does.
+// The mobile composition's RUNTIME plugin rows (each names a vendored
+// package the loader must resolve — staged like the device web-plugins).
 for (const pkg of MOBILE_PRESET_PACKAGES) {
   const real = join(REPO_ROOT, 'runtime/dsh/node_modules/@deepseek-ai', pkg);
   if (!existsSync(join(real, 'package.json'))) {
@@ -246,10 +243,8 @@ const webPluginDelivery = () => {
 const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
 // ---- the preset plane: the vendored tree + the synthesized presets
-// materialize under the workspace (the ws seam serves them), the farm
-// node_modules linked for the upward package walk. The VFS seed keys at
-// the WORKSPACE vendor root (the mount's async readFile has no real-disk
-// twin — underVFS is the read path). ----
+// materialize under the workspace; the VFS seed keys at the WORKSPACE
+// vendor root (the mount's async readFile has no real-disk twin). ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
 const realRoot = `${WS_VENDOR}/`;
 const presetsSeedSetup = async () => {
@@ -331,11 +326,8 @@ deliverWebPluginsNow();
 deliverPresetsSeed();
 console.log('[real-seat] resident when the boot graph lands');
 
-// ---- wait for the runtime's boot graph, then compose the served rows ----
-await bootReadyP;
-// The page wire composes OUT-OF-PROCESS (compose-only.mjs, a fresh clean
-// context — the loader's internal-resolver guard refuses a second in-process
-// compose); the runtime's own web.boot posted the recovery defaults.
+// ---- wait for the boot graph, then compose the served rows
+// (OUT-OF-PROCESS via compose-only.mjs; see the loader-resolver note) ----
 const staged = join(REPO_ROOT, 'tmp/dev-web-carrier');
 const composed = JSON.parse(readFileSync(join(staged, 'hero-rows.json'), 'utf8'));
 plugins.applyRuntimeRevs(composed.plugins);
@@ -400,12 +392,18 @@ for (const msg of queue.splice(0)) dispatch(msg);
 
 // ---- HTTP + WS ----
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
+const V2_ROOT = join(REPO_ROOT, 'presentation/web-client-v2/web');
 const serveDist = (req, url, respond) => {
+  // --ui v2: the def mobile face (web-client-v2, plain vanilla — no boot
+  // injection, no client-modules graph; it speaks the loopback wire
+  // directly). --ui official: the composed graph + the index injection.
+  const root = args.ui === 'v2' ? V2_ROOT : DIST_ROOT;
   const rel = url.pathname === '/' ? '/index.html' : url.pathname;
-  const file = join(DIST_ROOT, rel);
-  if (!file.startsWith(DIST_ROOT) || !existsSync(file)) return respond(404, 'text/plain', '');
+  const file = join(root, rel);
+  if (!file.startsWith(root) || !existsSync(file)) return respond(404, 'text/plain', '');
   const mime = MIME[file.slice(file.lastIndexOf('.'))] ?? 'application/octet-stream';
-  const body = rel === '/index.html' ? renderIndex(readFileSync(file, 'utf8')) : readFileSync(file);
+  const body = args.ui !== 'v2' && rel === '/index.html'
+    ? renderIndex(readFileSync(file, 'utf8')) : readFileSync(file);
   respond(200, mime, body);
 };
 const handleApi = (req, url, respond) => {
