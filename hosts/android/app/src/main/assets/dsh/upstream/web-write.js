@@ -202,10 +202,11 @@ const canonicalTimeZone = (value) => {
     || (value !== 'UTC' && !IANA_TIME_ZONE.test(value))) return undefined;
   try {
     if (typeof Intl === 'undefined') return value;
+    // A full Intl resolves a proper Area/Location to ITSELF — the
+    // resolution succeeding IS the validity proof (the recorded device
+    // wire prompts with Asia/Shanghai). Only a throw above invalidates.
     const fmt = new Intl.DateTimeFormat('en-US', { timeZone: value });
-    const canonical = fmt.resolvedOptions().timeZone;
-    if (canonical !== 'UTC' && IANA_TIME_ZONE.test(canonical)) return undefined;
-    return canonical;
+    return fmt.resolvedOptions().timeZone;
   } catch {
     return undefined;
   }

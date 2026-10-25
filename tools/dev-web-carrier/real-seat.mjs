@@ -409,15 +409,22 @@ const handleApi = (req, url, respond) => {
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
   req.on('end', () => {
-    const rpcId = `hero-${randomBytes(6).toString('hex')}`;
     let payload;
     try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return respond(400, 'text/plain', ''); }
+    // The client matches responses by ITS request rpcId (dsh-client-connection
+    // throws on any mismatch) — echo it; mint only for hand-rolled probes.
+    const rpcId = typeof payload.rpcId === 'string' && payload.rpcId !== ''
+      ? payload.rpcId : `hero-${randomBytes(6).toString('hex')}`;
+    // The client posts the full client-request envelope {type, rpcId,
+    // payload:{args}}; the runtime's handler reads msg.payload.args — unwrap
+    // one level (a bare {"args":…} hand-probe body passes through).
+    const inner = payload.payload ?? payload;
     console.log(`[real-seat] page -> ${url.pathname.slice('/api/'.length)}`);
     apiWaiters.set(rpcId, (result) => {
       console.log(`[real-seat] <- ${url.pathname.slice('/api/'.length)} ok=${result.ok}${result.ok ? '' : ' err=' + JSON.stringify(result.error ?? {})}`);
       respond(200, 'application/json', JSON.stringify({ type: 'server-response', rpcId, result }));
     });
-    deliver({ type: 'api.request', rpcId, endpoint: url.pathname.slice('/api/'.length), payload });
+    deliver({ type: 'api.request', rpcId, endpoint: url.pathname.slice('/api/'.length), payload: inner });
     setTimeout(() => {
       if (apiWaiters.has(rpcId)) {
         apiWaiters.delete(rpcId);
