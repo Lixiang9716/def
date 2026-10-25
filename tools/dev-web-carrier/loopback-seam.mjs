@@ -16,6 +16,29 @@ import { createRequire } from 'node:module';
 
 const require_ = createRequire(import.meta.url);
 
+/** Relay one settled response body to the gateway's stream sink. */
+const relayBody = async (res, bodyId) => {
+  try {
+    for await (const chunk of res) {
+      const frame = { callId: bodyId, event: 'http.body', chunkB64: chunk.toString('base64') };
+      globalThis.__dshGatewayOnEvent?.(JSON.stringify(frame));
+    }
+    globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.end' }));
+  } catch (error) {
+    const frame = { callId: bodyId, event: 'http.error', code: 'io', message: error?.message ?? 'response failed' };
+    globalThis.__dshGatewayOnEvent?.(JSON.stringify(frame));
+  }
+};
+
+/** Hand one response to the gateway: resolve the httpFetch promise, then
+ * relay the body one macrotask later (see the module comment). */
+const handoff = (res, resolveStage, bodyId) => {
+  setImmediate(() => {
+    resolveStage({ status: res.statusCode, headers: res.headers, bodyId });
+    setTimeout(() => void relayBody(res, bodyId), 0);
+  });
+};
+
 export const stageLoopbackHttpFetch = (seams, baseURL) => {
   const { request: httpRequest } = require_('node:http');
   let bodySeq = 0;
@@ -23,22 +46,7 @@ export const stageLoopbackHttpFetch = (seams, baseURL) => {
   seams.stagedHttp.set(prefix, (args) => new Promise((resolveStage, rejectStage) => {
     const body = args.bodyB64 !== undefined ? Buffer.from(args.bodyB64, 'base64') : undefined;
     const req = httpRequest(args.url, { method: args.method ?? 'POST', headers: args.headers ?? {} }, (res) => {
-      const bodyId = `body:mock-${++bodySeq}`;
-      setImmediate(() => {
-        resolveStage({ status: res.statusCode, headers: res.headers, bodyId });
-        setTimeout(() => {
-          void (async () => {
-            try {
-              for await (const chunk of res) {
-                globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.body', chunkB64: chunk.toString('base64') }));
-              }
-              globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.end' }));
-            } catch (error) {
-              globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.error', code: 'io', message: error?.message ?? 'response failed' }));
-            }
-          })();
-        }, 0);
-      });
+      handoff(res, resolveStage, `body:mock-${++bodySeq}`);
     });
     req.on('error', (error) => rejectStage(Object.assign(error, { code: 'io' })));
     if (body !== undefined) req.write(body);
