@@ -40,6 +40,41 @@ export const appletCat = async (argv, ctx) => {
   return shellStringOutcome(result);
 };
 
+/** jscheck: compile-probe the inline <script> blocks of an HTML file —
+ * the generated app's own smoke check (the author cannot open a browser;
+ * QuickJS compiling each block IS the parse proof, and a SyntaxError names
+ * the block so the author can fix the exact script). No DOM anywhere:
+ * this is a compile-only probe, never an execution. */
+export const appletJscheck = async (argv) => {
+  if (argv.length === 0) {
+    throw new ShellRefusal(2, 'jscheck: no file given');
+  }
+  const result = await runShelljs(
+    async (snap) => { for (const file of argv) await snap.readFile(file); },
+    () => shellState.shell.cat(...argv),
+  );
+  const blocks = [...result.stdout.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
+    .map((m) => m[1]).filter((s) => s.trim().length > 0);
+  if (blocks.length === 0) {
+    throw new ShellRefusal(2, 'jscheck: no inline <script> blocks found');
+  }
+  const lines = [];
+  for (let i = 0; i < blocks.length; i++) {
+    try {
+      new Function(blocks[i]);
+      lines.push(`script[${i}]: syntax OK (${blocks[i].length} bytes)`);
+    } catch (error) {
+      lines.push(`script[${i}]: SYNTAX ERROR: ${error?.message ?? error}`);
+    }
+  }
+  const bad = lines.filter((l) => l.includes('SYNTAX ERROR')).length;
+  return {
+    stdout: `${lines.join('\n')}\njscheck: ${blocks.length} block(s), ${bad} broken\n`,
+    stderr: '',
+    code: bad === 0 ? 0 : 1,
+  };
+};
+
 /** echo: no fs; util.format conventions (the body owns -n/-e). */
 export const appletEcho = async (argv) => {
   log.debug('applet', { applet: 'echo' });
