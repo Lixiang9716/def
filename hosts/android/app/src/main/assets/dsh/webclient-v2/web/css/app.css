@@ -1007,3 +1007,22 @@
   color: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
+
+/* ---- def home: the app card grid (形态三) ---- */
+.app-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 12px;margin:14px 0 22px}
+.app-card{border:0;padding:0;text-align:left;cursor:pointer;border-radius:18px;overflow:hidden;background:var(--card, #1b1b20);color:var(--fg);box-shadow:0 8px 22px #0007;transition:transform .12s}
+.app-card:active{transform:scale(.97)}
+.app-card-face{aspect-ratio:1;display:grid;place-items:center}
+.app-card-glyph{font-size:30px;font-weight:700;color:#fff9}
+.app-card-title{font-size:13px;font-weight:600;margin:8px 10px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-card-meta{font-size:11px;color:#9a9aa2;margin:2px 10px 10px}
+.new-app-form{border:0;border-radius:18px;background:#1d1d22;color:var(--fg);width:min(320px, 86vw);padding:0}
+.new-app-form::backdrop{background:#000a}
+.new-app-form form{display:flex;flex-direction:column;gap:12px;padding:18px}
+.new-app-form h2{margin:0;font-size:16px}
+.new-app-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#b9b9c0}
+.new-app-form input{border:1px solid #34343a;border-radius:10px;background:#141418;color:var(--fg);padding:9px 11px;font-size:14px}
+.new-app-form menu{display:flex;gap:10px;justify-content:flex-end;margin:4px 0 0;padding:0}
+.new-app-form button{border:0;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:#26262c;color:var(--fg)}
+.new-app-form button.primary{background:var(--red, #ec4141);color:#fff}
+.assistant-entry{opacity:.72}

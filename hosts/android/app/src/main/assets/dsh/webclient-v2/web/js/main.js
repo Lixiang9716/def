@@ -145,6 +145,77 @@ const refreshSessions = async () => {
   }
 };
 
+// ---- def home: the app inventory (the product's core visible surface) ----
+
+/** The mounted-plugin roster → the home card grid rows. */
+const refreshApps = async () => {
+  const grid = $('app-grid');
+  const emptyNote = $('app-grid-empty');
+  if (!grid) return;
+  try {
+    const value = await rpc('pluginInventory/list');
+    const plugins = Array.isArray(value?.plugins) ? value.plugins : [];
+    grid.replaceChildren(...plugins.map((plugin, i) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'app-card glass';
+      card.setAttribute('role', 'listitem');
+      const hue = (i * 47) % 360;
+      card.innerHTML = `
+        <div class="app-card-face" style="background:linear-gradient(140deg, hsl(${hue} 45% 30%), hsl(${(hue + 40) % 360} 40% 22%))">
+          <span class="app-card-glyph" aria-hidden="true">${(plugin.name ?? plugin.id ?? '◆').slice(0, 2)}</span>
+        </div>
+        <div class="app-card-title">${plugin.name ?? plugin.id ?? ''}</div>
+        <div class="app-card-meta">${plugin.enabled === false ? '未启用' : '已挂载'}</div>`;
+      card.addEventListener('click', () => openAppCard(plugin));
+      return card;
+    }));
+    emptyNote.hidden = plugins.length > 0;
+  } catch (error) {
+    grid.replaceChildren();
+    emptyNote.hidden = false;
+  }
+};
+
+/** Open one app card: the fullscreen face + the talk-to-this-app chat. */
+const openAppCard = (plugin) => {
+  toast(`${plugin.name ?? plugin.id}:卡面全屏与 App 会话在 v2.1`);
+};
+
+/** The creation flow: the light form → an appgen session → the seeded
+ * creation prompt (the appgen preset's playbook takes over from there). */
+$('new-app').addEventListener('click', () => {
+  const form = $('new-app-form');
+  form.querySelector('#new-app-name').value = '';
+  form.querySelector('#new-app-desc').value = '';
+  form.showModal();
+});
+$('new-app-form-inner').addEventListener('submit', async (event) => {
+  if (event.submitter?.value !== 'ok') return;
+  const name = $('new-app-name').value.trim();
+  const desc = $('new-app-desc').value.trim();
+  if (!name || !desc) return;
+  try {
+    const value = await rpc('session/create', { args: { request: { preset: 'appgen' } } });
+    const sessionId = value?.sessionId;
+    if (typeof sessionId !== 'string') throw new Error('no sessionId');
+    openSession(sessionId);
+    const prompt = `创建一个名为「${name}」的移动 App:${desc}。单文件 HTML、390px、深色主题、真实可交互;写完用 present 交付。`;
+    const deadline = Date.now() + 15000;
+    while (composer.isGenerating() && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    let accepted = await composer.submitText(prompt);
+    while (!accepted && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      accepted = await composer.submitText(prompt);
+    }
+    toast(accepted ? `开始创建「${name}」` : `创建流已打开,请手动发送「${name}」的描述`);
+  } catch (error) {
+    toast(isRemoteError(error) ? `创建失败（${error.code}）` : '创建失败');
+  }
+});
+
 const showView = (name) => {
   for (const [key, node] of Object.entries(views)) node.hidden = key !== name;
 };
@@ -153,7 +224,7 @@ const onConnStatus = (status) => {
   connState = status;
   renderConnection($('conn-capsule'), status);
   refreshChrome();
-  if (status === 'open') refreshSessions();
+  if (status === 'open') { refreshSessions(); refreshApps(); }
 };
 mux.onStatus(onConnStatus);
 
