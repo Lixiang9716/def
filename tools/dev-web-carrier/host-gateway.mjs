@@ -18,6 +18,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
 const require_ = createRequire(import.meta.url);
+const nodeFs = require_('node:fs');
 const { join } = require_('node:path');
 
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
@@ -30,9 +31,11 @@ export const installProcSeams = (wsRoot) => {
   // The write-tool's mirror flushes to real disk through this seam (the
   // canonical path is workspace-rooted — prefix it with the real root).
   globalThis.__dshProcWriteFileReal = (p, b64) => {
-    const full = join(wsRoot, p.replace(/^\//, ''));
-    require_('node:fs').mkdirSync(join(full, '..'), { recursive: true });
-    require_('node:fs').writeFileSync(full, Buffer.from(b64, 'base64'));
+    // The shim's canonical path is workspace-rooted ('/foo/bar' = the file
+    // bar in foo under the workspace). Prefix wsRoot to reach real disk.
+    const full = join(wsRoot, p);
+    nodeFs.mkdirSync(dirname(full), { recursive: true });
+    nodeFs.writeFileSync(full, Buffer.from(b64, 'base64'));
   };
   globalThis.__dshProcStatReal = (p) => {
     try {
