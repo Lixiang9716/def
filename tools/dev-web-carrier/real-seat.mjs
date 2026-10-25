@@ -301,13 +301,10 @@ const cfg = {
   llm,
   mockLlmUrl: args.llm === 'mock' ? llm.baseURL : undefined,
   apiKey: args.llm === 'mock' ? 'hero-mock-key' : llm.apiKey,
-  // The staged route reads the FLAT config fields (the Android host's
-  // shape — llm-route.js stagedRoute); the nested `llm` above is seat-local.
+  // The staged route reads the FLAT fields (Android host's shape —
+  // llm-route.js stagedRoute); the nested `llm` above is seat-local.
   ...(args.llm === 'staged' ? {
-    llmBaseUrl: llm.baseURL,
-    llmApiKey: llm.apiKey,
-    llmModel: llm.model,
-    llmProvider: llm.provider,
+    llmBaseUrl: llm.baseURL, llmApiKey: llm.apiKey, llmModel: llm.model, llmProvider: llm.provider,
   } : {}),
   commands: true,
   skills: {},
