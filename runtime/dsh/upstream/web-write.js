@@ -385,8 +385,7 @@ const makeCancelSession = (ctx) => async (args) => {
  * @returns {api, openStream, dispose}
  */
 
-/** The /api handler map (split from createWriteSurface at the file-size
- * gate): every claimed endpoint's handler, keyed by wire name. */
+/** The /api handler map: every claimed endpoint's handler by wire name. */
 const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       'session.list': makeListSessions(ctx),
       'session/list': makeListSessions(ctx),
@@ -395,12 +394,8 @@ const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       'session/prompt': makePromptSession(ctx),
       'session/cancel': makeCancelSession(ctx),
       ...makeSessionDeleteHandlers(ctx, deps),
-      // The composer model dialog's commit leg: validates the pick against
-      // the boot route and appends the model/selection intent to the live
-      // session journal (the desktop controller's selectModel semantics).
+      // The composer model dialog's commit + fork legs.
       ...makeModelSelectionHandlers(ctx, deps.llmRoute), ...makeSessionFeedbackHandlers(ctx),
-      // The composer dialog's Fork session leg: seeds the child from one
-      // completed-turn prefix and attaches it to the profile's workspace.
       ...makeSessionForkHandlers(ctx, deps),
       // The session deep-page legs + opener gate + preset catalog
       // (upstream/web-write-session.js).
