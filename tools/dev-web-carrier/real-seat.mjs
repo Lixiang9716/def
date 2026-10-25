@@ -278,31 +278,32 @@ const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
 /** The presets seed (the third device delivery): the vendored agent-presets
  * tree keyed at its VFS root — the roster walk reads ONLY the seeded view. */
-/** The presets VFS seed: the generated manifest's bytes keyed at the REAL
- * root the service reads. Under the farm resolution the vendored presets lib
- * loads from runtime/dsh/vendor (real disk), so its SHIPPED_PRESET_ROOT is
- * that real directory — the seat pushes it into the fs shim's VFS_ROOTS and
- * rewrites the manifest keys onto it (the /vendor spelling is the dsh-cli
- * face; this seat serves the same bytes at the path the service reads). */
-const presetsSeedSetup = async () => {
-  const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
-  const realRoot = `${join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2')}/`;
-  shim.VFS_ROOTS.push(realRoot);
-  const seed = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/scenario/agent-presets-probe-seed.js')).href);
-  const files = {};
-  for (const [path, file] of Object.entries(seed.default)) {
-    const tail = path.slice('/vendor/dsh/agent-presets@0.1.6-alpha.2'.length);
-    // single-slash join: the VFS keys are prefix-matched, and a doubled
-    // slash makes every readdir/read miss (the empty-roster class)
-    files[`${realRoot}${tail.replace(/^\/+/, '')}`] = { b64: Buffer.from(file.bytes).toString('base64'), mtimeMs: 0 };
+// The preset plane re-bases into the WORKSPACE (boot's agentPresetsBaseUrl
+// + agentPresetRoots — the Node face): the presets service reads its shipped
+// tree through the fs shim, and the shim only serves the workspace (ws seam
+// = real disk) plus the seeded VFS. The generated /vendor seed fed the VFS
+// face on dsh-cli; here the same bytes materialize under the workspace root
+// so the ws seam answers the walk with real files.
+const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
+const materializePresetsWorkspaceCopy = () => {
+  const vendored = join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2');
+  const { cpSync } = require('node:fs');
+  cpSync(vendored, WS_VENDOR, { recursive: true });
+  // node_modules resolution markers beside the composition rows: the
+  // generated seed's marker set, as real symlinks into the farm
+  const nm = join(WS_VENDOR, 'node_modules', '@deepseek-ai');
+  mkdirSync(nm, { recursive: true });
+  const seed = JSON.parse(readFileSync(join(staged, 'presets-seed-markers.json'), 'utf8'));
+  for (const marker of seed) {
+    const dst = join(WS_VENDOR, 'node_modules', ...marker.split('/'));
+    mkdirSync(dirname(dst), { recursive: true });
+    if (!existsSync(dst)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules', ...marker.split('/')), dst);
   }
-  return { type: 'agentPresets.seed', files };
+  // the composition's upward package walk lands on the farm itself
+  const wsNm = join(WS_ROOT, 'node_modules');
+  if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
 };
-const deliverPresetsSeed = async () => {
-  const delivery = await presetsSeedSetup();
-  deliver(delivery);
-  console.log(`[real-seat] presets seeded: ${Object.keys(delivery.files).length} files at the real vendor root`);
-};
+
 
 // ---- runtime.config, then the runtime import (main() runs at import) ----
 const WSArg = (p) => p; // the boot demands '/'-prefixed POSIX roots
@@ -323,6 +324,8 @@ const cfg = {
   creation: true,
   presetJoin: true,
   byokModels: true,
+  agentPresetsBaseUrl: pathToFileURL(WS_VENDOR + '/').href,
+  agentPresetRoots: [{ path: WS_VENDOR + '/presets/', trust: 'system' }],
   settingsProbes: false, // the recording seat proves chat+create, not settings
 };
 
