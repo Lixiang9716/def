@@ -422,7 +422,10 @@ const main = async () => {
   installTurnEvidence(ctx, route, cfg);
   installCreationMount(ctx, cfg, emit);
   installRuntimeHalf(ctx, cfg, route);
-  await probeSettingsSurfaces();
+  // cfg.settingsProbes === false skips the settings-proof probes (the
+  // recording seat doesn't prove settings; undefined keeps the proof).
+  if (cfg.settingsProbes === false) log.debug('settings probes skipped (cfg)', {});
+  else await probeSettingsSurfaces();
   log.debug('b4 runtime resident (write surface live; awaiting the page)', {});
 };
 

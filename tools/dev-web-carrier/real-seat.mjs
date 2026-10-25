@@ -23,7 +23,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PluginsRoute } from './plugins-route.mjs';
-import { composeBootWire, serializeRows, stagedDescriptors } from './compose-boot.mjs';
+import { stagedDescriptors } from './compose-boot.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
 import { createRequire } from 'node:module';
 
@@ -34,6 +34,13 @@ const WS_ROOT = join(REPO_ROOT, 'tmp/hero-seat/workspace');
 const COOKIE_NAME = 'dsh-dev-carrier';
 
 // ---- args ----
+const plugins = new PluginsRoute(
+  stagedDescriptors(REPO_ROOT).map((d) => ({
+    id: d.loaderName,
+    file: join(dirname(d.pkgJsonPath), 'lib', 'client.js'),
+  })),
+);
+
 const args = { port: 0, llm: 'staged' };
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--port') args.port = Number(process.argv[++i]);
@@ -69,16 +76,16 @@ globalThis.__dshBusPost = (line) => {
   const msg = JSON.parse(line);
   console.log('[real-seat] bus post:', msg.type);
   switch (msg.type) {
-    case 'web.boot': bootRows = msg; bootReady(); return;
+    case 'web.boot': bootRows = msg; console.log('[real-seat] runtime revs:', JSON.stringify(msg.plugins)); plugins?.applyRuntimeRevs(msg.plugins); bootReady(); return;
     case 'api.respond': {
       const waiter = apiWaiters.get(msg.rpcId);
       apiWaiters.delete(msg.rpcId);
       waiter?.(msg.result);
       return;
     }
-    case 'mux.item': muxSockets.get(msg.streamId)?.send(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
-    case 'mux.end': muxSockets.get(msg.streamId)?.send(JSON.stringify({ type: 'end', streamId: msg.streamId })); return;
-    case 'mux.error': muxSockets.get(msg.streamId)?.send(JSON.stringify({ type: 'error', streamId: msg.streamId, error: msg.error })); return;
+    case 'mux.item': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
+    case 'mux.end': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'end', streamId: msg.streamId })); return;
+    case 'mux.error': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'error', streamId: msg.streamId, error: msg.error })); return;
     default: posted.push(msg);
   }
 };
@@ -227,6 +234,7 @@ const cfg = {
   creation: true,
   presetJoin: true,
   byokModels: true,
+  settingsProbes: false, // the recording seat proves chat+create, not settings
 };
 
 const composerURL = pathToFileURL(join(REPO_ROOT, 'runtime/dsh/web-live/composer-web-live.js')).href;
@@ -240,13 +248,16 @@ console.log('[real-seat] resident when the boot graph lands');
 
 // ---- wait for the runtime's boot graph, then compose the served rows ----
 await bootReadyP;
+// The page wire composes OUT-OF-PROCESS (compose-only.mjs, a fresh clean
+// context — the loader's internal-resolver guard refuses a second in-process
+// compose); the runtime's own web.boot posted the recovery defaults.
 const staged = join(REPO_ROOT, 'tmp/dev-web-carrier');
-const boot = await composeBootWire({ repoRoot: REPO_ROOT, stageDir: staged });
-const plugins = new PluginsRoute(boot.bundles);
-plugins.applyRuntimeRevs(boot.plugins);
-const rows = serializeRows(boot.rows).concat([
-  { kind: 'global', name: '__DSH_CONNECTION_RECOVERY__', value: JSON.stringify({ backoffBaseMs: 500, backoffFactor: 2, backoffMaxMs: 10000, generationReadyWarnMs: 3000, generationReadyTimeoutMs: 15000 }).replaceAll('<', '\\u003c') },
-]);
+const composed = JSON.parse(readFileSync(join(staged, 'hero-rows.json'), 'utf8'));
+plugins.applyRuntimeRevs(composed.plugins);
+const rows = composed.rows.map((row) => {
+  const { placement, ...rest } = row;
+  return placement === undefined ? { ...rest, placement: 'head' } : { placement, ...rest };
+});
 const token = randomBytes(16).toString('hex');
 const isAuthed = (req) => (req.headers.cookie ?? '').split(';')
   .map((c) => c.trim()).some((c) => c === `${COOKIE_NAME}=${token}`);
@@ -258,20 +269,35 @@ const spliceAfter = (html, marker, insert) => {
   const gt = html.indexOf('>', at);
   return html.slice(0, gt + 1) + insert + html.slice(gt + 1);
 };
+const jsonString = (v) => `"${v.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
+const htmlAttribute = (v) => v.replaceAll('&', '&amp;').replaceAll('"', '&quot;')
+  .replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const READY_MARKUP = '<script>(globalThis.__DSH_BOOT_READY__ ??= Promise.withResolvers()).resolve()</script>';
 const rowMarkup = (row) => {
-  if (row.kind === 'style') return ['head', `<style>${row.text}</style>`];
-  if (row.kind === 'global') return ['head', `<script>window["${row.name}"]=${row.value};</script>`];
-  if (row.kind === 'script') return ['body', `<script type="module">${row.text}</script>`];
-  if (row.kind === 'link') return ['head', `<link rel="modulepreload" href="${row.url}">`];
-  return ['body', ''];
+  const placement = row.placement ?? 'head';
+  switch (row.kind) {
+    case 'global':
+      return ['head', `<script>globalThis[${jsonString(row.name)}] = ${row.value}</script>`];
+    case 'script':
+      return ['head', `<script>${row.text}</script>`];
+    case 'script-src':
+      return ['head', `<script src="${htmlAttribute(row.src)}"></script>`];
+    case 'script-preload':
+      return ['head', `<link rel="preload" as="script" href="${htmlAttribute(row.src)}">`];
+    case 'style':
+      return ['head', `<style>${row.text}</style>`];
+    default:
+      throw new Error(`real-seat: unknown injection row kind '${row.kind}'`);
+  }
 };
 const renderIndex = (html) => {
   let head = '';
   let body = '';
   for (const row of rows) {
     const [placement, markup] = rowMarkup(row);
-    if (placement === 'head') head += markup; else body += markup;
+    if (placement === 'body') body += markup; else head += markup;
   }
+  body += READY_MARKUP;
   let out = spliceAfter(html, '<head', '<base href="/">' + head);
   out = spliceAfter(out, '<body', body);
   return out;
