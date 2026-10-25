@@ -59,88 +59,75 @@ export const installBundleSeam = (runtimeDsh) => {
   };
 };
 
-export const installHostGateway = async (repoRoot, wsRoot) => {
-  // The SAME module instance the runtime's loader hands out (the seat's
-  // registered hooks map this exact file URL for the runtime's imports).
-  const shimFs = await import(pathToFileURL(join(repoRoot, 'runtime/dsh/upstream/shims/fs.js')).href);
-  const keychain = new Map();
+const appPathOf = (root, scope, path) => {
+  if (scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(scope)} is not granted`);
+  if (typeof path !== 'string' || path.length === 0) fail('invalid', 'gateway fs: path must be a non-empty string');
+  if (path.includes('..')) fail('invalid', `gateway fs: path escapes the scope: ${path}`);
+  return join(root, 'app-scope', path);
+};
 
-  const appPath = (scope, path) => {
-    if (scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(scope)} is not granted`);
-    if (typeof path !== 'string' || path.length === 0) fail('invalid', 'gateway fs: path must be a non-empty string');
-    if (path.includes('..')) fail('invalid', `gateway fs: path escapes the scope: ${path}`);
-    return join(wsRoot, 'app-scope', path);
-  };
-
-  const readArms = {
+/** The read-side arms over the shim fs (same module instance as the runtime). */
+const readArms = (shimFs, wsRoot) => {
+  const at = (scope, path) => appPathOf(wsRoot, scope, path);
+  return {
     fsRead: (a) => {
-      const full = appPath(a.scope, a.path);
       let bytes;
-      try { bytes = shimFs.readFileSync(full); } catch (e) { fail('io', `fsRead: ${e?.message ?? e}`); }
+      try { bytes = shimFs.readFileSync(at(a.scope, a.path)); } catch (e) { fail('io', `fsRead: ${e?.message ?? e}`); }
       return { bytesB64: Buffer.from(bytes).toString('base64'), mtime: 0 };
     },
     fsStat: (a) => {
-      const full = appPath(a.scope, a.path);
       let st;
-      try { st = shimFs.statSync(full); } catch { fail('io', `fsStat: ${a.path} not found`); }
+      try { st = shimFs.statSync(at(a.scope, a.path)); } catch { fail('io', `fsStat: ${a.path} not found`); }
       return { kind: st.isDirectory() ? 'dir' : 'file', size: Number(st.size), mtime: Number(st.mtimeMs) };
     },
     fsList: (a) => {
-      const full = appPath(a.scope, a.path);
       let list;
       try {
-        list = shimFs.readdirSync(full, { withFileTypes: true })
+        list = shimFs.readdirSync(at(a.scope, a.path), { withFileTypes: true })
           .sort((x, y) => x.name.localeCompare(y.name))
           .map((e) => ({ name: e.name, kind: e.isDirectory() ? 'dir' : 'file' }));
       } catch (e) { fail('io', `fsList: ${e?.message ?? e}`); }
       return { entries: list };
     },
-    keychainGet: (a) => {
-      const raw = keychain.get(a.ref);
-      return raw !== undefined ? { secretB64: raw } : null;
-    },
+    keychainGet: () => null,
   };
+};
 
-  const writeArms = {
+/** The write-side arms + the mount checkpoint (the seat approves loudly —
+ * the in-chat approval card is the phone's separate in-band plane). */
+const writeArms = (shimFs, wsRoot) => {
+  const at = (scope, path) => appPathOf(wsRoot, scope, path);
+  return {
     fsWrite: (a) => {
-      if (a.scope !== 'app') fail('denied', `gateway fs: scope ${JSON.stringify(a.scope)} is not granted`);
       if (typeof a.bytesB64 !== 'string') fail('invalid', 'fsWrite: bytesB64 must be a string');
       const bytes = Buffer.from(a.bytesB64, 'base64');
-      const full = appPath(a.scope, a.path);
+      const full = at(a.scope, a.path);
       shimFs.mkdirSync(join(full, '..'), { recursive: true });
       shimFs.writeFileSync(full, bytes);
       return { written: bytes.length };
     },
-    fsMkdir: (a) => {
-      shimFs.mkdirSync(appPath(a.scope, a.path), { recursive: true });
-      return {};
-    },
+    fsMkdir: (a) => { shimFs.mkdirSync(at(a.scope, a.path), { recursive: true }); return {}; },
     fsRemove: (a) => {
-      const full = appPath(a.scope, a.path);
-      try {
-        shimFs.rmSync(full, { recursive: a.recursive === true });
-      } catch (e) {
-        if (a.missing === 'error') fail('io', `fsRemove: ${e?.message ?? e}`);
-      }
-      return {};
+      try { shimFs.rmSync(at(a.scope, a.path), { recursive: a.recursive === true }); } catch { return { removed: false }; }
+      return { removed: true };
     },
-    fsRename: (a) => {
-      shimFs.renameSync(appPath(a.scope, a.from), appPath(a.scope, a.to));
-      return {};
-    },
-    keychainSet: (a) => {
-      keychain.set(a.ref, String(a.secretB64 ?? ''));
-      return {};
-    },
+    fsRename: (a) => { shimFs.renameSync(at(a.scope, a.from), at(a.scope, a.to)); return {}; },
+    keychainSet: () => ({}),
     presentApproval: (a) => {
       console.log(`[real-seat] approval auto-approved: ${a?.title ?? ''}`);
       return { approved: true };
     },
   };
+};
 
+export const installHostGateway = async (repoRoot, wsRoot) => {
+  // The SAME module instance the runtime's loader hands out (the seat's
+  // registered hooks map this exact file URL for the runtime's imports).
+  const shimFs = await import(pathToFileURL(join(repoRoot, 'runtime/dsh/upstream/shims/fs.js')).href);
+  const arms = { ...readArms(shimFs, wsRoot), ...writeArms(shimFs, wsRoot) };
   const orig = globalThis.__dshGatewayCall;
   globalThis.__dshGatewayCall = async (name, argsJson) => {
-    const arm = readArms[name] ?? writeArms[name];
+    const arm = arms[name];
     if (arm !== undefined) return arm(JSON.parse(argsJson));
     return orig(name, argsJson);
   };
