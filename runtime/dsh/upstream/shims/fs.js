@@ -253,7 +253,17 @@ export const readAnyBytes = (path) => {
     if (seeded !== undefined) return DshBuffer.fromBytes(seeded.bytes);
     throw enoent('open', path);
   }
-  if (wsAt(resolved) !== null || underVFS(path)) throw enoent('open', resolved);
+  if (wsAt(resolved) !== null) {
+    // The async face's real-disk twin (the readFileSync W6-V precedent, now
+    // pairing it): a workspace-inside miss consults the real seam before
+    // ENOENT — the workspaceFiles/readAll family reads runtime-authored
+    // files' REAL twins and the seat's host-disk files alike. The host
+    // declines with its own error arms (missing → the ENOENT below).
+    const real = readRealBytes(path, 'buffer');
+    if (real !== undefined) return real;
+    throw enoent('open', resolved);
+  }
+  if (underVFS(path)) throw enoent('open', path);
   // loop-r: the outside answer is the #358 anchor refusal (was the generic
   // desktop-host refuse — the model seat never took that arm meaningfully,
   // the real seam answered first).

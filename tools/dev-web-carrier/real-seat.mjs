@@ -133,6 +133,46 @@ if (args.llm === 'mock') {
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
+// The REAL proc seams: this seat's fs IS the host disk, so the shims'
+// metadata/read fallbacks answer truthfully for files created outside the
+// runtime (the toolface runners' shape — statSync/readdir/readFile base64).
+{
+  const { statSync, readdirSync } = await import('node:fs');
+  globalThis.__dshProcStatReal = (p) => {
+    try {
+      const st = statSync(p);
+      return {
+        isFile: st.isFile(), isSymbolicLink: st.isSymbolicLink(),
+        size: Number(st.size), mode: Number(st.mode),
+        mtimeMs: Math.trunc(Number(st.mtimeMs)),
+      };
+    } catch { return null; }
+  };
+  globalThis.__dshProcReaddirReal = (p) => {
+    try { return readdirSync(p); } catch { return null; }
+  };
+  globalThis.__dshProcReadReal = (p) => {
+    try { return readFileSync(p).toString('base64'); } catch { return null; }
+  };
+}
+// The device plants a Buffer global with the DshBuffer statics (web-shims'
+// byte bridge — its `typeof undefined` guard never fires under Node, where
+// Buffer already exists without them); the coverage family calls them.
+{
+  const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
+  globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
+}
+// The HOST gateway: the fs family + keychain the plugin plane writes
+// through (the device C host implements these; the panel seam loud-fails
+// them). Scope root inside the workspace container, like the phone.
+installHostGateway(join(WS_ROOT, 'app-scope'));
+// The device plants a Buffer global with the DshBuffer statics (web-shims'
+// byte bridge — its `typeof undefined` guard never fires under Node, where
+// Buffer already exists without them); the coverage family calls them.
+{
+  const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
+  globalThis.Buffer.fromBytes ??= (bytes) => DshBuffer.fromBytes(bytes);
+}
 // The HOST gateway: the fs family + keychain the plugin plane writes
 // through (the device C host implements these; the panel seam loud-fails
 // them). Scope root inside the workspace container, like the phone.
@@ -319,6 +359,10 @@ const cfg = {
   // mount refuses loudly). A staged key IS the configured state the section
   // exists to produce — off when staged, on for the mock seat.
   byokModels: args.llm === 'mock',
+  // The coverage surface (the file sidebar/preview family, skills, goals,
+  // commands, directoryPicker) — the Android interactive seat's row; the
+  // page's workspaceFiles/readAll answers from it.
+  fullCoverage: true,
   agentPresetsBaseUrl: pathToFileURL(WS_VENDOR + '/').href,
   agentPresetRoots: [{ path: WS_VENDOR + '/presets/', trust: 'system' }],
   settingsProbes: false, // the recording seat proves chat+create, not settings
