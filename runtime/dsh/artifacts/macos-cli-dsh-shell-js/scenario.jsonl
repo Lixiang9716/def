@@ -4,7 +4,8 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"launch env 
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
@@ -31,7 +32,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.BaEwaP"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.RUOAtN"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"session/created","sessionId":"s-dsh-shell-js-0001"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"agent/created","id":"main","sessionId":"s-dsh-shell-js-0001"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"offered phase begin","data":[{}]}
@@ -40,7 +41,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"quotes phas
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"WHO=dsh; echo \"hello from ${WHO}-shell, $WHO in double quotes\""}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"WHO=dsh; echo \"hello from ${WHO}-shell, $WHO in double quotes\""}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"WHO=dsh; echo \"hello from ${WHO}-shell, $WHO in double quotes\""}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":false}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"builtin provided","data":[{"name":"path"}]}
@@ -884,13 +885,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":43}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":"hello from dsh-shell, dsh in double quotes\n"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"echo '$WHO stays literal in single quotes'"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"echo '$WHO stays literal in single quotes'"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"echo '$WHO stays literal in single quotes'"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":42}]}
@@ -944,14 +945,14 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":36}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":"$WHO stays literal in single quotes\n"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"redirect phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"echo beta-line > notes.txt"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"echo beta-line > notes.txt"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"echo beta-line > notes.txt"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":26}]}
@@ -1023,13 +1024,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":""}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"echo alpha-line >> notes.txt"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"echo alpha-line >> notes.txt"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"echo alpha-line >> notes.txt"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":28}]}
@@ -1099,13 +1100,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":""}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"cat notes.txt"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"cat notes.txt"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"cat notes.txt"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":13}]}
@@ -1184,7 +1185,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":"beta-line\nalpha-line\n"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"notes.txt"}]}
@@ -1195,7 +1196,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"pipe phase 
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"command begin","data":[{"command":"cat notes.txt | sort | head -n 1"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"cat notes.txt | sort | head -n 1"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"cat notes.txt | sort | head -n 1"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":32}]}
@@ -1374,14 +1375,14 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/stdout","stdout":"alpha-line\n"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"refusals phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"refusal begin","data":[{"command":"echo \"nested $(echo boom) is refused\""}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"echo \"nested $(echo boom) is refused\""}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"echo \"nested $(echo boom) is refused\""}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":37}]}
@@ -1407,13 +1408,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"doub
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"dollar","data":[{"at":13}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"parse refuse","data":[{"message":"command substitution $(…)/backticks is not implemented"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.syntax","message":"shell parse error","data":[{"syntax":false}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/refused","exitCode":2,"missing":"command substitution"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":2}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"refusal begin","data":[{"command":"chmod +x notes.txt"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"chmod +x notes.txt"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"chmod +x notes.txt"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":18}]}
@@ -1468,13 +1469,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":228}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/refused","exitCode":2,"missing":"permission primitive"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":2}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"refusal begin","data":[{"command":"no-such-applet --version"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/call","command":"no-such-applet --version"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"shell dispatch","data":[{"command":"no-such-applet --version"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.shelljs","message":"ensure applets","data":[{"loaded":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.exec","message":"run command","data":[{"chars":24}]}
@@ -1523,7 +1524,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capt
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture text","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.stream","message":"capture bytes","data":[{"length":356}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"shell","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"jsshell","budgetMs":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/refused","exitCode":127,"missing":"program"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"shell/exit","exitCode":127}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"dsh-shell-js","event":"upstream/completed","status":"pass","upstream":"0.1.6-alpha.2","shellJs":"system-plugins/dsh-shell-js over the gateway fs primitives"}]}

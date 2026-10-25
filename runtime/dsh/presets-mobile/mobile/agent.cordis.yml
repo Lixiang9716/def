@@ -35,6 +35,18 @@
 
 # ── shell ───────────────────────────────────────────────────────────────────
 
+# The THREE-SHELL taxonomy (jsshell + host-granted externals):
+#   - `jsshell` (dsh-shell-js, mounted by the spine) — the native shell,
+#     always-on on every host: a JavaScript-executed bash-subset dialect
+#     over the scoped workspace. No spawn, no subprocess; the applets are
+#     bounded gateway calls.
+#   - `tool-bash` / `tool-pwsh` — HOST-GRANTED external shells: they park
+#     where the host registry grants no sandbox, and the platform XOR below
+#     is the sandboxes' own binding (bash-sandbox wraps the POSIX shell,
+#     pwsh-sandbox the win32 one). Descriptions cross-reference nothing —
+#     the packages are pinned upstream (D6) — so the taxonomy lives HERE
+#     and in jsshell's description.
+
 # `shell-env` stays in the HOST composition: `apps/cli/src/web.ts` injects it to
 # publish `DSH_WEB_URL`/`DSH_WEB_MODE`, and a host row that injects a service is
 # the criterion for host-plane ownership — injection resolves before any session
