@@ -125,7 +125,7 @@ if (args.llm === 'mock') {
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
-installProcSeams();
+installProcSeams(WS_ROOT);
 {
   const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
   globalThis.Buffer.fromBytes ??= (b) => DshBuffer.fromBytes(b);

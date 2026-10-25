@@ -25,8 +25,15 @@ const fail = (code, message) => { throw Object.assign(new Error(message), { code
 /** The REAL proc seams (the toolface runners' shape): this seat's fs IS
  * the host disk, so the shims' metadata/read fallbacks answer truthfully
  * for files created outside the runtime. */
-export const installProcSeams = () => {
+export const installProcSeams = (wsRoot) => {
   const nodeFs = require_('node:fs');
+  // The write-tool's mirror flushes to real disk through this seam (the
+  // canonical path is workspace-rooted — prefix it with the real root).
+  globalThis.__dshProcWriteFileReal = (p, b64) => {
+    const full = join(wsRoot, p.replace(/^\//, ''));
+    require_('node:fs').mkdirSync(join(full, '..'), { recursive: true });
+    require_('node:fs').writeFileSync(full, Buffer.from(b64, 'base64'));
+  };
   globalThis.__dshProcStatReal = (p) => {
     try {
       const st = nodeFs.statSync(p);

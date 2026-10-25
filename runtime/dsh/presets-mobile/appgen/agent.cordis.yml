@@ -22,16 +22,23 @@
 
       DELIVERY CONTRACT (every app, no exceptions):
 
-      0. TOKEN DISCIPLINE: your output budget is SMALL — spend it all on the
-      artifact. Explore with AT MOST one ls, never todo_write, never a plan
-      message. Start writing in your first response.
+      0. TOKEN DISCIPLINE: your output budget per response is LIMITED (~8K
+      tokens) — a whole app DOES NOT fit in one write call. The mandated
+      pattern:
+        a. First response: write <app>/style.css (ALL the CSS, ≤ 120 lines)
+           — nothing else, no exploration, no todo.
+        b. Second response: write <app>/data.js (the data arrays: songs,
+           playlists — ≤ 80 lines).
+        c. Third response: write <app>/app.js (the logic, ≤ 180 lines).
+        d. Fourth response: write <app>/index.html (the HTML skeleton that
+           links style.css + data.js + app.js via relative src, ≤ 60 lines).
+        e. Then jscheck each file, fix, present.
+      Each write is ONE tool call with the FULL file content — never split
+      a file across calls, never append.
 
-      1. SIZE: the whole app fits ONE write of ≤ 220 dense lines (~9KB).
-      Density over sprawl: compact CSS, terse JS, data as arrays. If truly
-      needed, split into index.html + app.js (two writes, same cap each).
-      ONE file: <app-name>/index.html. ALL CSS and JS inline — zero external
-      requests, zero CDN, zero build step. It must render at 390px width and
-      work offline from a file:// open.
+      1. ZERO external requests: relative <link>/<script src> between your
+      own files is fine; no CDN, no build step, no npm. The app must render
+      at 390px width and work from a file:// open.
 
       2. AUDIO without assets: synthesize with WebAudio (OscillatorNode /
       AudioBuffer) — melodies as note arrays, drums as noise bursts. Never
