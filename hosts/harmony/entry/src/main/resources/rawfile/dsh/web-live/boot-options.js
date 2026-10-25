@@ -72,6 +72,12 @@ export const bootOptions = (cfg, route, root, extras) => ({
   // it a creation turn's write tool calls drop on the floor (measured
   // 2026-10-09: the session agent published onto an empty toolset).
   presetJoin: cfg.presetJoin === true,
+  // The BYOK presets re-base (the Node face, T-0218 leg 4): seats without a
+  // staged bundle re-base the preset plane onto a real directory under the
+  // workspace — the ws seam serves the walk. Undefined keeps the device
+  // /vendor spelling.
+  ...(cfg.agentPresetsBaseUrl === undefined ? {} : { agentPresetsBaseUrl: cfg.agentPresetsBaseUrl }),
+  ...(cfg.agentPresetRoots === undefined ? {} : { agentPresetRoots: cfg.agentPresetRoots }),
   // The SESSION-PERSISTENCE gate (T-0212): the interactive seat's flag →
   // `{}` = DEFAULTS (root inside the pinned container, vendored 'zstd');
   // ABSENT → the key stays off (`absent = off`) — ungated boots unchanged.

@@ -83,7 +83,7 @@ globalThis.__dshBusPost = (line) => {
       waiter?.(msg.result);
       return;
     }
-    case 'mux.item': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
+    case 'mux.item': console.log('[real-seat] mux.item stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?') + ' value=' + JSON.stringify(msg.value)?.slice(0, 200)); muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
     case 'mux.end': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'end', streamId: msg.streamId })); return;
     case 'mux.error': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'error', streamId: msg.streamId, error: msg.error })); return;
     default: posted.push(msg);
@@ -115,7 +115,7 @@ let mockHandle = null;
 if (args.llm === 'mock') {
   const { startMockLlmServer } = await import(pathToFileURL(join(REPO_ROOT, 'external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js')).href);
   mockHandle = await startMockLlmServer({
-    host: '127.0.0.1', port: 0, sequence: ['mock'], repeatLast: true,
+    host: '127.0.0.1', port: 0, sequence: ['success'], repeatLast: true,
     successText: 'Hello from the hero seat', chunkSize: 6, chunkDelayMs: 30,
     apiKey: 'hero-mock-key', requestId: 'mock-req-1',
   });
@@ -141,15 +141,30 @@ if (args.llm === 'mock') {
     const body = args.bodyB64 !== undefined ? Buffer.from(args.bodyB64, 'base64') : undefined;
     const req = httpRequest(args.url, { method: args.method ?? 'POST', headers: args.headers ?? {} }, (res) => {
       const bodyId = `body:mock-${++bodySeq}`;
-      resolveStage({ status: res.statusCode, headers: res.headers, bodyId });
-      res.on('data', (chunk) => {
-        globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.body', chunkB64: chunk.toString('base64') }));
-      });
-      res.on('end', () => {
-        globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.end' }));
-      });
-      res.on('error', (error) => {
-        globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.error', code: 'io', message: error?.message ?? 'response failed' }));
+      // The gateway registers its stream-map entry in the microtask after
+      // resolveStage, but a loopback mock delivers headers + chunks in ONE
+      // I/O cycle — every event then beats the registration and drops
+      // (the read-idle watchdog aborts a perfectly streamed response).
+      // Defer the wire handoff one macrotask: bytes arriving meanwhile
+      // buffer in the paused socket until the data listeners attach.
+      setImmediate(() => {
+        resolveStage({ status: res.statusCode, headers: res.headers, bodyId });
+        // The relay starts only in a FRESH macrotask: the registration
+        // (the gateway's post-await continuation, two microtask ticks
+        // deep through the seam wrapper) drains before the first event.
+        // Bytes arriving meanwhile buffer in the paused socket.
+        setTimeout(() => {
+        void (async () => {
+          try {
+            for await (const chunk of res) {
+              globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.body', chunkB64: chunk.toString('base64') }));
+            }
+            globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.end' }));
+          } catch (error) {
+            globalThis.__dshGatewayOnEvent?.(JSON.stringify({ callId: bodyId, event: 'http.error', code: 'io', message: error?.message ?? 'response failed' }));
+          }
+        })();
+        }, 0);
       });
     });
     req.on('error', (error) => rejectStage(Object.assign(error, { code: 'io' })));
@@ -286,9 +301,11 @@ const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 // package walk lands. ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
 // The presets VFS seed (the third delivery): the generated manifest keyed
-// at the REAL vendor root (VFS_ROOTS.push) — the presets service's scan and
-// composition reads both answer through underVFS(real-root keys).
-const realRoot = `${join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2')}/`;
+// at the WORKSPACE vendor root — the mount's async readFile has no
+// real-disk twin (only readFileSync does), so the workspace copy is
+// invisible to it until the VFS gate answers: underVFS(WS_VENDOR/…) with
+// these exact keys.
+const realRoot = `${WS_VENDOR}/`;
 const presetsSeedSetup = async () => {
   const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
   shim.VFS_ROOTS.push(realRoot);
@@ -492,8 +509,9 @@ server.on('upgrade', (req, socket) => {
     let msg;
     try { msg = JSON.parse(text); } catch { return; }
     if (msg.type === 'open' && typeof msg.streamId === 'string') {
+      console.log('[real-seat] mux.open stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?'));
       muxSockets.set(msg.streamId, ws);
-      deliver({ type: 'mux.open', streamId: msg.streamId, endpoint: msg.endpoint ?? '' });
+      deliver({ type: 'mux.open', streamId: msg.streamId, endpoint: msg.endpoint ?? '', payload: msg.payload });
     } else if (msg.type === 'cancel' && typeof msg.streamId === 'string') {
       deliver({ type: 'mux.cancel', streamId: msg.streamId });
     }
