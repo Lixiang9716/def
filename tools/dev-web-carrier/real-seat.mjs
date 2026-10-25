@@ -12,6 +12,7 @@
  */
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
+import { createCardPlane } from './app-cards.mjs';
 import { installBundleSeam, installHostGateway, installProcSeams } from './host-gateway.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
