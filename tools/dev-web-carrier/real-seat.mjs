@@ -125,10 +125,8 @@ if (args.llm === 'mock') {
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
-// The REAL proc seams + the HOST gateway (fs family + keychain): this
-// seat's fs IS the host disk, so the shims' metadata/read fallbacks answer
-// truthfully and the plugin plane's writes land (the device C host
-// implements these natively; the panel seam loud-fails them by design).
+// The REAL proc seams + the HOST gateway: this seat's fs IS the host disk,
+// so the shims' fallbacks answer truthfully and plugin writes land.
 installProcSeams();
 installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 {
@@ -137,9 +135,8 @@ installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
 }
 installHostGateway(join(WS_ROOT, 'app-scope'));
 
-// ---- the web.plugins delivery: the staged client bundles, walked to
-// b64 files (web-boot.js stageWebPlugins' shape: plugins[] with
-// {loaderName, pkgJsonPath, entryPath, files:{relpath:{b64,mtimeMs}}}) ----
+// ---- the web.plugins delivery: the staged client bundles walked to b64
+// files (web-boot.js stageWebPlugins' shape) ----
 const walkFiles = (dir, base, out) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
@@ -253,11 +250,9 @@ const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 // mobile preset copied beside the shipped four, the farm node_modules
 // linked for the composition's upward package walk. ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
-// The presets VFS seed (the third delivery): the generated manifest keyed
-// at the WORKSPACE vendor root — the mount's async readFile has no
-// real-disk twin (only readFileSync does), so the workspace copy is
-// invisible to it until the VFS gate answers: underVFS(WS_VENDOR/…) with
-// these exact keys.
+// The presets VFS seed (the third delivery), keyed at the WORKSPACE vendor
+// root — the mount's async readFile has no real-disk twin, so underVFS is
+// what makes the workspace copy readable.
 const realRoot = `${WS_VENDOR}/`;
 const presetsSeedSetup = async () => {
   const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
