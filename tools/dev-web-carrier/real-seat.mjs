@@ -173,6 +173,15 @@ const walkFiles = (dir, base, out) => {
     }
   }
 };
+const MOBILE_PRESET_PACKAGES = [
+  'dsh-persona', 'dsh-agent-instructions', 'dsh-tool-fs', 'dsh-tool-jobs',
+  'dsh-skill-filesystem', 'dsh-tool-skill', 'dsh-command-goal',
+  'dsh-tool-goal', 'dsh-plan-mode', 'dsh-compaction-basic',
+  'dsh-command-compact', 'dsh-compaction-tool-result-pruner',
+  'dsh-tool-subagent-control', 'dsh-tool-subagent', 'dsh-tool-ask-user',
+  'dsh-tool-todo', 'dsh-tool-present',
+];
+
 const webPluginDelivery = () => {
   const plugins = [];
   for (const d of stagedDescriptors(REPO_ROOT)) {
@@ -196,6 +205,35 @@ const webPluginDelivery = () => {
       pkgJsonPath: d.pkgJsonPath,
       entryPath: `${WS_ROOT}/web-plugins/${d.loaderName}/lib/client.js`,
       files: keyed,
+    });
+  }
+  // The mobile composition's RUNTIME plugin rows (the 19-row join): each
+  // names a vendored package the loader must resolve — stage the package's
+  // own files the same way the device's web-plugins staging does.
+  for (const pkg of MOBILE_PRESET_PACKAGES) {
+    const real = join(REPO_ROOT, 'runtime/dsh/node_modules/@deepseek-ai', pkg);
+    if (!existsSync(join(real, 'package.json'))) {
+      console.log(`[real-seat] plugin package missing on the farm: ${pkg}`);
+      continue;
+    }
+    const loaderName = `@deepseek-ai/${pkg}`;
+    const diskDir = join(WS_ROOT, 'web-plugins', loaderName);
+    mkdirSync(diskDir, { recursive: true });
+    const keyed = {};
+    walkFiles(real, '', keyed);
+    const stagedFiles = {};
+    for (const [rel, file] of Object.entries(keyed)) {
+      const vfsPath = `/web-plugins/${loaderName}${rel}`;
+      stagedFiles[vfsPath] = file;
+      const dst = join(WS_ROOT, 'web-plugins', loaderName, rel);
+      mkdirSync(dirname(dst), { recursive: true });
+      writeFileSync(dst, Buffer.from(file.b64, 'base64'));
+    }
+    plugins.push({
+      loaderName,
+      pkgJsonPath: join(real, 'package.json'),
+      entryPath: `${WS_ROOT}/web-plugins/${loaderName}/lib/index.js`,
+      files: stagedFiles,
     });
   }
   return { type: 'web.plugins', plugins };
