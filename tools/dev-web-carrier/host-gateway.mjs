@@ -19,7 +19,7 @@ import { pathToFileURL } from 'node:url';
 
 const require_ = createRequire(import.meta.url);
 const nodeFs = require_('node:fs');
-const { join } = require_('node:path');
+const { join, dirname } = require_('node:path');
 
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
 
@@ -31,11 +31,27 @@ export const installProcSeams = (wsRoot) => {
   // The write-tool's mirror flushes to real disk through this seam (the
   // canonical path is workspace-rooted — prefix it with the real root).
   globalThis.__dshProcWriteFileReal = (p, b64) => {
-    // The shim's canonical path is workspace-rooted ('/foo/bar' = the file
-    // bar in foo under the workspace). Prefix wsRoot to reach real disk.
-    const full = join(wsRoot, p);
+    // The shim's canonical arrives pinned-root-prefixed when the workspace
+    // was mounted with the real absolute root (this seat's spelling) — take
+    // it verbatim; a workspace-rooted '/foo' spelling gets the wsRoot prefix.
+    const full = p.startsWith(wsRoot) ? p : join(wsRoot, p);
     nodeFs.mkdirSync(dirname(full), { recursive: true });
     nodeFs.writeFileSync(full, Buffer.from(b64, 'base64'));
+  };
+  // The mirror siblings (rm/chmod/mkdir keep the real disk from drifting
+  // off the VFS — the staging-dir cleanup, the mode mirrors, explicit mkdirs).
+  const realOf = (p) => (p.startsWith(wsRoot) ? p : join(wsRoot, p));
+  globalThis.__dshProcRmReal = (p, recursive) => {
+    try { nodeFs.rmSync(realOf(p), { recursive: recursive === true, force: true }); } catch { /* best-effort */ }
+  };
+  globalThis.__dshProcChmodReal = (p, mode) => {
+    try { nodeFs.chmodSync(realOf(p), mode); } catch { /* best-effort */ }
+  };
+  globalThis.__dshProcMkdirReal = (p) => {
+    try { nodeFs.mkdirSync(realOf(p), { recursive: true }); } catch { /* best-effort */ }
+  };
+  globalThis.__dshProcAccessReal = (p) => {
+    try { nodeFs.accessSync(realOf(p)); return true; } catch { return false; }
   };
   globalThis.__dshProcStatReal = (p) => {
     try {
@@ -61,8 +77,16 @@ export const installBundleSeam = (runtimeDsh) => {
   globalThis.__dshBundleRequire = (base, request) => {
     const dir = base.slice(0, base.lastIndexOf('/'));
     const rel = request.replace(/^\.\//, '');
+    // Under Node the parser hands a REAL absolute base (import.meta.dirname
+    // spelling); device callers hand the '/vendor/…' specifier-space (the
+    // leading slash is VIRTUAL — relative to the runtime root). Only a base
+    // under the real runtime tree reads verbatim.
+    const realTree = base.startsWith(`${runtimeDsh}/`) || base === runtimeDsh;
+    const target = realTree
+      ? `${dir}/${rel}`
+      : require_('node:path').join(runtimeDsh, `${dir}/${rel}`.replace(/^\//, ''));
     try {
-      return require_('node:fs').readFileSync(require_('node:path').join(runtimeDsh, `${dir}/${rel}`.replace(/^\//, '')), 'utf8');
+      return require_('node:fs').readFileSync(target, 'utf8');
     } catch (error) {
       throw Object.assign(new Error(`bundle-read miss: ${error?.message ?? error}`), { code: 'io' });
     }
@@ -140,5 +164,12 @@ export const installHostGateway = async (repoRoot, wsRoot) => {
     const arm = arms[name];
     if (arm !== undefined) return arm(JSON.parse(argsJson));
     return orig(name, argsJson);
+  };
+  // TEMP trace (2026-10-26): one line per gateway fsWrite while the
+  // write-through seam is under verification.
+  const traced = globalThis.__dshGatewayCall;
+  globalThis.__dshGatewayCall = async (name, argsJson) => {
+    if (name === 'fsWrite') console.log(`[gw] fsWrite path=${JSON.parse(argsJson)?.path}`);
+    return traced(name, argsJson);
   };
 };
