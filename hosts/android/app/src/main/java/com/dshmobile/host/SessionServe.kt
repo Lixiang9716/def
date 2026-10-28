@@ -382,6 +382,16 @@ class SessionServe private constructor(
                     // line arrives on the runtime thread.
                     activity.runOnUiThread { cardSurface?.handle(msg) }
                 }
+                "question.request" -> {
+                    // The in-band user-questions ask: the NATIVE dialog is the
+                    // device's answer face (the desktop seat renders a web
+                    // card); the answer rides the same bus delivery the config
+                    // rows use (question-bridge.js's composer intercept picks
+                    // it up and the parked ask_user_question resumes).
+                    activity.runOnUiThread {
+                        showQuestionDialog(activity, msg) { deliverRuntime(it) }
+                    }
+                }
                 else -> {
                     val handled = seam.onBusMessage(msg)
                     if (!handled) Log.i(TAG, "bus: unhandled '${msg.optString("type")}'")
