@@ -163,6 +163,13 @@ const installRuntimeHalf = (ctx, cfg, route) => {
     write: writeSurfaceOptions(cfg, ctx, route),
   });
   const busHandler = (msg) => {
+    // The in-band question answer (the device hosts deliver it here — the
+    // desktop seat calls the bridge's global directly): resolve the parked
+    // ask_user_question before the runtime sees the unknown type.
+    if (msg?.type === 'question.answer') {
+      globalThis.__dshQuestionAnswer?.(String(msg.id ?? ''), Array.isArray(msg.answers) ? msg.answers : []);
+      return;
+    }
     const outcome = runtime.deliver(msg);
     if (outcome.kind === 'booted') {
       emit('runtime.booted', {
