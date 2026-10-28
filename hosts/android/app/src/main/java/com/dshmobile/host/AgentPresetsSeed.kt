@@ -1,6 +1,7 @@
 package com.dshmobile.host
 
 import android.util.Base64
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -44,20 +45,8 @@ object AgentPresetsSeed {
             add("$VFS_BASE/presets/$rel", it.readBytes())
         }
 
-        // 1b. The OUTBOARD mobile presets (presets-mobile/{mobile,appgen} —
-        // the deployment's own rows, staged beside the vendor tree): they
-        // deliver at the SAME presets/ VFS rel, so the roster answers
-        // mobile + appgen beside the upstream four. Without this walk the
-        // device roster answers the upstream four only and the appgen
-        // creation route dies on the device (measured 2026-10-29).
-        val outboard = File(spikeRoot, "presets-mobile")
-        for (name in outboard.listFiles()?.filter { it.isDirectory }?.map { it.name }?.sorted() ?: emptyList()) {
-            val presetRoot = File(outboard, name)
-            presetRoot.walkTopDown().filter { it.isFile }.forEach {
-                val rel = it.relativeTo(presetRoot).path.replace(File.separatorChar, '/')
-                add("$VFS_BASE/presets/$name/$rel", it.readBytes())
-            }
-        }
+        // 1b. The OUTBOARD mobile presets (see addOutboardPresets).
+        addOutboardPresets(spikeRoot) { vfsPath, bytes -> add(vfsPath, bytes) }
 
         // 2. Resolution markers: one per staged dsh package, name+version read
         //    from the package's own staged package.json.
@@ -78,5 +67,22 @@ object AgentPresetsSeed {
 
         return if (files.length() == 0) null
         else JSONObject().put("type", "agentPresets.seed").put("files", files)
+    }
+
+    /** 1b. The OUTBOARD mobile presets (presets-mobile/{mobile,appgen} —
+     * the deployment's own rows, staged beside the vendor tree): they
+     * deliver at the SAME presets/ VFS rel, so the roster answers
+     * mobile + appgen beside the upstream four. Without this walk the
+     * device roster answers the upstream four only and the appgen
+     * creation route dies on the device (measured 2026-10-29). */
+    private fun addOutboardPresets(spikeRoot: File, add: (String, ByteArray) -> Unit) {
+        val outboard = File(spikeRoot, "presets-mobile")
+        for (name in outboard.listFiles()?.filter { it.isDirectory }?.map { it.name }?.sorted() ?: emptyList()) {
+            val presetRoot = File(outboard, name)
+            presetRoot.walkTopDown().filter { it.isFile }.forEach {
+                val rel = it.relativeTo(presetRoot).path.replace(File.separatorChar, '/')
+                add("$VFS_BASE/presets/$name/$rel", it.readBytes())
+            }
+        }
     }
 }
