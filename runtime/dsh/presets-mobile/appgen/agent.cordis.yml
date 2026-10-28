@@ -90,6 +90,15 @@
 - id: present
   name: '@deepseek-ai/dsh-tool-present'
 
+# ── the human interaction row (the in-band question card / native dialog) ──
+# The mount flow asks through it (the count-down-mini repair dance,
+# measured live 2026-10-28: without the row the model asked in plain text
+# and the turn stalled on a waterfall with no listener). Backed by the
+# userQuestions service the composition host plane mounts.
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
 # ── the plugin pipeline (author → install → mount) ─────────────────────────
 # plugin_create (dsh-create, spine-mounted) owns install+mount; the
 # plugin_manager tool waits for host-plane injections (pluginManager/
