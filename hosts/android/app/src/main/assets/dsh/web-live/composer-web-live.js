@@ -34,6 +34,7 @@ import { makeProbeAwaiter } from 'web-live/probe-respond-await.js';
 import { makeFailGate } from 'web-live/scenario-verdict.js';
 import { makeApiHandlerRespond } from 'web-live/api-handler-respond.js';
 import { installCreationMount } from 'web-live/plugin-live-mount.js';
+import { mountQuestionBridge } from 'web-live/question-bridge.js';
 import { makeComposerBus } from 'web-live/composer-bus.js';
 import { makeTurnEvidence } from 'web-live/turn-evidence.js';
 import { bootOptions as bootOptionsShared } from 'web-live/boot-options.js';
@@ -152,6 +153,11 @@ const installTurnEvidence = (ctx, route, cfg) => {
  * never the 30s RESPOND_TIMEOUT black-hole. */
 const installRuntimeHalf = (ctx, cfg, route) => {
   const onHandler = makeApiHandlerRespond({ post, fail, errorOf });
+  // The in-band user-questions arm (the user-facing seat): the model's
+  // ask_user_question parks here, the page's question card answers it, and
+  // the turn resumes — without it the turn waits on a waterfall no listener
+  // resolves (measured live 2026-10-28: the mount flow died mid-ask).
+  if (cfg.creation === true) mountQuestionBridge(ctx, post);
   const runtime = createWebBootRuntime({
     ctx, post,
     write: writeSurfaceOptions(cfg, ctx, route),

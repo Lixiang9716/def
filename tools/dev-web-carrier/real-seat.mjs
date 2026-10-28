@@ -69,23 +69,28 @@ globalThis.__dshBusOnMessage = (line) => {
 const cards = createCardPlane((streamId, frame) => {
   muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
 });
-// The app/cards channel also carries the in-band approval asks: the
-// channel module owns the subscriber set + the parked-ask registry.
-wireApprovalEmit((frame) => {
+// The app/cards channel also carries the in-band approval asks + the
+// user-question asks (the channel modules own their subscriber registries;
+// the runtime's bridges reach the fan-out through these global hooks).
+const emitToAppCards = (frame) => {
   for (const streamId of approvalSubscribers) {
     muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
   }
-});
+};
+wireApprovalEmit(emitToAppCards);
 globalThis.__dshEmitApproval = (ask) => {
   const { parkApproval } = requireApprovalChannel();
+  emitToAppCards({ type: 'approval.request', id: ask.id, ...ask });
   parkApproval(ask);
 };
+globalThis.__dshEmitQuestion = emitToAppCards;
 const approvalSubscribers = new Set();
 const requireApprovalChannel = async () => await import('./approval-channel.mjs');
 
 globalThis.__dshBusPost = (line) => {
   const msg = JSON.parse(line);
   if (typeof msg.type === 'string' && msg.type.startsWith('card.')) cards.forward(msg);
+  if (typeof msg.type === 'string' && msg.type.startsWith('question.')) emitToAppCards(msg);
   console.log('[real-seat] bus post:', msg.type);
   switch (msg.type) {
     case 'web.boot': bootRows = msg; console.log('[real-seat] runtime revs:', JSON.stringify(msg.plugins)); plugins?.applyRuntimeRevs(msg.plugins); bootReady(); return;
@@ -341,6 +346,34 @@ const serveDist = (req, url, respond) => {
     ? renderIndex(readFileSync(file, 'utf8')) : readFileSync(file);
   respond(200, mime, body);
 };
+/** The in-band answer endpoints (approval/decide + question/answer): the
+ * page's cards resolve the seat-parked arms. Returns the HTTP answer when
+ * the pathname is one of them, null to fall through to the runtime. */
+const answerInBand = (pathname, inner, respond, rpcId) => {
+  const args = inner?.args ?? inner ?? {};
+  if (pathname === '/api/question/answer') {
+    const answered = globalThis.__dshQuestionAnswer?.(String(args.id ?? ''), Array.isArray(args.answers) ? args.answers : []);
+    respond(200, 'application/json', JSON.stringify({
+      type: 'server-response', rpcId,
+      result: answered
+        ? { ok: true, value: { answered: true } }
+        : { ok: false, error: { code: 'question/not-found', message: 'no pending question with that id', details: {} } },
+    }));
+    return true;
+  }
+  if (pathname === '/api/approval/decide') {
+    const decided = decideApproval(String(args.id ?? ''), args.approved === true);
+    respond(200, 'application/json', JSON.stringify({
+      type: 'server-response', rpcId,
+      result: decided
+        ? { ok: true, value: { decided: true } }
+        : { ok: false, error: { code: 'approval/not-found', message: 'no pending approval with that id', details: {} } },
+    }));
+    return true;
+  }
+  return null;
+};
+
 const handleApi = (req, url, respond) => {
   if (req.method !== 'POST') return respond(405, 'text/plain', '');
   const chunks = [];
@@ -357,19 +390,12 @@ const handleApi = (req, url, respond) => {
     // one level (a bare {"args":…} hand-probe body passes through).
     const inner = payload.payload ?? payload;
     console.log(`[real-seat] page -> ${url.pathname.slice('/api/'.length)}`);
-    // The in-band approval decision: the page's approval card answers the
-    // seat-parked presentApproval arm here (never forwarded into the
-    // runtime — the runtime is blocked ON the arm).
-    if (url.pathname === '/api/approval/decide') {
-      const args = inner?.args ?? inner ?? {};
-      const decided = decideApproval(String(args.id ?? ''), args.approved === true);
-      return respond(200, 'application/json', JSON.stringify({
-        type: 'server-response', rpcId,
-        result: decided
-          ? { ok: true, value: { decided: true } }
-          : { ok: false, error: { code: 'approval/not-found', message: 'no pending approval with that id', details: {} } },
-      }));
-    }
+    // The in-band answers (approval + user-question): the page's cards
+    // answer the seat-parked arms here (never forwarded into the runtime —
+    // the runtime is blocked ON them). Returns null when the endpoint is
+    // NOT an in-band answer (the caller falls through to the runtime).
+    const answered = answerInBand(url.pathname, inner, respond, rpcId);
+    if (answered !== null) return;
     apiWaiters.set(rpcId, (result) => {
       console.log(`[real-seat] <- ${url.pathname.slice('/api/'.length)} ok=${result.ok}${result.ok ? '' : ' err=' + JSON.stringify(result.error ?? {})}`);
       respond(200, 'application/json', JSON.stringify({ type: 'server-response', rpcId, result }));

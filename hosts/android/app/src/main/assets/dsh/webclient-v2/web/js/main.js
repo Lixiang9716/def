@@ -45,14 +45,28 @@ const mux = new Mux();
 // open, so the card renders inside the conversation.
 mux.open('app/cards', {}, {
   onItem: (value) => {
-    if (value?.type !== 'approval.request' && value?.type !== 'approval.decided') return;
-    timeline.applyRecord({
-      type: 'event',
-      event: {
-        type: value.type === 'approval.request' ? 'approval/asked' : 'approval/decided',
-        data: value,
-      },
-    });
+    if (value?.type === 'approval.request' || value?.type === 'approval.decided') {
+      timeline.applyRecord({
+        type: 'event',
+        event: {
+          type: value.type === 'approval.request' ? 'approval/asked' : 'approval/decided',
+          data: value,
+        },
+      });
+      return;
+    }
+    // The in-band user-questions ask (ask_user_question): the card renders
+    // the questions with their options; the answer rides /api/question/answer
+    // and the parked turn resumes.
+    if (value?.type === 'question.request' || value?.type === 'question.decided') {
+      timeline.applyRecord({
+        type: 'event',
+        event: {
+          type: value.type === 'question.request' ? 'question/asked' : 'question/decided',
+          data: value,
+        },
+      });
+    }
   },
 });
 

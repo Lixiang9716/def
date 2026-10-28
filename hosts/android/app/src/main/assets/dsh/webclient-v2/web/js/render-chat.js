@@ -217,6 +217,61 @@ const renderApproval = (item) => {
   return wrap;
 };
 
+/** The in-band question card: the model's ask_user_question rendered where
+ * the conversation lives — each question with its option buttons (or a
+ * free-text answer); the answers ride dsh-question-answer and the parked
+ * turn resumes. */
+const renderQuestion = (item) => {
+  const wrap = el('div', 'item item-question');
+  const card = el('div', 'approval-card glass');
+  card.dataset.id = item.id ?? '';
+  const head = el('div', 'approval-head');
+  head.appendChild(el('span', 'approval-glyph', item.decided ? '✅' : '❓'));
+  const main = el('div', 'approval-main');
+  main.appendChild(el('div', 'approval-title', 'def 有问题想问你'));
+  card.appendChild(head);
+  card.appendChild(main);
+  if (item.decided) {
+    card.appendChild(el('div', 'approval-state', '已回答'));
+    wrap.appendChild(card);
+    return wrap;
+  }
+  for (const q of item.questions) {
+    const block = el('div', 'question-block');
+    if (q.header) block.appendChild(el('div', 'question-header', q.header));
+    block.appendChild(el('div', 'approval-reason', q.question ?? ''));
+    const actions = el('div', 'approval-actions question-actions');
+    const answer = (selected, custom) => {
+      actions.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+      document.dispatchEvent(new CustomEvent('dsh-question-answer',
+        { detail: { id: item.id, answers: [{ id: q.id ?? 'q1', selected, ...(custom ? { custom } : {}) }] } }));
+    };
+    for (const option of (q.options ?? [])) {
+      const btn = el('button', 'approval-allow', option.label ?? '');
+      btn.type = 'button';
+      btn.title = option.description ?? '';
+      btn.addEventListener('click', () => answer([option.label ?? '']));
+      actions.appendChild(btn);
+    }
+    if ((q.options ?? []).length === 0 || q.multi_select === true) {
+      const input = el('input', 'question-custom');
+      input.type = 'text';
+      input.placeholder = '自己写…';
+      const btn = el('button', 'approval-deny', '提交');
+      btn.type = 'button';
+      btn.addEventListener('click', () => {
+        if (input.value.trim() !== '') answer([], input.value.trim());
+      });
+      actions.appendChild(input);
+      actions.appendChild(btn);
+    }
+    block.appendChild(actions);
+    card.appendChild(block);
+  }
+  wrap.appendChild(card);
+  return wrap;
+};
+
 const renderSimple = (item) => {
   if (item.kind === 'notice') {
     const wrap = el('div', 'item item-notice');
@@ -238,6 +293,7 @@ const renderItem = (item) => {
   if (item.kind === 'assistant') return renderAssistantItem(item);
   if (item.kind === 'creation') return renderCreation(item);
   if (item.kind === 'approval') return renderApproval(item);
+  if (item.kind === 'question') return renderQuestion(item);
   return renderSimple(item);
 };
 

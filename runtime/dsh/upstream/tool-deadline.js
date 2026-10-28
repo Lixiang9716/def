@@ -38,6 +38,15 @@ const log = createLogger('dsh.tool-deadline');
  * own timeoutMs), far under the 10+ minute wedge the hang showed. */
 export const DEFAULT_BUDGET_MS = 120_000;
 
+/** Interactive tools park on a HUMAN (the in-band question/approval cards):
+ * their budget is human latency, not machine latency (measured 2026-10-28:
+ * the 120 s default aborted the model's ask_user_question before the user
+ * could answer, and the plugin-manager's mount approval raced the same
+ * wall — both cards answered correctly, the deadline had already fired). */
+const INTERACTIVE_BUDGET_MS = 600_000;
+const INTERACTIVE_TOOLS = new Set(['ask_user_question', 'plugin_manager']);
+const budgetFor = (tool, budgetMs) => (INTERACTIVE_TOOLS.has(tool) ? INTERACTIVE_BUDGET_MS : budgetMs);
+
 /** The capability-owned timeout code (dsh-timeout's vocabulary: the code
  * rides the TimeoutReason and the failure result's error.info). */
 export const TIMEOUT_CODE = 'tool/deadline';
@@ -75,9 +84,10 @@ export const deadlineResult = (tool, budgetMs) => {
  * the in-band result; the fused abort signal asks it to stop). */
 export const makeToolsExecuteListener = (budgetMs) => async (exec, next) => {
   const tool = exec?.name ?? '(unknown tool)';
-  log.debug('tool deadline armed', { tool, budgetMs });
+  const budget = budgetFor(tool, budgetMs);
+  log.debug('tool deadline armed', { tool, budget });
   const wrapperSignal = exec?.signal;
-  const guard = deadline(wrapperSignal, budgetMs, TIMEOUT_CODE);
+  const guard = deadline(wrapperSignal, budget, TIMEOUT_CODE);
   if (exec !== undefined) exec.signal = guard.signal;
   // Resolves exactly when OUR deadline reason lands on the fused signal —
   // an upstream cancellation aborting the same signal is not a timeout and
@@ -102,11 +112,11 @@ export const makeToolsExecuteListener = (budgetMs) => async (exec, next) => {
     guard[Symbol.dispose]();
   }
   if (settled.kind === 'done') {
-    log.debug('tool deadline disarmed (done)', { tool, budgetMs });
+    log.debug('tool deadline disarmed (done)', { tool, budget });
     return settled.result;
   }
-  log.warn('tool deadline fired', { tool, budgetMs });
-  return deadlineResult(tool, budgetMs);
+  log.warn('tool deadline fired', { tool, budget });
+  return deadlineResult(tool, budget);
 };
 
 export const name = 'tool-deadline';

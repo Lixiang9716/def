@@ -1304,6 +1304,7 @@ const BUNDLE_FILES: string[] = [
   'web-live/plugin-live-mount.js',
   'web-live/pomodoro-plugin-template.js',
   'web-live/probe-respond-await.js',
+  'web-live/question-bridge.js',
   'web-live/scenario-verdict.js',
   'web-live/session-persist-restart-core.js',
   'web-live/session-persist-restart.js',

@@ -121,16 +121,8 @@ export const openCreation = async (path, title) => {
   }
 };
 
-/** Wire the page events: the creation-card open + the approval answer. */
-export const setupCreationView = ({ toast }) => {
-  setCreationToast(toast);
-  document.addEventListener('dsh-open-creation', (event) => {
-    openCreation(event.detail.path, event.detail.title);
-  });
-  document.getElementById('creation-close').addEventListener('click', () => {
-    document.getElementById('creation-view').hidden = true;
-    document.getElementById('creation-frame').srcdoc = '';
-  });
+/** The approval answer wiring (the approval card's 批准/拒绝). */
+const wireApprovalAnswer = (toast) => {
   // The in-band approval answer: the card's 批准/拒绝 posts the decision to
   // the approval plane; a decided journal event re-renders authoritatively,
   // and until one arrives the answered card flips in place (the seat's
@@ -153,4 +145,41 @@ export const setupCreationView = ({ toast }) => {
       if (glyph) glyph.textContent = approved ? '✅' : '🚫';
     }
   });
+};
+
+/** The question answer wiring (the question card's options/typed answer). */
+const wireQuestionAnswer = (toast) => {
+  // The in-band question answer: the question card's option (or typed
+  // answer) resumes the parked ask_user_question turn.
+  document.addEventListener('dsh-question-answer', async (event) => {
+    const { id, answers } = event.detail;
+    try {
+      await rpc('question/answer', { args: { id, answers } });
+    } catch (error) {
+      toast(isRemoteError(error) ? `问询通道不可用（${error.code}）` : '问询通道不可用');
+      return;
+    }
+    for (const card of document.querySelectorAll('.approval-card')) {
+      if (card.dataset.id !== id) continue;
+      const state = card.querySelector('.approval-state');
+      if (state) state.textContent = '已回答';
+      card.querySelectorAll('.question-actions').forEach((a) => a.remove());
+      const glyph = card.querySelector('.approval-glyph');
+      if (glyph) glyph.textContent = '✅';
+    }
+  });
+};
+
+/** Wire the page events: the creation-card open + the two in-band answers. */
+export const setupCreationView = ({ toast }) => {
+  setCreationToast(toast);
+  document.addEventListener('dsh-open-creation', (event) => {
+    openCreation(event.detail.path, event.detail.title);
+  });
+  document.getElementById('creation-close').addEventListener('click', () => {
+    document.getElementById('creation-view').hidden = true;
+    document.getElementById('creation-frame').srcdoc = '';
+  });
+  wireApprovalAnswer(toast);
+  wireQuestionAnswer(toast);
 };

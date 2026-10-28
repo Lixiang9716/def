@@ -443,8 +443,8 @@ done
 # on a fresh install (the embed-list trap this file's own comments name).
 for s in android-composer-live-write.js android-officialweb-web-live.js android-session-live-read.js api-handler-respond.js \
          boot-options.js composer-bus.js composer-web-live.js manager-legs-probe.js \
-         plugin-live-mount.js probe-respond-await.js scenario-verdict.js turn-evidence.js \
-         turn-failure.js write-surface-options.js; do
+         plugin-live-mount.js probe-respond-await.js question-bridge.js scenario-verdict.js \
+         turn-evidence.js turn-failure.js write-surface-options.js; do
     if [ -f "$DSH/web-live/$s" ]; then
         cp "$DSH/web-live/$s" "$ASSETS/web-live/$s"
     fi
@@ -636,8 +636,8 @@ done
 # same stale-copy shadowing defect, the product mount entries' own row).
 for s in android-composer-live-write.js android-officialweb-web-live.js android-session-live-read.js api-handler-respond.js \
          boot-options.js composer-bus.js composer-web-live.js manager-legs-probe.js \
-         plugin-live-mount.js probe-respond-await.js scenario-verdict.js turn-evidence.js \
-         turn-failure.js write-surface-options.js; do
+         plugin-live-mount.js probe-respond-await.js question-bridge.js scenario-verdict.js \
+         turn-evidence.js turn-failure.js write-surface-options.js; do
     if [ "$MODE" = "check" ]; then
         if ! is_tracked "web-live/$s"; then
             # untracked source (fresh checkout without the staged copy): a
