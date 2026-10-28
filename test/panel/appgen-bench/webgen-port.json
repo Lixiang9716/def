@@ -1,0 +1,883 @@
+{
+  "port_version": 1,
+  "source": "WebGen-Bench test corpus (mnluzimu/WebGen-Bench, data/test.jsonl, NeurIPS 2025 D&B)",
+  "note": "Test cases verbatim from the upstream corpus; instructions re-phrased def-native (mobile app face, capabilities preserved). Execution tier v1 = spec-inspection judge; the action-execution leg upgrades it to real dispatch.",
+  "selection": [
+    "000036",
+    "000038",
+    "000041",
+    "000043",
+    "000066",
+    "000068",
+    "000078",
+    "000080",
+    "000092",
+    "000095",
+    "000096",
+    "000099"
+  ],
+  "instructions": [
+    {
+      "source_id": "000036",
+      "application_type": "E-commerce Web Applications",
+      "instruction_en": "Please implement a website to automatically search and compare product prices across different states. The website should allow users to select specific product categories and parameters. The website should be able to automatically search and compare product prices across different states, including finding the lowest-priced products, and provide detailed product information, including price, quantity, and supplier information. Apply seashell to the canvas background and crimson to all visible components.",
+      "prompt": "做一个跨区域商品比价应用的首页：顶部搜索栏，支持选择商品类目和参数进行比价，中间展示比价结果列表（价格、库存、供应商信息），最低价商品有标记，提供商品详情入口。背景浅色，主题色用绯红。",
+      "cases": [
+        {
+          "task": "Test the search functionality by selecting a specific product category and parameter.",
+          "expected_result": "The website returns a list of products within the selected category, displaying product names, prices, and suppliers.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Test the price comparison feature by searching for a specific product across different states.",
+          "expected_result": "The website displays a comparison of product prices, clearly highlighting the lowest price along with the relevant state and supplier information.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Verify the customization of search frequency by setting a new frequency for automatic searches in the user settings.",
+          "expected_result": "The customization option saves successfully, and subsequent searches occur at the newly appointed frequency.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering",
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Test the website's ability to provide detailed product information for a chosen product.",
+          "expected_result": "Detailed product information, including price, quantity, and supplier details, is displayed accurately and clearly.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Verify the navigational elements by attempting to access different sections (e.g., product categories, settings) from the homepage.",
+          "expected_result": "All navigational links lead to the correct pages, with no errors or misdirected links encountered.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'seashell' as the background color and 'crimson' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'seashell' and components (such as buttons, cards, headers, etc.) are styled with the color 'crimson', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000038",
+      "application_type": "E-commerce Web Applications",
+      "instruction_en": "Please implement a short-term apartment rental website for showcasing and renting apartments. The website should have functionalities for searching, filtering, and booking apartments. Users should be able to browse different types of apartments, search and filter apartments that meet their criteria, book selected apartments, and view booking records. Use linen as the screen background and maroon for component highlights.",
+      "prompt": "做一个短租公寓应用的首页：支持浏览不同户型、按条件搜索和筛选公寓、预订选中的公寓、查看预订记录。中间是公寓卡片列表（封面、价格、位置），action 含搜索筛选和我的预订入口。背景浅色，主题色用栗色。",
+      "cases": [
+        {
+          "task": "Perform a search for apartments using a specific location keyword.",
+          "expected_result": "A list of apartments relevant to the search keyword is displayed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Apply a filter to the apartment search results by selecting one-bedroom.",
+          "expected_result": "Only apartments that match the one-bedroom are displayed in the search results.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Book an apartment by selecting available dates and confirming the booking.",
+          "expected_result": "Booking confirmation is displayed, and the selected dates are marked as unavailable in the calendar.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "View booking records from the user account section.",
+          "expected_result": "The booking records show accurate information of all past and current bookings made by the user.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the homepage from a different page (e.g., booking confirmation page) using the website's main navigation menu.",
+          "expected_result": "The user is redirected to the homepage, which is fully loaded and functional.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'linen' as the background color and 'maroon' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'linen' and components (such as buttons, cards, headers, etc.) are styled with the color 'maroon', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000041",
+      "application_type": "E-commerce Web Applications",
+      "instruction_en": "Please implement an online trading website for bidding and trading. The website should have functionalities for bidding and trading, allowing users to browse trading opportunities, place orders, manage their trading accounts, and view their trading history. Set the background color to lemon chiffon and the component color to chocolate.",
+      "prompt": "做一个在线竞拍交易应用的首页：支持浏览交易机会、下单出价、管理交易账户、查看交易历史。中间是交易标的列表（封面、当前价、状态），action 含出价、账户、历史入口。背景浅色，主题色用巧克力色。",
+      "cases": [
+        {
+          "task": "Navigate to the bidding section and place a bid on a trading opportunity.",
+          "expected_result": "The bid is successfully placed and reflected in the user's bid history, with all relevant details accurately recorded.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Browse the available trading opportunities on the website.",
+          "expected_result": "A comprehensive list of trading opportunities is displayed, relevant to the user's preferences, without any missing or irrelevant entries.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "View the user's trading history from the account dashboard.",
+          "expected_result": "A detailed and accurate history of all past trading and bidding activities is displayed, including dates and transaction details.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Update account information via the account management page.",
+          "expected_result": "The information is updated successfully, and a confirmation message is displayed, with changes reflected correctly on subsequent views.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'lemon chiffon' as the background color and 'chocolate' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'lemon chiffon' and components (such as buttons, cards, headers, etc.) are styled with the color 'chocolate', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000043",
+      "application_type": "Email Clients",
+      "instruction_en": "Please implement a short message service platform for sending and managing short messages. The platform should have functionalities for sending short messages, managing user information, configuring policies, and monitoring short message sending situations. Users should be able to send short messages, view short message sending records, configure sending policies, and monitor short message sending situations. Apply azure mist as the background; style all components with dark slate blue.",
+      "prompt": "做一个短消息服务平台应用的首页：支持发送短消息、查看发送记录、配置发送策略、监控发送情况。中间是消息列表，action 含新建消息、策略配置、发送监控。背景浅色，主题色用暗石板蓝。",
+      "cases": [
+        {
+          "task": "Attempt to send a short message to a valid phone number.",
+          "expected_result": "The message is sent successfullyand the message appears in the sending records.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the \"User Information\" section and update a piece of user information.",
+          "expected_result": "The user information is updated successfully.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Configure a new sending policy by navigating to the \"Configure Policies\" section and filling out the form.",
+          "expected_result": "The policy is saved successfully and the new policy appears in the list of active policies.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "View short message sending records.",
+          "expected_result": "The records display accurately, showing relevant details such as date, time, recipient, and status of each message sent.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Monitor short message sending situations by accessing the dashboard.",
+          "expected_result": "Real-time data and statistics regarding short message sending activities are displayed clearly and accurately on the dashboard.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'azure mist' as the background color and 'dark slate blue' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'azure mist' and components (such as buttons, cards, headers, etc.) are styled with the color 'dark slate blue', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000066",
+      "application_type": "News and Information Sites",
+      "instruction_en": "Please implement a real-time culinary guide application to display restaurant and recipe information. The application should have functionalities for browsing restaurants, searching recipes, viewing reviews and ratings, and more. Users should be able to browse nearby restaurants, search for specific recipes, view other users' reviews and ratings, and add their own reviews and ratings. Color the background using lemon chiffon and set component styles to chocolate.",
+      "prompt": "做一个实时美食指南应用的首页：支持浏览附近餐厅、搜索菜谱、查看评分评论、添加自己的评论评分。中间是餐厅和菜谱卡片（封面、评分），action 含搜索、写评论。背景浅色，主题色用巧克力色。",
+      "cases": [
+        {
+          "task": "Browse the list of nearby restaurants from the homepage.",
+          "expected_result": "A list of restaurants near the user's current location is displayed, including names, addresses, and a means to get more details.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Perform a search for a specific recipe using the search bar.",
+          "expected_result": "Relevant recipes matching the search query are displayed, with each entry showing a basic description and an option to view more details.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "View a detailed page of a selected restaurant to see its reviews and ratings.",
+          "expected_result": "Detailed restaurant information is displayed, including user reviews and average ratings.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Submit a review and rating for a restaurant you've previously visited.",
+          "expected_result": "The new review and rating are successfully added and displayed under the selected restaurant's reviews.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Navigate through the site's main sections (home, restaurants, recipes, reviews) using the main menu.",
+          "expected_result": "Each section loads correctly with relevant and updated content, matching the menu item's title.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'lemon chiffon' as the background color and 'chocolate' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'lemon chiffon' and components (such as buttons, cards, headers, etc.) are styled with the color 'chocolate', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000068",
+      "application_type": "News and Information Sites",
+      "instruction_en": "Please implement an environmental warning system website to display real-time weather and air quality data. The website should have a real-time update function, displaying the air quality index (AQI) for the past two weeks, and allowing users to compare pollution and air quality changes. Users should be able to browse current weather and air quality data, including temperature, humidity, and gas sensor data. Set primary background to azure mist and elements to dark slate blue.",
+      "prompt": "做一个环境预警应用的首页：展示实时天气和空气质量数据（温度、湿度、气体传感），显示近两周 AQI 走势，支持对比污染和空气质量变化，action 含对比和刷新。背景浅色，主题色用暗石板蓝。",
+      "cases": [
+        {
+          "task": "Verify that the website loads the real-time weather data on the homepage.",
+          "expected_result": "The homepage should display current weather information, including temperature, humidity, and gas sensor data, immediately upon loading without the need for a page refresh.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Check if the website updates the air quality index (AQI) data in real-time.",
+          "expected_result": "The AQI information should refresh automatically on the site without manual page reloads and reflect changes accurately as per the latest available data.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Validate the ability to view historical air quality index (AQI) data for the past two weeks.",
+          "expected_result": "Users should be able to access a time series or historical graph/chart that shows AQI data for each of the last 14 days.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          }
+        },
+        {
+          "task": "Test the functionality for comparing changes in pollution and air quality over a specified period.",
+          "expected_result": "Users should be able to select two different dates within the last two weeks and see a visual comparison of the AQI data between these two dates.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          }
+        },
+        {
+          "task": "Ensure that users can navigate to a section that displays current weather information.",
+          "expected_result": "There should be a clear navigation path (e.g., a menu link or button) that directs users to the section showing the latest weather details, without encountering navigation issues.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'azure mist' as the background color and 'dark slate blue' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'azure mist' and components (such as buttons, cards, headers, etc.) are styled with the color 'dark slate blue', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000078",
+      "application_type": "Productivity Applications",
+      "instruction_en": "Please implement a computing task website for performing calculations. The website should have functionalities for inputting mathematical expressions, executing calculations, and displaying results. Users should be able to input mathematical expressions, select the calculation type (e.g., \"Basic Arithmetic\"), execute the calculation, and view the calculation results. Use mint cream as the screen background and teal for component highlights.",
+      "prompt": "做一个计算器应用的首页：支持输入数学表达式、选择计算类型（如基础算术）、执行计算、显示结果。中间有表达式输入区和结果区，action 含计算类型选择和执行。背景浅色，主题色用鸭绿色。",
+      "cases": [
+        {
+          "task": "Input a basic mathematical expression (e.g., \"2 + 2\") into the expression input field.",
+          "expected_result": "The expression \"2 + 2\" is correctly displayed in the input field without any modification.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Select a calculation type from the available options (e.g., \"Basic Arithmetic\").",
+          "expected_result": "The selected calculation type is visibly confirmed on the interface, ensuring the system understands the user's choice.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation"
+            ]
+          }
+        },
+        {
+          "task": "Click the button to execute the calculation after entering a mathematical expression and selecting a calculation type.",
+          "expected_result": "The system processes the equation and a result is displayed on the results screen.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Generation"
+            ]
+          }
+        },
+        {
+          "task": "Input an invalid mathematical expression (e.g., \"2 ++ 2\") and attempt to execute the calculation.",
+          "expected_result": "An error message is displayed, indicating that the expression is invalid and guiding the user to input a valid expression.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test the website's navigation by moving from the home page to the calculation page.",
+          "expected_result": "The transition should be smooth, and the calculation page should load without errors and allow immediate interaction.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'mint cream' as the background color and 'teal' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'mint cream' and components (such as buttons, cards, headers, etc.) are styled with the color 'teal', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000080",
+      "application_type": "Productivity Applications",
+      "instruction_en": "Please implement an advanced to-do list web application where users can create, edit, and delete to-do items. The application should have functionalities for adding new tasks, marking tasks as completed, deleting tasks, filtering tasks, and searching tasks. Users should be able to browse all to-do items, create new tasks, edit existing tasks, and delete unnecessary tasks. Set all pages to have a lavender background and indigo components.",
+      "prompt": "做一个高级待办清单应用的首页：支持新增任务、标记完成、编辑、删除、按状态筛选、搜索任务。中间是待办列表（可勾选行），action 含新建、筛选（全部/未完成/已完成）、搜索。背景浅色，主题色用靛青。",
+      "cases": [
+        {
+          "task": "Create a new task by filling out the \"Add Task\" form and submitting it.",
+          "expected_result": "The new task appears in the list of to-do items with the correct details and is visible under the user's account.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Edit an existing task by changing its description and saving the changes.",
+          "expected_result": "The task's description is updated in the list and reflects the changes accurately.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Mark a specific task as completed on the to-do list.",
+          "expected_result": "The task is visibly marked as completed, often indicated by a strikethrough, checkbox, or similar visual cue.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Delete a task from the list by selecting the \"Delete\" option next to it.",
+          "expected_result": "The selected task is removed from the list and is no longer visible in the account.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Use the search functionality to find a specific task by its title or keywords.",
+          "expected_result": "The search returns a relevant list of tasks that match the query, displaying intended search criteria clearly.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Filter tasks to show only completed or uncompleted tasks.",
+          "expected_result": "The task list updates to display only tasks that match the selected filter criteria without affecting the unfiltered tasks' status.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Verify the site's navigation by clicking the provided menu items or links in the user interface.",
+          "expected_result": "Each navigation element correctly redirects the user to the intended page without errors, maintaining user session details.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'lavender' as the background color and 'indigo' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'lavender' and components (such as buttons, cards, headers, etc.) are styled with the color 'indigo', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000092",
+      "application_type": "Social Media Platforms",
+      "instruction_en": "Please implement a skill sharing platform for showcasing personal skills and connecting with others. The platform should allow users to create profiles, add skills and certifications, and search for other users based on their qualifications. Users should be able to browse other users' profiles, view their skills and certifications, and contact them. The platform should also have a search feature that allows users to find other users based on their skills and certifications. Apply cornsilk for the layout background and peru for interactive elements.",
+      "prompt": "做一个技能分享平台应用的首页：支持浏览用户主页、查看技能和认证、按技能搜索用户、联系对方。中间是用户卡片（头像、技能标签、认证），action 含搜索、联系。背景浅色，主题色用秘鲁色。",
+      "cases": [
+        {
+          "task": "Verify that a user can create a profile and add skills and certifications.",
+          "expected_result": "The user should be able to input and save information regarding their skills and certifications, and this information should be accurately displayed on their profile page.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test the search feature by searching for a user based on a specific skill.",
+          "expected_result": "The search results should display a list of users who have the specified skill in their profiles.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Confirm that a user can view another user's profile, including their skills and certifications.",
+          "expected_result": "The user should be able to navigate to another user's profile and see the detailed list of their skills and certifications.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Check the contact functionality by trying to contact another user from their profile page.",
+          "expected_result": "The platform should provide an option to contact the user, such as sending a message or an integrated contact form, and it should function correctly.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Test the navigation system, ensuring users can easily move between pages such as home, profile, search, and any other main sections.",
+          "expected_result": "All navigation links should be functional and lead to their respective pages without errors.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'cornsilk' as the background color and 'peru' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'cornsilk' and components (such as buttons, cards, headers, etc.) are styled with the color 'peru', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000095",
+      "application_type": "Streaming and Interactive Platforms",
+      "instruction_en": "Please implement a website for downloading ringtones and wallpapers, providing services for downloading ringtones and wallpapers. The website should have the functionality to download ringtones and wallpapers, allowing users to browse and search for ringtones and wallpapers, select and download the desired content, navigate to the user profile to view the download history, add ringtones to the collection for future reference, and categorize the contents by selecting a category from the menu. The website should also have categorization and search functions to help users quickly find the ringtones and wallpapers they need. Style all pages with a light goldenrod background and olive drab components.",
+      "prompt": "做一个铃声壁纸下载应用的首页：支持浏览和搜索铃声壁纸、选择下载、查看下载历史、加入收藏、按类目筛选。中间是内容卡片（封面、名称），action 含下载、收藏、分类菜单、我的下载。背景浅色，主题色用橄榄褐。",
+      "cases": [
+        {
+          "task": "Use the search function to find a specific ringtone using a keyword.",
+          "expected_result": "The search results should populate a list of ringtones that match the keyword, showing relevant details such as title and category.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Browse a category of wallpapers and attempt to download one.",
+          "expected_result": "The download should initiate immediately after selecting \"Download,\" and the user should receive a confirmation message.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the user profile section to view the download history.",
+          "expected_result": "The download history should list all previously downloaded ringtones and wallpapers, including dates and times.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "File operation"
+            ]
+          }
+        },
+        {
+          "task": "Add a ringtone to the collection for future reference without downloading it.",
+          "expected_result": "The ringtone should appear in the user's collection section, accessible through their profile.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation",
+              "Generation"
+            ]
+          }
+        },
+        {
+          "task": "Test the categorization feature by selecting a category from the menu.",
+          "expected_result": "The page should display all ringtones and wallpapers accurately categorized, offering relevant options for easy navigation.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'light goldenrod' as the background color and 'olive drab' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'light goldenrod' and components (such as buttons, cards, headers, etc.) are styled with the color 'olive drab', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000096",
+      "application_type": "Travel Booking Portals",
+      "instruction_en": "Please implement an online travel booking website for booking train tickets, air tickets, and hotels. The website should have functionalities for searching, booking, payment, and order management. Users should be able to search and book train tickets, air tickets, and hotels, make online payments, and view order status. Use peach puff in the background layer and indian red for the component layer.",
+      "prompt": "做一个差旅订票应用的首页：支持搜索和预订火车票、机票、酒店，在线支付，查看订单状态。中间是票务卡片，action 含机票、火车票、酒店、我的订单入口。背景浅色，主题色用印度红。",
+      "cases": [
+        {
+          "task": "Search for a train ticket using specified departure and arrival cities and dates.",
+          "expected_result": "A list of available train options matching the search criteria is displayed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Book a selected air ticket from the search results.",
+          "expected_result": "User is able to successfully complete the booking process and receive a confirmation number.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Initiate an online payment for a hotel booking using a valid credit card.",
+          "expected_result": "The payment is processed, the transaction is confirmed, and an email receipt is generated.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the 'Order Status' page.",
+          "expected_result": "A list of all past and current bookings is displayed with their corresponding statuses.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'peach puff' as the background color and 'indian red' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'peach puff' and components (such as buttons, cards, headers, etc.) are styled with the color 'indian red', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000099",
+      "application_type": "Travel Booking Portals",
+      "instruction_en": "Please implement a minimalistic bus and railway ticket booking platform where users can search and book bus and railway tickets, view real-time seat availability and prices, make secure payments, and receive booking confirmations via email or SMS. The platform should have user account management features, including user registration, login, booking history, and ticket printing options. Additionally, the platform should have a responsive design that adapts to both mobile and desktop devices. Configure all backgrounds with snow and all components with dim gray.",
+      "prompt": "做一个极简公交火车票预订应用的首页：支持搜索车次、查看实时余座和票价、下单支付、接收确认、查看预订历史，action 含注册登录、订票、历史入口。背景浅色，主题色用暗灰。",
+      "cases": [
+        {
+          "task": "Test the user registration form functionality.",
+          "expected_result": "The form successfully registers a new user, and a confirmation message is displayed indicating successful registration.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Verify the login feature.",
+          "expected_result": "Users can log in using registered credentials, gaining access to personal account features such as booking history.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Search for a bus ticket and check seat availability.",
+          "expected_result": "The platform displays available bus options, along with real-time seat availability and pricing information.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Search for a railway ticket and check seat availability.",
+          "expected_result": "The platform displays available railway options, along with real-time seat availability and pricing information.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Test the booking payment process.",
+          "expected_result": "Payments are processed securely, with confirmation of payment completion displayed, and users receive a booking confirmation via email or SMS.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Test the booking history feature.",
+          "expected_result": "Users can view a list of their past bookings with details of each transaction after successful login.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Verify the ticket printing option.",
+          "expected_result": "Users are able to print their tickets directly from the platform in a print-friendly format.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'snow' as the background color and 'dim gray' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'snow' and components (such as buttons, cards, headers, etc.) are styled with the color 'dim gray', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

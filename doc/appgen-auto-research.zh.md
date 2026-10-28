@@ -44,6 +44,30 @@ app,不是 app-shell spec;四门校验器才是产品自己的契约):
 | [OpenHarmony Bench](https://arxiv.org/abs/2608.16022) | 真机验证的应用级任务——harmony 面的语料供体,远期 |
 | [Web-Bench](https://github.com/bytedance/web-bench)(ByteDance) | 项目内序贯依赖任务——未来多轮 morph/update 链 benchmark 的形状 |
 
+**移植——百分值 benchmark**(语料和公式移植, harness 仍是自己的)。供体
+benchmark 没法对 def 直接跑——WebCoderBench 24 个指标里 21 个的工具链挂在
+HTML/CSS/JS 代码上而 JSON spec 没有这些东西,WebGen-Bench 的 647 条测试用例
+是开浏览器操作网站的,它那家带法务限制的姊妹 benchmark 数据干脆没公开——所以
+移植搬的是能穿过产物类型变化的部分:**测试用例、计分公式、诊断项**。
+
+- **`test/panel/appgen-bench/webgen-port.json`**(由
+  `appgen-bench/build-port.mjs` 从上游克隆生成):从 101 指令/647 用例的语料
+  中选 12 指令/74 用例,按「能映射成单面手机应用」的应用类型均衡覆盖(电商、
+  效率、资讯、社交、旅行、流媒体、消息)。**测试用例逐字保真**——task、
+  expected_result、分类原封不动;只有指令被改写成 def 原生形态(功能全保留,
+  颜色要求映射到 `theme.accent`),benchmark 的语义仍是 benchmark 的。
+- **`test/panel/appgen-bench-port.mjs`** 原封不动地在**用例级**执行上游公式:
+  `accuracy = (N_yes + 0.5 × N_partial) ÷ N_total × 100%`,外加上游诊断项
+  (start-failed 率 = 生成没产出有效 spec,其用例全判 NO;judge 失败的用例从
+  分母剔除)。细分:按用例类别(Functional / Data Display / Design
+  Validation)和按指令。
+- **执行层 v1 = spec 审查 judge**:异族 judge(生成 deepseek、判分
+  glm-4.6——防同源偏好)对着生成的 spec 逐用例判:YES(内容在场且 action
+  能交付)/ PARTIAL / NO。这是诚实的静态层;action-execution 腿落地后升级为
+  真派发——升级属于 benchmark 变更(新 tier、新基线账本),不是悄悄改分。
+- 循环在这条轴上的优化目标就是 **accuracy 百分值和它的三个类别百分值**——
+  一轮一轮看 delta,账本形状和 census 相同。
+
 ### 循环怎么跑(auto-research 选型)
 
 - **循环引擎:宿主 agent 定时执行**(ZCode cron),不架框架服务。deep-research
