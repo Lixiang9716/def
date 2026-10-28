@@ -51,16 +51,67 @@ private fun askOptions(
     onAnswer: (JSONObject) -> Unit,
 ) {
     activity.runOnUiThread {
-        val options = question.optJSONArray("options") ?: return@runOnUiThread
-        val labels = (0 until options.length()).map { options.getJSONObject(it).optString("label") }
+        val options = question.optJSONArray("options")
+        android.util.Log.i("dsh.question", "askOptions parsed: ${options?.length() ?: -1} options, raw=${options?.toString()?.take(200)}")
+        if (options == null) return@runOnUiThread
+        val labels = (0 until options.length()).map { i ->
+            // The model's option shapes seen live: bare strings, objects
+            // {label|text|...} — the key VARIES by model whim, so take the
+            // object's LONGEST string value (the label is always its
+            // longest field; the description runs shorter) and fall back
+            // to the JSON itself when the object carries no strings.
+            val entry = options.opt(i)
+            when (entry) {
+                is String -> entry
+                is JSONObject -> {
+                    var best = ""
+                    for (k in entry.keys()) {
+                        val v = entry.optString(k)
+                        if (v.length > best.length) best = v
+                    }
+                    if (best.isEmpty()) entry.toString() else best
+                }
+                else -> entry.toString()
+            }
+        }
+        // The options render as DIALOG BUTTONS (positive/neutral/negative):
+        // the themed AlertDialog's item list collapsed to zero height on the
+        // emulator (measured 2026-10-29 — setItems and setSingleChoiceItems
+        // both), and buttons are the one face that cannot collapse. Three
+        // options max; more fall back to the free-text input.
+        android.util.Log.i("dsh.question", "labels armed: ${labels.size} → ${labels.joinToString(" | ").take(200)}")
         val builder = AlertDialog.Builder(activity)
             .setTitle(question.optString("header", "def"))
             .setMessage(question.optString("question", ""))
-            .setSingleChoiceItems(labels.toTypedArray(), -1) { dialog, which ->
+        if (labels.size in 1..3) {
+            builder.setPositiveButton(labels[0]) { dialog, _ ->
                 dialog.dismiss()
-                onAnswer(answerOf(questionId, JSONArray().put(labels[which]), null))
+                onAnswer(answerOf(questionId, JSONArray().put(labels[0]), null))
             }
-            .setNegativeButton("取消") { dialog, _ -> dialog.dismiss() }
+            if (labels.size >= 2) builder.setNeutralButton(labels[1]) { dialog, _ ->
+                dialog.dismiss()
+                onAnswer(answerOf(questionId, JSONArray().put(labels[1]), null))
+            }
+            if (labels.size >= 3) builder.setNegativeButton(labels[2]) { dialog, _ ->
+                dialog.dismiss()
+                onAnswer(answerOf(questionId, JSONArray().put(labels[2]), null))
+            }
+        } else {
+            // More than three options (or none): the free-text input covers
+            // the answer (the model reads the typed reply).
+            val input = EditText(activity)
+            input.hint = "自己写…"
+            val box = LinearLayout(activity)
+            box.orientation = LinearLayout.VERTICAL
+            box.setPadding(48, 16, 48, 0)
+            box.addView(input)
+            builder.setView(box)
+                .setPositiveButton("提交") { dialog, _ ->
+                    dialog.dismiss()
+                    onAnswer(answerOf(questionId, null, input.text.toString()))
+                }
+                .setNegativeButton("取消") { dialog, _ -> dialog.dismiss() }
+        }
         builder.show()
     }
 }

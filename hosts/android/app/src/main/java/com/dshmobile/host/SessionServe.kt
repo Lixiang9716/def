@@ -338,6 +338,7 @@ class SessionServe private constructor(
                     // card); the answer rides the same bus delivery the config
                     // rows use (question-bridge.js's composer intercept picks
                     // it up and the parked ask_user_question resumes).
+                    android.util.Log.i("dsh.question", "ask received: ${msg.toString().take(400)}")
                     val deliver: (JSONObject) -> Unit = { deliverRuntime(it) }
                     activity.runOnUiThread { showQuestionDialog(activity, msg, deliver) }
                 }
