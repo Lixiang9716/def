@@ -232,6 +232,11 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_upstream_web_write_streams_js), under: root)
         try write("upstream/web-write-settings.js",
                   data: resData(dsh_runtime_res_upstream_web_write_settings_js), under: root)
+        // The write surface's app bridge (the M4 split from web-write.js):
+        // the session/create + app/service-call arms ride it (measured live
+        // 2026-10-28 — the boot died on the first unresolved import).
+        try write("upstream/web-write-app.js",
+                  data: resData(dsh_runtime_res_upstream_web_write_app_js), under: root)
         try writeBootImportRows(root)
         try writeTransitiveFaceRows(root)
         // The npm bridge shim registers bare `diff` before the file tools
@@ -250,6 +255,22 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_upstream_llm_gateway_mount_js), under: root)
         try write("upstream/llm-piai-mount.js",
                   data: resData(dsh_runtime_res_upstream_llm_piai_mount_js), under: root)
+        // The pi-ai section's credentials service (llm-piai-mount.js imports
+        // it at module top) — its bytes were embedded with the BYOK plane's
+        // resource row but the stager never wrote the file, so the first
+        // serve boot died on `cannot load module
+        // 'upstream/credentials-store.js'` (measured live on the simulator
+        // 2026-10-28; the 2026-10-11 gateway-mount miss's twin).
+        try write("upstream/credentials-store.js",
+                  data: resData(dsh_runtime_res_upstream_credentials_store_js), under: root)
+        // The pi-ai section's import chain continues into these two:
+        // llm-piai-mount.js imports fetch-gateway-bridge.js at module top,
+        // which imports mcp-http-transport.js — same live-measured miss
+        // class (2026-10-28).
+        try write("upstream/fetch-gateway-bridge.js",
+                  data: resData(dsh_runtime_res_upstream_fetch_gateway_bridge_js), under: root)
+        try write("upstream/mcp-http-transport.js",
+                  data: resData(dsh_runtime_res_upstream_mcp_http_transport_js), under: root)
     }
 
     /// Seven top-level boot.js imports the stager missed while their
