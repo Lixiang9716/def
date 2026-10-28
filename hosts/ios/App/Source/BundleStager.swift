@@ -220,29 +220,41 @@ enum BundleStager {
         // The marketplace resolver seam and its crypto pair (the second live
         // measurement, same leg): web-write-marketplace.js imports
         // marketplace-resolver.js, which imports canonical-json.js + ed25519.js.
-        try write("marketplace-resolver.js",
-                  data: resData(dsh_runtime_res_marketplace_resolver_js), under: root)
-        try write("canonical-json.js",
-                  data: resData(dsh_runtime_res_canonical_json_js), under: root)
-        try write("ed25519.js",
-                  data: resData(dsh_runtime_res_ed25519_js), under: root)
+        try writeMarketplaceSeamRows(root)
         // The W-RPC write surface (b4): the composer-send adapter + scenario.
         try writeWriteSurface(root)
-        try write("upstream/web-write-streams.js",
-                  data: resData(dsh_runtime_res_upstream_web_write_streams_js), under: root)
-        try write("upstream/web-write-settings.js",
-                  data: resData(dsh_runtime_res_upstream_web_write_settings_js), under: root)
-        // The write surface's app bridge (the M4 split from web-write.js):
-        // the session/create + app/service-call arms ride it (measured live
-        // 2026-10-28 — the boot died on the first unresolved import).
-        try write("upstream/web-write-app.js",
-                  data: resData(dsh_runtime_res_upstream_web_write_app_js), under: root)
+        try writeWriteSurfaceSplitRows(root)
         try writeBootImportRows(root)
         try writeTransitiveFaceRows(root)
         // The npm bridge shim registers bare `diff` before the file tools
         // resolve it (upstream/boot.js's FILE-TOOLS row).
         // The writable workspace VFS half of the fs shim (the FILE-TOOLS
         // row's world; split from fs.js at the file-size gate).
+    }
+
+    /// The marketplace resolver seam + its crypto pair: web-write-marketplace.js
+    /// imports marketplace-resolver.js, which imports canonical-json.js +
+    /// ed25519.js (the second live measurement, same leg as the llm rows).
+    private static func writeMarketplaceSeamRows(_ root: URL) throws {
+        try write("marketplace-resolver.js",
+                  data: resData(dsh_runtime_res_marketplace_resolver_js), under: root)
+        try write("canonical-json.js",
+                  data: resData(dsh_runtime_res_canonical_json_js), under: root)
+        try write("ed25519.js",
+                  data: resData(dsh_runtime_res_ed25519_js), under: root)
+    }
+
+    /// The write surface's split files: streams + settings ride the b4 round,
+    /// and the app bridge (the M4 split from web-write.js) carries the
+    /// session/create + app/service-call arms (measured live 2026-10-28 —
+    /// the boot died on the first unresolved import).
+    private static func writeWriteSurfaceSplitRows(_ root: URL) throws {
+        try write("upstream/web-write-streams.js",
+                  data: resData(dsh_runtime_res_upstream_web_write_streams_js), under: root)
+        try write("upstream/web-write-settings.js",
+                  data: resData(dsh_runtime_res_upstream_web_write_settings_js), under: root)
+        try write("upstream/web-write-app.js",
+                  data: resData(dsh_runtime_res_upstream_web_write_app_js), under: root)
     }
 
     /// The spine seat's llm route wiring: boot.js imports the gateway llm
