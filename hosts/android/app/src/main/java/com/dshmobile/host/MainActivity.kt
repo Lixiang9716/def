@@ -438,15 +438,33 @@ class MainActivity : Activity() {
     }
 
     /** The asset-set stamp written INSIDE each synced tree: the exact sorted
-     * relative-path manifest of what the current APK ships. */
+     * relative-path manifest WITH each file's CRC — a path-only stamp let a
+     * same-list content change (a runtime fix inside an existing file) match
+     * the old stamp and the stale tree serve forever (measured 2026-10-28:
+     * the pi-ai collision fix rode a rebuilt APK while files/dsh kept the
+     * pre-fix boot.js — the list was identical, the bytes were not). File
+     * vs dir settles by OPENING: AssetManager.list() of a plain file returns
+     * the file's own name on some images, so the list shape cannot be
+     * trusted to walk the tree. */
     private fun collectAssetNames(assetPath: String, prefix: String, names: MutableSet<String>) {
-        val children = assets.list(assetPath).orEmpty()
-        if (children.isEmpty()) {
-            names.add(prefix)
+        val full = if (prefix.isEmpty()) assetPath else "$assetPath/$prefix"
+        val crc = java.util.zip.CRC32()
+        val isFile = try {
+            assets.open(full).use { input ->
+                val buf = ByteArray(8192)
+                var n: Int
+                while (input.read(buf).also { n = it } >= 0) crc.update(buf, 0, n)
+            }
+            true
+        } catch (_: java.io.FileNotFoundException) {
+            false
+        }
+        if (isFile) {
+            names.add("$prefix:${crc.value}")
             return
         }
-        for (child in children) {
-            collectAssetNames("$assetPath/$child", if (prefix.isEmpty()) child else "$prefix/$child", names)
+        for (child in assets.list(full).orEmpty()) {
+            collectAssetNames(assetPath, if (prefix.isEmpty()) child else "$prefix/$child", names)
         }
     }
 
@@ -474,9 +492,13 @@ class MainActivity : Activity() {
         if (target.exists()) target.deleteRecursively()
         target.mkdirs()
         for (rel in names) {
-            val out = File(target, rel)
+            // The stamp entry carries the ":crc" suffix — the on-disk name is
+            // the part before the LAST colon (a crc is all digits, so a path
+            // colon can never sit this late); only the stamp text keeps it.
+            val diskRel = rel.substringBeforeLast(':')
+            val out = File(target, diskRel)
             out.parentFile?.mkdirs()
-            copyAssetFile("$assetPath/$rel", out)
+            copyAssetFile("$assetPath/$diskRel", out)
         }
         JournalKeeper.restore(kept)
         stamp.writeText(desired)
