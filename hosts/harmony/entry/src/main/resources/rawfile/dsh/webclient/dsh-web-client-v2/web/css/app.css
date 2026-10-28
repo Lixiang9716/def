@@ -1047,3 +1047,12 @@
 .question-header{font-size:12px;font-weight:600;color:var(--fg-dim, #9aa);margin-bottom:2px}
 .question-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
 .question-custom{flex:1;min-width:120px;border:1px solid #ffffff22;border-radius:10px;padding:7px 10px;font-size:13px;background:transparent;color:var(--fg)}
+
+/* ---- the mounted-plugin live card (the CardPlayerSurface web sibling) ---- */
+.live-card{position:fixed;right:14px;bottom:14px;z-index:60;width:min(300px,calc(100vw - 28px));padding:12px 14px;border-radius:16px;box-shadow:0 10px 26px #0008}
+.live-card-head{display:flex;align-items:center;gap:8px}
+.live-card-glyph{color:var(--accent, #3b82f6)}
+.live-card-title{flex:1;font-weight:600;font-size:14px;color:var(--fg)}
+.live-card-close{border:0;background:transparent;color:var(--fg-dim, #9aa);font-size:16px;cursor:pointer;padding:0 2px}
+.live-card-sub{font-size:12px;color:var(--fg-dim, #9aa);margin-top:4px;word-break:break-word}
+.live-card-meta{font-size:11px;color:var(--fg-dim, #9aa);margin-top:6px;min-height:13px}

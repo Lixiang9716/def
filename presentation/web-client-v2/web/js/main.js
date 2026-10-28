@@ -16,6 +16,7 @@ import { createComposer } from './composer.js';
 import { setupOnboarding } from './onboarding.js';
 import { setupMarketplace } from './marketplace.js';
 import { setupCreationView, openCreation } from './creation-view.js';
+import { handleCardFrame } from './card-face.js';
 import { setupAppshell, openSurface as openAppshell, surfaceSpec, createSwarmStrip } from './appshell.js';
 import { mergeUpdate } from './appshell-core.js';
 
@@ -45,6 +46,7 @@ const mux = new Mux();
 // open, so the card renders inside the conversation.
 mux.open('app/cards', {}, {
   onItem: (value) => {
+    if (value?.type?.startsWith('card.')) { handleCardFrame(value); return; }
     if (value?.type === 'approval.request' || value?.type === 'approval.decided') {
       timeline.applyRecord({
         type: 'event',
