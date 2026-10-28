@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "note": "The census categories. Axis: ui = visual composition breadth; backend = interaction/action design depth. The music-player prompt is the L3 benchmark's prompt verbatim (comparability anchor). expect[] are soft wants reported as coverage, not hard gates.",
+  "categories": [
+    {
+      "id": "music-player",
+      "axis": "ui",
+      "prompt": "做一个音乐播放器应用的首页：顶部搜索栏，中间是每日推荐的横幅卡片，下面是四个快捷入口（私人FM、每日推荐、歌单、排行榜），再下面是三个推荐歌单的横向卡片列表，最底下有一个正在播放的迷你播放条。主题色用红色。",
+      "expect": [
+        { "kind": "template", "id": "search-bar" },
+        { "kind": "template", "id": "banner-card" },
+        { "kind": "template", "id": "hcard-row" },
+        { "kind": "template", "id": "mini-player" }
+      ]
+    },
+    {
+      "id": "wallet",
+      "axis": "ui",
+      "prompt": "做一个钱包应用的首页：顶部显示账户总资产和本月收支，中间是四个常用功能入口（扫码付款、转账、充值、账单），下面是最近的交易记录列表，每条带类别图标和金额，最底部有行动按钮。主题色用深蓝。",
+      "expect": [
+        { "kind": "template", "id": "balance-card" },
+        { "kind": "template", "id": "service-grid" },
+        { "kind": "min-actions", "count": 2 }
+      ]
+    },
+    {
+      "id": "chat",
+      "axis": "ui",
+      "prompt": "做一个即时通讯应用的首页：顶部搜索栏，中间是最近的会话列表（头像、昵称、最后一条消息、时间），底部是四个标签页（消息、通讯录、发现、我）。主题色用绿色。",
+      "expect": [
+        { "kind": "template", "id": "chat-row" },
+        { "kind": "template", "id": "tab-bar" },
+        { "kind": "template", "id": "search-bar" }
+      ]
+    },
+    {
+      "id": "tools-dashboard",
+      "axis": "ui",
+      "prompt": "做一个工具箱应用的首页：顶部搜索栏，中间是九宫格式的常用工具入口（至少八个，如日历、计算器、备忘录、天气、翻译、扫描、指南针、录音），下面是一个横幅卡片放限时活动。主题色用橙色。",
+      "expect": [
+        { "kind": "template", "id": "service-grid" },
+        { "kind": "template", "id": "banner-card" },
+        { "kind": "template", "id": "search-bar" }
+      ]
+    },
+    {
+      "id": "pomodoro",
+      "axis": "backend",
+      "prompt": "做一个番茄钟专注应用的首页：中间是一个大的倒计时进度（显示剩余 25:00），下面显示今日完成的番茄数和专注时长统计，再下面是任务清单（每项可勾选完成），底部有开始专注和休息两个按钮。主题色用番茄红。",
+      "expect": [
+        { "kind": "template", "id": "progressbar" },
+        { "kind": "min-actions", "count": 3 }
+      ]
+    },
+    {
+      "id": "calendar",
+      "axis": "backend",
+      "prompt": "做一个日历应用的首页：顶部显示当前月份，中间是月历网格，下面是今日的日程列表（时间、标题、颜色标记），底部有新建日程的按钮。主题色用靛蓝。",
+      "expect": [
+        { "kind": "min-actions", "count": 2 },
+        { "kind": "template", "id": "banner-card" }
+      ]
+    },
+    {
+      "id": "ecommerce",
+      "axis": "ui",
+      "prompt": "做一个电商应用的首页：顶部搜索栏，下面是限时秒杀的横向卡片列表（商品封面、名称、价格），中间是四个分类入口，再下面是猜你喜欢的两列商品卡片。主题色用正红。",
+      "expect": [
+        { "kind": "template", "id": "hcard-row" },
+        { "kind": "template", "id": "search-bar" }
+      ]
+    },
+    {
+      "id": "fitness",
+      "axis": "ui",
+      "prompt": "做一个健康运动应用的首页：顶部显示今日步数大数字，中间是三个环形进度（步数、卡路里、时长），下面是本周运动记录的横向卡片，底部标签四个（首页、运动、发现、我的）。主题色用青色。",
+      "expect": [
+        { "kind": "template", "id": "progressbar" },
+        { "kind": "template", "id": "tab-bar" }
+      ]
+    }
+  ]
+}
