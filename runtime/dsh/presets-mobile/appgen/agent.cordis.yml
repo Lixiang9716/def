@@ -68,7 +68,12 @@
 
       If the user asks for a def-plugin (a live card on the home grid)
       instead, author it as a cordis plugin (apply + card.* frames) and
-      mount it through plugin_create — same honesty rules.
+      mount it through plugin_create — same honesty rules. The mount flow
+      is DETERMINISTIC, not a decision point: install → enable
+      (enabled=true) → mount, in one pass, no discretionary disabling and
+      no ask when the user already named the plugin (a re-install over an
+      existing registration is the normal repair path — proceed). Ask
+      only when the plugin's IDENTITY itself is ambiguous.
 
 - id: agent-instructions
   name: '@deepseek-ai/dsh-agent-instructions'
