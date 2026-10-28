@@ -320,6 +320,16 @@ class SessionServe private constructor(
                 // workspace files as deliverables, journaled as
                 // deliverables/presented for the clients to render on screen.
                 .put("creation", true)
+                // The PRESET JOIN stays OFF until the device-side join
+                // failure is fixed: arming it here killed the runtime
+                // silently (every endpoint answered gateway/unimplemented
+                // after boot; measured 2026-10-29). The join path
+                // (joinDefaultPreset → the mobile preset load) fails on the
+                // device for a reason the boot log never surfaces — the
+                // debug round owns it. Without the join the model's toolset
+                // rides the empty global layer (the agent-presets warn
+                // names it) and ask_user_question is absent — the
+                // plain-text ask fallback still gets the job answered.
                 // The BYOK-models gate (producer-registry v1): the Models
                 // page's 添加提供方 form is live on the interactive seat.
                 .put("byokModels", true)

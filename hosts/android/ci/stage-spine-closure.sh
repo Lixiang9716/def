@@ -417,6 +417,21 @@ for client in v2 compact; do
         done
 done
 
+# The OUTBOARD mobile presets (runtime/dsh/presets-mobile/{mobile,appgen})
+# stage as their own assets dir — the device seeder (AgentPresetsSeed)
+# delivers them at the vendored package's presets/ VFS rel, so the device
+# roster answers mobile + appgen beside the upstream four. Staging outside
+# the vendored tree keeps the vendor pins byte-clean (adding rows there
+# would fail the pin check; measured 2026-10-29).
+for preset in mobile appgen; do
+    say "staging presets-mobile/$preset → assets/dsh/presets-mobile/$preset"
+    (cd "$ROOT/runtime/dsh/presets-mobile/$preset" && find . -type f) |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/presets-mobile/$preset/$(dirname "$rel")"
+            cp "$ROOT/runtime/dsh/presets-mobile/$preset/$rel" "$ASSETS/presets-mobile/$preset/$rel"
+        done
+done
+
 # The scenarios ride the same copy (assets stay byte-identical to the
 # runtime bundle, like every other staged scenario). The upstream-suite
 # driver + harness MUST be in this list: copyAssetDir re-merges assets over
