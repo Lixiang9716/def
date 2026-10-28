@@ -23,7 +23,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
-import { SYSTEM_V1 } from './appgen-eval/system-prompt.js';
+import { SYSTEM_V1, SYSTEM_V2 } from './appgen-eval/system-prompt.js';
 
 const env = Object.fromEntries(
   readFileSync(new URL('../../.env', import.meta.url), 'utf8')
@@ -64,7 +64,7 @@ const call = (which, messages, temperature) => fetch(`${which.baseURL}/chat/comp
 
 async function generate(prompt) {
   const res = await call(GEN, [
-    { role: 'system', content: SYSTEM_V1 },
+    { role: 'system', content: process.env.APPGEN_SYSTEM === 'V1' ? SYSTEM_V1 : SYSTEM_V2 },
     { role: 'user', content: prompt },
   ], 0.7);
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text().then((t) => t.slice(0, 200))}`);
@@ -180,7 +180,7 @@ console.log(`start-failed: ${startFailed}/${rows.length} instructions; judge-fai
 const ledger = {
   meta: {
     at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model,
-    portVersion: PORT_VERSION, formula: 'accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (WebGen-Bench, case level)',
+    portVersion: PORT_VERSION, systemPrompt: process.env.APPGEN_SYSTEM === 'V1' ? 'SYSTEM_V1' : 'SYSTEM_V2', formula: 'accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (WebGen-Bench, case level)',
     tier: 'static (spec-inspection judge; action-execution leg upgrades to real dispatch)',
     instructions: rows.length, cases: totalCases,
   },

@@ -67,6 +67,17 @@ HTML/CSS/JS 代码上而 JSON spec 没有这些东西,WebGen-Bench 的 647 条�
   真派发——升级属于 benchmark 变更(新 tier、新基线账本),不是悄悄改分。
 - 循环在这条轴上的优化目标就是 **accuracy 百分值和它的三个类别百分值**——
   一轮一轮看 delta,账本形状和 census 相同。
+- **链式移植(Web-Bench 的形状)**——`test/panel/appgen-chain.mjs`:对同一个
+  表面做**序贯依赖**的修改任务(渲染→任务 1→任务 2→任务 3),update 载荷经
+  产品自己的 `mergeUpdate` 合到当前真值、先过同四门、judge 再判任务。被拒绝
+  的更新判 NO,链从最后的有效真值继续——就是产品的真实行为。产出链式
+  accuracy % 和逐位衰减(越靠后的依赖任务存活率如何?)。这是**后端轴**的
+  百分值 benchmark;上面的移植 benchmark 是一次性渲染轴。
+- **不可移植,如实记录**:OpenHarmony Bench(任务是可构建的 ArkTS 工程真机
+  验证——def 不生成 ArkTS)和 1D-Bench(其迭代指标依赖截图腿;形状留给那条
+  腿的设计)。WebCoderBench 的规则系指标(Lighthouse/ESLint/Laplacian/
+  MDN-BCD)对 JSON spec 无 input——只有它的 judge 系指标可移植,归未来的
+  视觉腿。
 
 ### 循环怎么跑(auto-research 选型)
 
@@ -101,8 +112,11 @@ HTML/CSS/JS 代码上而 JSON spec 没有这些东西,WebGen-Bench 的 647 条�
 
 ### 边界
 
-- 循环自动测量、自动提案,**不自批产品改动**。优化 PR 走正常的
-  gates/评审流(发布动作需要明确 go)。
+- **改进步已获 owner 授权自动执行**(2026-10-29:「自动更新 harness …插件,
+  skills, prompt 等任何可以改变的内容」)——循环把 harness/prompt/validator/
+  catalog 改动作为正常 PR 落地,不再逐项等 go;gates 和分支保护仍是防线,
+  **发布动作(bump/tag/发布)仍需明确 go**。每个自主改进 PR 必须携带复测
+  delta:没有 delta 数字,不合并。
 - 普查真烧 token:默认每轮每类 2 跑(flash 档 ~16 次调用,量小);定 bars 的
   深跑(N=10,L3 深度)发生在落地 PR 里,不是每轮都跑。
 

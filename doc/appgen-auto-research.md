@@ -92,6 +92,23 @@ the test cases, the scoring formula, and the diagnostics.
 - The loop's optimization target on this axis is the **accuracy
   percentage and its three category percentages** — deltas cycle over
   cycle, same ledger shape as the census.
+- **The chain port (Web-Bench's shape)** — `test/panel/appgen-chain.mjs`:
+  sequential DEPENDENT modification tasks over one surface (render →
+  task 1 → task 2 → task 3), the update payload merged over the current
+  truth by the product's own `mergeUpdate` and judged by the same four
+  gates before the judge grades the task. A refused update scores NO and
+  the chain continues from the last valid truth — the product's real
+  behavior. Reports chain accuracy % and the per-position decay (do
+  later, dependent tasks survive?). This is the **backend-axis**
+  percentage benchmark; the port benchmark above is the one-shot render
+  axis.
+- **Not portable, recorded honestly**: OpenHarmony Bench (tasks are
+  buildable ArkTS projects verified on device — def does not generate
+  ArkTS) and 1D-Bench (its iteration metric needs the screenshot leg;
+  its shape is reserved for that leg's design). WebCoderBench's
+  rule-based metrics (Lighthouse / ESLint / Laplacian / MDN-BCD) have no
+  input on a JSON spec — only its judge-based metrics are portable, and
+  those ride the future visual leg.
 
 ### How the loop runs (auto-research selection)
 
@@ -135,9 +152,13 @@ the test cases, the scoring formula, and the diagnostics.
 
 ### Boundaries
 
-- The loop measures and proposes automatically; it **does not
-  self-approve product changes**. Optimization PRs follow the normal
-  gates/review flow (release actions need explicit go).
+- **The improve step is owner-authorized to run autonomously**
+  (2026-10-29: "自动更新 harness …插件, skills, prompt 等任何可以改变的内容")
+  — the loop lands harness/prompt/validator/catalog changes as normal PRs
+  without a per-change go; the gates and branch protection remain the
+  protection, and **release actions (bump/tag/publish) still need an
+  explicit go**. Each autonomous improvement PR must carry its re-measure
+  delta: no delta numbers, no merge.
 - Census runs cost real tokens: the default cycle runs 2 rounds per
   category (~16 calls, small on the flash tier); a bar-setting run (N=10,
   the L3 depth) happens in a landing PR, not every cycle.

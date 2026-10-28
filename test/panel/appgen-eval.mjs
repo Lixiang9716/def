@@ -19,7 +19,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
 import { specToA2UI } from '../../system-plugins/dsh-appshell/lib/appshell-to-a2ui.js';
-import { SYSTEM_V1 } from './appgen-eval/system-prompt.js';
+import { SYSTEM_V1, SYSTEM_V2 } from './appgen-eval/system-prompt.js';
 
 const env = Object.fromEntries(
   readFileSync(new URL('../../.env', import.meta.url), 'utf8')
@@ -33,6 +33,13 @@ const MODEL = process.env.LLM_MODEL || env.ZAI_MODEL || 'glm-4.6';
 const LEDGER_STEM = process.env.LEDGER_STEM || 'appgen-census';
 const RUNS = Number(process.env.APPGEN_RUNS || 2);
 const ONLY = (process.env.APPGEN_CATEGORIES || '').split(',').map((s) => s.trim()).filter(Boolean);
+// The generation prompt version under test. V2 (the default) is the
+// PRODUCT prompt — the frozen schema head plus the operative RULES from
+// the plugin's catalog, single-sourced; V1 (the frozen L3 text) remains
+// for comparability with the committed V1-era ledgers. Never mix versions
+// in one delta claim.
+const SYSTEM_VERSION = process.env.APPGEN_SYSTEM === 'V1' ? 'V1' : 'V2';
+const SYSTEM = SYSTEM_VERSION === 'V1' ? SYSTEM_V1 : SYSTEM_V2;
 
 if (!API_KEY) { console.error('appgen-eval: no API key in env — cannot run the census'); process.exit(1); }
 
@@ -188,7 +195,7 @@ const codesOf = (j) => [...j.errors.map((e) => `${e.code}:${e.msg ?? ''}`), ...j
 const rows = [];
 for (const category of selected) {
   const messages = [
-    { role: 'system', content: SYSTEM_V1 },
+    { role: 'system', content: SYSTEM },
     { role: 'user', content: category.prompt },
   ];
   for (let i = 0; i < RUNS; i++) {
@@ -259,20 +266,35 @@ for (const r of rows) {
 const failureClasses = Object.entries(firstPassHistogram).sort((a, b) => b[1] - a[1]);
 const finalFailureClasses = Object.entries(finalFailHistogram).sort((a, b) => b[1] - a[1]);
 
+// The percentage scorecard the loop optimizes (the owner's bar: report
+// percentages, not pass counts). structuralValid: specs the product's own
+// four gates accept; constitution: rubric-clean among structurally valid;
+// alignment: prompt-named expectations hit. All first-pass, 0-100.
+const pct = (n, d) => (d ? Math.round(n / d * 1000) / 10 : null);
+const structuralOkCount = rows.filter((r) => r.structuralOk).length;
+const expectAll = rows.flatMap((r) => r.expect ?? []);
+const percentages = {
+  structuralValid: pct(structuralOkCount, rows.length),
+  constitution: pct(rows.filter((r) => r.structuralOk && (r.firstPassRubricFails ?? []).length === 0).length, structuralOkCount),
+  alignment: pct(expectAll.filter((e) => e.hit).length, expectAll.length),
+};
+
 console.log(`\n--- appgen-eval summary (${MODEL} × ${rows.length} runs) ---`);
 for (const [id, s] of Object.entries(byCategory)) {
   console.log(`${id.padEnd(16)} structural ${s.structuralFirstPass}/${s.runs}  rubric ${s.rubricFirstPass}/${s.runs}  final ${s.finalPass}/${s.runs}  expect ${s.expectHits}/${s.expectTotal}  tokens ${s.tokensP50}  ${s.latencyP50}ms`);
 }
 console.log(`first-pass failure classes: ${failureClasses.map(([c, n]) => `${c}×${n}`).join('  ') || 'none'}`);
 console.log(`final (post-retry) failures: ${finalFailureClasses.map(([c, n]) => `${c}×${n}`).join('  ') || 'none'}`);
+console.log(`percentages: structuralValid ${percentages.structuralValid}%  constitution ${percentages.constitution}%  alignment ${percentages.alignment}%`);
 
 const ledger = {
   meta: {
-    at: new Date().toISOString(), model: MODEL, promptSet: PROMPTSET_VERSION, systemPrompt: 'SYSTEM_V1',
+    at: new Date().toISOString(), model: MODEL, promptSet: PROMPTSET_VERSION, systemPrompt: 'SYSTEM_' + SYSTEM_VERSION,
     runsPerCategory: RUNS, categories: selected.map((c) => c.id), temperature: 0.7,
     okDefinition: 'validate() four gates AND design-constitution rubric (machine-checkable half)',
   },
   summary: byCategory,
+  percentages,
   failureClasses,
   finalFailureClasses,
   rows,
