@@ -86,7 +86,8 @@ fun showQuestionDialog(activity: Activity, msg: JSONObject, deliverRuntime: (JSO
         }
         val question = questions.getJSONObject(index)
         val questionId = question.optString("id", "q$index")
-        val hasOptions = question.optJSONArray("options") != null
+        val options = question.optJSONArray("options")
+        val hasOptions = options != null && options.length() > 0
         val onAnswer = { row: JSONObject ->
             answers.put(row)
             askAt(index + 1)

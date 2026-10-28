@@ -188,6 +188,22 @@ cp "$DSH/../../external/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.j
 mkdir -p "$ASSETS/vendor/npm/js-yaml@4.1.0/dist"
 cp "$DSH/../../external/npm/js-yaml@4.1.0/dist/js-yaml.mjs" \
    "$ASSETS/vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs"
+
+# The COMPOSITION HOST PLANE's packages (the presetJoin seats — T-0048's
+# tail item): the four npm faces the plane imports. Without them the
+# plane's first import fails and the whole runtime boot dies silently
+# (every endpoint answered gateway/unimplemented; measured live on the
+# emulator 2026-10-29). Whole-package stages (lib + package.json — the
+# marker walk reads the manifest for name+version).
+for pkg in dsh-shell@0.1.6-alpha.2 dsh-shell-env@0.1.6-alpha.2 \
+           dsh-jobs-local@0.1.6-alpha.2 dsh-token-meter@0.1.6-alpha.2; do
+    say "staging the composition host plane package $pkg"
+    (cd "$DSH/../../external/npm/@deepseek-ai/$pkg" && find . -type f) |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/vendor/dsh/$pkg/$(dirname "$rel")"
+            cp "$DSH/../../external/npm/@deepseek-ai/$pkg/$rel" "$ASSETS/vendor/dsh/$pkg/$rel"
+        done
+done
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
 for pkg in dsh-anonymous-user-id dsh-compaction-image-offload dsh-file-reference dsh-file-reference-local \

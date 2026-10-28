@@ -139,6 +139,11 @@ private fun applyInteractiveFlags(config: JSONObject, workspace: File) {
         // The CREATION row: the present tool — the model declares
         // workspace files as deliverables.
         .put("creation", true)
+        // The PRESET JOIN: armed now that the composition host plane's
+        // packages stage (the 2026-10-29 silent death was the plane's
+        // four npm faces missing from the staging — the first import
+        // failed and the boot died before any log).
+        .put("presetJoin", true)
         .put("byokModels", true)
         .put("skills", skillsConfig(workspace))
 }
