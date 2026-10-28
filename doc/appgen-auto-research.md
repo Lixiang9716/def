@@ -59,6 +59,40 @@ app-shell specs; the four-gate validator is the product's own contract):
 | [OpenHarmony Bench](https://arxiv.org/abs/2608.16022) | app-level tasks verified on device — corpus donor for the harmony face, far term |
 | [Web-Bench](https://github.com/bytedance/web-bench) (ByteDance) | sequential dependent tasks across a project — the shape of a future multi-turn morph/update chain benchmark |
 
+**Ported — the percentage benchmark** (corpus and formula transplanted,
+the harness is still ours). The donor benchmarks cannot RUN against def
+directly — 21 of WebCoderBench's 24 metrics hang tooling on HTML/CSS/JS
+code that a JSON spec does not have, WebGen-Bench's 647 test cases drive a
+browser over websites, and its dataset-with-legal-strings sibling never
+shipped its data — so the port moves what survives the artifact change:
+the test cases, the scoring formula, and the diagnostics.
+
+- **`test/panel/appgen-bench/webgen-port.json`** (built by
+  `appgen-bench/build-port.mjs` from the upstream clone): 12 instructions
+  / 74 test cases selected from the 101/647 corpus, balanced across the
+  application types that map to a single-face mobile app (e-commerce,
+  productivity, news, social, travel, streaming, messaging). **The test
+  cases are verbatim** — task, expected result, and category untouched;
+  only the instruction is re-phrased def-native (capabilities preserved,
+  color asks mapped onto `theme.accent`), so the benchmark's semantics
+  stay the benchmark's.
+- **`test/panel/appgen-bench-port.mjs`** scores the upstream formula
+  verbatim at the case level: `accuracy = (N_yes + 0.5 × N_partial) /
+  N_total × 100%`, plus the upstream diagnostics (start-failed rate =
+  generation produced no valid spec, its cases all score NO; judge-failed
+  cases are excluded from the denominator). Breakdowns: per case category
+  (Functional / Data Display / Design Validation) and per instruction.
+- **Execution tier v1 = spec-inspection judge**: a different-family judge
+  (generator deepseek, judge glm-4.6 — no self-preference) grades each
+  case against the generated spec: YES (content present AND an action
+  delivers it) / PARTIAL / NO. This is the honest static tier; the
+  action-execution leg upgrades it to real dispatch later, and the
+  upgrade is a benchmark change (new tier, new baseline ledger), not a
+  silent re-score.
+- The loop's optimization target on this axis is the **accuracy
+  percentage and its three category percentages** — deltas cycle over
+  cycle, same ledger shape as the census.
+
 ### How the loop runs (auto-research selection)
 
 - **Cycle engine: the host agent on a schedule** (ZCode cron), no
