@@ -20,6 +20,27 @@ import {
 
 function isPlainString(v) { return typeof v === 'string'; }
 
+/**
+ * Actionable-refusal helpers (the census's dominant failure class was
+ * BAD_ACTION with a refusal that echoed the regex but never named the
+ * offending value — the model cannot repair what it cannot see).
+ */
+const quoteValue = (v) => {
+  const s = String(v);
+  return s.length > 40 ? '"' + s.slice(0, 40) + '…"' : '"' + s + '"';
+};
+/** A compliant rewrite of an offending action id: lowercase, invalid
+ * runes folded to '.', collapsed/trimmed, capped; falls back to a safe
+ * generic id when normalization cannot satisfy gate 4. */
+const suggestActionId = (v) => {
+  const s = String(v).toLowerCase()
+    .replace(/[^a-z0-9.:-]+/g, '.')
+    .replace(/^\.+|\.+$/g, '')
+    .replace(/\.{2,}/g, '.')
+    .slice(0, 64);
+  return ACTION_RE.test(s) ? s : 'app.action';
+};
+
 /** Expand one node recursively; returns { node } or { error }. depth guards structural self-recursion. */
 function expandNode(node, path, errors, depth) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) {
@@ -78,7 +99,7 @@ function walkExpanded(node, path, errors, depth, state) {
   }
   if (node.action !== undefined) {
     if (!isPlainString(node.action) || !ACTION_RE.test(node.action)) {
-      errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action must match ' + ACTION_RE });
+      errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action must match ' + ACTION_RE + '; got ' + quoteValue(node.action) + ' — try "' + suggestActionId(node.action) + '"' });
     }
   }
   for (const c of node.children || []) walkExpanded(c, path + '.children', errors, depth + 1, state);
@@ -99,7 +120,8 @@ export function validate(spec) {
     errors.push({ code: 'BAD_FIELD', path: '$.tabs', msg: 'tabs must be 2..5 strings' });
   }
   if (spec.actions !== undefined && !(Array.isArray(spec.actions) && spec.actions.every((a) => isPlainString(a) && ACTION_RE.test(a)))) {
-    errors.push({ code: 'BAD_ACTION', path: '$.actions', msg: 'actions must be an array of ' + ACTION_RE });
+    const bad = Array.isArray(spec.actions) ? spec.actions.find((a) => !isPlainString(a) || !ACTION_RE.test(a)) : spec.actions;
+    errors.push({ code: 'BAD_ACTION', path: '$.actions', msg: 'actions must be an array of ' + ACTION_RE + '; offending entry ' + quoteValue(bad) + ' — try "' + suggestActionId(bad) + '"' });
   }
   const serialized = JSON.stringify(spec);
   if (serialized.length > CAPS.SPEC_BYTES) {
@@ -116,7 +138,7 @@ export function validate(spec) {
       const actions = new Set(spec.actions || []);
       (function checkActions(node, path) {
         if (node.action !== undefined && !actions.has(node.action)) {
-          errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action not declared in spec.actions' });
+          errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action ' + quoteValue(node.action) + ' is not declared in spec.actions — declare it there or remove the action' });
         }
         for (const [i, c] of (node.children || []).entries()) checkActions(c, path + '.children[' + i + ']');
       })(expandedRoot, '$.screen');

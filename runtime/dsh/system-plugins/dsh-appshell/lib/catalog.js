@@ -31,6 +31,26 @@ export const CAPS = {
 /** Gate 4: actions are closed enums declared on the spec, never free strings. */
 export const ACTION_RE = /^[a-z][a-z0-9.:-]{0,63}$/;
 
+/**
+ * The authoring rules the model actually sees — the appshell_render tool
+ * description's operative prompt, single-sourced here so the benchmarks
+ * measure the product prompt rather than a harness copy. The ACTION IDS
+ * sentence is load-bearing: the validator enforces this exact grammar
+ * (gate 4), and generation-time violations were the census's dominant
+ * failure class until the format was stated with examples.
+ */
+export const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{accent,mode},tabs:[2..5 strings],actions:[ids],screen:node}. ' +
+  'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
+  'ACTION IDS are dot.case ASCII matching ' + ACTION_RE.source + ' — like "player.toggle", "order.pay", "flash.sale": start with a lowercase letter, use only a-z 0-9 . : - inside; NEVER Chinese, spaces, underscores or uppercase (button labels may be Chinese; ids may not). ' +
+  'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
+  'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed): ' +
+  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层. ' +
+  '色彩统治: 第一屏大面积被彩色 hero 与封面占据; hero 用最深色混 accent 的浓色场; theme.accent 全屏 ≤2 点位(主 CTA+活动处); 音乐/夜间类 theme.mode="dark". ' +
+  '文案真实: 具体数字与真实名目("¥1,920"), 禁占位词; 标题≤10字、按钮 2-4 字动词; emoji 只做内容一屏≤4. ' +
+  '字阶与数字主角: title 是海报, 全屏 ≤3 处(hero 主标题+数字主角); 数字/金额/进度用 title 档放大. ' +
+  '封面成套: hcard-row 每项 cover 带 color, 4 色板逐项错开; 卡片配 image(emoji+color) 锚点. ' +
+  '移动模板 ≥2 种; tabs 2-5 个每个≤4字; 不做桌面形态.';
+
 /** PRIMITIVE registry: name -> render(node, ctx) -> VNode (lib/render/<name>.js). */
 export const primitives = new Map();
 

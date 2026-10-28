@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "at": "2026-10-28T19:22:27.692Z",
+    "generator": "deepseek-v4-flash",
+    "judge": "glm-4.6",
+    "systemPrompt": "SYSTEM_V2",
+    "seeds": [
+      "music-player",
+      "wallet",
+      "pomodoro",
+      "chat"
+    ],
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
+  },
+  "overall": {
+    "yes": 8,
+    "partial": 1,
+    "no": 3,
+    "accuracy": 70.8
+  },
+  "positions": {
+    "1": {
+      "yes": 3,
+      "partial": 0,
+      "no": 1,
+      "accuracy": 75
+    },
+    "2": {
+      "yes": 3,
+      "partial": 0,
+      "no": 1,
+      "accuracy": 75
+    },
+    "3": {
+      "yes": 2,
+      "partial": 1,
+      "no": 1,
+      "accuracy": 62.5
+    }
+  },
+  "diagnostics": {
+    "rejectedUpdates": 0
+  },
+  "rows": [
+    {
+      "seed": "music-player",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
+          "verdict": "YES",
+          "why": "扫一扫按钮带 scan.open 动作，位于搜索栏左侧同一行"
+        },
+        {
+          "task": "把主题色从红色换成紫色 #7c4dff",
+          "verdict": "YES",
+          "why": "theme.accent 已设为 #7c4dff，完全符合要求"
+        },
+        {
+          "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
+          "verdict": "YES",
+          "why": "歌单列表下方新增「本周新碟」卡片，含两张封面横向卡片"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 11507
+    },
+    {
+      "seed": "wallet",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
+          "verdict": "NO",
+          "why": "render start-failed"
+        },
+        {
+          "task": "把主题色换成金色 #d4a017",
+          "verdict": "NO",
+          "why": "render start-failed"
+        },
+        {
+          "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
+          "verdict": "NO",
+          "why": "render start-failed"
+        }
+      ],
+      "renderOk": false,
+      "gen_tokens": 3866
+    },
+    {
+      "seed": "pomodoro",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在统计区下面新增今日任务清单（可勾选的三行）",
+          "verdict": "YES",
+          "why": "统计行后新增今日任务卡片，含三行可勾选任务（task.toggle）。"
+        },
+        {
+          "task": "把主题色换成墨绿色 #1f6f54",
+          "verdict": "YES",
+          "why": "theme.accent 设为 #1f6f54，修改已完整生效"
+        },
+        {
+          "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
+          "verdict": "YES",
+          "why": "页面顶部区域已有 noise.toggle 开关按钮（🎧 白噪音行）"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 11409
+    },
+    {
+      "seed": "chat",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
+          "verdict": "YES",
+          "why": "横幅卡片「未读消息 12 条」已存在于会话列表上方"
+        },
+        {
+          "task": "把主题色换成天蓝色 #2f9ee8",
+          "verdict": "YES",
+          "why": "theme.accent 完全符合要求的 #2f9ee8。"
+        },
+        {
+          "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
+          "verdict": "PARTIAL",
+          "why": "按钮及 msg.readall 存在，但在横幅卡下方单独行，未加在卡上"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 9737
+    }
+  ]
+}

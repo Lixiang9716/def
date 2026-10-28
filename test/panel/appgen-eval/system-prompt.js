@@ -7,12 +7,15 @@
  * SYSTEM_V1 is the L3 benchmark's system prompt verbatim
  * (test/panel/l3-benchmark.mjs) — schema + the design constitution — so
  * the music-player row stays comparable with the committed L3/M4 ledgers
- * (8/10 first-pass baseline). The known drift: the product's operative
- * prompt is the RULES text inside system-plugins/dsh-appshell/index.js
- * (the appshell_render tool description); single-sourcing that into a
- * shared module is the auto-research loop's first improvement item
- * (doc/appgen-auto-research.md §census).
+ * (8/10 first-pass baseline).
+ *
+ * SYSTEM_V2 is the PRODUCT prompt: the frozen schema/mechanics head of V1
+ * plus the operative RULES from the plugin's catalog (the exact text the
+ * appshell_render tool description carries). This closes the drift the
+ * V1 header named — the benchmarks now measure what the product says.
+ * Ledgers record which version ran; cross-version numbers never mix.
  */
+import { RULES } from '../../../system-plugins/dsh-appshell/lib/catalog.js';
 
 export const SYSTEM_V1 = `You are a UI spec generator. Output ONLY a valid JSON object matching the app-shell/0.9 schema — no markdown, no commentary.
 
@@ -56,3 +59,11 @@ Design constitution — the target device is a PHONE (390x844 portrait, touch, o
 - 字阶与数字主角：title 是海报，全屏 ≤3 处（hero 主标题+数字主角）；数字/金额/进度用 title 档放大。
 - 封面成套：hcard-row 每项 cover 带 color，4 色板逐项错开；卡片配 image(emoji+color) 锚点。
 - 移动模板 ≥2 种（search-bar/tab-bar/mini-player/chat-row/service-grid/hcard-row）；tabs 2-5 个每个≤4字；不做桌面形态。`;
+
+// SYSTEM_V2 composes the frozen V1 head (intro + schema + component types
+// + mechanical rules — everything before the inline constitution) with the
+// product's operative RULES from the catalog. When V1's head text changes,
+// that is a NEW version (SYSTEM_V3), never an edit here.
+const V1_HEAD = SYSTEM_V1.slice(0, SYSTEM_V1.indexOf('\n\nDesign constitution'));
+
+export const SYSTEM_V2 = V1_HEAD + '\n\n' + RULES;
