@@ -228,7 +228,7 @@ class SessionServe private constructor(
             "session-serve", runtimeBridge,
         )
         if (handle == 0L) throw IllegalStateException("serve begin: ${JsRuntime.bindingLastError()}")
-        deliverRuntime(runtimeConfig())
+        deliverRuntime(runtimeConfig(activity, workspaceRoot(activity), credential, interactive, carrier.port))
         deliverRuntime(
             JSONObject().put("type", "web.plugins").put("plugins", pluginsDelivery),
         )
@@ -286,70 +286,10 @@ class SessionServe private constructor(
      * user staged a credential, which is what makes turns hit a REAL model
      * instead of the carrier's scripted one. `commands`/`skills` ride only
      * the interactive seat (the "/" surfaces read them). */
-    private fun runtimeConfig(): JSONObject {
-        val workspace = workspaceRoot(activity)
-        val config = JSONObject()
-            .put("type", "runtime.config")
-            .put("mockLlmUrl", "http://127.0.0.1:${carrier.port}/mock-llm")
-            .put("apiKey", MockLlmRoute.KEY)
-            .put("containerRoot", workspace.absolutePath)
-            .put("fsScopeRoot", SessionServeConfig.appScopeRoot(activity).absolutePath)
-        if (credential != null) {
-            config
-                .put("llmBaseUrl", credential.baseUrl)
-                .put("llmApiKey", credential.apiKey)
-                .put("llmModel", credential.model)
-                .put("llmProvider", credential.provider)
-            if (credential.models.isNotEmpty()) config.put("llmModels", modelsJSON(credential.models))
-        }
-        if (interactive) {
-            config
-                .put("commands", true)
-                .put("fullCoverage", true)
-                .put("goals", true)
-                .put("fileReferences", true)
-                // The SESSION-PERSISTENCE gate (T-0212): `{}` = DEFAULTS
-                // (root inside the pinned container, vendored 'zstd'). The
-                // v2web drive runs this seat with interactive=true and DOES
-                // carry the row (no canonical record names the mount; the
-                // blank configured session falls through to create). The
-                // bare-boot drives (b3/b4/officialweb) construct
-                // interactive=false, so the key stays absent.
-                .put("sessionPersistence", true)
-                // The CREATION row: the present tool — the model declares
-                // workspace files as deliverables, journaled as
-                // deliverables/presented for the clients to render on screen.
-                .put("creation", true)
-                // The PRESET JOIN stays OFF until the device-side join
-                // failure is fixed: arming it here killed the runtime
-                // silently (every endpoint answered gateway/unimplemented
-                // after boot; measured 2026-10-29). The join path
-                // (joinDefaultPreset → the mobile preset load) fails on the
-                // device for a reason the boot log never surfaces — the
-                // debug round owns it. Without the join the model's toolset
-                // rides the empty global layer (the agent-presets warn
-                // names it) and ask_user_question is absent — the
-                // plain-text ask fallback still gets the job answered.
-                // The BYOK-models gate (producer-registry v1): the Models
-                // page's 添加提供方 form is live on the interactive seat.
-                .put("byokModels", true)
-                .put("skills", skillsConfig(workspace))
-        }
-        // The marketplace opt-in (the plugin marketplace panel's browse/
-        // install legs): present exactly when the user staged the resolver
-        // config — the scenario relays it as the write surface's
-        // marketplace {indexUrl} option (absent → the legs stay unclaimed).
-        SessionServeConfig.loadMarketplaceIndex(activity)?.let { config.put("marketplaceIndex", it) }
-        return config
-    }
 
     /** The skill-plane rows (boot.js `mountSkillPlane` reads them): the
      * dsh home, the agents home, and the user's custom skills dir — all
      * INSIDE the pinned workspace (the fs views refuse anything outside). */
-    private fun skillsConfig(workspace: File): JSONObject = JSONObject()
-        .put("dshHome", "${workspace.absolutePath}/home")
-        .put("agentsHome", "${workspace.absolutePath}/home/agents")
-        .put("customSkillDirs", JSONArray().put("${workspace.absolutePath}/skills"))
 
     /** The staged roster as the `runtime.config llmModels` row (entries
      * `{id, name}`) — the multi-model catalog the composer's model dialog

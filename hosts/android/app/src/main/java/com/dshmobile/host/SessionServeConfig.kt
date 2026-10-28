@@ -1,6 +1,7 @@
 package com.dshmobile.host
 
 import android.app.Activity
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -95,3 +96,87 @@ data class Credential(
     val provider: String,
     val models: List<Pair<String, String>> = emptyList(),
 )
+
+/** The staged runtime config (split here at the code-size gate): the
+ * mock route, the container roots, the live credential rows, and the
+ * interactive flags (commands/goals/creation/presetJoin). The PRESET JOIN
+ * stays OFF until the device-side join failure is fixed: arming it here
+ * killed the runtime silently (every endpoint answered
+ * gateway/unimplemented after boot; measured 2026-10-29) — the join path
+ * (joinDefaultPreset → the mobile preset load) fails on the device for a
+ * reason the boot log never surfaces; the debug round owns it. Without
+ * the join the model's toolset rides the empty global layer (the
+ * agent-presets warn names it) and ask_user_question is absent — the
+ * plain-text ask fallback still gets the job answered. */
+private fun modelsJSON(models: List<Pair<String, String>>): JSONArray = JSONArray().apply {
+    for ((id, name) in models) put(JSONObject().put("id", id).put("name", name))
+}
+
+/** The skills config rows (the interactive seat's skills plane). */
+private fun skillsConfig(workspace: File): JSONObject = JSONObject()
+    .put("dshHome", "${workspace.absolutePath}/home")
+    .put("agentsHome", "${workspace.absolutePath}/home/agents")
+    .put("customSkillDirs", JSONArray().put("${workspace.absolutePath}/skills"))
+
+fun runtimeConfig(
+        activity: Activity,
+        workspace: File,
+        credential: Credential?,
+        interactive: Boolean,
+        carrierPort: Int,
+    ): JSONObject {
+    val config = JSONObject()
+        .put("type", "runtime.config")
+        .put("mockLlmUrl", "http://127.0.0.1:$carrierPort/mock-llm")
+        .put("apiKey", MockLlmRoute.KEY)
+        .put("containerRoot", workspace.absolutePath)
+        .put("fsScopeRoot", SessionServeConfig.appScopeRoot(activity).absolutePath)
+    if (credential != null) {
+        config
+            .put("llmBaseUrl", credential.baseUrl)
+            .put("llmApiKey", credential.apiKey)
+            .put("llmModel", credential.model)
+            .put("llmProvider", credential.provider)
+        if (credential.models.isNotEmpty()) config.put("llmModels", modelsJSON(credential.models))
+    }
+    if (interactive) {
+        config
+            .put("commands", true)
+            .put("fullCoverage", true)
+            .put("goals", true)
+            .put("fileReferences", true)
+            // The SESSION-PERSISTENCE gate (T-0212): `{}` = DEFAULTS
+            // (root inside the pinned container, vendored 'zstd'). The
+            // v2web drive runs this seat with interactive=true and DOES
+            // carry the row (no canonical record names the mount; the
+            // blank configured session falls through to create). The
+            // bare-boot drives (b3/b4/officialweb) construct
+            // interactive=false, so the key stays absent.
+            .put("sessionPersistence", true)
+            // The CREATION row: the present tool — the model declares
+            // workspace files as deliverables, journaled as
+            // deliverables/presented for the clients to render on screen.
+            .put("creation", true)
+            // The PRESET JOIN stays OFF until the device-side join
+            // failure is fixed: arming it here killed the runtime
+            // silently (every endpoint answered gateway/unimplemented
+            // after boot; measured 2026-10-29). The join path
+            // (joinDefaultPreset → the mobile preset load) fails on the
+            // device for a reason the boot log never surfaces — the
+            // debug round owns it. Without the join the model's toolset
+            // rides the empty global layer (the agent-presets warn
+            // names it) and ask_user_question is absent — the
+            // plain-text ask fallback still gets the job answered.
+            // The BYOK-models gate (producer-registry v1): the Models
+            // page's 添加提供方 form is live on the interactive seat.
+            .put("byokModels", true)
+            .put("skills", skillsConfig(workspace))
+    }
+    // The marketplace opt-in (the plugin marketplace panel's browse/
+    // install legs): present exactly when the user staged the resolver
+    // config — the scenario relays it as the write surface's
+    // marketplace {indexUrl} option (absent → the legs stay unclaimed).
+    SessionServeConfig.loadMarketplaceIndex(activity)?.let { config.put("marketplaceIndex", it) }
+    return config
+}
+
