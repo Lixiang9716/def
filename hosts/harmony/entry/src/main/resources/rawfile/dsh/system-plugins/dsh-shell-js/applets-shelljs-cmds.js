@@ -46,6 +46,7 @@ const htmlPathOf = (path) => (path.includes('/') ? path.slice(0, path.lastIndexO
 /** jscheck's compile probe (module level for size): push the verdict line,
  * return the broken count. */
 const jscheckCompile = (lines, label, code) => {
+  log.debug('jscheck compile', { label, bytes: code.length });
   try {
     new Function(code);
     lines.push(`${label}: syntax OK (${code.length} bytes)`);
@@ -60,6 +61,7 @@ const jscheckCompile = (lines, label, code) => {
  * the delivery contract's exclusions): each is read through the same
  * snapshot face and compiled. Returns the broken count. */
 const jscheckExternalScripts = async (html, dir, lines) => {
+  log.debug('jscheck external walk', { dir });
   let bad = 0;
   const seen = new Set();
   for (const m of html.matchAll(/<script\b[^>]*\ssrc=["']([^"']+)["']/gi)) {

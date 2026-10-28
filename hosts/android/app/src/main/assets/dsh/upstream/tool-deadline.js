@@ -58,6 +58,7 @@ let stepCount = 0;
 let lastStepAt = 0;
 const stepBudgetCheck = (tool) => {
   const now = Date.now();
+  log.debug('step budget check', { tool, stepCount, STEP_BUDGET });
   if (now - lastStepAt > STEP_RESET_MS) stepCount = 0;
   lastStepAt = now;
   stepCount += 1;
