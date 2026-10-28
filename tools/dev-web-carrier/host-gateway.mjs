@@ -57,7 +57,8 @@ export const installProcSeams = (wsRoot) => {
     try {
       const st = nodeFs.statSync(p);
       return {
-        isFile: st.isFile(), isSymbolicLink: st.isSymbolicLink(),
+        isFile: st.isFile(), isDirectory: st.isDirectory(),
+        isSymbolicLink: st.isSymbolicLink(),
         size: Number(st.size), mode: Number(st.mode),
         mtimeMs: Math.trunc(Number(st.mtimeMs)),
       };
@@ -127,8 +128,17 @@ const readArms = (shimFs, wsRoot) => {
   };
 };
 
-/** The write-side arms + the mount checkpoint (the seat approves loudly —
- * the in-chat approval card is the phone's separate in-band plane). */
+/** The pending in-band approvals: id → resolver. The presentApproval arm
+ * parks here while the page's approval card waits for the user; the
+ * approval/decide endpoint (real-seat handleApi) completes it. */
+const pendingApprovals = new Map();
+let approvalSeq = 0;
+
+/** The write-side arms + the mount checkpoint — the checkpoint is IN-BAND:
+ * the ask rides the app/cards mux channel to the page (the card the user
+ * answers lives in the conversation), and the arm settles on the page's
+ * decision. No page subscriber (headless boot) → auto-approve after the
+ * grace timeout, loudly, exactly the old posture. */
 const writeArms = (shimFs, wsRoot) => {
   const at = (scope, path) => appPathOf(wsRoot, scope, path);
   return {
@@ -148,10 +158,34 @@ const writeArms = (shimFs, wsRoot) => {
     fsRename: (a) => { shimFs.renameSync(at(a.scope, a.from), at(a.scope, a.to)); return {}; },
     keychainSet: () => ({}),
     presentApproval: (a) => {
-      console.log(`[real-seat] approval auto-approved: ${a?.title ?? ''}`);
-      return { approved: true };
+      const id = `approval-${++approvalSeq}-${Date.now()}`;
+      const ask = {
+        type: 'approval.request', id,
+        title: a?.title ?? '插件挂载',
+        reason: a?.reason ?? a?.detail ?? '',
+      };
+      return new Promise((resolve) => {
+        pendingApprovals.set(id, resolve);
+        globalThis.__dshEmitApproval?.(ask);
+        setTimeout(() => {
+          if (!pendingApprovals.has(id)) return;
+          pendingApprovals.delete(id);
+          console.log(`[real-seat] approval ${id} auto-approved (no page answer in 120s): ${a?.title ?? ''}`);
+          resolve({ approved: true });
+        }, 120_000).unref?.();
+      });
     },
   };
+};
+
+/** The approval/decide endpoint's resolver: completes the parked arm and
+ * tells the page the decision landed. False = no such pending ask. */
+export const decideApproval = (id, approved) => {
+  const resolve = pendingApprovals.get(id);
+  if (resolve === undefined) return false;
+  pendingApprovals.delete(id);
+  resolve({ approved: approved === true });
+  return true;
 };
 
 export const installHostGateway = async (repoRoot, wsRoot) => {

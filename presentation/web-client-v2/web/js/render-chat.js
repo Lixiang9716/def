@@ -181,6 +181,42 @@ const renderCreation = (item) => {
   return wrap;
 };
 
+/** The in-band approval card: the mount/approval checkpoint rendered where
+ * the conversation lives — title + reason + 批准/拒绝 while pending, the
+ * decided badge once answered. The answer rides dsh-approval-decide; the
+ * runtime's journal decides what the card shows (approval/asked → decided). */
+const renderApproval = (item) => {
+  const wrap = el('div', 'item item-approval');
+  const card = el('div', 'approval-card glass');
+  card.dataset.id = item.id ?? '';
+  const head = el('div', 'approval-head');
+  head.appendChild(el('span', 'approval-glyph', item.decided ? (item.approved ? '✅' : '🚫') : '🛡️'));
+  const main = el('div', 'approval-main');
+  main.appendChild(el('div', 'approval-title', item.title || '挂载审批'));
+  if (item.reason) main.appendChild(el('div', 'approval-reason', item.reason));
+  card.appendChild(head);
+  card.appendChild(main);
+  if (item.decided) {
+    card.appendChild(el('div', 'approval-state',
+      item.approved ? '已批准' : '已拒绝'));
+  } else {
+    const actions = el('div', 'approval-actions');
+    for (const [label, approved] of [['拒绝', false], ['批准', true]]) {
+      const btn = el('button', approved ? 'approval-allow' : 'approval-deny', label);
+      btn.type = 'button';
+      btn.addEventListener('click', () => {
+        btn.disabled = true;
+        document.dispatchEvent(new CustomEvent('dsh-approval-decide',
+          { detail: { id: item.id, approved } }));
+      });
+      actions.appendChild(btn);
+    }
+    card.appendChild(actions);
+  }
+  wrap.appendChild(card);
+  return wrap;
+};
+
 const renderSimple = (item) => {
   if (item.kind === 'notice') {
     const wrap = el('div', 'item item-notice');
@@ -201,6 +237,7 @@ const renderItem = (item) => {
   if (item.kind === 'user') return renderUserItem(item);
   if (item.kind === 'assistant') return renderAssistantItem(item);
   if (item.kind === 'creation') return renderCreation(item);
+  if (item.kind === 'approval') return renderApproval(item);
   return renderSimple(item);
 };
 

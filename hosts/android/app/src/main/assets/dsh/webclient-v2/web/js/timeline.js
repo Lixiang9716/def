@@ -183,8 +183,28 @@ const applyEvent = (state, event) => {
       });
       break;
     case 'session/title': applyTitle(state, data); break;
-    case 'system/message': case 'todo/write': case 'approval/asked':
-    case 'approval/decided': case 'goal/change': case 'plan/mode': {
+    case 'approval/asked': {
+      add(state, {
+        kind: 'approval',
+        id: data?.id ?? data?.key ?? data?.callId ?? '',
+        title: data?.title ?? data?.toolName ?? '挂载审批',
+        reason: data?.reason ?? data?.detail ?? '',
+        decided: false, approved: false,
+      });
+      break;
+    }
+    case 'approval/decided': {
+      add(state, {
+        kind: 'approval',
+        id: data?.id ?? data?.key ?? data?.callId ?? '',
+        title: data?.title ?? data?.toolName ?? '挂载审批',
+        reason: data?.reason ?? '',
+        decided: true, approved: data?.approved === true,
+      });
+      break;
+    }
+    case 'system/message': case 'todo/write':
+    case 'goal/change': case 'plan/mode': {
       add(state, { kind: 'system', label: type.split('/')[0], types: [type] });
       break;
     }

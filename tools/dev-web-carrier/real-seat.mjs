@@ -13,7 +13,7 @@
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
 import { createCardPlane } from './app-cards.mjs';
-import { installBundleSeam, installHostGateway, installProcSeams } from './host-gateway.mjs';
+import { decideApproval, installBundleSeam, installHostGateway, installProcSeams } from './host-gateway.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -67,6 +67,15 @@ globalThis.__dshBusOnMessage = (line) => {
 const cards = createCardPlane((streamId, frame) => {
   muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
 });
+// The app/cards subscriber ids the seat owns (the approval ask rides the
+// same channel — host-gateway's __dshEmitApproval fans out here).
+const approvalSubscribers = new Set();
+const emitApprovalFrame = (frame) => {
+  for (const streamId of approvalSubscribers) {
+    muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
+  }
+};
+globalThis.__dshEmitApproval = emitApprovalFrame;
 
 globalThis.__dshBusPost = (line) => {
   const msg = JSON.parse(line);
@@ -422,6 +431,19 @@ const handleApi = (req, url, respond) => {
     // one level (a bare {"args":…} hand-probe body passes through).
     const inner = payload.payload ?? payload;
     console.log(`[real-seat] page -> ${url.pathname.slice('/api/'.length)}`);
+    // The in-band approval decision: the page's approval card answers the
+    // seat-parked presentApproval arm here (never forwarded into the
+    // runtime — the runtime is blocked ON the arm).
+    if (url.pathname === '/api/approval/decide') {
+      const args = inner?.args ?? inner ?? {};
+      const decided = decideApproval(String(args.id ?? ''), args.approved === true);
+      return respond(200, 'application/json', JSON.stringify({
+        type: 'server-response', rpcId,
+        result: decided
+          ? { ok: true, value: { decided: true } }
+          : { ok: false, error: { code: 'approval/not-found', message: 'no pending approval with that id', details: {} } },
+      }));
+    }
     apiWaiters.set(rpcId, (result) => {
       console.log(`[real-seat] <- ${url.pathname.slice('/api/'.length)} ok=${result.ok}${result.ok ? '' : ' err=' + JSON.stringify(result.error ?? {})}`);
       respond(200, 'application/json', JSON.stringify({ type: 'server-response', rpcId, result }));
@@ -481,6 +503,7 @@ server.on('upgrade', (req, socket) => {
       if (msg.endpoint === 'app/cards') {
         // The seat owns this endpoint: replay the live cards, then stream.
         cards.subscribe(msg.streamId);
+        approvalSubscribers.add(msg.streamId);
         return;
       }
       deliver({ type: 'mux.open', streamId: msg.streamId, endpoint: msg.endpoint ?? '', payload: msg.payload });

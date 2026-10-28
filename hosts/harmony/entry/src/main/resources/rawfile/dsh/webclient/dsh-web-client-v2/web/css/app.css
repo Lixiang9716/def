@@ -1026,3 +1026,18 @@
 .new-app-form button{border:0;border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;background:#26262c;color:var(--fg)}
 .new-app-form button.primary{background:var(--red, #ec4141);color:#fff}
 .assistant-entry{opacity:.72}
+
+/* ---- in-band approval card (the mount/approval checkpoint in-chat) ---- */
+.item-approval{margin:10px 0}
+.approval-card{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 14px;border-radius:16px}
+.approval-head{display:flex;align-items:center;gap:8px}
+.approval-glyph{font-size:20px}
+.approval-main{flex:1;min-width:140px}
+.approval-title{font-weight:600;font-size:14px;color:var(--fg)}
+.approval-reason{font-size:12px;color:var(--fg-dim, #9aa);margin-top:2px;word-break:break-word}
+.approval-state{font-size:12px;color:var(--fg-dim, #9aa)}
+.approval-actions{display:flex;gap:8px}
+.approval-actions button{border:0;border-radius:12px;padding:7px 16px;font-size:13px;cursor:pointer}
+.approval-allow{background:var(--accent, #3b82f6);color:#fff}
+.approval-deny{background:transparent;color:var(--fg-dim, #9aa);border:1px solid #ffffff22}
+.approval-actions button:disabled{opacity:.5;cursor:default}

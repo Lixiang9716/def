@@ -37,6 +37,24 @@ const composer = createComposer($('composer'), toast);
 setupAppshell();
 const mux = new Mux();
 
+// The seat-owned app/cards channel: live card frames AND the in-band
+// approval asks (the mount checkpoint's ask rides here; the decision goes
+// back through /api/approval/decide — see the dsh-approval-decide listener).
+// A synthetic journal record folds the frame into whichever session view is
+// open, so the card renders inside the conversation.
+mux.open('app/cards', {}, {
+  onItem: (value) => {
+    if (value?.type !== 'approval.request' && value?.type !== 'approval.decided') return;
+    timeline.applyRecord({
+      type: 'event',
+      event: {
+        type: value.type === 'approval.request' ? 'approval/asked' : 'approval/decided',
+        data: value,
+      },
+    });
+  },
+});
+
 /** The app-shell action loop-back: wait out the authoring turn's drain
  * window, then submit the tagged turn — retrying if the host answers
  * session/busy (dev carrier) instead of silently dropping the action. */
@@ -147,33 +165,76 @@ const refreshSessions = async () => {
 
 // ---- def home: the app inventory (the product's core visible surface) ----
 
-/** The mounted-plugin roster → the home card grid rows. */
+let appGridRetries = 0;
+
+/** The workspace's created-app directories: every workspace child directory
+ * holding an index.html is a delivered app (the present contract's on-disk
+ * spelling). The plugin registry is the v2.1 install plane; until a
+ * creation installs, the delivered files ARE the app (measured 2026-10-28:
+ * the netease-music run left four files and an empty plugin roster). */
+const refreshCreatedApps = async () => {
+  const dirs = [];
+  try {
+    const value = await rpc('workspaceFiles/list', { args: { path: '.' } });
+    const entries = Array.isArray(value?.entries) ? value.entries : [];
+    for (const entry of entries) {
+      if ((entry.type ?? entry.kind) !== 'directory') continue;
+      const name = entry.name;
+      if (!name || name.startsWith('.') || name === 'app-scope' || name === 'vendor') continue;
+      try {
+        await rpc('workspaceFiles/stat', { args: { path: `${name}/index.html` } });
+        dirs.push(name);
+      } catch { /* no entry HTML — not an app face */ }
+    }
+  } catch { /* the files face unavailable: the grid degrades to installed-only */ }
+  return dirs;
+};
+
+/** The home card grid rows: installed plugins (the mount plane) + the
+ * workspace's created apps (the deliverable plane), deduplicated by name. */
 const refreshApps = async () => {
   const grid = $('app-grid');
   const emptyNote = $('app-grid-empty');
   if (!grid) return;
-  try {
-    const value = await rpc('pluginInventory/list');
-    const plugins = Array.isArray(value?.plugins) ? value.plugins : [];
-    grid.replaceChildren(...plugins.map((plugin, i) => {
-      const card = document.createElement('button');
-      card.type = 'button';
-      card.className = 'app-card glass';
-      card.setAttribute('role', 'listitem');
-      const hue = (i * 47) % 360;
-      card.innerHTML = `
-        <div class="app-card-face" style="background:linear-gradient(140deg, hsl(${hue} 45% 30%), hsl(${(hue + 40) % 360} 40% 22%))">
-          <span class="app-card-glyph" aria-hidden="true">${(plugin.name ?? plugin.id ?? '◆').slice(0, 2)}</span>
-        </div>
-        <div class="app-card-title">${plugin.name ?? plugin.id ?? ''}</div>
-        <div class="app-card-meta">${plugin.enabled === false ? '未启用' : '已挂载'}</div>`;
-      card.addEventListener('click', () => openAppCard(plugin));
-      return card;
-    }));
-    emptyNote.hidden = plugins.length > 0;
-  } catch (error) {
-    grid.replaceChildren();
-    emptyNote.hidden = false;
+  const [plugins, createdDirs] = await Promise.all([
+    rpc('pluginInventory/list')
+      .then((value) => (Array.isArray(value?.plugins) ? value.plugins : []))
+      .catch(() => []),
+    refreshCreatedApps(),
+  ]);
+  const createdNames = new Set(createdDirs);
+  const rows = [
+    ...createdDirs.map((name) => ({ app: name, created: true })),
+    ...plugins.filter((plugin) => !createdNames.has(plugin.name ?? plugin.id)),
+  ];
+  grid.replaceChildren(...rows.map((row, i) => {
+    const label = row.created ? row.app : (row.app.name ?? row.app.id ?? '');
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'app-card glass';
+    card.setAttribute('role', 'listitem');
+    const hue = (i * 47) % 360;
+    card.innerHTML = `
+      <div class="app-card-face" style="background:linear-gradient(140deg, hsl(${hue} 45% 30%), hsl(${(hue + 40) % 360} 40% 22%))">
+        <span class="app-card-glyph" aria-hidden="true">${label.slice(0, 2)}</span>
+      </div>
+      <div class="app-card-title">${label}</div>
+      <div class="app-card-meta">${row.created ? '已交付' : (row.app.enabled === false ? '未启用' : '已挂载')}</div>`;
+    card.addEventListener('click', () => {
+      if (row.created) openCreation(`${row.app}/index.html`, label);
+      else openAppCard(row.app);
+    });
+    return card;
+  }));
+  emptyNote.hidden = rows.length > 0;
+  // The boot-race guard: the first refresh often lands while the runtime is
+  // still materializing (the mux opens before the spine answers), so an
+  // empty grid retries a bounded few times before conceding.
+  if (rows.length === 0 && appGridRetries < 5) {
+    appGridRetries += 1;
+    setTimeout(refreshApps, 3000);
+  } else if (rows.length > 0) {
+    appGridRetries = 0;
   }
 };
 
@@ -300,6 +361,79 @@ const openSession = (sessionId) => {
 // claimed workspaceFiles/read leg and shown fullscreen in a sandboxed
 // frame — the on-screen half of the creation-mode loop.
 const creationView = $('creation-view');
+
+/** Read one workspace file as text (readAll's three result spellings). */
+const readWorkspaceText = async (path) => {
+  const value = await rpc('workspaceFiles/readAll', { args: { path } });
+  if (typeof value === 'string') return value;
+  if (typeof value?.text === 'string') return value.text;
+  if (typeof value?.data === 'string') {
+    const bytes = Uint8Array.from(atob(value.data), (ch) => ch.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  return null;
+};
+
+/** A srcdoc frame resolves NO relative links — the presented HTML's
+ * stylesheet/script/image references would all 404 inside the sandbox and
+ * the deliverable renders unstyled and dead (measured 2026-10-28: the
+ * netease-music card opened as bare text). Inline every RELATIVE reference
+ * with the sibling file's content fetched over the same file leg; absolute
+ * and data: URLs stay untouched. Bounded: a runaway linked chain stops at
+ * the budget and keeps whatever inlined. */
+const INLINE_BUDGET = 2 * 1024 * 1024;
+const isRelativeRef = (u) => typeof u === 'string' && u !== ''
+  && !/^(https?:|data:|blob:|\/\/|#)/i.test(u);
+const cleanRef = (u) => u.split('?')[0].split('#')[0];
+const joinSibling = (dir, ref) => (dir ? `${dir}/${cleanRef(ref)}` : cleanRef(ref));
+const imageMime = (ref) => {
+  const ext = cleanRef(ref).split('.').pop().toLowerCase();
+  if (ext === 'svg') return 'image/svg+xml';
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
+  if (ext === 'gif') return 'image/gif';
+  if (ext === 'webp') return 'image/webp';
+  return 'image/png';
+};
+const inlineLinkedFiles = async (htmlText, dir) => {
+  const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+  let budget = INLINE_BUDGET;
+  for (const link of [...doc.querySelectorAll('link[rel~="stylesheet"][href], link[rel="stylesheet"][href]')]) {
+    const href = link.getAttribute('href');
+    if (!isRelativeRef(href) || budget <= 0) continue;
+    try {
+      const css = await readWorkspaceText(joinSibling(dir, href));
+      if (css === null) continue;
+      const style = doc.createElement('style');
+      style.textContent = css;
+      link.replaceWith(style);
+      budget -= css.length;
+    } catch { /* unreadable sibling: keep the link, the rest still renders */ }
+  }
+  for (const script of [...doc.querySelectorAll('script[src]')]) {
+    const src = script.getAttribute('src');
+    if (!isRelativeRef(src) || budget <= 0) continue;
+    try {
+      const code = await readWorkspaceText(joinSibling(dir, src));
+      if (code === null) continue;
+      const inline = doc.createElement('script');
+      inline.textContent = code;
+      script.replaceWith(inline);
+      budget -= code.length;
+    } catch { /* keep */ }
+  }
+  for (const img of [...doc.querySelectorAll('img[src]')]) {
+    const src = img.getAttribute('src');
+    if (!isRelativeRef(src) || budget <= 0) continue;
+    try {
+      const value = await rpc('workspaceFiles/readAll', { args: { path: joinSibling(dir, src) } });
+      if (typeof value?.data !== 'string') continue;
+      img.setAttribute('src', `data:${imageMime(src)};base64,${value.data}`);
+      budget -= value.data.length;
+    } catch { /* keep */ }
+  }
+  return doc.documentElement.outerHTML;
+};
+
 const openCreation = async (path, title) => {
   $('creation-title-text').textContent = title || path;
   creationView.hidden = false;
@@ -319,6 +453,14 @@ const openCreation = async (path, title) => {
       const bytes = Uint8Array.from(atob(value.data), (ch) => ch.charCodeAt(0));
       text = new TextDecoder().decode(bytes);
     }
+    // HTML deliverables get their relative siblings inlined (see
+    // inlineLinkedFiles); non-HTML text passes through verbatim.
+    if (/<html|<!doctype html/i.test(text)) {
+      const dir = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '';
+      try {
+        text = await inlineLinkedFiles(text, dir);
+      } catch { /* a parse oddity renders the raw file rather than nothing */ }
+    }
     // ArkWeb (HarmonyOS) stops reflecting iframe.srcdoc after the frame's
     // first clear — writes succeed but the engine neither navigates nor
     // reflects, so a SECOND opened deliverable renders blank (measured,
@@ -336,6 +478,29 @@ const openCreation = async (path, title) => {
 };
 document.addEventListener('dsh-open-creation', (event) => {
   openCreation(event.detail.path, event.detail.title);
+});
+
+// The in-band approval answer: the card's 批准/拒绝 posts the decision to
+// the approval plane; a decided journal event re-renders authoritatively,
+// and until one arrives the answered card flips in place (the seat's
+// presentApproval arm resolves through this surface).
+document.addEventListener('dsh-approval-decide', async (event) => {
+  const { id, approved } = event.detail;
+  try {
+    await rpc('approval/decide', { args: { id, approved } });
+  } catch (error) {
+    toast(isRemoteError(error) ? `审批通道不可用（${error.code}）` : '审批通道不可用');
+    return;
+  }
+  for (const card of document.querySelectorAll('.approval-card')) {
+    if (card.dataset.id !== id) continue;
+    const state = card.querySelector('.approval-state');
+    if (state) state.textContent = approved ? '已批准' : '已拒绝';
+    const actions = card.querySelector('.approval-actions');
+    if (actions) actions.remove();
+    const glyph = card.querySelector('.approval-glyph');
+    if (glyph) glyph.textContent = approved ? '✅' : '🚫';
+  }
 });
 $('creation-close').addEventListener('click', () => {
   creationView.hidden = true;
