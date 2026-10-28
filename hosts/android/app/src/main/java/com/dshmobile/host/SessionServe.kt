@@ -388,9 +388,8 @@ class SessionServe private constructor(
                     // card); the answer rides the same bus delivery the config
                     // rows use (question-bridge.js's composer intercept picks
                     // it up and the parked ask_user_question resumes).
-                    activity.runOnUiThread {
-                        showQuestionDialog(activity, msg) { deliverRuntime(it) }
-                    }
+                    val deliver: (JSONObject) -> Unit = { deliverRuntime(it) }
+                    activity.runOnUiThread { showQuestionDialog(activity, msg, deliver) }
                 }
                 else -> {
                     val handled = seam.onBusMessage(msg)
