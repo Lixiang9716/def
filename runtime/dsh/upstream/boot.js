@@ -24,7 +24,6 @@
  */
 import './web-shims.js';
 import process from 'node:process';
-import { createLogger } from 'logger.js';
 import { Context } from '@deepseek-ai/cordis';
 import { SessionStore } from '@deepseek-ai/dsh-session';
 import { AgentRegistry } from '@deepseek-ai/dsh-agent';
@@ -41,7 +40,7 @@ import { mountWebPlane } from 'upstream/web-search-keyless.js';
 // the same module's BYOK-models section gate (mountPiAiSection) joins the
 // group (2026-10-23).
 import { mountGatewayLlm } from 'upstream/llm-gateway-mount.js';
-import { mountPiAiProviders, mountPiAiSection } from 'upstream/llm-piai-mount.js';
+import { mountPiAiProviders, mountPiAiSectionTolerant } from 'upstream/llm-piai-mount.js';
 import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
@@ -474,20 +473,8 @@ export async function bootUpstream(options) {
   // The BYOK-MODELS gate (llm-piai-mount.js): the pi-ai section over an EMPTY
   // base — the catalog directory + the "llm-pi-ai" settings section + the
   // credentials service, zero routes. Absent = the default boot byte-identical.
-  // A LIVE route row that already declares a catalog id (the saved BYOK key's
-  // deepseek row; measured on the Android seat 2026-10-28) must not kill the
-  // whole spine: the live route is authoritative, the section degrades — the
-  // models chooser loses the catalog rows until no live row holds the id.
-  if (llm.piaiSection === true) {
-    try {
-      await mountPiAiSection(ctx, onEvent);
-    } catch (error) {
-      if (!/pi-ai section mount collided/.test(String(error?.message))) throw error;
-      createLogger('boot').warn('pi-ai section skipped — the live llm route already declares its provider', {
-        error: String(error?.message).slice(0, 200),
-      });
-    }
-  }
+  // The tolerant wrapper keeps a live-route collision from killing the spine.
+  if (llm.piaiSection === true) await mountPiAiSectionTolerant(ctx, onEvent);
 
   onEvent('upstream/services', {
     kernel: '@deepseek-ai/cordis@4.0.2',

@@ -40,7 +40,7 @@ import { mountWebPlane } from 'upstream/web-search-keyless.js';
 // the same module's BYOK-models section gate (mountPiAiSection) joins the
 // group (2026-10-23).
 import { mountGatewayLlm } from 'upstream/llm-gateway-mount.js';
-import { mountPiAiProviders, mountPiAiSection } from 'upstream/llm-piai-mount.js';
+import { mountPiAiProviders, mountPiAiSectionTolerant } from 'upstream/llm-piai-mount.js';
 import { AgentLoop } from '@deepseek-ai/dsh-agent-loop';
 import { mountBootRows } from 'plugin-mount.js';
 // The GOAL/COMMAND/FILE-REFERENCE/CREATION rows (split at the code-size gate, 2026-10-03).
@@ -473,7 +473,8 @@ export async function bootUpstream(options) {
   // The BYOK-MODELS gate (llm-piai-mount.js): the pi-ai section over an EMPTY
   // base — the catalog directory + the "llm-pi-ai" settings section + the
   // credentials service, zero routes. Absent = the default boot byte-identical.
-  if (llm.piaiSection === true) await mountPiAiSection(ctx, onEvent);
+  // The tolerant wrapper keeps a live-route collision from killing the spine.
+  if (llm.piaiSection === true) await mountPiAiSectionTolerant(ctx, onEvent);
 
   onEvent('upstream/services', {
     kernel: '@deepseek-ai/cordis@4.0.2',
