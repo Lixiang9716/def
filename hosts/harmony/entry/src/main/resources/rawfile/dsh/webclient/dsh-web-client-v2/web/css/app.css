@@ -835,7 +835,7 @@
 #appshell-root .ash-row:has(> .ash-card) > .ash-card { scroll-snap-align: start; min-width: 164px; flex: 1 0 auto; }
 /* the accent wash breathes in from the top; light cards are glass over it */
 #appshell-view { background: var(--p-surface-bg, linear-gradient(180deg, color-mix(in srgb, var(--p-accent, #1677ff) 16%, #FAFAF9) 0%, #FAFAF9 44%)); }
-#appshell-view:not([data-mode="dark"]) .ash-card { background: rgba(255,255,255,.66); backdrop-filter: blur(18px) saturate(1.35); border: 1px solid rgba(255,255,255,.65); }
+#appshell-view:not([data-mode="dark"]) .ash-card { background: rgba(255,255,255,.66); backdrop-filter: blur(18px) saturate(1.35); border: 1px solid rgba(255,255,255,.65); box-shadow: 0 8px 24px -12px rgba(16,18,26,.18), 0 2px 6px -2px rgba(16,18,26,.08); }
 #appshell-view:not([data-mode="dark"]) .ash-card:has(> .ash-text.ash-title) { background: linear-gradient(140deg, color-mix(in srgb, var(--p-accent, #1677ff) 26%, #FFFFFF) 0%, color-mix(in srgb, var(--p-accent, #1677ff) 8%, #FDFCFA) 70%); border-color: color-mix(in srgb, var(--p-accent, #1677ff) 24%, transparent); }
 #appshell-view:not([data-mode="dark"]) .ash-card:has(> .ash-text.ash-title) .ash-text { color: #1c1c22; }
 /* dark mode: the renderer honors spec.theme.mode — the stage goes nocturnal */
