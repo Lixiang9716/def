@@ -1,0 +1,980 @@
+{
+  "meta": {
+    "at": "2026-10-29T03:38:50.805Z",
+    "generator": "deepseek-v4-flash",
+    "judge": "glm-4.6",
+    "portVersion": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (WebGen-Bench, case level)",
+    "tier": "static (spec-inspection judge; action-execution leg upgrades to real dispatch)",
+    "instructions": 12,
+    "cases": 74
+  },
+  "overall": {
+    "yes": 32,
+    "partial": 36,
+    "no": 6,
+    "accuracy": 67.6
+  },
+  "categories": {
+    "Functional Testing": {
+      "yes": 20,
+      "partial": 19,
+      "no": 4,
+      "accuracy": 68.6
+    },
+    "Data Display Testing": {
+      "yes": 8,
+      "partial": 10,
+      "no": 1,
+      "accuracy": 68.4
+    },
+    "Design Validation Testing": {
+      "yes": 4,
+      "partial": 7,
+      "no": 1,
+      "accuracy": 62.5
+    }
+  },
+  "diagnostics": {
+    "startFailedInstructions": 0,
+    "judgeFailedInstructions": 0,
+    "excludedCases": 0
+  },
+  "rows": [
+    {
+      "source_id": "000036",
+      "application_type": "E-commerce Web Applications",
+      "cases": 6,
+      "gen_tokens": 4643,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "YES",
+          "why": "category.select/params.pick/price.compare actions; cards show name, price, supplier"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "YES",
+          "why": "price.compare action; lowest-price badge with state and supplier comparison shown"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering",
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "No settings section or search-frequency action declared in spec"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "YES",
+          "why": "product.detail action; cards show price, stock quantity, supplier details"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Tab navigation includes categories/profile, but no settings section exists"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Accent is exact crimson; background #FFF7F8 is not exact seashell"
+        }
+      ],
+      "scored": 6,
+      "yes": 3,
+      "partial": 2,
+      "no": 1,
+      "accuracy": 66.7
+    },
+    {
+      "source_id": "000038",
+      "application_type": "E-commerce Web Applications",
+      "cases": 6,
+      "gen_tokens": 4581,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "YES",
+          "why": "Search bar plus apartment.search action and apartment cards deliver keyword search results."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "YES",
+          "why": "apartment.filter action exists; one-bedroom listings (一居 42㎡) are present."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "apartment.book action exists, but no date picker or calendar unavailability display."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "E-commerce"
+            ]
+          },
+          "v": "YES",
+          "why": "booking.history action and 我的/预订 tabs expose booking records with summary data."
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "YES",
+          "why": "Tab-bar offers 首页 tab returning to the fully specified homepage."
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "YES",
+          "why": "Theme uses maroon #800000 accent and warm linen-toned #FFF5F0 background."
+        }
+      ],
+      "scored": 6,
+      "yes": 5,
+      "partial": 1,
+      "no": 0,
+      "accuracy": 91.7
+    },
+    {
+      "source_id": "000041",
+      "application_type": "E-commerce Web Applications",
+      "cases": 5,
+      "gen_tokens": 3128,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          },
+          "v": "YES",
+          "why": "auction.bid action places bids; history.view/tab records and reflects bid history"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "YES",
+          "why": "auction.browse action plus hcard-row items deliver browsing trading opportunities"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "YES",
+          "why": "历史 tab and history.view action provide access to trading/bidding history"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "YES",
+          "why": "account.manage action and 账户 tab cover account management updates"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "chocolate accent #D2691E matches, but background #FFF8F0 is not lemon chiffon"
+        }
+      ],
+      "scored": 5,
+      "yes": 4,
+      "partial": 1,
+      "no": 0,
+      "accuracy": 90
+    },
+    {
+      "source_id": "000043",
+      "application_type": "Email Clients",
+      "cases": 6,
+      "gen_tokens": 3653,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "message.compose action exists, but no phone-number compose form or send confirmation content"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "No user information section or action anywhere in the spec"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "strategy.config action exists, but no policy form or active-policy list content"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "record.view action and preview rows exist, but full per-message date/recipient/status records absent"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "YES",
+          "why": "monitor.open action plus banner/progress statistics display sending data clearly"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "YES",
+          "why": "Theme declares background #F4F5FA and dark slate blue #483D8B components"
+        }
+      ],
+      "scored": 6,
+      "yes": 2,
+      "partial": 3,
+      "no": 1,
+      "accuracy": 58.3
+    },
+    {
+      "source_id": "000066",
+      "application_type": "News and Information Sites",
+      "cases": 6,
+      "gen_tokens": 3514,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Restaurant cards show names/ratings with restaurant.open, but addresses are absent"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "search-bar with search.submit exists, but recipe results content is unspecified"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "restaurant.open action exists; ratings/review snippet shown, no detailed restaurant page"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Communication"
+            ]
+          },
+          "v": "YES",
+          "why": "review.write action and displayed review list deliver submitting and showing new review"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Tabs cover nearby, recipes, reviews, but other sections' content is unspecified"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Accent is chocolate (#D2691E), but background #FFF8F0 is not lemon chiffon"
+        }
+      ],
+      "scored": 6,
+      "yes": 1,
+      "partial": 5,
+      "no": 0,
+      "accuracy": 58.3
+    },
+    {
+      "source_id": "000068",
+      "application_type": "News and Information Sites",
+      "cases": 6,
+      "gen_tokens": 4035,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "YES",
+          "why": "Homepage displays temperature 26°C, humidity 58%, gas 0.42ppm on load"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "AQI shown with manual refresh action, but no automatic real-time update declared"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Two-week AQI summary exists, but no per-day 14-day time series or graph"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "aqi.compare action and comparison cards exist, but date-picking comparison content absent"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "YES",
+          "why": "天气详情 button with weather.detail action navigates to weather details section"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "YES",
+          "why": "Theme background #F5F6FB pale azure mist, accent #483D8B dark slate blue"
+        }
+      ],
+      "scored": 6,
+      "yes": 3,
+      "partial": 3,
+      "no": 0,
+      "accuracy": 75
+    },
+    {
+      "source_id": "000078",
+      "application_type": "Productivity Applications",
+      "cases": 6,
+      "gen_tokens": 3735,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "YES",
+          "why": "Search-bar expression input exists with explicit input placeholder; free text entry displays as typed"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation"
+            ]
+          },
+          "v": "YES",
+          "why": "Three calculation-type buttons exist with calc.type.select action providing visible selection"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Generation"
+            ]
+          },
+          "v": "YES",
+          "why": "calc.evaluate action and result display area with computed value are present"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Input and evaluate actions exist, but no error message or invalid-expression feedback declared"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "Single-screen spec; no separate home page or navigation path to a calculation page"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Teal accent #008080 declared, but mint cream background color absent from theme"
+        }
+      ],
+      "scored": 6,
+      "yes": 3,
+      "partial": 2,
+      "no": 1,
+      "accuracy": 66.7
+    },
+    {
+      "source_id": "000080",
+      "application_type": "Productivity Applications",
+      "cases": 8,
+      "gen_tokens": 6714,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "task.create action exists, but no 'Add Task' form with fields is specified"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "task.edit action exists on tasks, but no edit form/description field is specified"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "YES",
+          "why": "Each task row has a task.toggle '完成' button; completion state is tracked"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "YES",
+          "why": "Each task row has a '删除' button bound to task.delete"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "YES",
+          "why": "Search bar plus '搜索' button bound to task.search is present"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "YES",
+          "why": "Filter buttons 全部/未完成/已完成 map to filter.all/active/done actions"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Tab-bar with four tabs exists, but other tabs' content is unspecified"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "YES",
+          "why": "Theme declares lavender-toned background #F5F4FA and indigo accent #4B0082"
+        }
+      ],
+      "scored": 8,
+      "yes": 5,
+      "partial": 3,
+      "no": 0,
+      "accuracy": 81.3
+    },
+    {
+      "source_id": "000092",
+      "application_type": "Social Media Platforms",
+      "cases": 6,
+      "gen_tokens": 5337,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Skills/certifications displayed via badges, but no create/edit profile action exists"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "YES",
+          "why": "Search bar with search.skill action and skill-tagged user cards present"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "YES",
+          "why": "user.profile, skill.view, verify.view actions show skills and certifications"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "YES",
+          "why": "user.contact action provided via 联系 button on each user card"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "YES",
+          "why": "Tab-bar offers 首页, 找技能, 消息, 我的 sections"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Accent #CD853F is peru, but background #FFF8F1 is not cornsilk (#FFF8DC)"
+        }
+      ],
+      "scored": 6,
+      "yes": 4,
+      "partial": 2,
+      "no": 0,
+      "accuracy": 83.3
+    },
+    {
+      "source_id": "000095",
+      "application_type": "Streaming and Interactive Platforms",
+      "cases": 6,
+      "gen_tokens": 3807,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Search bar and ringtone details exist, but no search action or results behavior is declared."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Wallpaper content and a download action exist, but only ringtone.download; no wallpaper download or confirmation."
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "File operation"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Profile tab and downloads.open action exist, but history list with dates/times is not specified."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation",
+              "Generation"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "ringtone.favorite action exists, but collection view within profile is absent from the spec."
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Category tab and category.filter action exist, but categorized content listings are not specified."
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "Theme uses #F5F6EE background and #556B2F accent, neither light goldenrod nor olive drab."
+        }
+      ],
+      "scored": 6,
+      "yes": 0,
+      "partial": 5,
+      "no": 1,
+      "accuracy": 41.7
+    },
+    {
+      "source_id": "000096",
+      "application_type": "Travel Booking Portals",
+      "cases": 5,
+      "gen_tokens": 3507,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "E-commerce"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Search bar and sample train options exist, but no departure/arrival/date search or results action"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching",
+              "Form Operations"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "flight.book action exists, but no booking flow content or confirmation number is provided"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "order.pay action exists, but no credit-card entry, confirmation, or email receipt content"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Orders tab and order.view exist, but only one order with status shown, not full list"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Accent #CD5C5C is indian red, but background #FFFAFA is snow, not peach puff"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 5,
+      "no": 0,
+      "accuracy": 50
+    },
+    {
+      "source_id": "000099",
+      "application_type": "Travel Booking Portals",
+      "cases": 8,
+      "gen_tokens": 3911,
+      "structuralOk": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "No registration form or register action; only auth.login exists"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "YES",
+          "why": "auth.login button plus 我的 tab and history access deliver login flow"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Search and seat.check actions exist, but only train content, no buses"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Searching"
+            ]
+          },
+          "v": "YES",
+          "why": "Train options show prices and remaining seats; seat.check action present"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "order.pay/confirm exist but no email/SMS confirmation capability"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Details Information"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "history.view action declared but no actual booking history content"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "No print action or print-friendly ticket format in spec"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "PARTIAL",
+          "why": "Accent #696969 is dim gray, but background #F5F5F5 is whitesmoke, not snow"
+        }
+      ],
+      "scored": 8,
+      "yes": 2,
+      "partial": 4,
+      "no": 2,
+      "accuracy": 50
+    }
+  ]
+}

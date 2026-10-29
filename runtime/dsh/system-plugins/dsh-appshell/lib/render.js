@@ -70,5 +70,6 @@ export function renderSpec(spec, ctx) {
   const { ok, errors, expanded } = validate(spec);
   if (!ok) return { ok: false, errors };
   const accent = (spec.theme && spec.theme.accent) || '#1677ff';
-  return { ok: true, vnode: renderNode(expanded, { accent, ...ctx }) };
+  const background = (spec.theme && spec.theme.background) || undefined;
+  return { ok: true, vnode: renderNode(expanded, { accent, background, ...ctx }) };
 }
