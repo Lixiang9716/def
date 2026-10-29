@@ -135,7 +135,7 @@ async function judgeTask(task, spec) {
   return null;
 }
 
-const UPDATE_SYSTEM = SYSTEM + '\n\nYou are UPDATING an existing surface. Output ONLY a JSON object with the CHANGED parts: "screen" (the full new tree) and, when the task touches them, "theme"/"tabs"/"actions". No markdown, no commentary.';
+const UPDATE_SYSTEM = SYSTEM + '\n\nYou are UPDATING an existing surface. Output ONLY a JSON object: "screen" is REQUIRED in every update — always the COMPLETE new tree as one object, even when the task only changes colors or adds one element; "theme"/"tabs"/"actions" ride along only when the task touches them. No markdown, no commentary.';
 
 /** Run one chain task: generate the incremental update, merge it over the
  * current truth through the product's own mergeUpdate + four gates, judge

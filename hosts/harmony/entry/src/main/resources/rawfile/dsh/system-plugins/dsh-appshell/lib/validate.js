@@ -116,6 +116,9 @@ export function validate(spec) {
   if (spec.theme && (typeof spec.theme !== 'object' || !isPlainString(spec.theme.accent))) {
     errors.push({ code: 'BAD_FIELD', path: '$.theme', msg: 'theme.accent must be a string' });
   }
+  if (spec.theme && spec.theme.background !== undefined && !isPlainString(spec.theme.background)) {
+    errors.push({ code: 'BAD_FIELD', path: '$.theme.background', msg: 'theme.background must be a string when present' });
+  }
   if (!Array.isArray(spec.tabs) || spec.tabs.length < 2 || spec.tabs.length > 5 || !spec.tabs.every(isPlainString)) {
     errors.push({ code: 'BAD_FIELD', path: '$.tabs', msg: 'tabs must be 2..5 strings' });
   }
