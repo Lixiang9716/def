@@ -1,0 +1,39 @@
+/**
+ * appgen-scorecard: the merged percentage scorecard — one table from the
+ * latest committed ledgers of every benchmark family (census, port,
+ * chain, visual). A viewer, not a runner: it reads what the loop
+ * measured, never re-runs anything. Prints the table the runbook's
+ * §scorecard section quotes; stale ledgers are named, not hidden.
+ */
+import { readFileSync, readdirSync } from 'node:fs';
+
+const dir = new URL('../../tools/dev-web-carrier/artifacts/appgen-bench/', import.meta.url);
+const evalDir = new URL('../../tools/dev-web-carrier/artifacts/appgen-eval/', import.meta.url);
+
+const newest = (d, prefix) => {
+  // By ledger meta.at, never filename order — 'systemv2' sorts after
+  // 'iter9' alphabetically and would masquerade as the latest.
+  const files = readdirSync(d).filter((f) => f.startsWith(prefix) && f.endsWith('.json'));
+  const parsed = files.map((f) => {
+    try { return JSON.parse(readFileSync(new URL(f, d), 'utf8')); } catch { return null; }
+  }).filter((l) => l?.meta?.at);
+  parsed.sort((a, b) => new Date(b.meta.at) - new Date(a.meta.at));
+  return parsed[0] ?? null;
+};
+
+const port = newest(dir, 'webgen-port-deepseek-v4-flash-');
+const portGlm = newest(dir, 'webgen-port-glm-5.3-flash-');
+const chain = newest(dir, 'appgen-chain-deepseek-v4-flash-');
+const visual = newest(dir, 'appgen-visual-deepseek-v4-flash-');
+const census = newest(evalDir, 'appgen-census-deepseek-v4-flash-');
+
+const dv = port?.categories?.['Design Validation Testing']?.accuracy ?? null;
+console.log('=== def appgen scorecard (latest committed ledgers) ===');
+if (port) {
+  console.log(`port (dsflash${port.runsPerInstruction > 1 ? `, ${port.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${port.meanAccuracy ?? port.overall.accuracy}% | DV ${dv}% | start-fail ${port.diagnostics.startFailedInstructions}`);
+}
+if (portGlm) console.log(`port (glm-5.3-flash${portGlm.runsPerInstruction > 1 ? `, ${portGlm.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${portGlm.meanAccuracy ?? portGlm.overall.accuracy}%`);
+if (chain) console.log(`chain (backend axis): ${chain.overall.accuracy}% | refusals ${chain.diagnostics.rejectedUpdates}`);
+if (visual) console.log(`visual: background ${visual.visual.backgroundYes} YES / ${visual.visual.backgroundPartial} PARTIAL / ${visual.visual.backgroundNo} NO | appearance ${visual.visual.meanAppearance}/5 (rubric ${visual.meta.appearanceRubric ?? 'v1'})`);
+if (census) console.log(`census: structuralValid ${census.percentages?.structuralValid}% | constitution ${census.percentages?.constitution}% | alignment ${census.percentages?.alignment}%`);
+if (!port || !chain) console.log('NOTE: missing families — run the loop before quoting the scorecard.');
