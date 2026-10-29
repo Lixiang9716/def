@@ -16,6 +16,7 @@
 
 import {
   SPEC_VERSION, CAPS, ACTION_RE, primitives, templates, KNOWN_PRIMITIVES,
+  snapNamedColor,
 } from './catalog.js';
 
 function isPlainString(v) { return typeof v === 'string'; }
@@ -109,14 +110,38 @@ function walkExpanded(node, path, errors, depth, state) {
  * Validate a full app-shell spec.
  * @returns {{ ok: boolean, errors: Array<{code: string, path: string, msg: string}>, expanded: object|null }}
  */
+/** Canonicalize obvious near-miss theme colors (#FFF5F5 → seashell) on a
+ * shallow clone; the caller's spec is never mutated. normalizedSpec is
+ * null unless at least one color snapped. */
+function withSnappedColors(spec) {
+  if (!spec.theme || typeof spec.theme !== 'object') return { working: spec, normalizedSpec: null };
+  const snap = {};
+  for (const slot of ['accent', 'background']) {
+    const v = spec.theme[slot];
+    if (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v)) {
+      const exact = snapNamedColor(v);
+      if (exact) snap[slot] = exact;
+    }
+  }
+  if (!Object.keys(snap).length) return { working: spec, normalizedSpec: null };
+  const working = { ...spec, theme: { ...spec.theme, ...snap } };
+  return { working, normalizedSpec: working };
+}
+
 export function validate(spec) {
   const errors = [];
   if (!spec || typeof spec !== 'object') return { ok: false, errors: [{ code: 'BAD_FIELD', path: '$', msg: 'spec must be an object' }], expanded: null };
-  if (spec.spec !== SPEC_VERSION) errors.push({ code: 'BAD_FIELD', path: '$.spec', msg: 'spec must be "' + SPEC_VERSION + '"' });
-  if (spec.theme && (typeof spec.theme !== 'object' || !isPlainString(spec.theme.accent))) {
+  // Near-miss color snap: a theme color that is an obvious near-miss of a
+  // named CSS color (the #FFF5F5-for-seashell failure mode) is
+  // canonicalized to the exact hex before validation — the author's intent
+  // is unambiguous, and the surface renders the named color. The caller's
+  // object is never mutated; normalizedSpec carries the snapped form.
+  const { working, normalizedSpec } = withSnappedColors(spec);
+  if (working.spec !== SPEC_VERSION) errors.push({ code: 'BAD_FIELD', path: '$.spec', msg: 'spec must be "' + SPEC_VERSION + '"' });
+  if (working.theme && (typeof working.theme !== 'object' || !isPlainString(working.theme.accent))) {
     errors.push({ code: 'BAD_FIELD', path: '$.theme', msg: 'theme.accent must be a string' });
   }
-  if (spec.theme && spec.theme.background !== undefined && !isPlainString(spec.theme.background)) {
+  if (working.theme && working.theme.background !== undefined && !isPlainString(working.theme.background)) {
     errors.push({ code: 'BAD_FIELD', path: '$.theme.background', msg: 'theme.background must be a string when present' });
   }
   if (!Array.isArray(spec.tabs) || spec.tabs.length < 2 || spec.tabs.length > 5 || !spec.tabs.every(isPlainString)) {
@@ -126,19 +151,19 @@ export function validate(spec) {
     const bad = Array.isArray(spec.actions) ? spec.actions.find((a) => !isPlainString(a) || !ACTION_RE.test(a)) : spec.actions;
     errors.push({ code: 'BAD_ACTION', path: '$.actions', msg: 'actions must be an array of ' + ACTION_RE + '; offending entry ' + quoteValue(bad) + ' — try "' + suggestActionId(bad) + '"' });
   }
-  const serialized = JSON.stringify(spec);
+  const serialized = JSON.stringify(working);
   if (serialized.length > CAPS.SPEC_BYTES) {
     errors.push({ code: 'SPEC_TOO_LARGE', path: '$', msg: 'serialized spec > ' + CAPS.SPEC_BYTES + ' bytes' });
     return { ok: false, errors, expanded: null };
   }
-  const expandedRoot = expandNode(spec.screen, '$.screen', errors, 1);
+  const expandedRoot = expandNode(working.screen, '$.screen', errors, 1);
   let expanded = null;
   if (expandedRoot) {
     const state = { nodes: 0 };
     walkExpanded(expandedRoot, '$.screen', errors, 1, state);
     if (state.nodes > CAPS.NODES) errors.push({ code: 'NODE_OVERFLOW', path: '$.screen', msg: 'expanded nodes > ' + CAPS.NODES });
     if (errors.length === 0) {
-      const actions = new Set(spec.actions || []);
+      const actions = new Set(working.actions || []);
       (function checkActions(node, path) {
         if (node.action !== undefined && !actions.has(node.action)) {
           errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action ' + quoteValue(node.action) + ' is not declared in spec.actions — declare it there or remove the action' });
@@ -148,7 +173,7 @@ export function validate(spec) {
     }
   }
   expanded = errors.length ? null : expandedRoot;
-  return { ok: errors.length === 0, errors, expanded };
+  return { ok: errors.length === 0, errors, expanded, normalizedSpec };
 }
 
 /**

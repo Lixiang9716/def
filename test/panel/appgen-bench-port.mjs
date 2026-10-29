@@ -127,10 +127,17 @@ for (const instruction of selected) {
     const gen = await generate(instruction.prompt);
     row.gen_tokens = gen.tokens;
     let spec = null;
-    try { spec = extractSpec(gen.content); } catch { spec = null; }
-    const checked = spec ? validate(spec) : { ok: false };
+    let renderCheck = { ok: false, errors: [{ code: 'UNPARSEABLE', msg: 'generation was not a JSON object' }] };
+    try {
+      spec = extractSpec(gen.content);
+      renderCheck = validate(spec);
+    } catch (e) {
+      renderCheck = { ok: false, errors: [{ code: 'UNPARSEABLE', msg: e.message.slice(0, 120) }] };
+    }
+    const checked = renderCheck;
     row.structuralOk = checked.ok;
     if (!checked.ok) {
+      row.renderError = checked.errors?.[0]?.msg?.slice(0, 160);
       // Start Failed (the upstream diagnostic): no usable artifact — every
       // case scores NO, the harshest honest reading.
       row.start_failed = true;

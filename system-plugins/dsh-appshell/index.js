@@ -80,10 +80,14 @@ const renderTool = () => defineTool({
       log.info({ event: 'appshell.render', mode: MODE, ok: false, errors: result.errors.length });
       throw new Error('spec rejected: ' + JSON.stringify(result.errors));
     }
-    const surfaceId = mintSurfaceId(spec);
+    // Near-miss theme colors are canonicalized (validate snaps #FFF5F5 to
+    // seashell #FFF5EE): the minted surface and the echo carry the exact
+    // hexes, so the rendered surface IS the named color.
+    const minted = result.normalizedSpec ?? spec;
+    const surfaceId = mintSurfaceId(minted);
     log.info({ event: 'appshell.render', mode: MODE, ok: true, errors: 0, surfaceId });
-    const title = MODE === 'mock' ? (args.fixture || 'wechat') : (spec.title || 'app');
-    return { ok: true, title, surfaceId, spec };
+    const title = MODE === 'mock' ? (args.fixture || 'wechat') : (minted.title || 'app');
+    return { ok: true, title, surfaceId, spec: minted };
   },
 });
 

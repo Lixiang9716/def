@@ -18,6 +18,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
+import { NAMED_COLORS, colorDistance } from '../../system-plugins/dsh-appshell/lib/catalog.js';
 import { specToA2UI } from '../../system-plugins/dsh-appshell/lib/appshell-to-a2ui.js';
 import { SYSTEM_V1, SYSTEM_V2 } from './appgen-eval/system-prompt.js';
 
@@ -119,6 +120,20 @@ function rubric(spec) {
     }
   }
   if (f.actions.length === 0) push('RUBRIC_NO_ACTIONS', 'actions[] empty — a poster, not an app');
+  // Near-miss named colors: a theme color within reach of a CSS-named
+  // color but not equal is the #FFF5F5-for-seashell failure mode — the
+  // machine-checkable twin of the judge's exactness complaints.
+  for (const [slot, value] of [['accent', spec.theme?.accent], ['background', spec.theme?.background]]) {
+    if (typeof value !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(value)) continue;
+    const upper = value.toUpperCase();
+    if (Object.values(NAMED_COLORS).includes(upper)) continue;
+    let best = null;
+    for (const [name, hex] of Object.entries(NAMED_COLORS)) {
+      const d = colorDistance(upper, hex);
+      if (d <= 150 && (best === null || d < best.d)) best = { name, hex, d };
+    }
+    if (best) push('RUBRIC_NAMED_COLOR_NEAR_MISS', `theme.${slot} ${value} is near ${best.name} ${best.hex} — use the exact hex`);
+  }
 
   return {
     fails,
