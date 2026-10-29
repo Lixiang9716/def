@@ -15,7 +15,10 @@
  *
  * Generator: LLM_* (fallback DSH_LLM_*, then ZAI_*); judge: JUDGE_* (keep
  * a different family). Knobs: CHAIN_SEEDS (first N seeds), LEDGER_STEM.
- * Not a CI gate — the loop's backend-axis percentage benchmark
+ * Chain shape: 5 dependent tasks per seed since round 18 (the r18 battery
+ * saturated 3 tasks at 100% — no decay was observable; tasks 4-5 probe the
+ * late chain; earlier ledgers ran 3 and carry their own rows). Not a CI
+ * gate — the loop's backend-axis percentage benchmark
  * (doc/appgen-auto-research.md).
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -55,6 +58,8 @@ const SEEDS = [
       '在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）',
       '把主题色从红色换成紫色 #7c4dff',
       '在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片',
+      '在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）',
+      '把每日推荐横幅卡片的标题文本改成「今日精选」',
     ],
   },
   {
@@ -64,6 +69,8 @@ const SEEDS = [
       '在总资产下面加一行本月结余的进度条（progress），显示已消费 68%',
       '把主题色换成金色 #d4a017',
       '在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）',
+      '在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）',
+      '把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」',
     ],
   },
   {
@@ -73,6 +80,8 @@ const SEEDS = [
       '在统计区下面新增今日任务清单（可勾选的三行）',
       '把主题色换成墨绿色 #1f6f54',
       '在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）',
+      '在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）',
+      '把今日完成的番茄数文本改成「今日已完成 6 个番茄」',
     ],
   },
   {
@@ -82,6 +91,8 @@ const SEEDS = [
       '在会话列表上面加一行「未读消息 12 条」的横幅卡片',
       '把主题色换成天蓝色 #2f9ee8',
       '在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）',
+      '把「未读消息 12 条」横幅的文本改成「未读消息 3 条」',
+      '在底部标签栏最后新增一个「我的」标签',
     ],
   },
 ].slice(0, N_SEEDS);
@@ -236,6 +247,7 @@ const ledger = {
   meta: {
     at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model,
     systemPrompt: 'SYSTEM_' + SYSTEM_VERSION, seeds: rows.map((r) => r.seed),
+    chainShape: '5 dependent tasks per seed (round-18 deepening; ledgers before round 18 ran 3 tasks per seed)',
     formula: 'accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)',
   },
   overall, positions,
