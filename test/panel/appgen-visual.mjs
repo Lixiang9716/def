@@ -1,11 +1,15 @@
 /**
  * appgen-visual: the visual leg — the design-constitution half the static
- * judge cannot see. Generate a spec, render it in the real web client
- * (the dev carrier page + openSurface), screenshot the presented surface,
- * and ask a VISION judge what the static tier could never know: is the
- * requested background actually painted, are the named colors visible,
- * and how does it look (the appearance score; rubric v3 grades 0-100 —
- * v2's 1-5 saturated at 4 every round, hiding polish progress).
+ * judge cannot see. Generate a spec, run it through the product's own
+ * validate() (visual leg v2: a spec the product would refuse is recorded
+ * as refused, never rendered; the minted form — near-miss theme colors
+ * snapped to the exact hex, exactly what appshell_render renders — is
+ * what renders), screenshot the presented surface in the real web client
+ * (the dev carrier page + openSurface), and ask a VISION judge what the
+ * static tier could never know: is the requested background actually
+ * painted, are the named colors visible, and how does it look (the
+ * appearance score; rubric v3 grades 0-100 — v2's 1-5 saturated at 4
+ * every round, hiding polish progress).
  *
  * Judge: glm-4.6v (vision, JUDGE_* env). Generator: LLM_* (deepseek
  * default). Screenshots land under artifacts/appgen-bench/shots-<stem>/
@@ -16,6 +20,9 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { openCarriedPage, closeCarriedPage } from '../tools/helpers/carrier-page.mjs';
 import { readPng } from '../tools/helpers/visual-diff-core.mjs';
+// The product's four-gate validator — the same module appshell_render runs
+// (system-plugins/dsh-appshell/index.js) and the panel tests import.
+import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
 
 const env = Object.fromEntries(
   readFileSync(new URL('../../.env', import.meta.url), 'utf8')
@@ -62,6 +69,19 @@ async function generate(prompt) {
   if (start === -1 || end === 0) throw new Error('no JSON object');
   return JSON.parse(cleaned.slice(start, end));
 }
+
+/** Slots the validator snapped, as {slot: [rawHex, mintedHex]} — null when
+ * none did. The ledger's adherence evidence: the pixel check measures the
+ * rendered surface against the minted hex, not the raw request. */
+const colorSnaps = (raw, mintedSpec) => {
+  const snaps = {};
+  for (const slot of ['accent', 'background']) {
+    if (raw.theme?.[slot] !== undefined && raw.theme[slot] !== mintedSpec.theme?.[slot]) {
+      snaps[slot] = [raw.theme[slot], mintedSpec.theme[slot]];
+    }
+  }
+  return Object.keys(snaps).length ? snaps : null;
+};
 
 const backgroundHitFraction = (shot, hex) => {
   const png = readPng(shot);
@@ -120,43 +140,61 @@ try {
     try {
       const spec = await generate(instruction.prompt);
       row.theme = spec.theme ?? null;
-      const opened = await session.page.evaluate(async (spec) => {
-        const mod = await import(new URL('js/appshell.js', location.href).href);
-        const ok = mod.openSurface({ title: 'App', spec, onAction: null });
-        await new Promise((r) => setTimeout(r, 350));
-        return ok;
-      }, spec);
-      row.opened = opened === true;
-      const view = await session.page.$('#appshell-view');
-      const shot = await view.screenshot({ type: 'png' });
-      const shotPath = new URL(`${instruction.source_id}.png`, shotsDir);
-      writeFileSync(shotPath, shot);
-      row.shot = shotPath.pathname.split('/').slice(-2).join('/');
-      // The pixel check owns exactness (the vision judge cannot tell
-      // seashell #FFF5EE from white on a screenshot): average the shot's
-      // top strip and compare against theme.background.
-      // The pixel check owns exactness: grid-sample the shot — the
-      // background is painted when a large fraction of the surface is
-      // within tolerance of the exact hex (headers/cards may differ).
-      row.pixelBackground = null;
-      if (typeof spec.theme?.background === 'string' && /^#[0-9a-fA-F]{6}$/.test(spec.theme.background)) {
-        const { fraction } = backgroundHitFraction(shot, spec.theme.background);
-        row.pixelBackground = { target: spec.theme.background, hitFraction: fraction, painted: fraction >= 0.25 };
-      }
-      const verdict = await judgeVisual(instruction, shot.toString('base64'));
-      if (verdict === null) { row.judge_failed = true; row.background_painted = null; row.appearance = null; }
-      else {
-        row.background_painted = verdict.background_painted;
-        row.colors_visible = verdict.colors_visible;
-        row.appearance = verdict.appearance;
-        row.why = verdict.why;
-        row.polish_hint = verdict.polish_hint ?? null;
+      // Product-faithful render path (appshell_render): validate first —
+      // a spec the product would refuse is recorded as refused, never
+      // rendered; the minted form (near-miss theme colors snapped to the
+      // exact hex) is what renders and what the pixel check measures
+      // adherence against, so the snap is verified at the pixel layer.
+      const check = validate(spec);
+      row.validated = check.ok;
+      let minted = null;
+      if (!check.ok) {
+        row.rejectCodes = check.errors.map((e) => e.code);
+        row.opened = false;
+      } else {
+        minted = check.normalizedSpec ?? spec;
+        row.colorSnap = check.normalizedSpec ? colorSnaps(spec, minted) : null;
+        const opened = await session.page.evaluate(async (spec) => {
+          const mod = await import(new URL('js/appshell.js', location.href).href);
+          const ok = mod.openSurface({ title: 'App', spec, onAction: null });
+          await new Promise((r) => setTimeout(r, 350));
+          return ok;
+        }, minted);
+        row.opened = opened === true;
+        const view = await session.page.$('#appshell-view');
+        const shot = await view.screenshot({ type: 'png' });
+        const shotPath = new URL(`${instruction.source_id}.png`, shotsDir);
+        writeFileSync(shotPath, shot);
+        row.shot = shotPath.pathname.split('/').slice(-2).join('/');
+        // The pixel check owns exactness: grid-sample the shot — the
+        // background is painted when a large fraction of the surface is
+        // within tolerance of the exact MINTED hex (headers/cards may
+        // differ). The snap is verified here: the rendered pixels must
+        // adhere to the normalized hex, not the raw request.
+        row.pixelBackground = null;
+        if (typeof minted.theme?.background === 'string' && /^#[0-9a-fA-F]{6}$/.test(minted.theme.background)) {
+          const { fraction } = backgroundHitFraction(shot, minted.theme.background);
+          row.pixelBackground = { target: minted.theme.background, hitFraction: fraction, painted: fraction >= 0.25 };
+        }
+        const verdict = await judgeVisual(instruction, shot.toString('base64'));
+        if (verdict === null) { row.judge_failed = true; row.background_painted = null; row.appearance = null; }
+        else {
+          row.background_painted = verdict.background_painted;
+          row.colors_visible = verdict.colors_visible;
+          row.appearance = verdict.appearance;
+          row.why = verdict.why;
+          row.polish_hint = verdict.polish_hint ?? null;
+        }
       }
     } catch (e) {
       row.error = e.message.slice(0, 160);
     }
     rows.push(row);
-    console.log(`${instruction.source_id}: bg ${row.background_painted ?? (row.judge_failed ? 'JUDGE-FAIL' : 'ERR')} | pixel ${row.pixelBackground ? (row.pixelBackground.painted ? 'EXACT' : 'OFF(' + row.pixelBackground.distance + ')') : '-'} | appearance ${row.appearance ?? '-'} | ${(row.colors_visible || row.why || row.error || '').slice(0, 60)}`);
+    if (row.validated === false) {
+      console.log(`${instruction.source_id}: REJECTED(${row.rejectCodes.join(',')}) | not rendered — product gates refuse this spec`);
+    } else {
+      console.log(`${instruction.source_id}: bg ${row.background_painted ?? (row.judge_failed ? 'JUDGE-FAIL' : 'ERR')} | pixel ${row.pixelBackground ? (row.pixelBackground.painted ? 'EXACT' : 'OFF(' + row.pixelBackground.distance + ')') : '-'} | appearance ${row.appearance ?? '-'} | ${(row.colors_visible || row.why || row.error || '').slice(0, 60)}`);
+    }
   }
 } finally {
   await closeCarriedPage(session);
@@ -169,11 +207,13 @@ const appearances = scored.map((r) => r.appearance).sort((a, b) => a - b);
 const meanAppearance = appearances.length ? Math.round(appearances.reduce((a, b) => a + b, 0) / appearances.length * 10) / 10 : null;
 console.log(`\n--- appgen-visual (${GEN.model} gen × ${JUDGE.model} judge, ${rows.length} instructions) ---`);
 console.log(`BACKGROUND PAINTED: ${yes} YES / ${partial} PARTIAL / ${scored.length - yes - partial} NO of ${scored.length} scored`);
+const refused = rows.filter((r) => r.validated === false).length;
+console.log(`VALIDATOR (product gates): ${refused} refused of ${rows.length}`);
 console.log(`APPEARANCE (0-100): mean ${meanAppearance}, distribution ${JSON.stringify(appearances)}`);
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v1)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors' },
-  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, appearanceScale: 100, meanAppearance },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors' },
+  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
 };
