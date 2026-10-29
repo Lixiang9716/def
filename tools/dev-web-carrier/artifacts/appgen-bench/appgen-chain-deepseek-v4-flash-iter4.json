@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "at": "2026-10-29T06:21:31.993Z",
+    "generator": "deepseek-v4-flash",
+    "judge": "glm-4.6",
+    "systemPrompt": "SYSTEM_V2",
+    "seeds": [
+      "music-player",
+      "wallet",
+      "pomodoro",
+      "chat"
+    ],
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
+  },
+  "overall": {
+    "yes": 6,
+    "partial": 0,
+    "no": 6,
+    "accuracy": 50
+  },
+  "positions": {
+    "1": {
+      "yes": 2,
+      "partial": 0,
+      "no": 2,
+      "accuracy": 50
+    },
+    "2": {
+      "yes": 2,
+      "partial": 0,
+      "no": 2,
+      "accuracy": 50
+    },
+    "3": {
+      "yes": 2,
+      "partial": 0,
+      "no": 2,
+      "accuracy": 50
+    }
+  },
+  "diagnostics": {
+    "rejectedUpdates": 0
+  },
+  "rows": [
+    {
+      "seed": "music-player",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        },
+        {
+          "task": "把主题色从红色换成紫色 #7c4dff",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        },
+        {
+          "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        }
+      ],
+      "renderOk": false,
+      "renderError": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/; offending entry \"playlist.playAll\" — try \"playlist.playall\"",
+      "gen_tokens": 3390
+    },
+    {
+      "seed": "wallet",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
+          "verdict": "YES",
+          "why": "进度条位于总资产卡片下方，显示已消费68%与本月结余"
+        },
+        {
+          "task": "把主题色换成金色 #d4a017",
+          "verdict": "YES",
+          "why": "theme.accent 已设为 #D4A017"
+        },
+        {
+          "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
+          "verdict": "YES",
+          "why": "交易卡片底部已含「账单导出」按钮且 action 为 bill.export"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 12250
+    },
+    {
+      "seed": "pomodoro",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在统计区下面新增今日任务清单（可勾选的三行）",
+          "verdict": "YES",
+          "why": "统计卡片后有三行可勾选任务清单，带task.toggle操作"
+        },
+        {
+          "task": "把主题色换成墨绿色 #1f6f54",
+          "verdict": "YES",
+          "why": "主题色 accent 已设为 #1f6f54，完全符合要求"
+        },
+        {
+          "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
+          "verdict": "YES",
+          "why": "白噪音开关按钮存在，action 为 noise.toggle，位于页面顶部区域"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 14927
+    },
+    {
+      "seed": "chat",
+      "tasks": 3,
+      "steps": [
+        {
+          "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        },
+        {
+          "task": "把主题色换成天蓝色 #2f9ee8",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        },
+        {
+          "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
+          "verdict": "NO",
+          "why": "render start-failed: BAD_ACTION"
+        }
+      ],
+      "renderOk": false,
+      "renderError": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/; offending entry \"chat.markAllRead\" — try \"chat.markallread\"",
+      "gen_tokens": 3541
+    }
+  ]
+}
