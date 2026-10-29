@@ -13,7 +13,7 @@
  * the same defaults the individual runners carry. Everything the auto-
  * improve loop needs to measure one round, without shell gymnastics.
  */
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,21 +59,25 @@ if (legs.includes('visual') && !existsSync(join(ROOT, 'test/tools/node_modules/p
   spawnSync('npm', ['ci', '--no-audit', '--no-fund'], { cwd: join(ROOT, 'test/tools'), stdio: 'inherit' });
 }
 
-const run = (leg, stem, extraEnv) => {
+// The four legs are independent (separate ledgers, separate judge/model
+// streams) and run CONCURRENTLY — a round costs the longest leg, not the
+// sum. stdio inherits, so interleaved lines are expected.
+const runAsync = (leg, stem, extraEnv) => new Promise((resolve, reject) => {
   const spec = {
     port: { script: 'test/panel/appgen-bench-port.mjs', env: { BENCH_RUNS: '2' } },
     chain: { script: 'test/panel/appgen-chain.mjs', env: {} },
     census: { script: 'test/panel/appgen-eval.mjs', env: { APPGEN_RUNS: '2' } },
     visual: { script: 'test/panel/appgen-visual.mjs', env: { VISUAL_N: '8' } },
   }[leg];
-  const r = spawnSync('node', [spec.script], {
+  const r = spawn('node', [spec.script], {
     cwd: ROOT,
     env: { ...ENV, LEDGER_STEM: stem, ...spec.env, ...extraEnv },
     stdio: 'inherit',
     timeout: 90 * 60 * 1000,
   });
-  if (r.status !== 0) throw new Error(`${leg} runner exited ${r.status}`);
-};
+  r.on('exit', (code) => (code === 0 ? resolve() : reject(new Error(`${leg} runner exited ${code}`))));
+  r.on('error', reject);
+});
 
 const readLedger = (dir, prefix) => {
   // Latest by meta.at, never filename order.
@@ -85,11 +89,13 @@ const readLedger = (dir, prefix) => {
   parsed.sort((a, b) => new Date(b.meta.at) - new Date(a.meta.at));
   return parsed[0] ?? null;
 };
+const legStems = { port: 'webgen-port-deepseek-v4-flash-r', chain: 'appgen-chain-deepseek-v4-flash-r', census: 'appgen-census-deepseek-v4-flash-r', visual: 'appgen-visual-deepseek-v4-flash-r' };
 const result = { round, legs: {} };
 
+await Promise.all(legs.map((leg) => runAsync(leg, `${legStems[leg]}r${round}`)));
+const stemOf = { port: 'webgen-port-deepseek-v4-flash-r', chain: 'appgen-chain-deepseek-v4-flash-r', census: 'appgen-census-deepseek-v4-flash-r', visual: 'appgen-visual-deepseek-v4-flash-r' };
 if (legs.includes('port')) {
-  run('port', `webgen-port-deepseek-v4-flash-r${round}`);
-  const l = readLedger('appgen-bench', `webgen-port-deepseek-v4-flash-r${round}`);
+  const l = readLedger('appgen-bench', stemOf.port);
   result.legs.port = {
     meanAccuracy: l?.meanAccuracy ?? null,
     dvPooled: l?.categories?.['Design Validation Testing']?.accuracy ?? null,
@@ -97,18 +103,15 @@ if (legs.includes('port')) {
   };
 }
 if (legs.includes('chain')) {
-  run('chain', `appgen-chain-deepseek-v4-flash-r${round}`);
-  const l = readLedger('appgen-bench', `appgen-chain-deepseek-v4-flash-r${round}`);
+  const l = readLedger('appgen-bench', stemOf.chain);
   result.legs.chain = { accuracy: l?.overall?.accuracy ?? null, refusals: l?.diagnostics?.rejectedUpdates ?? null };
 }
 if (legs.includes('census')) {
-  run('census', `appgen-census-deepseek-v4-flash-r${round}`);
-  const l = readLedger('appgen-eval', `appgen-census-deepseek-v4-flash-r${round}`);
+  const l = readLedger('appgen-eval', stemOf.census);
   result.legs.census = l?.percentages ?? null;
 }
 if (legs.includes('visual')) {
-  run('visual', `appgen-visual-deepseek-v4-flash-r${round}`);
-  const l = readLedger('appgen-bench', `appgen-visual-deepseek-v4-flash-r${round}`);
+  const l = readLedger('appgen-bench', stemOf.visual);
   result.legs.visual = { bgYes: l?.visual?.backgroundYes ?? null, bgScored: l?.visual?.scored ?? null, appearance: l?.visual?.meanAppearance ?? null };
 }
 
