@@ -42,9 +42,11 @@ export const ACTION_RE = /^[a-z][a-z0-9.:-]{0,63}$/;
 export const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",theme:{accent,mode},tabs:[2..5 strings],actions:[ids],screen:node}. ' +
   'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
   'ACTION IDS are dot.case ASCII matching ' + ACTION_RE.source + ' — like "player.toggle", "order.pay", "flash.sale": start with a lowercase letter, use only a-z 0-9 . : - inside; NEVER Chinese, spaces, underscores or uppercase (button labels may be Chinese; ids may not). ' +
+  'COVERAGE: inventory EVERY user operation the request names and give each one an action id plus a visible entry (button/tab/grid item) — account settings, registration, history, export, print all get one; a capability without an entry does not exist. ' +
+  'COLORS: when the request names a standard color, use its EXACT CSS hex, never an approximation — chocolate #D2691E, indian red #CD5C5C, dim gray #696969, lemon chiffon #FFFACD, peach puff #FFDAB9, snow #FFFAFA; a background-color ask goes on the hero card color. ' +
   'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
   'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed): ' +
-  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层. ' +
+  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层(模板算一层). ' +
   '色彩统治: 第一屏大面积被彩色 hero 与封面占据; hero 用最深色混 accent 的浓色场; theme.accent 全屏 ≤2 点位(主 CTA+活动处); 音乐/夜间类 theme.mode="dark". ' +
   '文案真实: 具体数字与真实名目("¥1,920"), 禁占位词; 标题≤10字、按钮 2-4 字动词; emoji 只做内容一屏≤4. ' +
   '字阶与数字主角: title 是海报, 全屏 ≤3 处(hero 主标题+数字主角); 数字/金额/进度用 title 档放大. ' +

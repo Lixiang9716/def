@@ -179,12 +179,19 @@ for (const seed of SEEDS) {
       { role: 'user', content: seed.prompt },
     ]);
     let current = null;
-    try { current = extractJson(first.content); } catch { current = null; }
-    const baseOk = current ? validate(current).ok : false;
+    let renderCheck = { ok: false, errors: [{ code: 'UNPARSEABLE', msg: 'generation was not a JSON object' }] };
+    try {
+      current = extractJson(first.content);
+      renderCheck = validate(current);
+    } catch (e) {
+      renderCheck = { ok: false, errors: [{ code: 'UNPARSEABLE', msg: e.message.slice(0, 120) }] };
+    }
+    const baseOk = renderCheck.ok;
     row.renderOk = baseOk;
+    if (!baseOk) row.renderError = renderCheck.errors?.[0]?.msg?.slice(0, 160);
     row.gen_tokens = first.tokens;
     if (!baseOk) {
-      row.steps = seed.tasks.map((t) => ({ task: t, verdict: 'NO', why: 'render start-failed' }));
+      row.steps = seed.tasks.map((t) => ({ task: t, verdict: 'NO', why: 'render start-failed: ' + (renderCheck.errors?.[0]?.code ?? '?') }));
     } else {
       const state = { current, genTokens: row.gen_tokens };
       for (const task of seed.tasks) {
