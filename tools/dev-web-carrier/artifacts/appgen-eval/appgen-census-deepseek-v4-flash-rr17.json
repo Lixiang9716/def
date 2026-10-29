@@ -1,0 +1,982 @@
+{
+  "meta": {
+    "at": "2026-10-29T21:18:44.668Z",
+    "model": "deepseek-v4-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 2,
+    "categories": [
+      "music-player",
+      "wallet",
+      "chat",
+      "tools-dashboard",
+      "pomodoro",
+      "calendar",
+      "ecommerce",
+      "fitness"
+    ],
+    "temperature": 0.7,
+    "okDefinition": "validate() four gates AND design-constitution rubric (machine-checkable half)"
+  },
+  "summary": {
+    "music-player": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 8,
+      "expectTotal": 8,
+      "tokensP50": 4722,
+      "latencyP50": 18774
+    },
+    "wallet": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 6,
+      "tokensP50": 8123,
+      "latencyP50": 26423
+    },
+    "chat": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 4752,
+      "latencyP50": 18155
+    },
+    "tools-dashboard": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 0,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 6347,
+      "latencyP50": 16724
+    },
+    "pomodoro": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 7953,
+      "latencyP50": 23730
+    },
+    "calendar": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 5351,
+      "latencyP50": 18832
+    },
+    "ecommerce": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 0,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 9558,
+      "latencyP50": 31316
+    },
+    "fitness": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 6771,
+      "latencyP50": 14339
+    }
+  },
+  "percentages": {
+    "structuralValid": 100,
+    "constitution": 31.3,
+    "alignment": 95.2
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_NAMED_COLOR_NEAR_MISS",
+      8
+    ],
+    [
+      "RUBRIC_DEPTH",
+      5
+    ],
+    [
+      "RUBRIC_HERO_FIRST",
+      1
+    ],
+    [
+      "RUBRIC_TITLE_BUDGET",
+      1
+    ]
+  ],
+  "finalFailureClasses": [
+    [
+      "RUBRIC_NAMED_COLOR_NEAR_MISS",
+      4
+    ],
+    [
+      "RUBRIC_DEPTH",
+      2
+    ],
+    [
+      "RUBRIC_TITLE_BUDGET",
+      1
+    ]
+  ],
+  "rows": [
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 8131,
+      "latency": 26712,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "mini-player",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 6
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is card"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#121212\",\"mode\":\"dark\"},\"tabs\":[\"推荐\",\"发现\",\"播客\",\"我的\"],\"actions\":[\"search.open\",\"fm.open\",\"daily.open\",\"playlist.open\",\"charts.open\",\"playlist.view\",\"player.toggle\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"card\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索歌曲、歌手、歌单\"},{\"type\":\"banner-card\",\"title\":\"每日推荐 30 首\",\"subtitle\":\"按你的口味更新 · 10月24日 06:00\"},{\"type\":\"button\",\"label\":\"立即播放\",\"action\":\"daily.open\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📻\",\"label\":\"私人FM\"},{\"icon\":\"📅\",\"label\":\"每日推荐\"},{\"icon\":\"🎼\",\"label\":\"歌单\"},{\"icon\":\"🏆\",\"label\":\"排行榜\"}]},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"推荐歌单\",\"size\":\"body\",\"tone\":\"default\"},{\"type\":\"badge\",\"text\":\"3 个更新\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🌙\",",
+      "retried": true
+    },
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 4722,
+      "latency": 18774,
+      "a2uiComponents": 57,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7253,
+      "latency": 19568,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "balance-card",
+          "chat-row"
+        ],
+        "actions": 5,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": false
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #F4F6FB is near aliceblue #F0F8FF — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#1E3A8A\",\"background\":\"#F4F6FB\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"账单\",\"卡包\",\"我的\"],\"actions\":[\"wallet.scan\",\"wallet.transfer\",\"wallet.topup\",\"wallet.bills\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"总资产 ¥128,460.50\",\"subtitle\":\"本月收入 ¥8,600.00 · 本月支出 ¥3,280.50\"},{\"type\":\"row\",\"children\":[{\"type\":\"balance-card\",\"label\":\"本月支出\",\"value\":\"¥3,280.50\"},{\"type\":\"balance-card\",\"label\":\"本月收入\",\"value\":\"¥8,600.00\"}]},{\"type\":\"card\",\"children\":[{\"type\":\"column\",\"children\":[{\"type\":\"text\",\"text\":\"常用功能\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"row\",\"children\":[{\"type\":\"button\",\"label\":\"扫码付款\",\"action\":\"wallet.scan\"},{\"type\":\"button\",\"label\":\"转账\",\"action\":\"wallet.transfer\"},{\"type\":\"button\",\"label\":\"充值\",\"action\":\"wallet.topup\"},{\"type\":\"button\",",
+      "retried": true
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 8123,
+      "latency": 26423,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "service-grid",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": false
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #F5F7FB is near aliceblue #F0F8FF — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#0B2447\",\"background\":\"#F5F7FB\",\"mode\":\"light\"},\"tabs\":[\"钱包\",\"卡包\",\"理财\",\"我的\"],\"actions\":[\"wallet.scan\",\"wallet.transfer\",\"wallet.topup\",\"wallet.bill\",\"bill.viewall\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"总资产 ¥128,460.00\",\"subtitle\":\"本月收入 ¥8,240 · 支出 ¥3,580\"},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"本月预算已用\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"badge\",\"text\":\"结余 ¥4,660\"}]},{\"type\":\"progressbar\",\"label\":\"月预算 ¥8,000\",\"value\":45}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📷\",\"label\":\"扫码付款\"},{\"icon\":\"↗️\",\"label\":\"转账\"},{\"icon\":\"➕\",\"label\":\"充值\"},{\"icon\":\"📋\",\"label\":\"账单\"}]},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"最近交易\",\"size\":\"body\",\"tone\":\"default\"},{",
+      "retried": true
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3381,
+      "latency": 11256,
+      "a2uiComponents": 44,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 4752,
+      "latency": 18155,
+      "a2uiComponents": 47,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 8470,
+      "latency": 30529,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F2 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F2 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FFA500\",\"background\":\"#FFF8F2\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"工具\",\"活动\",\"我的\"],\"actions\":[\"activity.join\",\"tools.all\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"年卡 ¥99 限时\",\"subtitle\":\"原价 ¥168 · 剩 3 天 · 全部工具免广告\"},{\"type\":\"row\",\"children\":[{\"type\":\"button\",\"label\":\"立即参与\",\"action\":\"activity.join\"},{\"type\":\"button\",\"label\":\"全部工具\",\"action\":\"tools.all\"}]},{\"type\":\"search-bar\",\"placeholder\":\"搜索工具、功能或设置\"},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"常用工具\",\"size\":\"body\",\"tone\":\"default\"},{\"type\":\"badge\",\"text\":\"8 个\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📅\",\"label\":\"日历\"},{\"icon\":\"🧮\",\"label\":\"计算器\"},{\"icon\":\"📝\",\"label\":\"备忘录\"},{\"icon\":\"⛅\",\"label\":\"天气\"},{\"icon\":\"🌐\",\"label\":\"翻译\"},{\"icon\":\"📷\",\"label\":\"扫描\"},{\"icon\":\"🧭\",\"lab",
+      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FFA500\",\"background\":\"#FFFFFF\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"工具\",\"活动\",\"我的\"],\"actions\":[\"activity.join\",\"tools.all\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"年卡 ¥99 限时\",\"subtitle\":\"原价 ¥168 · 剩 3 天 · 八件工具全部解锁\"},{\"type\":\"row\",\"children\":[{\"type\":\"button\",\"label\":\"立即参与\",\"action\":\"activity.join\"},{\"type\":\"button\",\"label\":\"全部工具\",\"action\":\"tools.all\"}]},{\"type\":\"search-bar\",\"placeholder\":\"搜索工具、功能或设置\"},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"常用工具\",\"size\":\"body\",\"tone\":\"default\"},{\"type\":\"badge\",\"text\":\"共 8 个\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📅\",\"label\":\"日历\"},{\"icon\":\"🧮\",\"label\":\"计算器\"},{\"icon\":\"📝\",\"label\":\"备忘录\"},{\"icon\":\"⛅\",\"label\":\"天气\"},{\"icon\":\"🌐\",\"label\":\"翻译\"},{\"icon\":\"📷\",\"label\":\"扫描\"},{\"icon\":\"🧭\",\"",
+      "retried": true
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 6347,
+      "latency": 16724,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 12,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F0 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F0 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FFA500\",\"background\":\"#FFF8F0\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"工具\",\"我的\"],\"actions\":[\"search.open\",\"tool.all\",\"tool.calendar\",\"tool.calculator\",\"tool.notes\",\"tool.weather\",\"tool.translate\",\"tool.scan\",\"tool.compass\",\"tool.record\",\"activity.open\",\"history.open\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时活动 剩3天\",\"subtitle\":\"工具箱年卡 ¥68，原价 ¥128\"},{\"type\":\"search-bar\",\"placeholder\":\"搜索工具、功能\"},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"常用工具\",\"size\":\"body\"},{\"type\":\"button\",\"label\":\"全部\",\"action\":\"tool.all\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📅\",\"label\":\"日历\"},{\"icon\":\"🧮\",\"label\":\"计算器\"},{\"icon\":\"📝\",\"label\":\"备忘录\"},{\"icon\":\"⛅\",\"label\":\"天气\"},{\"icon\":\"🌐\",\"label\":\"翻译\"},{\"icon\":\"📷\",\"label\":\"扫描\"},{\"icon\":\"🧭\",\"label\":\"",
+      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FFA500\",\"background\":\"#FFFFFF\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"工具\",\"我的\"],\"actions\":[\"tool.all\",\"activity.open\",\"history.open\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时活动 剩3天\",\"subtitle\":\"工具箱年卡 ¥68，原价 ¥128\"},{\"type\":\"search-bar\",\"placeholder\":\"搜索工具、功能\"},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"常用工具\",\"size\":\"body\"},{\"type\":\"button\",\"label\":\"全部\",\"action\":\"tool.all\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📅\",\"label\":\"日历\"},{\"icon\":\"🧮\",\"label\":\"计算器\"},{\"icon\":\"📝\",\"label\":\"备忘录\"},{\"icon\":\"⛅\",\"label\":\"天气\"},{\"icon\":\"🌐\",\"label\":\"翻译\"},{\"icon\":\"📷\",\"label\":\"扫描\"},{\"icon\":\"🧭\",\"label\":\"指南针\"},{\"icon\":\"🎙️\",\"label\":\"录音\"}]},{\"type\":\"row\",\"children\":[{\"type\":\"button\",\"label\":\"立即参与\",\"action\":\"activity.open\"},{\"type\":\"butto",
+      "retried": true
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 9529,
+      "latency": 28457,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "balance-card",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 6
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#FF6347\",\n    \"background\": \"#FFF5EE\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"专注\", \"统计\", \"任务\", \"我的\"],\n  \"actions\": [\"focus.start\", \"rest.start\", \"task.toggle\", \"task.add\", \"stats.view\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"番茄专注\",\n        \"subtitle\": \"今天第 2 轮 · 目标 8 个番茄\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              {\n                \"type\": \"image\",\n                \"emoji\": \"🍅\",\n                \"color\": \"#FF6347\"\n              },\n              {\n                \"type\": \"column\",\n                \"children\": [\n                  {\n                    \"type\": \"text\",\n   ",
+      "retried": true
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7953,
+      "latency": 23730,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF6347\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"专注\",\"统计\",\"任务\",\"我的\"],\"actions\":[\"pomodoro.start\",\"pomodoro.break\",\"task.toggle\",\"task.add\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"番茄专注\",\"subtitle\":\"第 3 轮 · 深度工作 25 分钟\"},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"image\",\"emoji\":\"🍅\",\"color\":\"#FF6347\"},{\"type\":\"text\",\"text\":\"剩余专注时间\",\"size\":\"small\",\"tone\":\"muted\"}]},{\"type\":\"text\",\"text\":\"25:00\",\"size\":\"title\",\"tone\":\"accent\"},{\"type\":\"progressbar\",\"label\":\"本轮进度 0:00 / 25:00\",\"value\":0}]},{\"type\":\"card\",\"children\":[{\"type\":\"text\",\"text\":\"今日统计\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"row\",\"children\":[{\"type\":\"column\",\"children\":[{\"type\":\"text\",\"text\":\"完成番茄\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"",
+      "retried": true
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 9355,
+      "latency": 24695,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #F7F5FF is near aliceblue #F0F8FF — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#4B0082\",\"background\":\"#F7F5FF\",\"mode\":\"light\"},\"tabs\":[\"月历\",\"日程\",\"我的\"],\"actions\":[\"calendar.month.prev\",\"calendar.month.next\",\"calendar.create\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"2025年6月\",\"subtitle\":\"今天 6月12日 周四 · 共 3 项日程\"},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"六月\",\"size\":\"body\"},{\"type\":\"button\",\"label\":\"上月\",\"action\":\"calendar.month.prev\"},{\"type\":\"button\",\"label\":\"下月\",\"action\":\"calendar.month.next\"}]},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"日\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"text\",\"text\":\"一\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"text\",\"text\":\"二\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"text\",\"text\":\"三\",\"size\":\"small\",\"tone\":\"muted\"},{\"type\":\"text\",\"text\":",
+      "retried": true
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5351,
+      "latency": 18832,
+      "a2uiComponents": 89,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 4
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 12551,
+      "latency": 47593,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 4,
+        "titles": 2,
+        "emoji": 4,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF5F5 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF5F5 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF5F5\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.open\",\"flash.sale\",\"feed.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时秒杀 5折起\",\"subtitle\":\"今晚 20:00 开抢 · 满199减50\"},{\"type\":\"row\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索 连衣裙 口红\"},{\"type\":\"button\",\"label\":\"搜索\",\"action\":\"search.open\"}]},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\"},{\"type\":\"button\",\"label\":\"抢购\",\"action\":\"flash.sale\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"👗\",\"color\":\"#FFE4E1\"},\"title\":\"法式碎花连衣裙\",\"sub\":\"¥199\"},{\"cover\":{\"emoji\":\"💄\",\"color\":\"#FFDAB9\"},\"title\":\"丝绒哑光口红\",\"sub\":\"¥89\"},{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#E6E6FA\"},\"title\":\"无",
+      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFFFFF\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.open\",\"flash.sale\",\"feed.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时秒杀 5折起\",\"subtitle\":\"今晚 20:00 开抢 满199减50\"},{\"type\":\"row\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索 连衣裙 口红\"},{\"type\":\"button\",\"label\":\"搜索\",\"action\":\"search.open\"}]},{\"type\":\"card\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"👗\",\"color\":\"#FFE4E1\"},\"title\":\"法式碎花连衣裙\",\"sub\":\"¥199\"},{\"cover\":{\"emoji\":\"💄\",\"color\":\"#FFDAB9\"},\"title\":\"丝绒哑光口红\",\"sub\":\"¥89\"},{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#E6E6FA\"},\"title\":\"无线蓝牙耳机\",\"sub\":\"¥299\"},{\"cover\":{\"emoji\":\"👟\",\"color\":\"#F0FFFF\"},\"title\":\"轻弹跑步鞋\",\"sub",
+      "retried": true
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 9558,
+      "latency": 31316,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 4,
+        "titles": 5,
+        "emoji": 4,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 4
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_TITLE_BUDGET",
+          "msg": "5 title runs > 3"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F7 is near snow #FFFAFA — use the exact hex"
+        }
+      ],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_TITLE_BUDGET",
+          "msg": "5 title runs > 3"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F7 is near snow #FFFAFA — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF8F7\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.open\",\"flash.more\",\"category.all\",\"recommend.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"8.8 秒杀狂欢\",\"subtitle\":\"正红价 全场低至3折 · 满199减60 · 20:00开抢\"},{\"type\":\"row\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索耳机、咖啡机、护肤\"},{\"type\":\"button\",\"label\":\"搜索\",\"action\":\"search.open\"}]},{\"type\":\"column\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\"},{\"type\":\"badge\",\"text\":\"20:00 场\"},{\"type\":\"button\",\"label\":\"更多\",\"action\":\"flash.more\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#CD5C5C\"},\"title\":\"降噪蓝牙耳机\",\"sub\":\"¥199 券后\"},{\"cover\":{\"emoji\":\"☕\",\"color\":\"#D2691E\"},\"title\":\"意式咖啡机",
+      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFFFFF\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.open\",\"flash.more\",\"category.all\",\"recommend.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"8.8 秒杀狂欢\",\"subtitle\":\"正红价 全场低至3折 · 满199减60 · 今晚20:00开抢\"},{\"type\":\"row\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索降噪耳机、咖啡机\"},{\"type\":\"button\",\"label\":\"搜索\",\"action\":\"search.open\"}]},{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\"},{\"type\":\"badge\",\"text\":\"20:00 场\"},{\"type\":\"button\",\"label\":\"更多\",\"action\":\"flash.more\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#CD5C5C\"},\"title\":\"降噪蓝牙耳机\",\"sub\":\"¥199 券后\"},{\"cover\":{\"emoji\":\"☕\",\"color\":\"#D2691E\"},\"title\":\"意式咖啡机\",\"sub\":\"¥899 直降\"},{\"cover\":",
+      "retried": true
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3037,
+      "latency": 8627,
+      "a2uiComponents": 43,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6771,
+      "latency": 14339,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 4
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #F0FBFC is near aliceblue #F0F8FF — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#00FFFF\", \"background\": \"#F0FBFC\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"运动\", \"发现\", \"我的\"],\n  \"actions\": [\"workout.start\", \"report.open\", \"goal.edit\", \"record.open\", \"tab.home\", \"tab.sport\", \"tab.discover\", \"tab.profile\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"8,642 步\",\n        \"subtitle\": \"今日目标 10,000 步 · 还差 1,358 步\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"badge\", \"text\": \"今日三段环\" },\n              { \"type\": \"badge\", \"text\": \"已完成 86%\" }\n            ]\n          },\n          { \"type\": \"progressbar\", \"label\": \"步数 8,642 / 10,000\", \"value\": 86 },\n          { \"typ",
+      "retried": true
+    }
+  ]
+}
