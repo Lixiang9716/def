@@ -43,7 +43,7 @@ export const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",t
   'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
   'ACTION IDS are dot.case ASCII matching ' + ACTION_RE.source + ' — like "player.toggle", "order.pay", "flash.sale": start with a lowercase letter, use only a-z 0-9 . : - inside; NEVER Chinese, spaces, underscores or uppercase (button labels may be Chinese; ids may not) — the classic slip is camelCase after a dot: "playAll"→"playall", "markAllRead"→"markallread", every rune after each dot stays lowercase. ' +
   'COVERAGE: inventory EVERY user operation the request names and give each one an action id plus a visible entry (button/tab/grid item) — account settings, registration, history, export, print all get one; a capability without an entry does not exist. ' +
-  'COLORS: when the request names a standard color, use its EXACT CSS hex, never an approximation or an invented tone — chocolate #D2691E, indian red #CD5C5C, dim gray #696969, lemon chiffon #FFFACD, peach puff #FFDAB9, snow #FFFAFA, seashell #FFF5EE, linen #FAF0E6, mint cream #F5FFFA, cornsilk #FFF8DC, lavender #E6E6FA, azure #F0FFFF, aliceblue #F0F8FF, ivory #FFFFF0, beige #F5F5DC, gold #FFD700. The COMPONENT-color ask goes to theme.accent, the BACKGROUND-color ask goes to theme.background — e.g. "background lemon chiffon, components chocolate" → {"accent":"#D2691E","background":"#FFFACD"}. When the request names the background color, theme.background is that name\u0027s EXACT hex — NEVER invent a harmonious tone; the harmonious-light-background fallback applies ONLY when no background color is named (for a non-standard name like "azure mist" or "light goldenrod", use the closest standard color\u0027s hex — azure #F0FFFF, lightgoldenrodyellow #FAFAD2 — and never a near-miss tone you invent). ' +
+  'COLORS: when the request names a standard color, use its EXACT CSS hex, never an approximation or an invented tone. BACKGROUND HEX TABLE — copy VERBATIM, never a lookalike pastel: seashell=#FFF5EE linen=#FAF0E6 lemon chiffon=#FFFACD mint cream=#F5FFFA cornsilk=#FFF8DC snow=#FFFAFA peach puff=#FFDAB9 lavender=#E6E6FA azure=#F0FFFF aliceblue=#F0F8FF ivory=#FFFFF0 beige=#F5F5DC lightgoldenrodyellow=#FAFAD2. chocolate #D2691E, indian red #CD5C5C, dim gray #696969, lemon chiffon #FFFACD, peach puff #FFDAB9, snow #FFFAFA, seashell #FFF5EE, linen #FAF0E6, mint cream #F5FFFA, cornsilk #FFF8DC, lavender #E6E6FA, azure #F0FFFF, aliceblue #F0F8FF, ivory #FFFFF0, beige #F5F5DC, gold #FFD700. The COMPONENT-color ask goes to theme.accent, the BACKGROUND-color ask goes to theme.background — e.g. "background lemon chiffon, components chocolate" → {"accent":"#D2691E","background":"#FFFACD"}. When the request names the background color, theme.background is that name\u0027s EXACT hex — NEVER invent a harmonious tone; the harmonious-light-background fallback applies ONLY when no background color is named (for a non-standard name like "azure mist" or "light goldenrod", use the closest standard color\u0027s hex — azure #F0FFFF, lightgoldenrodyellow #FAFAD2 — and never a near-miss tone you invent). ' +
   'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
   'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed): ' +
   '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层(模板算一层). ' +
@@ -52,6 +52,45 @@ export const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",t
   '字阶与数字主角: title 是海报, 全屏 ≤3 处(hero 主标题+数字主角); 数字/金额/进度用 title 档放大. ' +
   '封面成套: hcard-row 每项 cover 带 color, 4 色板逐项错开; 卡片配 image(emoji+color) 锚点. ' +
   '移动模板 ≥2 种; tabs 2-5 个每个≤4字; 不做桌面形态.';
+
+/**
+ * Named CSS colors the authoring rules quote (RULES teaches exact hexes;
+ * this map is the machine-checkable twin — the census rubric flags
+ * near-misses: a theme color close to a named color but not equal).
+ */
+export const NAMED_COLORS = {
+  chocolate: '#D2691E', 'indian red': '#CD5C5C', 'dim gray': '#696969',
+  'lemon chiffon': '#FFFACD', 'peach puff': '#FFDAB9', snow: '#FFFAFA',
+  seashell: '#FFF5EE', linen: '#FAF0E6', 'mint cream': '#F5FFFA',
+  cornsilk: '#FFF8DC', lavender: '#E6E6FA', azure: '#F0FFFF',
+  aliceblue: '#F0F8FF', ivory: '#FFFFF0', beige: '#F5F5DC', gold: '#FFD700',
+  crimson: '#DC143C', maroon: '#800000', teal: '#008080', indigo: '#4B0082',
+  peru: '#CD853F', 'olive drab': '#6B8E23', 'dark slate blue': '#483D8B',
+  'light goldenrod yellow': '#FAFAD2',
+};
+
+/** Distance-squared between two #RRGGBB colors (0 = identical). */
+export function colorDistance(a, b) {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  return pa.reduce((sum, v, i) => sum + (v - pb[i]) * (v - pb[i]), 0);
+}
+
+/** Snap a #RRGGBB color to the exact hex of the nearest named color when
+ * it is an obvious near-miss (distance ≤ 150). Among equidistant named
+ * colors (white-to-white slips) the nearest still beats an invented tone.
+ * Returns the exact hex, or null when the color is not a near-miss
+ * (custom colors pass through untouched). */
+export function snapNamedColor(hex) {
+  const upper = hex.toUpperCase();
+  if (Object.values(NAMED_COLORS).includes(upper)) return null;
+  let best = null;
+  for (const named of Object.values(NAMED_COLORS)) {
+    const d = colorDistance(upper, named);
+    if (d <= 150 && (best === null || d < best.d)) best = { d, hex: named };
+  }
+  return best ? best.hex : null;
+}
 
 /** PRIMITIVE registry: name -> render(node, ctx) -> VNode (lib/render/<name>.js). */
 export const primitives = new Map();
