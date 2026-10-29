@@ -31,7 +31,7 @@ const censusGlm = newest(evalDir, 'appgen-census-glm-5.3-flash-');
 const dv = port?.categories?.['Design Validation Testing']?.accuracy ?? null;
 console.log('=== def appgen scorecard (latest committed ledgers) ===');
 if (port) {
-  console.log(`port (dsflash${port.runsPerInstruction > 1 ? `, ${port.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${port.meanAccuracy ?? port.overall.accuracy}% | DV ${dv}% | start-fail ${port.diagnostics.startFailedInstructions}`);
+  console.log(`port (dsflash${port.runsPerInstruction > 1 ? `, ${port.runsPerInstruction}-run mean` : ', single-run'}, corpus v${port.meta.portVersion ?? 1}): accuracy ${port.meanAccuracy ?? port.overall.accuracy}% | DV ${dv}% | start-fail ${port.diagnostics.startFailedInstructions}`);
 }
 if (portGlm) console.log(`port (glm-5.3-flash${portGlm.runsPerInstruction > 1 ? `, ${portGlm.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${portGlm.meanAccuracy ?? portGlm.overall.accuracy}%`);
 if (chain) console.log(`chain (backend axis): ${chain.overall.accuracy}% | refusals ${chain.diagnostics.rejectedUpdates}`);
