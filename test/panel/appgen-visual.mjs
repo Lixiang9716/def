@@ -4,7 +4,8 @@
  * (the dev carrier page + openSurface), screenshot the presented surface,
  * and ask a VISION judge what the static tier could never know: is the
  * requested background actually painted, are the named colors visible,
- * and how does it look (the WebGen-Bench appearance score, 1-5).
+ * and how does it look (the appearance score; rubric v3 grades 0-100 —
+ * v2's 1-5 saturated at 4 every round, hiding polish progress).
  *
  * Judge: glm-4.6v (vision, JUDGE_* env). Generator: LLM_* (deepseek
  * default). Screenshots land under artifacts/appgen-bench/shots-<stem>/
@@ -79,9 +80,11 @@ const backgroundHitFraction = (shot, hex) => {
 };
 
 const JUDGE_SYSTEM = `You are grading a PHONE APP SCREEN (390x844) rendered from a generated spec, against the original requirement's visual asks. Grade only what is visible.
-Reply ONLY JSON: {"background_painted":"YES"|"PARTIAL"|"NO","colors_visible":"<=20 words naming what component/background colors you see","appearance":<1-5 integer>,"why":"<=20 words","polish_hint":"<=12 words: the single change that would most raise polish"}
+Reply ONLY JSON: {"background_painted":"YES"|"PARTIAL"|"NO","colors_visible":"<=20 words naming what component/background colors you see","appearance":<0-100 integer>,"why":"<=20 words","polish_hint":"<=12 words: the single change that would most raise polish"}
 background_painted: is a non-default background tone consistent with the request visible? Near-white requested tones count as YES when clearly not the default gray/white.
-appearance rubric v2 - grade ONLY layout quality, hierarchy, spacing, alignment, polish. Do NOT lower it for color-name exactness (a separate channel grades that): 1 ugly/broken, 3 clean and functional, 4 well-composed with clear hierarchy, 5 polished and striking.`;
+appearance rubric v3 - grade ONLY layout quality, hierarchy, spacing, alignment, polish, as a 0-100 integer. Do NOT lower it for color-name exactness (a separate pixel channel grades exactness). Anchor bands — use the full range and differentiate between screens:
+0-19 broken or ugly (overlapping, clipped, chaotic); 20-44 rough (works but default-looking, uneven spacing, weak hierarchy); 45-64 clean but generic (competent and readable, no deliberate composition); 65-79 well-composed (clear hierarchy, deliberate spacing and grouping); 80-89 polished (refined details, striking identity); 90-100 exceptional (no visible flaw remains).
+If your polish_hint names a structural deficiency rather than a minor cosmetic tweak, the score is below 65. Most generated screens fall in 45-79; do not inflate.`;
 
 async function judgeVisual(instruction, shotB64) {
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -100,7 +103,8 @@ async function judgeVisual(instruction, shotB64) {
     if (start === -1 || end === 0) continue;
     try {
       const parsed = JSON.parse(text.slice(start, end));
-      if (['YES', 'PARTIAL', 'NO'].includes(parsed.background_painted) && Number.isInteger(parsed.appearance)) return parsed;
+      if (['YES', 'PARTIAL', 'NO'].includes(parsed.background_painted) && Number.isInteger(parsed.appearance)
+        && parsed.appearance >= 0 && parsed.appearance <= 100) return parsed;
     } catch { /* retry */ }
   }
   return null;
@@ -165,11 +169,11 @@ const appearances = scored.map((r) => r.appearance).sort((a, b) => a - b);
 const meanAppearance = appearances.length ? Math.round(appearances.reduce((a, b) => a + b, 0) / appearances.length * 10) / 10 : null;
 console.log(`\n--- appgen-visual (${GEN.model} gen × ${JUDGE.model} judge, ${rows.length} instructions) ---`);
 console.log(`BACKGROUND PAINTED: ${yes} YES / ${partial} PARTIAL / ${scored.length - yes - partial} NO of ${scored.length} scored`);
-console.log(`APPEARANCE (1-5): mean ${meanAppearance}, distribution ${JSON.stringify(appearances)}`);
+console.log(`APPEARANCE (0-100): mean ${meanAppearance}, distribution ${JSON.stringify(appearances)}`);
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v1)', appearanceRubric: 'v2 - layout/polish only, color exactness separated' },
-  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, meanAppearance },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v1)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors' },
+  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, appearanceScale: 100, meanAppearance },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
 };

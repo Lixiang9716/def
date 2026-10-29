@@ -34,6 +34,6 @@ if (port) {
 }
 if (portGlm) console.log(`port (glm-5.3-flash${portGlm.runsPerInstruction > 1 ? `, ${portGlm.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${portGlm.meanAccuracy ?? portGlm.overall.accuracy}%`);
 if (chain) console.log(`chain (backend axis): ${chain.overall.accuracy}% | refusals ${chain.diagnostics.rejectedUpdates}`);
-if (visual) console.log(`visual: background ${visual.visual.backgroundYes} YES / ${visual.visual.backgroundPartial} PARTIAL / ${visual.visual.backgroundNo} NO | appearance ${visual.visual.meanAppearance}/5 (rubric ${visual.meta.appearanceRubric ?? 'v1'})`);
+if (visual) console.log(`visual: background ${visual.visual.backgroundYes} YES / ${visual.visual.backgroundPartial} PARTIAL / ${visual.visual.backgroundNo} NO | appearance ${visual.visual.meanAppearance}/${visual.visual.appearanceScale ?? 5} (rubric ${visual.meta.appearanceRubric ?? 'v1'})`);
 if (census) console.log(`census: structuralValid ${census.percentages?.structuralValid}% | constitution ${census.percentages?.constitution}% | alignment ${census.percentages?.alignment}%`);
 if (!port || !chain) console.log('NOTE: missing families — run the loop before quoting the scorecard.');
