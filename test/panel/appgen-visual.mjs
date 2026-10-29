@@ -79,7 +79,7 @@ const backgroundHitFraction = (shot, hex) => {
 };
 
 const JUDGE_SYSTEM = `You are grading a PHONE APP SCREEN (390x844) rendered from a generated spec, against the original requirement's visual asks. Grade only what is visible.
-Reply ONLY JSON: {"background_painted":"YES"|"PARTIAL"|"NO","colors_visible":"<=20 words naming what component/background colors you see","appearance":<1-5 integer>,"why":"<=20 words"}
+Reply ONLY JSON: {"background_painted":"YES"|"PARTIAL"|"NO","colors_visible":"<=20 words naming what component/background colors you see","appearance":<1-5 integer>,"why":"<=20 words","polish_hint":"<=12 words: the single change that would most raise polish"}
 background_painted: is a non-default background tone consistent with the request visible? Near-white requested tones count as YES when clearly not the default gray/white.
 appearance rubric v2 - grade ONLY layout quality, hierarchy, spacing, alignment, polish. Do NOT lower it for color-name exactness (a separate channel grades that): 1 ugly/broken, 3 clean and functional, 4 well-composed with clear hierarchy, 5 polished and striking.`;
 
@@ -146,6 +146,7 @@ try {
         row.colors_visible = verdict.colors_visible;
         row.appearance = verdict.appearance;
         row.why = verdict.why;
+        row.polish_hint = verdict.polish_hint ?? null;
       }
     } catch (e) {
       row.error = e.message.slice(0, 160);
