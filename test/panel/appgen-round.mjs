@@ -67,7 +67,7 @@ const runAsync = (leg, stem, extraEnv) => new Promise((resolve, reject) => {
     port: { script: 'test/panel/appgen-bench-port.mjs', env: { BENCH_RUNS: '2' } },
     chain: { script: 'test/panel/appgen-chain.mjs', env: {} },
     census: { script: 'test/panel/appgen-eval.mjs', env: { APPGEN_RUNS: '2' } },
-    visual: { script: 'test/panel/appgen-visual.mjs', env: { VISUAL_N: '8' } },
+    visual: { script: 'test/panel/appgen-visual.mjs', env: { VISUAL_N: '12' } },
   }[leg];
   const r = spawn('node', [spec.script], {
     cwd: ROOT,

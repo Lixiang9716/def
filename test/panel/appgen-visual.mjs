@@ -44,7 +44,7 @@ const JUDGE = {
   model: process.env.JUDGE_MODEL || 'glm-4.6v',
 };
 const LEDGER_STEM = process.env.LEDGER_STEM || 'appgen-visual';
-const VISUAL_N = Number(process.env.VISUAL_N || 6);
+const VISUAL_N = Number(process.env.VISUAL_N || 12);
 const DARK_N = Number(process.env.VISUAL_DARK_N || 2);
 for (const [k, v] of Object.entries({ gen: GEN, judge: JUDGE })) {
   if (!v.apiKey || !v.baseURL) { console.error(`appgen-visual: missing ${k} credentials`); process.exit(1); }
