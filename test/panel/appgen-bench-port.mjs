@@ -43,6 +43,10 @@ const JUDGE = {
 };
 const LEDGER_STEM = process.env.LEDGER_STEM || 'webgen-port';
 const BENCH_N = Number(process.env.BENCH_N || 0);
+// Runs per instruction. 1 = the upstream one-shot shape; >1 averages away
+// the ±2-4 point pass-to-pass generation noise (iteration-4 finding) —
+// deltas below the noise floor are not claims.
+const BENCH_RUNS = Math.max(1, Number(process.env.BENCH_RUNS || 1));
 for (const [k, v] of Object.entries({ gen: GEN, judge: JUDGE })) {
   if (!v.apiKey || !v.baseURL) { console.error(`appgen-bench-port: missing ${k} endpoint credentials`); process.exit(1); }
 }
@@ -116,8 +120,9 @@ async function judgeCases(instruction, cases, spec) {
 }
 
 const rows = [];
+for (let run = 1; run <= BENCH_RUNS; run++) {
 for (const instruction of selected) {
-  const row = { source_id: instruction.source_id, application_type: instruction.application_type, cases: instruction.cases.length };
+  const row = { source_id: instruction.source_id, application_type: instruction.application_type, cases: instruction.cases.length, run };
   try {
     const gen = await generate(instruction.prompt);
     row.gen_tokens = gen.tokens;
@@ -151,7 +156,8 @@ for (const instruction of selected) {
   row.no = scored.filter((v) => v.v === 'NO').length;
   row.accuracy = scored.length ? Math.round((row.yes + 0.5 * row.partial) / scored.length * 1000) / 10 : null;
   rows.push(row);
-  console.log(`${instruction.source_id}: structural ${row.structuralOk ? 'OK' : 'START-FAIL'} | Y ${row.yes} P ${row.partial} N ${row.no}${row.scored < row.cases ? ` (excluded ${row.cases - row.scored})` : ''} → accuracy ${row.accuracy === null ? 'n/a' : row.accuracy + '%'}`);
+  console.log(`${instruction.source_id}#${run}: structural ${row.structuralOk ? 'OK' : 'START-FAIL'} | Y ${row.yes} P ${row.partial} N ${row.no}${row.scored < row.cases ? ` (excluded ${row.cases - row.scored})` : ''} → accuracy ${row.accuracy === null ? 'n/a' : row.accuracy + '%'}`);
+}
 }
 
 // ---- aggregate: the upstream formula at case level -------------------------
@@ -168,12 +174,22 @@ for (const v of all) {
   (byCategory[k] ??= []).push(v);
 }
 const categories = Object.fromEntries(Object.entries(byCategory).map(([k, vs]) => [k, acc(vs)]));
+// Mean of per-instruction accuracies across runs (the noise-averaged
+// headline; pooling all cases would let multi-case instructions dominate).
+const perInstruction = {};
+for (const r of rows) {
+  if (r.accuracy !== null) (perInstruction[r.source_id] ??= []).push(r.accuracy);
+}
+const meanAccuracy = Object.values(perInstruction).length
+  ? Math.round(Object.values(perInstruction).reduce((sum, arr) => sum + arr.reduce((a, b) => a + b, 0) / arr.length, 0) / Object.values(perInstruction).length * 10) / 10
+  : null;
 const totalCases = rows.reduce((n, r) => n + r.cases, 0);
 const startFailed = rows.filter((r) => r.start_failed).length;
 const judgeFailed = rows.filter((r) => r.judge_failed).length;
 
 console.log(`\n--- WebGen-Bench port (${GEN.model} gen × ${JUDGE.model} judge, ${rows.length} instructions / ${totalCases} cases) ---`);
-console.log(`ACCURACY: ${overall.accuracy}%  (YES ${overall.yes} / PARTIAL ${overall.partial} / NO ${overall.no} of ${all.length} scored)`);
+console.log(`ACCURACY (pooled): ${overall.accuracy}%  (YES ${overall.yes} / PARTIAL ${overall.partial} / NO ${overall.no} of ${all.length} scored)`);
+if (BENCH_RUNS > 1) console.log(`ACCURACY (mean of per-instruction means, ${BENCH_RUNS} runs): ${meanAccuracy}%`);
 for (const [k, v] of Object.entries(categories)) console.log(`  ${k.padEnd(28)} ${v.accuracy}%  (Y ${v.yes} P ${v.partial} N ${v.no})`);
 console.log(`start-failed: ${startFailed}/${rows.length} instructions; judge-failed: ${judgeFailed}/${rows.length}; excluded cases: ${totalCases - all.length}`);
 
@@ -184,7 +200,7 @@ const ledger = {
     tier: 'static (spec-inspection judge; action-execution leg upgrades to real dispatch)',
     instructions: rows.length, cases: totalCases,
   },
-  overall, categories,
+  overall, meanAccuracy, runsPerInstruction: BENCH_RUNS, categories,
   diagnostics: { startFailedInstructions: startFailed, judgeFailedInstructions: judgeFailed, excludedCases: totalCases - all.length },
   rows,
 };

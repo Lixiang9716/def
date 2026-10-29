@@ -71,6 +71,9 @@ export function openSurface({ title, spec, onAction }) {
   activeActionHandler = onAction || null;
   currentSurfaceSpec = spec;
   view.style.setProperty('--p-accent', (spec.theme && spec.theme.accent) || '#1677ff');
+  const background = spec.theme && typeof spec.theme.background === 'string' ? spec.theme.background : '';
+  if (background) view.style.setProperty('--p-surface-bg', background);
+  else view.style.removeProperty('--p-surface-bg');
   view.dataset.mode = (spec.theme && spec.theme.mode) === 'dark' ? 'dark' : 'light';
   const root = document.getElementById('appshell-root');
   root.replaceChildren();
