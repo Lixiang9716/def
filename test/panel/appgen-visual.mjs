@@ -80,7 +80,8 @@ const backgroundHitFraction = (shot, hex) => {
 
 const JUDGE_SYSTEM = `You are grading a PHONE APP SCREEN (390x844) rendered from a generated spec, against the original requirement's visual asks. Grade only what is visible.
 Reply ONLY JSON: {"background_painted":"YES"|"PARTIAL"|"NO","colors_visible":"<=20 words naming what component/background colors you see","appearance":<1-5 integer>,"why":"<=20 words"}
-appearance: 1 ugly/broken, 3 acceptable mobile UI, 5 polished and harmonious.`;
+background_painted: is a non-default background tone consistent with the request visible? Near-white requested tones count as YES when clearly not the default gray/white.
+appearance rubric v2 - grade ONLY layout quality, hierarchy, spacing, alignment, polish. Do NOT lower it for color-name exactness (a separate channel grades that): 1 ugly/broken, 3 clean and functional, 4 well-composed with clear hierarchy, 5 polished and striking.`;
 
 async function judgeVisual(instruction, shotB64) {
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -166,7 +167,7 @@ console.log(`BACKGROUND PAINTED: ${yes} YES / ${partial} PARTIAL / ${scored.leng
 console.log(`APPEARANCE (1-5): mean ${meanAppearance}, distribution ${JSON.stringify(appearances)}`);
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v1)' },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v1)', appearanceRubric: 'v2 - layout/polish only, color exactness separated' },
   visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, meanAppearance },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
