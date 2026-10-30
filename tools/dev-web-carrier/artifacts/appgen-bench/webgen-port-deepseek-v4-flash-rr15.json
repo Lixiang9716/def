@@ -1,45 +1,45 @@
 {
   "meta": {
-    "at": "2026-10-29T19:47:10.005Z",
+    "at": "2026-10-30T02:09:30.813Z",
     "generator": "deepseek-v4-flash",
     "judge": "glm-4.6",
-    "portVersion": 1,
+    "portVersion": 2,
     "systemPrompt": "SYSTEM_V2",
     "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (WebGen-Bench, case level)",
     "tier": "static (spec-inspection judge; action-execution leg upgrades to real dispatch)",
-    "instructions": 24,
-    "cases": 148
+    "instructions": 40,
+    "cases": 252
   },
   "overall": {
-    "yes": 63,
-    "partial": 77,
-    "no": 8,
-    "accuracy": 68.6
+    "yes": 15,
+    "partial": 25,
+    "no": 212,
+    "accuracy": 10.9
   },
-  "meanAccuracy": 68,
+  "meanAccuracy": 11.7,
   "runsPerInstruction": 2,
   "categories": {
     "Functional Testing": {
-      "yes": 37,
-      "partial": 43,
-      "no": 6,
-      "accuracy": 68
+      "yes": 5,
+      "partial": 14,
+      "no": 127,
+      "accuracy": 8.2
     },
     "Data Display Testing": {
-      "yes": 17,
-      "partial": 21,
-      "no": 0,
-      "accuracy": 72.4
+      "yes": 6,
+      "partial": 8,
+      "no": 52,
+      "accuracy": 15.2
     },
     "Design Validation Testing": {
-      "yes": 9,
-      "partial": 13,
-      "no": 2,
-      "accuracy": 64.6
+      "yes": 4,
+      "partial": 3,
+      "no": 33,
+      "accuracy": 13.8
     }
   },
   "diagnostics": {
-    "startFailedInstructions": 0,
+    "startFailedInstructions": 33,
     "judgeFailedInstructions": 0,
     "excludedCases": 0
   },
@@ -49,7 +49,7 @@
       "application_type": "E-commerce Web Applications",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 4683,
+      "gen_tokens": 6287,
       "structuralOk": true,
       "verdicts": [
         {
@@ -61,7 +61,7 @@
             ]
           },
           "v": "YES",
-          "why": "category.select, spec.filter, compare.run actions and result list with names, prices, suppliers exist"
+          "why": "category.pick/param.pick plus compare.start yield results with names, prices, suppliers."
         },
         {
           "task_category": {
@@ -72,7 +72,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Price comparison with lowest-price badge and suppliers exists, but no state/region data"
+          "why": "Lowest price badge, sorting, and suppliers shown, but no per-state information."
         },
         {
           "task_category": {
@@ -82,8 +82,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "NO",
-          "why": "No settings action or search-frequency customization capability in the spec"
+          "v": "PARTIAL",
+          "why": "我的 tab exists, but no settings action or search-frequency option provided."
         },
         {
           "task_category": {
@@ -93,7 +93,7 @@
             ]
           },
           "v": "YES",
-          "why": "Rows show price, quantity, supplier; product.detail and supplier.open actions available"
+          "why": "product.detail action; rows show price, quantity, and supplier details."
         },
         {
           "task_category": {
@@ -103,7 +103,7 @@
             ]
           },
           "v": "YES",
-          "why": "Tabs 比价/类目/历史/我的 switch sections, covering categories and settings navigation"
+          "why": "Tab-bar declares four sections; category and other action buttons navigate."
         },
         {
           "task_category": {
@@ -113,21 +113,21 @@
             ]
           },
           "v": "YES",
-          "why": "Theme declares seashell background #FFF5EE and crimson accent #DC143C on components"
+          "why": "Background #FFF6F7 is seashell-toned; accent #DC143C is exact crimson."
         }
       ],
       "scored": 6,
       "yes": 4,
-      "partial": 1,
-      "no": 1,
-      "accuracy": 75
+      "partial": 2,
+      "no": 0,
+      "accuracy": 83.3
     },
     {
       "source_id": "000038",
       "application_type": "E-commerce Web Applications",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 8549,
+      "gen_tokens": 5236,
       "structuralOk": true,
       "verdicts": [
         {
@@ -137,8 +137,8 @@
               "Searching"
             ]
           },
-          "v": "YES",
-          "why": "Search bar and apartment listings exist; searching keyword can surface relevant results."
+          "v": "PARTIAL",
+          "why": "Search bar and search.open action exist; keyword-driven results content is not specified"
         },
         {
           "task_category": {
@@ -147,8 +147,8 @@
               "Filtering"
             ]
           },
-          "v": "YES",
-          "why": "filter.open action declared; one-bedroom apartments present among listings."
+          "v": "PARTIAL",
+          "why": "filter.open action exists; filter panel with one-bedroom option is absent"
         },
         {
           "task_category": {
@@ -159,7 +159,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "apartment.book action exists, but date picker, calendar, and confirmation content absent."
+          "why": "booking.create exists; date calendar and confirmation view content absent"
         },
         {
           "task_category": {
@@ -170,7 +170,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "booking.list action and account tab exist, but booking record content absent."
+          "why": "bookings.view action exists via 我的预订; booking records content not specified"
         },
         {
           "task_category": {
@@ -180,7 +180,7 @@
             ]
           },
           "v": "YES",
-          "why": "Tab bar includes 首页 tab; homepage content fully present."
+          "why": "Tab-bar includes 首页 tab and homepage content fully specified"
         },
         {
           "task_category": {
@@ -190,21 +190,21 @@
             ]
           },
           "v": "YES",
-          "why": "Theme declares background #FAF0E6 (linen) and accent #800000 (maroon)."
+          "why": "Theme declares linen #FAF0E6 background and maroon #800000 accent on components"
         }
       ],
       "scored": 6,
-      "yes": 4,
-      "partial": 2,
+      "yes": 2,
+      "partial": 4,
       "no": 0,
-      "accuracy": 83.3
+      "accuracy": 66.7
     },
     {
       "source_id": "000041",
       "application_type": "E-commerce Web Applications",
       "cases": 5,
       "run": 1,
-      "gen_tokens": 3538,
+      "gen_tokens": 3920,
       "structuralOk": true,
       "verdicts": [
         {
@@ -216,7 +216,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "bid.place action exists, but no bid history content/details behind it"
+          "why": "bid.place action exists, but no bid history content or confirmation details are specified."
         },
         {
           "task_category": {
@@ -227,7 +227,7 @@
             ]
           },
           "v": "YES",
-          "why": "hcard-row lists opportunities; auction.browse delivers full browsing"
+          "why": "hcard-row displays multiple bidding opportunities with prices and statuses, plus search-bar."
         },
         {
           "task_category": {
@@ -238,7 +238,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "history.open action/tab exists but detailed history content is absent"
+          "why": "history.open action exists, but detailed history content with dates is absent from spec."
         },
         {
           "task_category": {
@@ -249,7 +249,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "account.settings action exists but no update form or confirmation"
+          "why": "account.open exists, but no account-update action or edit capability is declared."
         },
         {
           "task_category": {
@@ -259,7 +259,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "chocolate accent matches; background #FAF0E6 is linen, not lemon chiffon"
+          "why": "Chocolate accent #D2691E matches; background #FAF0E6 is linen, not lemon chiffon."
         }
       ],
       "scored": 5,
@@ -273,7 +273,7 @@
       "application_type": "Email Clients",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 3623,
+      "gen_tokens": 4192,
       "structuralOk": true,
       "verdicts": [
         {
@@ -283,8 +283,8 @@
               "Communication"
             ]
           },
-          "v": "YES",
-          "why": "message.compose action sends messages; records viewable via record.view and recent-sends card"
+          "v": "PARTIAL",
+          "why": "message.new action exists but no compose form/phone input specified"
         },
         {
           "task_category": {
@@ -295,7 +295,7 @@
             ]
           },
           "v": "NO",
-          "why": "No user information section or user info update action exists"
+          "why": "No User Information section or update action exists"
         },
         {
           "task_category": {
@@ -305,7 +305,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "policy.config action exists, but no active policies list is declared"
+          "why": "strategy.config action exists; policy form and active list absent"
         },
         {
           "task_category": {
@@ -315,7 +315,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "record.view action exists, but per-message date/recipient/status details absent"
+          "why": "record.view exists; visible rows lack recipient and status details"
         },
         {
           "task_category": {
@@ -325,7 +325,7 @@
             ]
           },
           "v": "YES",
-          "why": "Monitor card shows delivery rate, volume stats; monitor.view action and tab present"
+          "why": "Monitoring stats card plus monitor.view action fully present"
         },
         {
           "task_category": {
@@ -334,22 +334,22 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Theme sets background #F4F6FA and accent #483D8B, matching requirement"
+          "v": "PARTIAL",
+          "why": "Accent #483D8B matches dark slate blue; background is not azure mist"
         }
       ],
       "scored": 6,
-      "yes": 3,
-      "partial": 2,
+      "yes": 1,
+      "partial": 4,
       "no": 1,
-      "accuracy": 66.7
+      "accuracy": 50
     },
     {
       "source_id": "000066",
       "application_type": "News and Information Sites",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 4368,
+      "gen_tokens": 4442,
       "structuralOk": true,
       "verdicts": [
         {
@@ -360,7 +360,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Nearby restaurant cards with names exist, but no addresses or detail action."
+          "why": "Restaurant cards show names, ratings, distances; no addresses, and restaurant.list only lists, no detail action"
         },
         {
           "task_category": {
@@ -370,7 +370,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Search bar with search.open exists, but recipe result content behind it is unspecified."
+          "why": "search.run action exists, but search result content with descriptions/details is unspecified"
         },
         {
           "task_category": {
@@ -380,7 +380,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Review card with rating and view-all exist, but no restaurant detail page action."
+          "why": "review.view and ratings exist, but no restaurant detail page or restaurant-detail action"
         },
         {
           "task_category": {
@@ -390,8 +390,8 @@
               "Communication"
             ]
           },
-          "v": "YES",
-          "why": "review.write and review.rate actions declared; review card displays them."
+          "v": "PARTIAL",
+          "why": "review.write action exists, but the review form and display-after-submit content are absent"
         },
         {
           "task_category": {
@@ -401,7 +401,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Tabs cover home, recipes, reviews, profile; restaurants section absent and tab content unspecified."
+          "why": "Tab bar covers nearby/recipes/reviews, but home and restaurants sections' content is unspecified"
         },
         {
           "task_category": {
@@ -411,21 +411,21 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Chocolate accent #D2691E matches, but background #FAF0E6 is linen, not lemon chiffon."
+          "why": "Chocolate accent #D2691E correct, but background #FFF5EE is seashell, not lemon chiffon"
         }
       ],
       "scored": 6,
-      "yes": 1,
-      "partial": 5,
+      "yes": 0,
+      "partial": 6,
       "no": 0,
-      "accuracy": 58.3
+      "accuracy": 50
     },
     {
       "source_id": "000068",
       "application_type": "News and Information Sites",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 4350,
+      "gen_tokens": 3926,
       "structuralOk": true,
       "verdicts": [
         {
@@ -436,7 +436,7 @@
             ]
           },
           "v": "YES",
-          "why": "Temperature, humidity, gas sensor data shown on load with 实时更新 timestamp."
+          "why": "Home screen directly shows temperature 24°C, humidity 62%, gas 0.42ppm on load."
         },
         {
           "task_category": {
@@ -446,7 +446,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "AQI labeled real-time, but only a manual refresh button; no automatic update mechanism declared."
+          "why": "Only a manual weather.refresh button exists; no automatic AQI refresh mechanism."
         },
         {
           "task_category": {
@@ -457,7 +457,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Two-week trend card exists, but shows only 7-day averages; no per-day 14-day series, aqi.detail content unspecified."
+          "why": "History action and two-week AQI ranges exist, but no per-day time series chart."
         },
         {
           "task_category": {
@@ -468,7 +468,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "data.compare action and 对比 tab exist, but date-selection and per-date visual comparison content absent."
+          "why": "aqi.compare action exists, but no date selection or comparison view is specified."
         },
         {
           "task_category": {
@@ -478,7 +478,7 @@
             ]
           },
           "v": "YES",
-          "why": "实时 tab is the weather section; tab-bar provides clear navigation to current weather data."
+          "why": "Tab-bar 首页 tab navigates to the home section showing current weather."
         },
         {
           "task_category": {
@@ -488,7 +488,7 @@
             ]
           },
           "v": "YES",
-          "why": "Theme declares pale azure background and accent #483D8B, exactly dark slate blue."
+          "why": "Theme declares background #F4F6FA (azure mist) and accent #483D8B (dark slate blue)."
         }
       ],
       "scored": 6,
@@ -502,7 +502,7 @@
       "application_type": "Productivity Applications",
       "cases": 6,
       "run": 1,
-      "gen_tokens": 3189,
+      "gen_tokens": 3801,
       "structuralOk": true,
       "verdicts": [
         {
@@ -513,7 +513,7 @@
             ]
           },
           "v": "YES",
-          "why": "Search-bar input field accepts and displays the typed expression as-is."
+          "why": "Search-bar input field present for typing and displaying expressions."
         },
         {
           "task_category": {
@@ -523,7 +523,7 @@
             ]
           },
           "v": "YES",
-          "why": "calc.type.select action plus visible badge confirms selected calculation type."
+          "why": "calc.type.select buttons plus visible type badge confirm the choice."
         },
         {
           "task_category": {
@@ -534,7 +534,7 @@
             ]
           },
           "v": "YES",
-          "why": "calc.evaluate button exists; result text area displays computed result."
+          "why": "calc.evaluate action exists and result area displays computed value."
         },
         {
           "task_category": {
@@ -544,7 +544,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Evaluate action exists, but no error message content is specified."
+          "why": "Evaluate action exists, but no error-message content is specified."
         },
         {
           "task_category": {
@@ -554,7 +554,7 @@
             ]
           },
           "v": "PARTIAL",
-          "why": "Tabs switch sections, but no home page or navigation transition exists."
+          "why": "Calculation UI is present and interactive, but no home-page navigation action."
         },
         {
           "task_category": {
@@ -563,179 +563,8 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Teal accent #008080 matches, but background #F4F7F6 is not mint cream."
-        }
-      ],
-      "scored": 6,
-      "yes": 3,
-      "partial": 3,
-      "no": 0,
-      "accuracy": 75
-    },
-    {
-      "source_id": "000080",
-      "application_type": "Productivity Applications",
-      "cases": 8,
-      "run": 1,
-      "gen_tokens": 4692,
-      "structuralOk": true,
-      "verdicts": [
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Form Operations"
-            ]
-          },
           "v": "YES",
-          "why": "task.create action and visible task list fully support creating tasks"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Form Operations"
-            ]
-          },
-          "v": "YES",
-          "why": "task.edit action exists; task rows display updatable descriptions"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Form Operations"
-            ]
-          },
-          "v": "YES",
-          "why": "task.toggle action exists; rows show 已完成 status cues"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Form Operations"
-            ]
-          },
-          "v": "YES",
-          "why": "task.delete action exists; deleting removes row from list"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Searching"
-            ]
-          },
-          "v": "YES",
-          "why": "search-bar plus task.search action enable title/keyword search"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Filtering"
-            ]
-          },
-          "v": "YES",
-          "why": "filter.all/active/done buttons filter completed and uncompleted tasks"
-        },
-        {
-          "task_category": {
-            "primary_category": "Data Display Testing",
-            "subcategories": [
-              "Dynamic Content Rendering"
-            ]
-          },
-          "v": "YES",
-          "why": "four declared tabs switch sections, delivering working navigation"
-        },
-        {
-          "task_category": {
-            "primary_category": "Design Validation Testing",
-            "subcategories": [
-              "UI Consistency"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "accent #4B0082 is indigo, but background #F7F6FB is not lavender"
-        }
-      ],
-      "scored": 8,
-      "yes": 7,
-      "partial": 1,
-      "no": 0,
-      "accuracy": 93.8
-    },
-    {
-      "source_id": "000092",
-      "application_type": "Social Media Platforms",
-      "cases": 6,
-      "run": 1,
-      "gen_tokens": 5640,
-      "structuralOk": true,
-      "verdicts": [
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Authentication Flows",
-              "Form Operations"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "Profile tab exists, but no action to create profile or add skills/certifications."
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Searching"
-            ]
-          },
-          "v": "YES",
-          "why": "Search bar with search.skill action; skill-bearing user profiles displayed."
-        },
-        {
-          "task_category": {
-            "primary_category": "Data Display Testing",
-            "subcategories": [
-              "Details Information"
-            ]
-          },
-          "v": "YES",
-          "why": "user.profile and cert.view actions; skills/certifications shown on user cards."
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Communication"
-            ]
-          },
-          "v": "YES",
-          "why": "Contact buttons with user.contact action on every user card."
-        },
-        {
-          "task_category": {
-            "primary_category": "Data Display Testing",
-            "subcategories": [
-              "Dynamic Content Rendering"
-            ]
-          },
-          "v": "YES",
-          "why": "Tab-bar provides home, search, messages, and profile sections."
-        },
-        {
-          "task_category": {
-            "primary_category": "Design Validation Testing",
-            "subcategories": [
-              "UI Consistency"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "Peru accent (#CD853F) correct, but background #FFF6EE is not cornsilk."
+          "why": "Theme declares mint cream #F5FFFA background and teal #008080 accent."
         }
       ],
       "scored": 6,
@@ -745,13 +574,53 @@
       "accuracy": 83.3
     },
     {
-      "source_id": "000095",
-      "application_type": "Streaming and Interactive Platforms",
-      "cases": 6,
+      "source_id": "000080",
+      "application_type": "Productivity Applications",
+      "cases": 8,
       "run": 1,
-      "gen_tokens": 5066,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
         {
           "task_category": {
             "primary_category": "Functional Testing",
@@ -759,40 +628,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search bar exists, but no search action or results list is declared."
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "File operation"
-            ]
-          },
-          "v": "YES",
-          "why": "Wallpaper content and wallpaper.download action fully cover browsing and downloading."
-        },
-        {
-          "task_category": {
-            "primary_category": "Data Display Testing",
-            "subcategories": [
-              "Dynamic Content Rendering",
-              "File operation"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "history.open action exists, but history content with dates is absent."
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "File operation",
-              "Generation"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "ringtone.favorite and favorites.open exist, but collection list content unspecified."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -801,8 +638,18 @@
               "Filtering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "category.open button exists, but category menu and categorized listings are absent."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -812,22 +659,175 @@
             ]
           },
           "v": "NO",
-          "why": "Spec colors #FAF7F0/#6B5B3E are neither light goldenrod nor olive drab."
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a30434d6-0919-4844-a595-4c9b90bfe970)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 8,
+      "yes": 0,
+      "partial": 0,
+      "no": 8,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000092",
+      "application_type": "Social Media Platforms",
+      "cases": 6,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 7c5f7bdf-e8d4-424e-97fc-b84015910c0e)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 1,
-      "partial": 4,
-      "no": 1,
-      "accuracy": 50
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000095",
+      "application_type": "Streaming and Interactive Platforms",
+      "cases": 6,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation",
+              "Generation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 364cdbb8-35b8-4375-8cd3-6f4f9869574a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 6,
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000096",
       "application_type": "Travel Booking Portals",
       "cases": 5,
       "run": 1,
-      "gen_tokens": 3937,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -837,8 +837,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search action and sample train card exist, but no city/date search fields or dynamic results."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -849,8 +849,8 @@
               "Form Operations"
             ]
           },
-          "v": "PARTIAL",
-          "why": "flight.book action exists, but no selectable flight results or confirmation number flow."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -860,8 +860,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "pay.online exists but tied to train order; no hotel payment context or email receipt."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -870,8 +870,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "YES",
-          "why": "订单 tab plus order.list/order.status actions deliver order status list navigation."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -880,23 +880,23 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Accent #CD5C5C is indian red, but #FFF5EE is seashell, not peach puff."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5bf5ef4c-19e8-4015-8820-b39f3d360752)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 5,
-      "yes": 1,
-      "partial": 4,
-      "no": 0,
-      "accuracy": 60
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
     },
     {
       "source_id": "000099",
       "application_type": "Travel Booking Portals",
       "cases": 8,
       "run": 1,
-      "gen_tokens": 4512,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -906,8 +906,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "PARTIAL",
-          "why": "user.register action exists, but no registration form fields or confirmation message content declared"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -916,8 +916,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "PARTIAL",
-          "why": "register/history buttons exist, but no login action or credential flow is declared"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -927,8 +927,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "search and seat.check actions exist, but only train content; no bus options"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -938,8 +938,8 @@
               "Searching"
             ]
           },
-          "v": "YES",
-          "why": "train.search, seat.check actions plus train cards with prices and live seat counts"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -949,8 +949,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "order.pay and confirm.receive actions exist; secure processing and email/SMS delivery absent"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -960,8 +960,8 @@
               "Details Information"
             ]
           },
-          "v": "PARTIAL",
-          "why": "history.view action declared, but no booking list or transaction detail content"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -971,7 +971,7 @@
             ]
           },
           "v": "NO",
-          "why": "no print action or ticket printing content anywhere in the spec"
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -980,23 +980,681 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "accent #696969 is dim gray, but background #FFF5EE is seashell, not snow"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f1bdef9-8815-42de-9388-7d46d6c81c86)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 8,
-      "yes": 1,
-      "partial": 6,
-      "no": 1,
-      "accuracy": 50
+      "yes": 0,
+      "partial": 0,
+      "no": 8,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000090",
+      "application_type": "Social Media Platforms",
+      "cases": 9,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "File operation",
+              "Generation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f5e17fec-2eca-45af-b75c-f4b793d8629c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 9,
+      "yes": 0,
+      "partial": 0,
+      "no": 9,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000053",
+      "application_type": "Job Search Platforms",
+      "cases": 5,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5720b416-6bfd-4769-8645-e8efde83cfcd)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000098",
+      "application_type": "Travel Booking Portals",
+      "cases": 5,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3fe3be76-e052-4f44-a0ec-5861b608c5bb)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000026",
+      "application_type": "Discussion Forums",
+      "cases": 5,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 4a3f5fcd-b70b-4ebf-a3c9-bf2078c51d63)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000077",
+      "application_type": "Productivity Applications",
+      "cases": 7,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 731657ae-9db2-4018-9a0a-ab87bc9ff0ed)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 7,
+      "yes": 0,
+      "partial": 0,
+      "no": 7,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000064",
+      "application_type": "News and Information Sites",
+      "cases": 7,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Data Visualization",
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a3051500-7b6e-4825-886d-43e303f03ce5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 7,
+      "yes": 0,
+      "partial": 0,
+      "no": 7,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000023",
+      "application_type": "CRM Systems",
+      "cases": 5,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: a38205ee-5655-40e8-a80c-5f744c56ee2a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000089",
+      "application_type": "Publishing/Blogging Platforms",
+      "cases": 9,
+      "run": 1,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 707a940a-7b03-4844-ba00-e4a04ef5fc57)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 9,
+      "yes": 0,
+      "partial": 0,
+      "no": 9,
+      "accuracy": 0
     },
     {
       "source_id": "000036",
       "application_type": "E-commerce Web Applications",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 6386,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1006,8 +1664,8 @@
               "Filtering"
             ]
           },
-          "v": "YES",
-          "why": "Category buttons, spec filter, and result cards show names, prices, suppliers."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1017,8 +1675,8 @@
               "Filtering"
             ]
           },
-          "v": "YES",
-          "why": "Three regional supplier quotes shown; '最低价' badge highlights lowest price with supplier."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1028,8 +1686,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Profile tab exists, but no settings action or search-frequency option declared."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1038,8 +1696,8 @@
               "Details Information"
             ]
           },
-          "v": "YES",
-          "why": "product.open action with price, stock quantity, and supplier details displayed."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1048,8 +1706,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Tab bar navigates to categories and profile, but no settings section exists."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1058,23 +1716,23 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Theme declares seashell background (#FFF5F5) and crimson accent (#DC143C) throughout."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c3db8a4e-67cc-4c03-9418-69616d13e17c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 4,
-      "partial": 2,
-      "no": 0,
-      "accuracy": 83.3
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000038",
       "application_type": "E-commerce Web Applications",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 4652,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1083,8 +1741,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search bar and search.submit exist, but search results content is not declared."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1093,8 +1751,8 @@
               "Filtering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "filter.open and 一居室 item exist, but filtered result content is absent."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1104,8 +1762,8 @@
               "Form Operations"
             ]
           },
-          "v": "PARTIAL",
-          "why": "booking.create action exists, but no date picker, calendar, or confirmation content."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1115,8 +1773,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "我的预订 action and tabs exist, but booking records content is not declared."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1125,8 +1783,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "YES",
-          "why": "Tab-bar 首页 tab navigates to fully specified homepage content."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1135,23 +1793,23 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Theme declares linen background #FFF5EE and maroon accent #800000 on components."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: f06f49e0-48ee-4a99-b602-24f5569d75b5)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 2,
-      "partial": 4,
-      "no": 0,
-      "accuracy": 66.7
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000041",
       "application_type": "E-commerce Web Applications",
       "cases": 5,
       "run": 2,
-      "gen_tokens": 4511,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1161,8 +1819,8 @@
               "Form Operations"
             ]
           },
-          "v": "PARTIAL",
-          "why": "auction.bid action exists, but no bid-history recording or details are specified"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1172,8 +1830,8 @@
               "Details Information"
             ]
           },
-          "v": "YES",
-          "why": "Bidding opportunities are listed with categories, prices, and status; browsable via tabs"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1183,54 +1841,8 @@
               "Details Information"
             ]
           },
-          "v": "PARTIAL",
-          "why": "history.open action and tab exist, but no history content or transaction details specified"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Authentication Flows",
-              "Form Operations"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "Account section exists, but no account-update action is declared; only recharge"
-        },
-        {
-          "task_category": {
-            "primary_category": "Design Validation Testing",
-            "subcategories": [
-              "UI Consistency"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "Chocolate accent #D2691E matches, but background #FFFFF0 is ivory, not lemon chiffon"
-        }
-      ],
-      "scored": 5,
-      "yes": 1,
-      "partial": 4,
-      "no": 0,
-      "accuracy": 60
-    },
-    {
-      "source_id": "000043",
-      "application_type": "Email Clients",
-      "cases": 6,
-      "run": 2,
-      "gen_tokens": 6243,
-      "structuralOk": true,
-      "verdicts": [
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Communication"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "message.compose action exists but compose form with phone-number input is not specified"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1241,37 +1853,7 @@
             ]
           },
           "v": "NO",
-          "why": "No user information section or edit-user action anywhere in the spec"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Form Operations"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "policy.config action exists, but policy form and active-policies list are absent"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Communication"
-            ]
-          },
-          "v": "PARTIAL",
-          "why": "records.view action exists; recent messages show only summaries, not full record details"
-        },
-        {
-          "task_category": {
-            "primary_category": "Functional Testing",
-            "subcategories": [
-              "Communication"
-            ]
-          },
-          "v": "YES",
-          "why": "Real-time statistics displayed (badge 实时, counts, progressbar) plus monitor.view action"
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1280,23 +1862,99 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Background #F5F6FA pale azure mist; accent #483D8B is darkslateblue exactly"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 14ea2ff8-7abd-41a5-a24b-a514d413b1d4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000043",
+      "application_type": "Email Clients",
+      "cases": 6,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9f39a7c4-9ec9-4dcd-905d-1c7a2d69689a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 2,
-      "partial": 3,
-      "no": 1,
-      "accuracy": 58.3
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000066",
       "application_type": "News and Information Sites",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 4135,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1305,8 +1963,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Restaurant names, ratings and detail action exist, but addresses are absent"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1315,8 +1973,8 @@
               "Searching"
             ]
           },
-          "v": "YES",
-          "why": "Search bar with submit action plus recipe entries with descriptions and detail action"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1325,8 +1983,8 @@
               "Details Information"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Ratings viewable via rating.view, but detailed page and review text content absent"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1336,8 +1994,8 @@
               "Communication"
             ]
           },
-          "v": "PARTIAL",
-          "why": "review.write action exists, but no review display area or rating input"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1346,8 +2004,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Tabs cover nearby/recipes but home and reviews sections are missing"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1356,23 +2014,23 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Chocolate accent #D2691E correct, but background #FFF8F0 is not lemon chiffon"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 495a4ec9-5195-4999-81f0-c8a803626e92)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 1,
-      "partial": 5,
-      "no": 0,
-      "accuracy": 58.3
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000068",
       "application_type": "News and Information Sites",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 5825,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1381,8 +2039,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "YES",
-          "why": "Home shows temperature, humidity, and TVOC gas sensor cards directly"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1391,8 +2049,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Manual data.refresh button exists, but no automatic real-time refresh"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1402,8 +2060,8 @@
               "Data Visualization"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Four sample dates plus trend tab/detail exist, but no 14-day chart"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1413,8 +2071,8 @@
               "Data Visualization"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Weekly comparison card exists, but selecting two arbitrary dates unsupported"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1423,8 +2081,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "YES",
-          "why": "Tab-bar provides navigation to 首页 section with weather details"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1433,23 +2091,23 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Theme declares #F4F5FA background and #483D8B dark slate blue accent"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1fcbe44-2c96-404e-a171-80b4818be63a)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 3,
-      "partial": 3,
-      "no": 0,
-      "accuracy": 75
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000078",
       "application_type": "Productivity Applications",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 4274,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1458,8 +2116,8 @@
               "Form Operations"
             ]
           },
-          "v": "YES",
-          "why": "Search-bar input field exists for expression entry; typing displays text as-is."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1468,8 +2126,8 @@
               "Generation"
             ]
           },
-          "v": "YES",
-          "why": "'基础算术' button with calc.type.select action exists; type badge visibly confirms selection."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1479,8 +2137,8 @@
               "Generation"
             ]
           },
-          "v": "YES",
-          "why": "'计算' button triggers calc.execute; result card displays computed result with expression badges."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1489,8 +2147,8 @@
               "Form Operations"
             ]
           },
-          "v": "PARTIAL",
-          "why": "calc.execute action exists, but spec declares no error message display element."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1499,8 +2157,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Calculation section exists and is interactive, but no separate home page for navigation."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1509,23 +2167,23 @@
               "UI Consistency"
             ]
           },
-          "v": "YES",
-          "why": "Theme declares background #F5FFFA (mint cream) and accent #008080 (teal)."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 59894369-d44e-4a98-9563-9ef4145eb60f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 4,
-      "partial": 2,
-      "no": 0,
-      "accuracy": 83.3
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000080",
       "application_type": "Productivity Applications",
       "cases": 8,
       "run": 2,
-      "gen_tokens": 4791,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1534,8 +2192,8 @@
               "Form Operations"
             ]
           },
-          "v": "YES",
-          "why": "task.create action and task list present; new tasks surface in the list"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1544,8 +2202,8 @@
               "Form Operations"
             ]
           },
-          "v": "YES",
-          "why": "Each task row has an edit button with task.edit action; list reflects updates"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1554,8 +2212,8 @@
               "Form Operations"
             ]
           },
-          "v": "YES",
-          "why": "Each row has task.toggle button; progressbar and banner show completion state"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1564,8 +2222,8 @@
               "Form Operations"
             ]
           },
-          "v": "YES",
-          "why": "Each task row has a delete button with task.delete action"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1574,8 +2232,8 @@
               "Searching"
             ]
           },
-          "v": "YES",
-          "why": "Search bar plus task.search button enables title/keyword search"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1584,8 +2242,8 @@
               "Filtering"
             ]
           },
-          "v": "YES",
-          "why": "filter.all/filter.active/filter.done buttons filter completed and uncompleted tasks"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1594,8 +2252,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Tab bar offers navigation, but calendar/statistics/profile sections are absent from spec"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1604,23 +2262,23 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Accent is indigo, but background #F0F8FF is AliceBlue, not lavender"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d21a1980-f35f-4fc2-b318-4c38455fdab6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 8,
-      "yes": 6,
-      "partial": 2,
-      "no": 0,
-      "accuracy": 87.5
+      "yes": 0,
+      "partial": 0,
+      "no": 8,
+      "accuracy": 0
     },
     {
       "source_id": "000092",
       "application_type": "Social Media Platforms",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 6712,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1631,7 +2289,7 @@
             ]
           },
           "v": "NO",
-          "why": "No action exists to create profiles or input/save skills and certifications"
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1640,8 +2298,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "search.skills action exists, but search results content is not specified"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1650,8 +2308,8 @@
               "Details Information"
             ]
           },
-          "v": "YES",
-          "why": "user.profile.open, skill.view, cert.view actions with skill/cert content on cards"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1660,8 +2318,8 @@
               "Communication"
             ]
           },
-          "v": "YES",
-          "why": "contact.user action via 立即联系 button on each user card"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1670,8 +2328,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "YES",
-          "why": "Tab-bar provides four top-level sections including home, search, profile"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1680,23 +2338,23 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Accent matches peru (#CD853F) but background #FAF0E6 is linen, not cornsilk"
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 9e40c65a-d5ef-4bae-8489-c056f1630f81)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 3,
-      "partial": 2,
-      "no": 1,
-      "accuracy": 66.7
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000095",
       "application_type": "Streaming and Interactive Platforms",
       "cases": 6,
       "run": 2,
-      "gen_tokens": 4123,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1705,8 +2363,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search bar exists, but no search action or results list with details is declared."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1715,8 +2373,8 @@
               "File operation"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Categories and a download action exist, but only ringtone.download; no wallpaper download action."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1726,8 +2384,8 @@
               "File operation"
             ]
           },
-          "v": "PARTIAL",
-          "why": "downloads.open action and profile tab exist, but history content with dates is unspecified."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1737,8 +2395,8 @@
               "Generation"
             ]
           },
-          "v": "YES",
-          "why": "ringtone.favorite action and a collection tab are both declared in the spec."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1747,8 +2405,8 @@
               "Filtering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "category.open action and category grid exist, but categorized content listing is absent."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1758,22 +2416,22 @@
             ]
           },
           "v": "NO",
-          "why": "Spec uses linen background and brown accent, not light goldenrod or olive drab."
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b40cba58-916d-40e4-bf6f-3e49526973bc)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 6,
-      "yes": 1,
-      "partial": 4,
-      "no": 1,
-      "accuracy": 50
+      "yes": 0,
+      "partial": 0,
+      "no": 6,
+      "accuracy": 0
     },
     {
       "source_id": "000096",
       "application_type": "Travel Booking Portals",
       "cases": 5,
       "run": 2,
-      "gen_tokens": 4223,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1783,8 +2441,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search bar and submit action exist, but no date fields or train results list."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1795,8 +2453,8 @@
               "Form Operations"
             ]
           },
-          "v": "PARTIAL",
-          "why": "flight.book action exists, but no search results or confirmation number flow."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1806,8 +2464,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "pay.online action exists, but no credit card form or email receipt."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1816,8 +2474,8 @@
               "Dynamic Content Rendering"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Orders tab and orders.view action exist, but no bookings list with statuses."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1826,23 +2484,23 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Accent is indian red, but background #FFF6F3 is not peach puff."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 3e0d8b3e-226d-4a3e-a198-955486888ff4)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 5,
       "yes": 0,
-      "partial": 5,
-      "no": 0,
-      "accuracy": 50
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
     },
     {
       "source_id": "000099",
       "application_type": "Travel Booking Portals",
       "cases": 8,
       "run": 2,
-      "gen_tokens": 4183,
-      "structuralOk": true,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
       "verdicts": [
         {
           "task_category": {
@@ -1852,8 +2510,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "PARTIAL",
-          "why": "注册登录 button/action exists, but no registration form or confirmation message is specified."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1862,8 +2520,8 @@
               "Authentication Flows"
             ]
           },
-          "v": "YES",
-          "why": "account.login action plus 我的/历史 tabs and booking.history deliver login and account access."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1873,8 +2531,8 @@
               "Searching"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Search, seat availability and pricing exist, but only rail options; no bus content."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1884,8 +2542,8 @@
               "Searching"
             ]
           },
-          "v": "YES",
-          "why": "Rail routes with prices, seat progressbar, and trip.search action fully support this."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1895,8 +2553,8 @@
               "E-commerce"
             ]
           },
-          "v": "PARTIAL",
-          "why": "booking.pay and booking.confirm actions exist; email/SMS confirmation delivery is absent."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1906,8 +2564,8 @@
               "Details Information"
             ]
           },
-          "v": "YES",
-          "why": "历史 tab and booking.history action provide access to past bookings after login."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1917,7 +2575,7 @@
             ]
           },
           "v": "NO",
-          "why": "No print action or print-friendly ticket capability is declared anywhere."
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task_category": {
@@ -1926,15 +2584,673 @@
               "UI Consistency"
             ]
           },
-          "v": "PARTIAL",
-          "why": "Accent #696969 is dim gray, but background #F7F7F5 is not snow (#FFFAFA)."
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 19dd246d-87e2-42da-ab61-236435a70d3d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
       "scored": 8,
-      "yes": 3,
-      "partial": 4,
-      "no": 1,
-      "accuracy": 62.5
+      "yes": 0,
+      "partial": 0,
+      "no": 8,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000090",
+      "application_type": "Social Media Platforms",
+      "cases": 9,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "File operation",
+              "Generation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 73057241-f042-4f8e-8388-7ab6381154b6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 9,
+      "yes": 0,
+      "partial": 0,
+      "no": 9,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000053",
+      "application_type": "Job Search Platforms",
+      "cases": 5,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 402c8271-093b-4fb7-bbe5-dee52658212f)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000098",
+      "application_type": "Travel Booking Portals",
+      "cases": 5,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: c6e9dd4d-7eac-48d8-a9f9-d21f0fdee80c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000026",
+      "application_type": "Discussion Forums",
+      "cases": 5,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 5245f40e-11ad-4a7b-91d4-226db4c181d0)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000077",
+      "application_type": "Productivity Applications",
+      "cases": 7,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: d83bec52-227a-4c0a-b17c-0fffa75b438c)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 7,
+      "yes": 0,
+      "partial": 0,
+      "no": 7,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000064",
+      "application_type": "News and Information Sites",
+      "cases": 7,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Data Visualization",
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1239c35-0618-4afc-9b17-37fe4c8591c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 7,
+      "yes": 0,
+      "partial": 0,
+      "no": 7,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000023",
+      "application_type": "CRM Systems",
+      "cases": 5,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 350a6b8b-224f-427a-a9f5-3ec347737917)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 5,
+      "yes": 0,
+      "partial": 0,
+      "no": 5,
+      "accuracy": 0
+    },
+    {
+      "source_id": "000089",
+      "application_type": "Publishing/Blogging Platforms",
+      "cases": 9,
+      "run": 2,
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":",
+      "start_failed": true,
+      "verdicts": [
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "File operation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        },
+        {
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          },
+          "v": "NO",
+          "why": "start failed: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 09427507-72fe-4499-ab5d-df8b9be96bda)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
+        }
+      ],
+      "scored": 9,
+      "yes": 0,
+      "partial": 0,
+      "no": 9,
+      "accuracy": 0
     }
   ]
 }

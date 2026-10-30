@@ -15,6 +15,14 @@
  * cases all score NO) and a judge-failure rate (unscorable cases excluded
  * from the denominator, the WebCoderBench exclusion rule).
  *
+ * Endpoint-side start-failures (HTTP 402/408/429/5xx, network errors) are
+ * measurement failures, not data: the provider refusing or dropping the
+ * request says nothing about generation quality. When they dominate the
+ * run (>= half the rows) the ledger is stamped `meta.runInvalid` and the
+ * runner exits 2 — a dead-endpoint round must refuse to publish as a
+ * quality number (r15: 33/40 runs died on `Insufficient Balance` and
+ * shipped as accuracy 11.7%).
+ *
  * Generator: LLM_BASE_URL/LLM_API_KEY/LLM_MODEL (fallback DSH_LLM_*, then
  * ZAI_*). Judge: JUDGE_* (fallback ZAI_*) — keep it a DIFFERENT family
  * from the generator (no self-preference). Knobs: BENCH_N (first N
@@ -60,6 +68,11 @@ const corpus = JSON.parse(
 const selected = BENCH_N > 0 ? corpus.slice(0, BENCH_N) : corpus;
 
 const VERDICTS = new Set(['YES', 'PARTIAL', 'NO']);
+// Endpoint-side failure classes — the provider refused or dropped the
+// request (balance drained, rate limit, timeout, server error, network).
+// A generation that came back invalid is the generator's data; an endpoint
+// that never answered is not.
+const ENDPOINT_FAIL = /HTTP (402|408|429|5\d\d)\b|fetch failed|ECONNREFUSED|ECONNRESET|ENOTFOUND|ETIMEDOUT|EAI_AGAIN|insufficient_balance/i;
 const call = (which, messages, temperature) => fetch(`${which.baseURL}/chat/completions`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${which.apiKey}` },
@@ -139,8 +152,10 @@ for (const instruction of selected) {
     if (!checked.ok) {
       row.renderError = checked.errors?.[0]?.msg?.slice(0, 160);
       // Start Failed (the upstream diagnostic): no usable artifact — every
-      // case scores NO, the harshest honest reading.
+      // case scores NO, the harshest honest reading. Class 'spec': the
+      // generator produced something the product refuses.
       row.start_failed = true;
+      row.startFailureClass = 'spec';
       row.verdicts = instruction.cases.map((c) => ({ task_category: c.task_category, v: 'NO', why: 'start failed: no valid spec' }));
     } else {
       const judged = await judgeCases(instruction, instruction.cases, spec);
@@ -154,6 +169,7 @@ for (const instruction of selected) {
   } catch (e) {
     row.error = e.message.slice(0, 160);
     row.start_failed = true;
+    row.startFailureClass = ENDPOINT_FAIL.test(row.error) ? 'endpoint' : 'generation';
     row.verdicts = instruction.cases.map((c) => ({ task_category: c.task_category, v: 'NO', why: 'start failed: ' + row.error }));
   }
   const scored = row.verdicts.filter((v) => VERDICTS.has(v.v));
@@ -192,13 +208,20 @@ const meanAccuracy = Object.values(perInstruction).length
   : null;
 const totalCases = rows.reduce((n, r) => n + r.cases, 0);
 const startFailed = rows.filter((r) => r.start_failed).length;
+const endpointFailed = rows.filter((r) => r.startFailureClass === 'endpoint').length;
 const judgeFailed = rows.filter((r) => r.judge_failed).length;
+// The r15 lesson: 33/40 runs died on the provider's `Insufficient Balance`
+// and the run still published accuracy 11.7% — a dead endpoint masquerading
+// as a quality collapse. When endpoint-side failures dominate, the run is
+// a measurement failure: stamp the ledger and exit 2 so the round driver
+// refuses it instead of quoting it.
+const runInvalid = endpointFailed * 2 >= rows.length;
 
 console.log(`\n--- WebGen-Bench port (${GEN.model} gen × ${JUDGE.model} judge, ${rows.length} instructions / ${totalCases} cases) ---`);
 console.log(`ACCURACY (pooled): ${overall.accuracy}%  (YES ${overall.yes} / PARTIAL ${overall.partial} / NO ${overall.no} of ${all.length} scored)`);
 if (BENCH_RUNS > 1) console.log(`ACCURACY (mean of per-instruction means, ${BENCH_RUNS} runs): ${meanAccuracy}%`);
 for (const [k, v] of Object.entries(categories)) console.log(`  ${k.padEnd(28)} ${v.accuracy}%  (Y ${v.yes} P ${v.partial} N ${v.no})`);
-console.log(`start-failed: ${startFailed}/${rows.length} instructions; judge-failed: ${judgeFailed}/${rows.length}; excluded cases: ${totalCases - all.length}`);
+console.log(`start-failed: ${startFailed}/${rows.length} instructions (endpoint ${endpointFailed}, generation ${startFailed - endpointFailed}); judge-failed: ${judgeFailed}/${rows.length}; excluded cases: ${totalCases - all.length}`);
 
 const ledger = {
   meta: {
@@ -211,8 +234,15 @@ const ledger = {
   diagnostics: { startFailedInstructions: startFailed, judgeFailedInstructions: judgeFailed, excludedCases: totalCases - all.length },
   rows,
 };
+if (runInvalid) {
+  ledger.meta.runInvalid = { reason: 'endpoint-failure', endpointStartFailed: endpointFailed, runs: rows.length };
+}
 const outDir = new URL('../../tools/dev-web-carrier/artifacts/appgen-bench/', import.meta.url);
 mkdirSync(outDir, { recursive: true });
 const outPath = new URL(`../../tools/dev-web-carrier/artifacts/appgen-bench/${LEDGER_STEM}.json`, import.meta.url);
 writeFileSync(outPath, JSON.stringify(ledger, null, 2) + '\n');
 console.log(`ledger → ${outPath.pathname}`);
+if (runInvalid) {
+  console.error(`appgen-bench-port: RUN INVALID — endpoint-side start-failures ${endpointFailed}/${rows.length} (provider refused/dropped the request); the accuracy above is a dead-endpoint artifact, not a quality number`);
+  process.exit(2);
+}
