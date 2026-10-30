@@ -1,6 +1,6 @@
 {
   "meta": {
-    "at": "2026-10-29T22:20:23.238Z",
+    "at": "2026-10-30T03:02:16.699Z",
     "generator": "deepseek-v4-flash",
     "judge": "glm-4.6",
     "systemPrompt": "SYSTEM_V2",
@@ -14,41 +14,41 @@
     "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
   },
   "overall": {
-    "yes": 19,
-    "partial": 1,
-    "no": 0,
-    "accuracy": 97.5
+    "yes": 0,
+    "partial": 0,
+    "no": 20,
+    "accuracy": 0
   },
   "positions": {
     "1": {
-      "yes": 4,
+      "yes": 0,
       "partial": 0,
-      "no": 0,
-      "accuracy": 100
+      "no": 4,
+      "accuracy": 0
     },
     "2": {
-      "yes": 4,
+      "yes": 0,
       "partial": 0,
-      "no": 0,
-      "accuracy": 100
+      "no": 4,
+      "accuracy": 0
     },
     "3": {
-      "yes": 4,
+      "yes": 0,
       "partial": 0,
-      "no": 0,
-      "accuracy": 100
+      "no": 4,
+      "accuracy": 0
     },
     "4": {
-      "yes": 3,
-      "partial": 1,
-      "no": 0,
-      "accuracy": 87.5
+      "yes": 0,
+      "partial": 0,
+      "no": 4,
+      "accuracy": 0
     },
     "5": {
-      "yes": 4,
+      "yes": 0,
       "partial": 0,
-      "no": 0,
-      "accuracy": 100
+      "no": 4,
+      "accuracy": 0
     }
   },
   "diagnostics": {
@@ -61,32 +61,31 @@
       "steps": [
         {
           "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
-          "verdict": "YES",
-          "why": "扫一扫按钮(scan.open)位于搜索栏左侧，完全符合要求"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把主题色从红色换成紫色 #7c4dff",
-          "verdict": "YES",
-          "why": "theme.accent 已设为紫色 #7c4dff，播放器封面同步紫色"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
-          "verdict": "YES",
-          "why": "本周新碟标题行与两张封面卡片的横向卡片已完整新增"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）",
-          "verdict": "PARTIAL",
-          "why": "查看全部/album.more exists but at section bottom, not beside 本周新碟 header"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把每日推荐横幅卡片的标题文本改成「今日精选」",
-          "verdict": "YES",
-          "why": "横幅卡片标题已是「今日精选」"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
-      "renderOk": true,
-      "gen_tokens": 17334
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 38613d93-41a2-46f9-a200-d9ea3f9442c6)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
     },
     {
       "seed": "wallet",
@@ -94,32 +93,31 @@
       "steps": [
         {
           "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
-          "verdict": "YES",
-          "why": "总资产下方新增卡片：'本月结余'行、已消费68%徽标及value=68的progressbar均已实现"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把主题色换成金色 #d4a017",
-          "verdict": "YES",
-          "why": "theme.accent 已设为金色 #d4a017，完整生效"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
-          "verdict": "YES",
-          "why": "按钮「账单导出」带 bill.export action 位于交易列表之后"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）",
-          "verdict": "YES",
-          "why": "Service-grid 下方新增行含票券/客服按钮及对应 action"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」",
-          "verdict": "YES",
-          "why": "banner-card subtitle exactly matches requested monthly income/expense text"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
-      "renderOk": true,
-      "gen_tokens": 19704
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 01603dab-6a35-41b1-bee6-55236256511d)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
     },
     {
       "seed": "pomodoro",
@@ -127,32 +125,31 @@
       "steps": [
         {
           "task": "在统计区下面新增今日任务清单（可勾选的三行）",
-          "verdict": "YES",
-          "why": "统计卡片后新增今日任务卡，含三行可勾选任务"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把主题色换成墨绿色 #1f6f54",
-          "verdict": "YES",
-          "why": "theme.accent 已设置为 #1F6F54，与请求的墨绿色一致"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
-          "verdict": "YES",
-          "why": "顶部白噪音行带按钮，action noise.toggle 已声明"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）",
-          "verdict": "YES",
-          "why": "专注报告按钮与 report.view action 已存在于白噪音同一行"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把今日完成的番茄数文本改成「今日已完成 6 个番茄」",
-          "verdict": "YES",
-          "why": "文本「今日已完成 6 个番茄」已完整出现在卡片中"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
-      "renderOk": true,
-      "gen_tokens": 21308
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: 1d6fe43a-cc42-4b84-a82c-23af0dc6def7)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
     },
     {
       "seed": "chat",
@@ -160,32 +157,31 @@
       "steps": [
         {
           "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
-          "verdict": "YES",
-          "why": "存在 banner-card「未读消息 12 条」，位于会话列表正上方"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把主题色换成天蓝色 #2f9ee8",
-          "verdict": "YES",
-          "why": "theme.accent 已设为 #2F9EE8，完全匹配"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
-          "verdict": "YES",
-          "why": "『全部已读』按钮存在，action 为 msg.readall，位于横幅卡片内"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "把「未读消息 12 条」横幅的文本改成「未读消息 3 条」",
-          "verdict": "YES",
-          "why": "横幅副标题与徽章均显示「未读消息 3 条」，修改完整生效"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         },
         {
           "task": "在底部标签栏最后新增一个「我的」标签",
-          "verdict": "YES",
-          "why": "「我的」已作为底部标签栏最后一项新增"
+          "verdict": "NO",
+          "why": "error: HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
         }
       ],
-      "renderOk": true,
-      "gen_tokens": 17686
+      "error": "HTTP 402: {\"error\":{\"message\":\"Insufficient Balance (request_id: b1269fbc-4823-4c8e-b9c9-30598d754159)\",\"type\":\"insufficient_balance_error\",\"param\":null,\"code\":"
     }
   ]
 }
