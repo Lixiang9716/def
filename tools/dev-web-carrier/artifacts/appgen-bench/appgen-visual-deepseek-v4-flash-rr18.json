@@ -1,244 +1,78 @@
 {
   "meta": {
-    "at": "2026-10-29T21:49:52.974Z",
+    "at": "2026-10-30T02:53:48.885Z",
     "generator": "deepseek-v4-flash",
     "judge": "glm-4.6v",
-    "instructions": 8,
+    "instructions": 12,
     "tier": "rendered-surface screenshots (visual leg v2, product validate+normalize render path)",
     "appearanceRubric": "v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors",
     "darkAudit": "sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=2); luminance <0.35 = dark"
   },
   "visual": {
-    "backgroundYes": 7,
+    "backgroundYes": 0,
     "backgroundPartial": 0,
-    "backgroundNo": 1,
-    "scored": 8,
+    "backgroundNo": 0,
+    "scored": 0,
     "rejected": 0,
     "appearanceScale": 100,
-    "meanAppearance": 71.3,
-    "darkSampled": 2,
-    "darkOk": 2,
-    "darkMeanLuminance": 0.136,
-    "darkMeanAppearance": 66
+    "meanAppearance": null,
+    "darkSampled": 0,
+    "darkOk": 0,
+    "darkMeanLuminance": null,
+    "darkMeanAppearance": null
   },
   "pixelCheck": {
-    "paintedExact": 8,
-    "checked": 8
+    "paintedExact": 0,
+    "checked": 0
   },
   "rows": [
     {
       "source_id": "000036",
-      "theme": {
-        "accent": "#DC143C",
-        "background": "#FFF7F7",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": {
-        "background": [
-          "#FFF7F7",
-          "#FFFAFA"
-        ]
-      },
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000036.png",
-      "pixelBackground": {
-        "target": "#FFFAFA",
-        "hitFraction": 0.64,
-        "painted": true
-      },
-      "background_painted": "NO",
-      "colors_visible": "crimson (top bar, buttons, price), light pink (big box), white (background), light gray (tag)",
-      "appearance": 70,
-      "why": "Clean layout with clear hierarchy, but background not matching seashell",
-      "polish_hint": "Apply seashell to canvas background",
-      "dark": {
-        "opened": true,
-        "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000036.dark.png",
-        "meanLuminance": 0.116,
-        "dark": true,
-        "appearance": 70,
-        "why": "Clean layout with clear hierarchy, but generic design",
-        "colors_visible": "crimson (buttons, header), dark (background)"
-      }
+      "error": "HTTP 402"
     },
     {
       "source_id": "000038",
-      "theme": {
-        "accent": "#954535",
-        "background": "#FDF7F4",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": {
-        "background": [
-          "#FDF7F4",
-          "#FFF5EE"
-        ]
-      },
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000038.png",
-      "pixelBackground": {
-        "target": "#FFF5EE",
-        "hitFraction": 0.75,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "linen background, maroon header/buttons, black/gray text",
-      "appearance": 70,
-      "why": "Clean layout with clear hierarchy, but lacks refined details",
-      "polish_hint": "Add subtle shadow to listing cards",
-      "dark": {
-        "opened": true,
-        "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000038.dark.png",
-        "meanLuminance": 0.155,
-        "dark": true,
-        "appearance": 62,
-        "why": "Clean layout but dark background mismatches linen requirement",
-        "colors_visible": "dark background, maroon (header/buttons), white text"
-      }
+      "error": "HTTP 402"
     },
     {
       "source_id": "000041",
-      "theme": {
-        "accent": "#D2691E",
-        "background": "#FFF5EE",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": null,
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000041.png",
-      "pixelBackground": {
-        "target": "#FFF5EE",
-        "hitFraction": 0.71,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "background lemon chiffon, components chocolate",
-      "appearance": 65,
-      "why": "Clear hierarchy and spacing, but lacks refined details",
-      "polish_hint": "Ensure component colors match chocolate tone consistently"
+      "error": "HTTP 402"
     },
     {
       "source_id": "000043",
-      "theme": {
-        "accent": "#483D8B",
-        "background": "#F0F8FF",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": null,
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000043.png",
-      "pixelBackground": {
-        "target": "#F0F8FF",
-        "hitFraction": 0.72,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "azure mist (background), dark slate blue (buttons, header, progress bar)",
-      "appearance": 75,
-      "why": "Clean layout with clear hierarchy and even spacing",
-      "polish_hint": "Refine header color to dark slate blue"
+      "error": "HTTP 402"
     },
     {
       "source_id": "000066",
-      "theme": {
-        "accent": "#D2691E",
-        "background": "#FAF0E6",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": null,
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000066.png",
-      "pixelBackground": {
-        "target": "#FAF0E6",
-        "hitFraction": 0.83,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "background lemon chiffon, header orange, buttons orange, search bar white, cards white",
-      "appearance": 70,
-      "why": "Clean layout with clear sections but lacks subtle depth",
-      "polish_hint": "Add shadows to cards for dimension"
+      "error": "HTTP 402"
     },
     {
       "source_id": "000068",
-      "theme": {
-        "accent": "#483D8B",
-        "background": "#F4F5FA",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": {
-        "background": [
-          "#F4F5FA",
-          "#F0F8FF"
-        ]
-      },
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000068.png",
-      "pixelBackground": {
-        "target": "#F0F8FF",
-        "hitFraction": 0.73,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "azure mist background, dark purple elements, white cards",
-      "appearance": 75,
-      "why": "Clean layout with clear data hierarchy and consistent spacing",
-      "polish_hint": "Align top bar color to dark slate blue"
+      "error": "HTTP 402"
     },
     {
       "source_id": "000078",
-      "theme": {
-        "accent": "#008080",
-        "background": "#F5FFFA",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": null,
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000078.png",
-      "pixelBackground": {
-        "target": "#F5FFFA",
-        "hitFraction": 0.61,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "mint cream background, teal header/buttons, white input field, light teal cards",
-      "appearance": 75,
-      "why": "Clear layout, good spacing, consistent color scheme",
-      "polish_hint": "Add subtle shadow to result card for depth"
+      "error": "HTTP 402"
     },
     {
       "source_id": "000080",
-      "theme": {
-        "accent": "#4B0082",
-        "background": "#F6F6FB",
-        "mode": "light"
-      },
-      "validated": true,
-      "colorSnap": {
-        "background": [
-          "#F6F6FB",
-          "#F0F8FF"
-        ]
-      },
-      "opened": true,
-      "shot": "shots-appgen-visual-deepseek-v4-flash-rr18/000080.png",
-      "pixelBackground": {
-        "target": "#F0F8FF",
-        "hitFraction": 0.56,
-        "painted": true
-      },
-      "background_painted": "YES",
-      "colors_visible": "lavender background, indigo buttons/headers",
-      "appearance": 70,
-      "why": "Clean layout with clear hierarchy, lavender/indigo match request",
-      "polish_hint": "Add soft shadow to task cards"
+      "error": "HTTP 402"
+    },
+    {
+      "source_id": "000092",
+      "error": "HTTP 402"
+    },
+    {
+      "source_id": "000095",
+      "error": "HTTP 402"
+    },
+    {
+      "source_id": "000096",
+      "error": "HTTP 402"
+    },
+    {
+      "source_id": "000099",
+      "error": "HTTP 402"
     }
   ]
 }
