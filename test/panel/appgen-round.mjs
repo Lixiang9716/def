@@ -67,17 +67,19 @@ if (legs.includes('visual') && !existsSync(join(ROOT, 'test/tools/node_modules/p
 // streams) and run CONCURRENTLY — a round costs the longest leg, not the
 // sum. stdio inherits, so interleaved lines are expected.
 const runAsync = (leg, stem, extraEnv) => new Promise((resolve, reject) => {
+  // Per-leg timeouts: the port leg on the v2 corpus (20 instructions x
+  // BENCH_RUNS x glm-4.6 judge calls) legitimately runs 2-3h.
   const spec = {
-    port: { script: 'test/panel/appgen-bench-port.mjs', env: { BENCH_RUNS: '2' } },
-    chain: { script: 'test/panel/appgen-chain.mjs', env: {} },
-    census: { script: 'test/panel/appgen-eval.mjs', env: { APPGEN_RUNS: '2' } },
-    visual: { script: 'test/panel/appgen-visual.mjs', env: { VISUAL_N: '12' } },
+    port: { script: 'test/panel/appgen-bench-port.mjs', env: { BENCH_RUNS: '2' }, timeoutMs: 300 * 60 * 1000 },
+    chain: { script: 'test/panel/appgen-chain.mjs', env: {}, timeoutMs: 120 * 60 * 1000 },
+    census: { script: 'test/panel/appgen-eval.mjs', env: { APPGEN_RUNS: '2' }, timeoutMs: 180 * 60 * 1000 },
+    visual: { script: 'test/panel/appgen-visual.mjs', env: { VISUAL_N: '12' }, timeoutMs: 150 * 60 * 1000 },
   }[leg];
   const r = spawn('node', [spec.script], {
     cwd: ROOT,
     env: { ...ENV, LEDGER_STEM: stem, ...spec.env, ...extraEnv },
     stdio: 'inherit',
-    timeout: 90 * 60 * 1000,
+    timeout: spec.timeoutMs,
   });
   r.on('exit', (code) => (code === 0 ? resolve() : reject(new Error(`${leg} runner exited ${code}`))));
   r.on('error', reject);
