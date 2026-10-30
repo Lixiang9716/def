@@ -29,11 +29,15 @@ const envFile = Object.fromEntries(
     .filter((l) => l.includes('=') && !l.startsWith('#'))
     .map((l) => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; })
 );
+// Zhipu-only by owner decision (2026-10-30): the DeepSeek generator
+// account went unpaid (HTTP 402 from round 15 on) — every model in the
+// battery now comes from the ZAI endpoint (generator glm-5.3-flash,
+// judges glm-4.6 / glm-4.6v).
 const ENV = {
   ...process.env,
-  LLM_BASE_URL: process.env.LLM_BASE_URL || envFile.DSH_LLM_BASE_URL,
-  LLM_API_KEY: process.env.LLM_API_KEY || envFile.DSH_LLM_API_KEY,
-  LLM_MODEL: process.env.LLM_MODEL || 'deepseek-v4-flash',
+  LLM_BASE_URL: process.env.LLM_BASE_URL || envFile.ZAI_BASE_URL,
+  LLM_API_KEY: process.env.LLM_API_KEY || envFile.ZAI_API_KEY,
+  LLM_MODEL: process.env.LLM_MODEL || 'glm-5.3-flash',
   JUDGE_BASE_URL: process.env.JUDGE_BASE_URL || envFile.ZAI_BASE_URL,
   JUDGE_API_KEY: process.env.JUDGE_API_KEY || envFile.ZAI_API_KEY,
 };
