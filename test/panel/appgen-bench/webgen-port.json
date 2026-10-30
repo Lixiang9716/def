@@ -1,7 +1,7 @@
 {
-  "port_version": 1,
+  "port_version": 2,
   "source": "WebGen-Bench test corpus (mnluzimu/WebGen-Bench, data/test.jsonl, NeurIPS 2025 D&B)",
-  "note": "Test cases verbatim from the upstream corpus; instructions re-phrased def-native (mobile app face, capabilities preserved). Execution tier v1 = spec-inspection judge; the action-execution leg upgrades it to real dispatch.",
+  "note": "Test cases verbatim from the upstream corpus; instructions re-phrased def-native (mobile app face, capabilities preserved). Execution tier v1 = spec-inspection judge; the action-execution leg upgrades it to real dispatch. v2: 20 instructions (round 20; v1 ledgers ran the first 12, whose prompts and order are unchanged).",
   "selection": [
     "000036",
     "000038",
@@ -14,7 +14,15 @@
     "000092",
     "000095",
     "000096",
-    "000099"
+    "000099",
+    "000090",
+    "000053",
+    "000098",
+    "000026",
+    "000077",
+    "000064",
+    "000023",
+    "000089"
   ],
   "instructions": [
     {
@@ -870,6 +878,608 @@
         {
           "task": "Verify that the website uses 'snow' as the background color and 'dim gray' as the component color, as specified in the design requirements.",
           "expected_result": "The website has a background color of 'snow' and components (such as buttons, cards, headers, etc.) are styled with the color 'dim gray', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000090",
+      "application_type": "Social Media Platforms",
+      "instruction_en": "Please implement a social website for user registration, making friends, and sharing. The website should have a registration function, allowing users to create an account and log in. Users should be able to invite friends to join the website and vote on content. Users should be able to upload pictures and earn points. The website should have a personal homepage that displays user information and updates. Use light cyan as the default background and cadet blue for component styling.",
+      "prompt": "做一个社交分享应用的首页：顶部搜索栏，中间是个人主页卡片（头像、昵称、动态）和内容流（图片卡片、可投票、含积分展示），action 含注册登录、邀请好友、上传图片、内容投票。背景用浅青色（light cyan），主题色用军校蓝（cadet blue）。",
+      "cases": [
+        {
+          "task": "Attempt to register a new user with valid details using the registration form.",
+          "expected_result": "The user account is successfully created, and a confirmation message is displayed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Log in with the newly registered user's credentials.",
+          "expected_result": "The user is redirected to their personal homepage, which welcomes them by name.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the user profile section and verify the display of user information, including profile picture, name, and any recent updates.",
+          "expected_result": "User's profile picture, name, and updates are accurately displayed on their personal homepage.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Invite a friend to join the website by sending an invitation via a provided function.",
+          "expected_result": "A confirmation message is displayed, indicating that the invitation was successfully sent.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Upload a picture as the logged-in user and check for successful upload indication.",
+          "expected_result": "The picture appears in the user's profile or designated upload area with a confirmation of successful upload.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "File operation"
+            ]
+          }
+        },
+        {
+          "task": "Vote on a piece of content (e.g., picture) on the website.",
+          "expected_result": "The vote is registered, and the total votes count updates to reflect the user’s action.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Check the user points system by performing an action that earns points (e.g., logging in, uploading content) and verifying the points update.",
+          "expected_result": "The user’s points tally increases appropriately based on the action performed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "File operation",
+              "Generation"
+            ]
+          }
+        },
+        {
+          "task": "Validate navigation consistency by visiting different major sections of the website (e.g., Home, Profile, Friends, Uploads) using navigation menus.",
+          "expected_result": "Navigation links lead to the correct sections, and pages load without errors.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'light cyan' as the background color and 'cadet blue' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'light cyan' and components (such as buttons, cards, headers, etc.) are styled with the color 'cadet blue', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000053",
+      "application_type": "Job Search Platforms",
+      "instruction_en": "Please implement an internship portal website that connects students with companies offering internship opportunities. The website should have a student panel and a company panel, where students can browse and apply for internships, and companies can post internship positions. The website should also be optimized for speed, navigation, user interface, and user experience. Choose mint cream for the background; set all component colors to teal.",
+      "prompt": "做一个实习招聘应用的首页：顶部搜索栏，中间是实习职位卡片列表（职位、公司、地点），支持学生浏览和申请职位、企业发布职位，action 含学生/企业面板切换、申请、发布。背景用薄荷奶油色（mint cream），主题色用鸭绿色（teal）。",
+      "cases": [
+        {
+          "task": "Test the internship browsing functionality on the student panel.",
+          "expected_result": "Students can view a list of available internships, with each listing displaying consistent and correct company information, position description, and application deadline.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Test the internship application submission functionality from the student panel.",
+          "expected_result": "Students can successfully apply for a chosen internship, receive a confirmation notification on the website, and an email acknowledgment of their application.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test the internship posting functionality on the company panel.",
+          "expected_result": "Companies can successfully post a new internship opportunity, which becomes immediately visible and accurately listed on the student browsing page.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test the cross-linking navigation between the student and company panels.",
+          "expected_result": "Users can switch between the student and company panels with intuitive navigation elements and without encountering any broken links or navigation errors.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'mint cream' as the background color and 'teal' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'mint cream' and components (such as buttons, cards, headers, etc.) are styled with the color 'teal', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000098",
+      "application_type": "Travel Booking Portals",
+      "instruction_en": "Please implement a comprehensive car rental platform for booking car rental services. The platform should have a user-friendly interface, allowing users to easily browse and book car rental services. Users should be able to browse different types of cars, select rental dates and times, book selected cars, and view booking records. The platform should support multiple payment methods and provide order management functionality. Set the background to papaya whip, and apply dark orange to components.",
+      "prompt": "做一个租车预订应用的首页：顶部搜索栏，中间是可选车辆卡片列表（车型、价格、状态），支持选车、选租赁起止时间、下单支付、查看订单记录，action 含预订、支付方式选择、我的订单。背景用木瓜色（papaya whip），主题色用深橙色（dark orange）。",
+      "cases": [
+        {
+          "task": "Browse the available cars for rental.",
+          "expected_result": "The list of available cars, along with their details (e.g., type, price per day), is displayed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Select a car and specify rental start and end dates.",
+          "expected_result": "The system highlights whether the selected car is available for the chosen dates.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Navigate to the car booking confirmation page after selecting a car and rental dates.",
+          "expected_result": "The booking summary (car type, rental dates, total cost) is accurately displayed, with options to proceed to payment or edit details.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Attempt to complete a booking using one of the available payment methods.",
+          "expected_result": "Payment is processed successfully, and a booking confirmation screen is shown with a unique booking reference.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Payment",
+              "E-commerce"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'papaya whip' as the background color and 'dark orange' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'papaya whip' and components (such as buttons, cards, headers, etc.) are styled with the color 'dark orange', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000026",
+      "application_type": "Discussion Forums",
+      "instruction_en": "Please implement a polls website for users to cast their votes. The website should have functionalities for voting and viewing voting results. Users should be able to browse different voting options, cast votes for selected options, and view voting results. Color the background using white and set component styles to navy.",
+      "prompt": "做一个在线投票应用的首页：顶部标题栏，中间是投票选项列表（可浏览各选项的当前票数），支持为选中选项投票、查看实时投票结果（占比可视化），action 含投票、查看结果。背景用白色（white），主题色用海军蓝（navy）。",
+      "cases": [
+        {
+          "task": "Test the navigation to the voting page from the homepage.",
+          "expected_result": "The user can navigate to the voting page without errors, and all voting options are displayed.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Check the ability to browse different voting options without casting a vote.",
+          "expected_result": "The user can view a list of voting options, and each option should be clearly displayed with relevant information.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching",
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "Test the voting functionality by casting a vote on a selected option.",
+          "expected_result": "The vote is successfully recorded, and the user receives a confirmation notification indicating that their vote has been cast.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Check the voting results page for the display of current voting results.",
+          "expected_result": "The user can view the up-to-date voting results, including relevant statistics or graphical representations.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Data Visualization"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'white' as the background color and 'navy' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'white' and components (such as buttons, cards, headers, etc.) are styled with the color 'navy', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000077",
+      "application_type": "Productivity Applications",
+      "instruction_en": "Please implement a website that provides tool information for engineers. The website should have user registration and login functionality, and be able to display information about various tools, including tool name, description, function, price, etc. Users should be able to search and filter tools, view detailed tool information, and be able to comment and rate tools. Declare ivory as the global background color and forest green for all UI pieces.",
+      "prompt": "做一个工程师工具库应用的首页：顶部搜索栏，中间是工具卡片列表（名称、描述、功能、价格），支持注册登录、按类目筛选、查看工具详情、评论评分，action 含搜索、筛选、详情、评论。背景用象牙色（ivory），主题色用森林绿（forest green）。",
+      "cases": [
+        {
+          "task": "Test the user registration form by creating a new account.",
+          "expected_result": "A new user account is successfully created, and a confirmation message is displayed. The user is directed to a welcome page or dashboard.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows",
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Perform a login operation using valid credentials.",
+          "expected_result": "The user is successfully logged in and redirected to their user dashboard, confirming their account status.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Search for a specific tool using the search functionality.",
+          "expected_result": "The search results display relevant tools matching the search query, including tool name and basic details.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Apply a filter to the tools section based on tool category.",
+          "expected_result": "Only tools within the selected category are displayed, and all other tools are correctly excluded.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Filtering"
+            ]
+          }
+        },
+        {
+          "task": "View detailed information for a specific tool by clicking on it.",
+          "expected_result": "The detailed page displays comprehensive information including tool name, description, function, and price.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Add a comment and rating to a tool as a logged-in user.",
+          "expected_result": "The comment and rating are successfully submitted and appear under the tool's comments section.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'ivory' as the background color and 'forest green' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'ivory' and components (such as buttons, cards, headers, etc.) are styled with the color 'forest green', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000064",
+      "application_type": "News and Information Sites",
+      "instruction_en": "Please implement a news blog website for the shipping industry to publish news and company information. The website should have sections for news, company profiles, and events. Users should be able to browse news, company information, and events, and subscribe to newsletters. The website should have a backend management system that allows administrators to manage ad spaces. Implement styling with old lace for the background and rosy brown for components.",
+      "prompt": "做一个航运新闻资讯应用的首页：顶部导航，中间是新闻文章列表和公司名片、活动卡片，支持浏览新闻、查看公司和活动详情、订阅简报，action 含资讯、公司、活动、订阅。背景用旧蕾丝色（old lace），主题色用玫瑰棕（rosy brown）。",
+      "cases": [
+        {
+          "task": "Navigate to the news section and verify the presence of recent articles.",
+          "expected_result": "The news section should display a list of current articles related to the shipping industry, each with a title, publication date, and a brief summary.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Access a company profile from the company information section.",
+          "expected_result": "The selected company profile should open up to display detailed information, including company history, key executives, and contact information.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Attempt to subscribe to the newsletter using a valid email address.",
+          "expected_result": "A confirmation message should appear indicating successful subscription to the newsletter.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations",
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Go to the events section and view details of a listed event.",
+          "expected_result": "The event details should display comprehensive information such as date, time, location, and a brief description of the event.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Test the main navigation bar links to ensure they redirect to correct sections.",
+          "expected_result": "Clicking on each navigation link should take the user to the correct section (news, company profiles, events) without errors.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify ad space management in the backend by placing an advertisement and checking its display on the main site.",
+          "expected_result": "The placed advertisement should appear in the designated ad space on the website.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Data Visualization",
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'old lace' as the background color and 'rosy brown' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'old lace' and components (such as buttons, cards, headers, etc.) are styled with the color 'rosy brown', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000023",
+      "application_type": "CRM Systems",
+      "instruction_en": "Please implement a customer relationship management website for managing sales leads and reporting. The website should have functionalities for automated message sending, organizing and categorizing leads, updating lead information and status, updating settings and dropdown menus, and reporting. Users should be able to browse and manage sales leads, view reports, and receive best practice and integration advice. Define background as papaya whip; define components with dark orange.",
+      "prompt": "做一个销售线索管理应用的首页：顶部操作栏，中间是线索卡片列表（姓名、状态、分类），支持新增线索、更新线索状态、自动发送消息、查看报表和最佳实践建议，action 含新增、更新、消息、报表。背景用木瓜色（papaya whip），主题色用深橙色（dark orange）。",
+      "cases": [
+        {
+          "task": "Verify that the \"Add New Lead\" form allows users to fill out and submit details correctly.",
+          "expected_result": "The form submissions successfully add the lead to the system.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test the automated message-sending functionality by initiating a message to a specific lead.",
+          "expected_result": "The message is sent automatically, and a confirmation notification is displayed.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Confirm that lead information can be updated by modifying an existing lead's status.",
+          "expected_result": "The lead’s status is successfully updated, and the new status is accurately displayed on the lead’s profile.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Form Operations"
+            ]
+          }
+        },
+        {
+          "task": "Test website navigation by using the provided menu to access the best practice and integration advice section.",
+          "expected_result": "The relevant page is successfully loaded, and users can view the information on best practices and integration advice.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'papaya whip' as the background color and 'dark orange' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'papaya whip' and components (such as buttons, cards, headers, etc.) are styled with the color 'dark orange', accurately reflecting the design instruction.",
+          "task_category": {
+            "primary_category": "Design Validation Testing",
+            "subcategories": [
+              "UI Consistency"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "000089",
+      "application_type": "Publishing/Blogging Platforms",
+      "instruction_en": "Please implement a startup article publishing mini-program to display entrepreneurial experiences and stories. The mini-program should have functions for browsing articles, searching, collecting, and sharing. Users should be able to browse articles in different categories, search for articles of interest, collect favorite articles, and share articles on other platforms. The mini-program should also have user registration and login functions, allowing users to manage their collections and reading history. Style the layout with old lace in the background and rosy brown for the interface.",
+      "prompt": "做一个创业文章阅读应用的首页：顶部搜索栏，中间是分类文章卡片列表（封面、标题、摘要），支持注册登录、搜索、收藏文章、分享文章、查看阅读历史，action 含搜索、收藏、分享、我的收藏。背景用旧蕾丝色（old lace），主题色用玫瑰棕（rosy brown）。",
+      "cases": [
+        {
+          "task": "Verify Article Browsing",
+          "expected_result": "Users can successfully browse articles under different categories. Selecting a category should display a list of relevant articles without errors or missing content.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering",
+              "Details Information"
+            ]
+          }
+        },
+        {
+          "task": "Test Search Functionality",
+          "expected_result": "When a user enters a query into the search bar and submits it, the system should display a list of articles that match the search criteria, reflecting accurate and relevant results based on the query.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Searching"
+            ]
+          }
+        },
+        {
+          "task": "Check Article Collection Feature",
+          "expected_result": "Users should be able to click a \"collect\" button on an article, which will then be added to their collection. The collected articles should be accessible from a dedicated section, accurately displaying all saved articles.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation",
+              "File operation"
+            ]
+          }
+        },
+        {
+          "task": "Validate Article Sharing Capability",
+          "expected_result": "Users should be able to share articles to other platforms via a functional share button. Upon clicking, options for sharing (e.g., social media, email) should be displayed, and the selected method should successfully transmit the article link.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Communication"
+            ]
+          }
+        },
+        {
+          "task": "Assess User Registration Process",
+          "expected_result": "New users should be able to register by providing necessary information (e.g., username, email, password). The registration process should complete without errors, and users should receive confirmation of successful registration.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Test User Login Functionality",
+          "expected_result": "Existing users should be able to log in using their credentials. Upon successful login, users should be directed to their personalized homepage, where they can access their collections and reading history.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Authentication Flows"
+            ]
+          }
+        },
+        {
+          "task": "Validate Reading History Tracking",
+          "expected_result": "As users read articles, these articles should appear in their reading history section. The history should update automatically and display a correct and chronological list of previously read articles.",
+          "task_category": {
+            "primary_category": "Functional Testing",
+            "subcategories": [
+              "Generation"
+            ]
+          }
+        },
+        {
+          "task": "Examine Navigation to Different Sections",
+          "expected_result": "Users should be able to navigate smoothly between sections (e.g., categories, search, collections, profile) via a navigation menu. The transition between sections should be seamless, with minimal loading time and no broken links.",
+          "task_category": {
+            "primary_category": "Data Display Testing",
+            "subcategories": [
+              "Dynamic Content Rendering"
+            ]
+          }
+        },
+        {
+          "task": "Verify that the website uses 'old lace' as the background color and 'rosy brown' as the component color, as specified in the design requirements.",
+          "expected_result": "The website has a background color of 'old lace' and components (such as buttons, cards, headers, etc.) are styled with the color 'rosy brown', accurately reflecting the design instruction.",
           "task_category": {
             "primary_category": "Design Validation Testing",
             "subcategories": [

@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "at": "2026-10-29T19:54:52.690Z",
+    "generator": "deepseek-v4-flash",
+    "judge": "glm-4.6v",
+    "instructions": 2,
+    "tier": "rendered-surface screenshots (visual leg v2, product validate+normalize render path)",
+    "appearanceRubric": "v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors"
+  },
+  "visual": {
+    "backgroundYes": 1,
+    "backgroundPartial": 0,
+    "backgroundNo": 1,
+    "scored": 2,
+    "rejected": 0,
+    "appearanceScale": 100,
+    "meanAppearance": 71
+  },
+  "pixelCheck": {
+    "paintedExact": 2,
+    "checked": 2
+  },
+  "rows": [
+    {
+      "source_id": "000036",
+      "theme": {
+        "accent": "#DC143C",
+        "background": "#FFF6F6",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FFF6F6",
+          "#FFFAFA"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-snap-probe/000036.png",
+      "pixelBackground": {
+        "target": "#FFFAFA",
+        "hitFraction": 0.61,
+        "painted": true
+      },
+      "background_painted": "NO",
+      "colors_visible": "crimson buttons, red top bar, white background, pink section",
+      "appearance": 70,
+      "why": "Clean layout with clear hierarchy but generic",
+      "polish_hint": "Add seashell texture to background"
+    },
+    {
+      "source_id": "000038",
+      "theme": {
+        "accent": "#800000",
+        "background": "#FAF0E6",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-snap-probe/000038.png",
+      "pixelBackground": {
+        "target": "#FAF0E6",
+        "hitFraction": 0.71,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "linen (background), maroon (top bar/buttons), white (search bar/tabs), light pink (featured card), dark gray (text)",
+      "appearance": 72,
+      "why": "Clean layout with clear hierarchy, but generic design",
+      "polish_hint": "Adjust featured card background to match linen tone"
+    }
+  ]
+}
