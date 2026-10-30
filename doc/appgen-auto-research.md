@@ -46,6 +46,15 @@ breadth layer over the L3/M4 anchors):
   header-time lie), and any surprising number gets the **nonce/variance
   control** (same prompt twice must differ; a nonce woven into a required
   field must come back) before it is believed.
+- **Dead-endpoint rounds are refused, not published** (the r15-r18 lesson:
+  four batteries ran against a drained provider account and shipped as
+  11.7% / all-zero legs). When endpoint-class failures (HTTP
+  402/408/429/5xx, network errors) dominate a ledger's rows, the run is a
+  measurement failure: the round driver refuses it (`runInvalid` markers,
+  exit 2), leg runners stamp `meta.runInvalid`, and the scorecard quotes
+  the family as `RUN INVALID` — never as a quality number. The only fix is
+  the endpoint itself (top-up or swap); no prompt/gate/catalog change can
+  act on a round that never generated.
 
 **Method donors — external, borrowed at the pattern level, never
 imported wholesale** (they target HTML websites or native apps, not

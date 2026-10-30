@@ -32,6 +32,13 @@ token/延迟 bars)、TTFT probe。它们都回答不了业主要求的两个问�
 - 度量卫生,两处都咬过一次:延迟在**响应体收净之后**采样(M4 账本记录过的
   ~30× header 时间谎报),任何可疑数字先过 **nonce/方差对照**(同 prompt
   两跑必须不同;织入必填字段的 nonce 必须回来)再采信。
+- **死端点的轮次要拒收,不许发布**(r15-r18 的教训:四轮电池跑在欠费的
+  provider 账户上,以 11.7% / 全零腿的形状发布出去)。当 endpoint 类失败
+  (HTTP 402/408/429/5xx、网络错误)占账本行数的多数时,这一跑就是测量
+  失败:round driver 拒收该轮(`runInvalid` 标记、exit 2),各腿 runner
+  在账本盖 `meta.runInvalid` 戳,scorecard 把该家族引用为 `RUN INVALID`
+  ——绝不当作质量数字。唯一的修法是端点本身(充值或换端点);任何
+  prompt/gate/catalog 改动都无法作用于一个从未生成过的轮次。
 
 **方法供体——外部,按模式借鉴,绝不整体引入**(它们面向 HTML 网站或原生
 app,不是 app-shell spec;四门校验器才是产品自己的契约):
