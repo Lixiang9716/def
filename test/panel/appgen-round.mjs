@@ -122,7 +122,15 @@ if (legs.includes('census')) {
 }
 if (legs.includes('visual')) {
   const l = readLedger('appgen-bench', stemOf.visual);
-  result.legs.visual = { bgYes: l?.visual?.backgroundYes ?? null, bgScored: l?.visual?.scored ?? null, appearance: l?.visual?.meanAppearance ?? null };
+  result.legs.visual = {
+    bgYes: l?.visual?.backgroundYes ?? null,
+    bgScored: l?.visual?.scored ?? null,
+    appearance: l?.visual?.meanAppearance ?? null,
+    // The judge's own noise floor (same screenshot judged 2×): appearance
+    // deltas smaller than this are unresolvable — the planner reads them
+    // here so sub-noise moves never masquerade as progress.
+    judgeNoise: l?.visual?.judgeSelfVariance?.meanAbsDelta ?? null,
+  };
 }
 
 console.log('ROUND_RESULT ' + JSON.stringify(result));

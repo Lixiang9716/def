@@ -35,7 +35,11 @@ if (port) {
 }
 if (portGlm) console.log(`port (glm-5.3-flash${portGlm.runsPerInstruction > 1 ? `, ${portGlm.runsPerInstruction}-run mean` : ', single-run'}): accuracy ${portGlm.meanAccuracy ?? portGlm.overall.accuracy}%`);
 if (chain) console.log(`chain (backend axis): ${chain.overall.accuracy}% | refusals ${chain.diagnostics.rejectedUpdates}`);
-if (visual) console.log(`visual: background ${visual.visual.backgroundYes} YES / ${visual.visual.backgroundPartial} PARTIAL / ${visual.visual.backgroundNo} NO | appearance ${visual.visual.meanAppearance}/${visual.visual.appearanceScale ?? 5} (rubric ${visual.meta.appearanceRubric ?? 'v1'})`);
+if (visual) {
+  const v = visual.visual.judgeSelfVariance;
+  const noise = v ? ` | judge self-variance ±${v.meanAbsDelta} mean|Δ| (max ${v.maxDelta}, within-5 ${Math.round(v.within5Rate * 100)}%)` : '';
+  console.log(`visual: background ${visual.visual.backgroundYes} YES / ${visual.visual.backgroundPartial} PARTIAL / ${visual.visual.backgroundNo} NO | appearance ${visual.visual.meanAppearance}/${visual.visual.appearanceScale ?? 5} (rubric ${visual.meta.appearanceRubric ?? 'v1'})${noise}`);
+}
 if (census) console.log(`census (dsflash): structuralValid ${census.percentages?.structuralValid}% | constitution ${census.percentages?.constitution}% | alignment ${census.percentages?.alignment}%`);
 if (censusGlm) console.log(`census (glm-5.3-flash): structuralValid ${censusGlm.percentages?.structuralValid}% | constitution ${censusGlm.percentages?.constitution}% | alignment ${censusGlm.percentages?.alignment}%`);
 if (!port || !chain) console.log('NOTE: missing families — run the loop before quoting the scorecard.');
