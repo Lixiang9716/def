@@ -43,10 +43,11 @@ export const RULES = 'Author an app-shell spec: {"spec":"' + SPEC_VERSION + '",t
   'Node types (closed): text,image,button,row,column,card,progressbar,badge + templates search-bar,tab-bar,chat-row,service-grid,banner-card,hcard-row,balance-card,mini-player. ' +
   'ACTION IDS are dot.case ASCII matching ' + ACTION_RE.source + ' — like "player.toggle", "order.pay", "flash.sale": start with a lowercase letter, use only a-z 0-9 . : - inside; NEVER Chinese, spaces, underscores or uppercase (button labels may be Chinese; ids may not) — the classic slip is camelCase after a dot: "playAll"→"playall", "markAllRead"→"markallread", every rune after each dot stays lowercase. ' +
   'COVERAGE: inventory EVERY user operation the request names and give each one an action id plus a visible entry (button/tab/grid item) — account settings, registration, history, export, print all get one; a capability without an entry does not exist. ' +
+  'DESTINATION CONTENT: an entry alone is not coverage — the tab/action must lead to content declared IN the tree: forms name their input fields and submit shows a confirmation with a real reference number ("订单号 B20260831-4921"), history/order tabs list 2-3 real entries each with date and status, settings tabs show the actual toggles/options — laid flat inside the existing cards as rows of entries, never as a tile column inside a row (that is the 4th level); an entry whose destination content is nowhere in the tree does not exist either. ' +
   'COLORS: when the request names a standard color, use its EXACT CSS hex, never an approximation or an invented tone. BACKGROUND HEX TABLE — copy VERBATIM, never a lookalike pastel: seashell=#FFF5EE linen=#FAF0E6 lemon chiffon=#FFFACD mint cream=#F5FFFA cornsilk=#FFF8DC snow=#FFFAFA peach puff=#FFDAB9 lavender=#E6E6FA azure=#F0FFFF aliceblue=#F0F8FF ivory=#FFFFF0 beige=#F5F5DC lightgoldenrodyellow=#FAFAD2. chocolate #D2691E, indian red #CD5C5C, dim gray #696969, lemon chiffon #FFFACD, peach puff #FFDAB9, snow #FFFAFA, seashell #FFF5EE, linen #FAF0E6, mint cream #F5FFFA, cornsilk #FFF8DC, lavender #E6E6FA, azure #F0FFFF, aliceblue #F0F8FF, ivory #FFFFF0, beige #F5F5DC, gold #FFD700. The COMPONENT-color ask goes to theme.accent, the BACKGROUND-color ask goes to theme.background — e.g. "background lemon chiffon, components chocolate" → {"accent":"#D2691E","background":"#FFFACD"}. When the request names the background color, theme.background is that name\u0027s EXACT hex — NEVER invent a harmonious tone; the harmonious-light-background fallback applies ONLY when no background color is named (for a non-standard name like "azure mist" or "light goldenrod", use the closest standard color\u0027s hex — azure #F0FFFF, lightgoldenrodyellow #FAFAD2 — and never a near-miss tone you invent). ' +
   'Every button.action must be declared in actions. Text fields are plain text. Call appshell_catalog for the full rules. ' +
   'Design constitution — the target device is a PHONE (390x844 portrait, touch, one-handed): ' +
-  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层(模板算一层). ' +
+  '一屏一主角: screen.children[0] 必须是 banner-card hero 或大封面 hcard-row; 顶层 4-6 块, 主角块视觉重量≥其余总和; 嵌套≤3 层(模板算一层; screen 下 card→row→leaf 已是顶格, 卡片内 row 里不再套 column 瓦片——并列小块一行一项直接排 row). ' +
   '色彩统治: 第一屏大面积被彩色 hero 与封面占据; hero 用最深色混 accent 的浓色场; theme.accent 全屏 ≤2 点位(主 CTA+活动处); 音乐/夜间类 theme.mode="dark". ' +
   '文案真实: 具体数字与真实名目("¥1,920"), 禁占位词; 标题≤10字、按钮 2-4 字动词; emoji 只做内容一屏≤4. ' +
   '字阶与数字主角: title 是海报, 全屏 ≤3 处(hero 主标题+数字主角); 数字/金额/进度用 title 档放大. ' +
@@ -120,6 +121,12 @@ export function p(type, fields) {
 /* values — the validator treats them as inert strings (gate 2).       */
 /* ---------------------------------------------------------------- */
 
+/** The cover palette — the machine twin of the constitution's 「hcard-row
+ * 每项 cover 带 color, 4 色板逐项错开」: an item whose spec omits
+ * cover.color gets palette slot i%4, so a cover strip never collapses to
+ * one flat default blue. Explicit spec colors always win. */
+const COVER_PALETTE = ['#1677ff', '#0d9488', '#d97706', '#7c3aed'];
+
 defineTemplate('search-bar', {
   expand: (n) => p('card', { style: { borderRadius: '14px', padding: '6px 10px' }, children: [
     p('text', { text: '🔍 ' + String(n.placeholder || '搜索'), size: 'small', tone: 'muted' }),
@@ -169,8 +176,8 @@ defineTemplate('banner-card', {
 });
 
 defineTemplate('hcard-row', {
-  expand: (n) => p('row', { children: (n.items || []).slice(0, 6).map((it) => p('card', { children: [
-    p('image', { emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || '#1677ff' }),
+  expand: (n) => p('row', { children: (n.items || []).slice(0, 6).map((it, i) => p('card', { children: [
+    p('image', { emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || COVER_PALETTE[i % 4] }),
     p('text', { text: String(it.title || ''), size: 'small' }),
     p('text', { text: String(it.sub || ''), size: 'small', tone: 'muted' }),
   ] })) }),
