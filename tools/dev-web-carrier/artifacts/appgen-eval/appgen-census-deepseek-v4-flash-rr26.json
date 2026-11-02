@@ -1,6 +1,6 @@
 {
   "meta": {
-    "at": "2026-11-02T03:20:35.077Z",
+    "at": "2026-11-02T18:58:03.909Z",
     "model": "glm-5.3-flash",
     "promptSet": 1,
     "systemPrompt": "SYSTEM_V2",
@@ -23,14 +23,25 @@
       "axis": "ui",
       "runs": 2,
       "structuralFirstPass": 2,
-      "rubricFirstPass": 0,
+      "rubricFirstPass": 2,
       "finalPass": 2,
       "expectHits": 8,
       "expectTotal": 8,
-      "tokensP50": 15208,
-      "latencyP50": 333029
+      "tokensP50": 5708,
+      "latencyP50": 79540
     },
     "wallet": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 5,
+      "expectTotal": 6,
+      "tokensP50": 6817,
+      "latencyP50": 96700
+    },
+    "chat": {
       "axis": "ui",
       "runs": 2,
       "structuralFirstPass": 2,
@@ -38,63 +49,52 @@
       "finalPass": 2,
       "expectHits": 6,
       "expectTotal": 6,
-      "tokensP50": 10322,
-      "latencyP50": 194777
-    },
-    "chat": {
-      "axis": "ui",
-      "runs": 2,
-      "structuralFirstPass": 2,
-      "rubricFirstPass": 0,
-      "finalPass": 2,
-      "expectHits": 6,
-      "expectTotal": 6,
-      "tokensP50": 8778,
-      "latencyP50": 143146
+      "tokensP50": 5067,
+      "latencyP50": 68099
     },
     "tools-dashboard": {
       "axis": "ui",
       "runs": 2,
       "structuralFirstPass": 2,
-      "rubricFirstPass": 2,
+      "rubricFirstPass": 0,
       "finalPass": 2,
       "expectHits": 6,
       "expectTotal": 6,
-      "tokensP50": 6998,
-      "latencyP50": 164611
+      "tokensP50": 12014,
+      "latencyP50": 154748
     },
     "pomodoro": {
       "axis": "backend",
       "runs": 2,
       "structuralFirstPass": 2,
-      "rubricFirstPass": 2,
+      "rubricFirstPass": 1,
       "finalPass": 2,
       "expectHits": 4,
       "expectTotal": 4,
-      "tokensP50": 7500,
-      "latencyP50": 179332
+      "tokensP50": 12250,
+      "latencyP50": 148071
     },
     "calendar": {
       "axis": "backend",
       "runs": 2,
       "structuralFirstPass": 2,
-      "rubricFirstPass": 0,
+      "rubricFirstPass": 1,
       "finalPass": 2,
-      "expectHits": 3,
+      "expectHits": 4,
       "expectTotal": 4,
-      "tokensP50": 14102,
-      "latencyP50": 213157
+      "tokensP50": 14622,
+      "latencyP50": 160994
     },
     "ecommerce": {
       "axis": "ui",
       "runs": 2,
-      "structuralFirstPass": 1,
+      "structuralFirstPass": 2,
       "rubricFirstPass": 0,
-      "finalPass": 0,
+      "finalPass": 1,
       "expectHits": 4,
       "expectTotal": 4,
-      "tokensP50": 12595,
-      "latencyP50": 256895
+      "tokensP50": 22188,
+      "latencyP50": 329809
     },
     "fitness": {
       "axis": "ui",
@@ -104,42 +104,38 @@
       "finalPass": 2,
       "expectHits": 4,
       "expectTotal": 4,
-      "tokensP50": 6353,
-      "latencyP50": 127108
+      "tokensP50": 4838,
+      "latencyP50": 59839
     }
   },
   "percentages": {
-    "structuralValid": 93.8,
-    "constitution": 46.7,
+    "structuralValid": 100,
+    "constitution": 56.3,
     "alignment": 97.6
   },
   "failureClasses": [
     [
       "RUBRIC_NAMED_COLOR_NEAR_MISS",
-      4
-    ],
-    [
-      "RUBRIC_HERO_FIRST",
       3
     ],
     [
-      "RUBRIC_NO_ACTIONS",
+      "RUBRIC_DEPTH",
+      3
+    ],
+    [
+      "RUBRIC_HERO_FIRST",
       2
     ],
     [
-      "RUBRIC_TITLE_LEN",
+      "RUBRIC_TITLE_BUDGET",
+      2
+    ],
+    [
+      "RUBRIC_TEMPLATES",
       1
     ],
     [
       "RUBRIC_TOP_BLOCKS",
-      1
-    ],
-    [
-      "RUBRIC_TITLE_BUDGET",
-      1
-    ],
-    [
-      "RUBRIC_DEPTH",
       1
     ]
   ],
@@ -149,19 +145,11 @@
       1
     ],
     [
-      "RUBRIC_TOP_BLOCKS",
+      "RUBRIC_DEPTH",
       1
     ],
     [
       "RUBRIC_TITLE_BUDGET",
-      1
-    ],
-    [
-      "RUBRIC_NAMED_COLOR_NEAR_MISS",
-      1
-    ],
-    [
-      "HTTP",
       1
     ]
   ],
@@ -170,14 +158,14 @@
       "category": "music-player",
       "axis": "ui",
       "run": 1,
-      "firstOk": false,
+      "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 10009,
-      "latency": 202543,
-      "a2uiComponents": 0,
+      "tokens": 6572,
+      "latency": 92668,
+      "a2uiComponents": 49,
       "counts": {
-        "topBlocks": 6,
+        "topBlocks": 5,
         "maxDepth": 2,
         "titles": 0,
         "emoji": 0,
@@ -186,68 +174,7 @@
           "search-bar",
           "service-grid",
           "hcard-row",
-          "mini-player",
-          "tab-bar"
-        ],
-        "actions": 8,
-        "interactive": 1
-      },
-      "expect": [
-        {
-          "kind": "template",
-          "id": "search-bar",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "banner-card",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "hcard-row",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "mini-player",
-          "hit": true
-        }
-      ],
-      "errors": [],
-      "rubricFails": [],
-      "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_HERO_FIRST",
-          "msg": "screen.children[0] is search-bar"
-        }
-      ],
-      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#1C1C1E\",\"mode\":\"dark\"},\"tabs\":[\"首页\",\"乐库\",\"我的\"],\"actions\":[\"search.open\",\"recommend.daily.open\",\"fm.private.open\",\"playlist.library.open\",\"chart.rank.open\",\"playlist.detail.open\",\"player.toggle\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索歌曲、歌手或播客\"},{\"type\":\"banner-card\",\"title\":\"每日推荐已更新\",\"subtitle\":\"根据你近 7 天的听歌口味生成 30 首\"},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"🎧\",\"label\":\"私人FM\"},{\"icon\":\"📅\",\"label\":\"每日推荐\"},{\"icon\":\"📂\",\"label\":\"歌单\"},{\"icon\":\"📈\",\"label\":\"排行榜\"}]},{\"type\":\"column\",\"children\":[{\"type\":\"text\",\"text\":\"推荐歌单\",\"size\":\"body\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🌙\",\"color\":\"#5E35B1\"},\"title\":\"深夜耳机\",\"sub\":\"32首 · 舒缓电子\"},{\"cover\":{\"emoji\":\"☕\",\"color\":\"#00897B\"},\"title\":\"",
-      "retried": true
-    },
-    {
-      "category": "music-player",
-      "axis": "ui",
-      "run": 2,
-      "firstOk": false,
-      "structuralOk": true,
-      "finalOk": true,
-      "tokens": 15208,
-      "latency": 333029,
-      "a2uiComponents": 0,
-      "counts": {
-        "topBlocks": 6,
-        "maxDepth": 2,
-        "titles": 1,
-        "emoji": 0,
-        "templates": [
-          "banner-card",
-          "search-bar",
-          "service-grid",
-          "hcard-row",
-          "mini-player",
-          "tab-bar"
+          "mini-player"
         ],
         "actions": 1,
         "interactive": 1
@@ -277,14 +204,59 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": [
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5708,
+      "latency": 79540,
+      "a2uiComponents": 51,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
         {
-          "code": "RUBRIC_HERO_FIRST",
-          "msg": "screen.children[0] is search-bar"
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
         }
       ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#FF0000\", \"mode\": \"dark\" },\n  \"tabs\": [\"首页\", \"播客\", \"我的\"],\n  \"actions\": [\"daily.play\", \"player.toggle\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      { \"type\": \"search-bar\", \"placeholder\": \"搜索歌曲、歌手、播客\" },\n      {\n        \"type\": \"column\",\n        \"children\": [\n          { \"type\": \"banner-card\", \"title\": \"每日推荐已更新\", \"subtitle\": \"为你生成 30 首 · 周四 06:00\" },\n          { \"type\": \"row\", \"children\": [ { \"type\": \"button\", \"label\": \"立即听\", \"action\": \"daily.play\" } ] }\n        ]\n      },\n      {\n        \"type\": \"service-grid\",\n        \"items\": [\n          { \"icon\": \"📻\", \"label\": \"私人FM\" },\n          { \"icon\": \"📅\", \"label\": \"每日推荐\" },\n          { \"icon\": \"🎼\", \"label\": \"歌单\" },\n          { \"icon\": \"📈\", \"label\": \"排行榜\" }\n        ]\n      },\n",
-      "retried": true
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
     },
     {
       "category": "wallet",
@@ -293,21 +265,21 @@
       "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 8425,
-      "latency": 175750,
-      "a2uiComponents": 59,
+      "tokens": 7544,
+      "latency": 107158,
+      "a2uiComponents": 55,
       "counts": {
-        "topBlocks": 6,
-        "maxDepth": 3,
-        "titles": 2,
+        "topBlocks": 4,
+        "maxDepth": 2,
+        "titles": 1,
         "emoji": 0,
         "templates": [
+          "banner-card",
           "balance-card",
           "service-grid",
-          "hcard-row",
-          "tab-bar"
+          "chat-row"
         ],
-        "actions": 6,
+        "actions": 4,
         "interactive": 2
       },
       "expect": [
@@ -336,31 +308,31 @@
       "category": "wallet",
       "axis": "ui",
       "run": 2,
-      "firstOk": false,
+      "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 10322,
-      "latency": 194777,
-      "a2uiComponents": 0,
+      "tokens": 6817,
+      "latency": 96700,
+      "a2uiComponents": 48,
       "counts": {
-        "topBlocks": 6,
-        "maxDepth": 3,
-        "titles": 2,
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 1,
         "emoji": 0,
         "templates": [
-          "balance-card",
+          "banner-card",
           "service-grid",
           "chat-row",
           "tab-bar"
         ],
-        "actions": 6,
-        "interactive": 2
+        "actions": 4,
+        "interactive": 1
       },
       "expect": [
         {
           "kind": "template",
           "id": "balance-card",
-          "hit": true
+          "hit": false
         },
         {
           "kind": "template",
@@ -376,14 +348,7 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_TITLE_LEN",
-          "msg": "title >10 runes: \"+¥12,860.00\""
-        }
-      ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#00008B\", \"background\": \"#F0F8FF\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"理财\", \"账单\", \"我的\"],\n  \"actions\": [\"assets.detail\", \"scan.pay\", \"transfer.send\", \"wallet.topup\", \"bills.list\", \"bills.export\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"balance-card\",\n        \"label\": \"账户总资产\",\n        \"value\": \"¥128,540.66\",\n        \"actionLabel\": \"明细\",\n        \"action\": \"assets.detail\"\n      },\n      {\n        \"type\": \"row\",\n        \"children\": [\n          {\n            \"type\": \"card\",\n            \"children\": [\n              { \"type\": \"text\", \"text\": \"本月收入\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"+¥12,860.00\", \"size\": \"title\" }\n            ]\n          },\n          {\n           ",
-      "retried": true
+      "firstPassRubricFails": []
     },
     {
       "category": "chat",
@@ -392,9 +357,62 @@
       "firstOk": false,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 7995,
-      "latency": 126139,
+      "tokens": 8106,
+      "latency": 84054,
       "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 1,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #F7F8FA is near mint cream #F5FFFA — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#008000\", \"background\": \"#F7F8FA\", \"mode\": \"light\" },\n  \"tabs\": [\"消息\", \"通讯录\", \"发现\", \"我\"],\n  \"actions\": [\"chat.new\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"消息\",\n        \"subtitle\": \"3 条未读 · 2 条@你\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索联系人、群聊\"\n      },\n      {\n        \"type\": \"column\",\n        \"children\": [\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🧑\", \"color\": \"#2E7D32\" },\n            \"name\": \"张伟\",\n            \"preview\": \"晚上一起吃火锅吗？\",\n            \"time\": \"14:32\"\n          },\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"👥\", \"color\": \"#4CAF50\" },\n            \"name\":",
+      "retried": true
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5067,
+      "latency": 68099,
+      "a2uiComponents": 42,
       "counts": {
         "topBlocks": 4,
         "maxDepth": 2,
@@ -406,7 +424,7 @@
           "chat-row",
           "tab-bar"
         ],
-        "actions": 7,
+        "actions": 1,
         "interactive": 1
       },
       "expect": [
@@ -429,93 +447,30 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_NO_ACTIONS",
-          "msg": "actions[] empty — a poster, not an app"
-        }
-      ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#008000\", \"background\": \"#F5FFFA\", \"mode\": \"light\" },\n  \"tabs\": [\"消息\", \"通讯录\", \"发现\", \"我\"],\n  \"actions\": [],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"3 条未读消息\",\n        \"subtitle\": \"林晓雨、产品讨论组正在等你回复\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索联系人、群聊、消息\"\n      },\n      {\n        \"type\": \"column\",\n        \"children\": [\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🌷\", \"color\": \"#2E8B57\" },\n            \"name\": \"林晓雨\",\n            \"preview\": \"好的，明早九点见！\",\n            \"time\": \"09:42\"\n          },\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"💼\", \"color\": \"#6B8E23\" },\n            \"name\"",
-      "retried": true
-    },
-    {
-      "category": "chat",
-      "axis": "ui",
-      "run": 2,
-      "firstOk": false,
-      "structuralOk": true,
-      "finalOk": true,
-      "tokens": 8778,
-      "latency": 143146,
-      "a2uiComponents": 0,
-      "counts": {
-        "topBlocks": 5,
-        "maxDepth": 2,
-        "titles": 0,
-        "emoji": 0,
-        "templates": [
-          "banner-card",
-          "search-bar",
-          "chat-row",
-          "tab-bar"
-        ],
-        "actions": 2,
-        "interactive": 2
-      },
-      "expect": [
-        {
-          "kind": "template",
-          "id": "chat-row",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "tab-bar",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "search-bar",
-          "hit": true
-        }
-      ],
-      "errors": [],
-      "rubricFails": [],
-      "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_NO_ACTIONS",
-          "msg": "actions[] empty — a poster, not an app"
-        },
-        {
-          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
-          "msg": "theme.background #F7F8FA is near mint cream #F5FFFA — use the exact hex"
-        }
-      ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#07C160\",\n    \"background\": \"#F7F8FA\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"消息\", \"通讯录\", \"发现\", \"我\"],\n  \"actions\": [],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"3 条未读消息\",\n        \"subtitle\": \"来自 陈奕然、产品研发群、妈\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索联系人、群聊、聊天记录\"\n      },\n      {\n        \"type\": \"column\",\n        \"children\": [\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🌿\", \"color\": \"#FFDAB9\" },\n            \"name\": \"陈奕然\",\n            \"preview\": \"设计稿第二版已发你邮箱\",\n            \"time\": \"14:32\"\n          },\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🚀\", \"color\": \"#E6E6FA\" },\n ",
-      "retried": true
+      "firstPassRubricFails": []
     },
     {
       "category": "tools-dashboard",
       "axis": "ui",
       "run": 1,
-      "firstOk": true,
+      "firstOk": false,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 6241,
-      "latency": 138812,
-      "a2uiComponents": 45,
+      "tokens": 10653,
+      "latency": 126798,
+      "a2uiComponents": 0,
       "counts": {
         "topBlocks": 5,
-        "maxDepth": 2,
-        "titles": 0,
+        "maxDepth": 3,
+        "titles": 1,
         "emoji": 0,
         "templates": [
           "banner-card",
           "search-bar",
-          "service-grid"
+          "service-grid",
+          "tab-bar"
         ],
-        "actions": 10,
+        "actions": 9,
         "interactive": 1
       },
       "expect": [
@@ -538,21 +493,28 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": []
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F0 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#FFA500\",\n    \"background\": \"#FFF8F0\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"首页\", \"分类\", \"收藏\", \"我的\"],\n  \"actions\": [\n    \"tools.calendar\",\n    \"tools.calculator\",\n    \"tools.notes\",\n    \"tools.weather\",\n    \"tools.translate\",\n    \"tools.scan\",\n    \"tools.compass\",\n    \"tools.record\",\n    \"promo.buy\"\n  ],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"限时会员日 5 折\",\n        \"subtitle\": \"60+ Pro 工具畅用，6 月 18 日 24:00 截止\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索工具，如「翻译」「扫描」\"\n      },\n      {\n        \"type\": \"service-grid\",\n        \"items\": [\n          { \"icon\": \"📅\", \"label\": \"日历\" },\n          { \"icon\": \"🧮\", \"label\": \"计算器\" },\n          { \"icon\": \"",
+      "retried": true
     },
     {
       "category": "tools-dashboard",
       "axis": "ui",
       "run": 2,
-      "firstOk": true,
+      "firstOk": false,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 6998,
-      "latency": 164611,
-      "a2uiComponents": 49,
+      "tokens": 12014,
+      "latency": 154748,
+      "a2uiComponents": 0,
       "counts": {
-        "topBlocks": 6,
-        "maxDepth": 2,
+        "topBlocks": 4,
+        "maxDepth": 1,
         "titles": 0,
         "emoji": 0,
         "templates": [
@@ -561,8 +523,8 @@
           "service-grid",
           "tab-bar"
         ],
-        "actions": 11,
-        "interactive": 1
+        "actions": 10,
+        "interactive": 0
       },
       "expect": [
         {
@@ -584,7 +546,18 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": []
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        },
+        {
+          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
+          "msg": "theme.background #FFF8F0 is near seashell #FFF5EE — use the exact hex"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#FFA500\", \"background\": \"#FFF8F0\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"工具箱\", \"我的\"],\n  \"actions\": [\"search.query\", \"tool.calendar\", \"tool.calculator\", \"tool.memo\", \"tool.weather\", \"tool.translate\", \"tool.scan\", \"tool.compass\", \"tool.record\", \"promo.view\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      { \"type\": \"search-bar\", \"placeholder\": \"搜索工具、记事或翻译\" },\n      {\n        \"type\": \"service-grid\",\n        \"items\": [\n          { \"icon\": \"📅\", \"label\": \"日历\" },\n          { \"icon\": \"🧮\", \"label\": \"计算器\" },\n          { \"icon\": \"📝\", \"label\": \"备忘录\" },\n          { \"icon\": \"⛅\", \"label\": \"天气\" },\n          { \"icon\": \"🌐\", \"label\": \"翻译\" },\n          { \"icon\": \"📄\", \"label\": \"扫描\" },\n          { \"icon\": \"🧭\", \"label\": \"指南针\" },\n          { \"",
+      "retried": true
     },
     {
       "category": "pomodoro",
@@ -593,20 +566,21 @@
       "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 8483,
-      "latency": 188778,
-      "a2uiComponents": 42,
+      "tokens": 6346,
+      "latency": 86270,
+      "a2uiComponents": 46,
       "counts": {
         "topBlocks": 6,
         "maxDepth": 3,
-        "titles": 2,
-        "emoji": 3,
+        "titles": 0,
+        "emoji": 0,
         "templates": [
           "banner-card",
+          "balance-card",
           "tab-bar"
         ],
-        "actions": 3,
-        "interactive": 4
+        "actions": 4,
+        "interactive": 6
       },
       "expect": [
         {
@@ -629,14 +603,14 @@
       "category": "pomodoro",
       "axis": "backend",
       "run": 2,
-      "firstOk": true,
+      "firstOk": false,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 7500,
-      "latency": 179332,
-      "a2uiComponents": 42,
+      "tokens": 12250,
+      "latency": 148071,
+      "a2uiComponents": 0,
       "counts": {
-        "topBlocks": 6,
+        "topBlocks": 5,
         "maxDepth": 3,
         "titles": 2,
         "emoji": 0,
@@ -662,30 +636,37 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": []
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#FF6347\", \"background\": \"#FFF5EE\", \"mode\": \"light\" },\n  \"tabs\": [\"专注\", \"任务\", \"统计\", \"我的\"],\n  \"actions\": [\"focus.start\", \"break.start\", \"task.check.1\", \"task.check.2\", \"task.check.3\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"25:00\",\n        \"subtitle\": \"深度专注 · 第 3 个番茄进行中\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          { \"type\": \"progressbar\", \"label\": \"本轮进度 · 刚开始\", \"value\": 0 },\n          {\n            \"type\": \"row\",\n            \"children\": [\n              {\n                \"type\": \"column\",\n                \"children\": [\n                  { \"type\": \"text\", \"text\": \"今日已完成\", \"size\": \"small\", \"tone\": \"muted\" },\n                  { \"type\": \"text\", ",
+      "retried": true
     },
     {
       "category": "calendar",
       "axis": "backend",
       "run": 1,
-      "firstOk": false,
+      "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 16809,
-      "latency": 290754,
-      "a2uiComponents": 0,
+      "tokens": 8498,
+      "latency": 125727,
+      "a2uiComponents": 88,
       "counts": {
         "topBlocks": 6,
         "maxDepth": 3,
-        "titles": 1,
+        "titles": 0,
         "emoji": 0,
         "templates": [
           "banner-card",
           "hcard-row",
           "tab-bar"
         ],
-        "actions": 3,
-        "interactive": 3
+        "actions": 4,
+        "interactive": 4
       },
       "expect": [
         {
@@ -702,14 +683,7 @@
       "errors": [],
       "rubricFails": [],
       "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
-          "msg": "theme.background #F6F7FB is near aliceblue #F0F8FF — use the exact hex"
-        }
-      ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#4B0082\",\n    \"background\": \"#F6F7FB\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"月历\", \"日程\", \"统计\", \"我的\"],\n  \"actions\": [\"month.prev\", \"month.next\", \"event.create\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"十一月\",\n        \"subtitle\": \"2025 年 · 全月 18 项日程 · 今日 4 项\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"button\", \"label\": \"上月\", \"action\": \"month.prev\" },\n              { \"type\": \"text\", \"text\": \"2025 年 11 月\", \"size\": \"body\" },\n              { \"type\": \"button\", \"label\": \"下月\", \"action\": \"month.next\" }\n            ]\n          },\n          {\n            \"type\": \"row\",\n ",
-      "retried": true
+      "firstPassRubricFails": []
     },
     {
       "category": "calendar",
@@ -718,8 +692,8 @@
       "firstOk": false,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 14102,
-      "latency": 213157,
+      "tokens": 14622,
+      "latency": 160994,
       "a2uiComponents": 0,
       "counts": {
         "topBlocks": 5,
@@ -728,17 +702,16 @@
         "emoji": 0,
         "templates": [
           "banner-card",
-          "chat-row",
-          "tab-bar"
+          "hcard-row"
         ],
-        "actions": 1,
-        "interactive": 1
+        "actions": 2,
+        "interactive": 2
       },
       "expect": [
         {
           "kind": "min-actions",
           "count": 2,
-          "hit": false
+          "hit": true
         },
         {
           "kind": "template",
@@ -751,11 +724,11 @@
       "firstPassErrors": [],
       "firstPassRubricFails": [
         {
-          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
-          "msg": "theme.background #F4F5FB is near aliceblue #F0F8FF — use the exact hex"
+          "code": "RUBRIC_TEMPLATES",
+          "msg": "mobile templates = 1 (want ≥2): banner-card"
         }
       ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#4B0082\", \"background\": \"#F4F5FB\", \"mode\": \"light\" },\n  \"tabs\": [\"今天\", \"月历\", \"统计\", \"我的\"],\n  \"actions\": [\"event.create\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"11月\",\n        \"subtitle\": \"2025年 · 本月 28 个日程\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"text\", \"text\": \"日\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"一\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"二\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"三\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"",
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#4B0082\",\n    \"background\": \"#F0F8FF\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"日历\", \"日程\", \"提醒\", \"我的\"],\n  \"actions\": [\"event.create\", \"schedule.open\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"2025年11月\",\n        \"subtitle\": \"本月 23 个日程 · 本周 6 个\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"text\", \"text\": \"一\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"二\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"三\", \"size\": \"small\", \"tone\": \"muted\" },\n              { \"type\": \"text\", \"text\": \"四\", \"size\": \"small\",",
       "retried": true
     },
     {
@@ -764,14 +737,70 @@
       "run": 1,
       "firstOk": false,
       "structuralOk": true,
-      "finalOk": false,
-      "tokens": 12595,
-      "latency": 256895,
+      "finalOk": true,
+      "tokens": 14519,
+      "latency": 185776,
       "a2uiComponents": 0,
       "counts": {
-        "topBlocks": 8,
+        "topBlocks": 6,
         "maxDepth": 3,
-        "titles": 5,
+        "titles": 2,
+        "emoji": 2,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid"
+        ],
+        "actions": 1,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_TOP_BLOCKS",
+          "msg": "top-level blocks = 7 (want 4-6)"
+        },
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        },
+        {
+          "code": "RUBRIC_TITLE_BUDGET",
+          "msg": "4 title runs > 3"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#FF0000\",\n    \"background\": \"#FFF5EE\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"首页\", \"分类\", \"购物车\", \"我的\"],\n  \"actions\": [\"cart.add\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"限时秒杀\",\n        \"subtitle\": \"14点场 · 距结束 02:31:08 · 全场5折起\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索商品或店铺\"\n      },\n      {\n        \"type\": \"service-grid\",\n        \"items\": [\n          { \"icon\": \"📱\", \"label\": \"数码\" },\n          { \"icon\": \"💄\", \"label\": \"美妆\" },\n          { \"icon\": \"🍎\", \"label\": \"生鲜\" },\n          { \"icon\": \"🛋️\", \"label\": \"家居\" }\n        ]\n      },\n      {\n        \"type\": \"hcard-row\",\n        \"items\": [\n          { \"cover\": { \"emoji\": \"🎧\", \"color\": \"#CD5",
+      "retried": true
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 22188,
+      "latency": 329809,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 4,
+        "titles": 6,
         "emoji": 4,
         "templates": [
           "search-bar",
@@ -780,8 +809,8 @@
           "service-grid",
           "tab-bar"
         ],
-        "actions": 1,
-        "interactive": 1
+        "actions": 3,
+        "interactive": 6
       },
       "expect": [
         {
@@ -802,16 +831,12 @@
           "msg": "screen.children[0] is search-bar"
         },
         {
-          "code": "RUBRIC_TOP_BLOCKS",
-          "msg": "top-level blocks = 8 (want 4-6)"
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
         },
         {
           "code": "RUBRIC_TITLE_BUDGET",
-          "msg": "5 title runs > 3"
-        },
-        {
-          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
-          "msg": "theme.background #FFF8F7 is near snow #FFFAFA — use the exact hex"
+          "msg": "6 title runs > 3"
         }
       ],
       "firstPassErrors": [],
@@ -821,73 +846,17 @@
           "msg": "screen.children[0] is search-bar"
         },
         {
-          "code": "RUBRIC_TOP_BLOCKS",
-          "msg": "top-level blocks = 8 (want 4-6)"
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
         },
         {
           "code": "RUBRIC_TITLE_BUDGET",
-          "msg": "5 title runs > 3"
-        },
-        {
-          "code": "RUBRIC_NAMED_COLOR_NEAR_MISS",
-          "msg": "theme.background #FFF8F7 is near snow #FFFAFA — use the exact hex"
+          "msg": "6 title runs > 3"
         }
       ],
-      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF8F7\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"feed.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索iPhone 15 / 空气炸锅\"},{\"type\":\"banner-card\",\"title\":\"限时秒杀 14:00场\",\"subtitle\":\"距结束 02:31:08 · 满199减50\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"📱\",\"color\":\"#696969\"},\"title\":\"iPhone 15 128G\",\"sub\":\"¥4,999\"},{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#CD5C5C\"},\"title\":\"降噪耳机 Pro\",\"sub\":\"¥299\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#FFD700\"},\"title\":\"智能手表 S9\",\"sub\":\"¥1,299\"},{\"cover\":{\"emoji\":\"👟\",\"color\":\"#D2691E\"},\"title\":\"轻弹跑步鞋\",\"sub\":\"¥219\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"👗\",\"label\":\"服饰\"},{\"icon\":\"💻\",\"label\":\"数码\"},{\"icon\":\"💄\",\"label\":\"美妆\"},{\"icon\":\"🍎\",\"label\":\"生鲜\"}]",
-      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"feed.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时秒杀 14:00场\",\"subtitle\":\"距结束 02:31:08 · 满199减50\"},{\"type\":\"search-bar\",\"placeholder\":\"搜索iPhone 15 / 空气炸锅\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"📱\",\"color\":\"#D2691E\"},\"title\":\"iPhone 15 128G\",\"sub\":\"¥4,999\"},{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#CD5C5C\"},\"title\":\"降噪耳机 Pro\",\"sub\":\"¥299\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#FFD700\"},\"title\":\"智能手表 S9\",\"sub\":\"¥1,299\"},{\"cover\":{\"emoji\":\"👟\",\"color\":\"#696969\"},\"title\":\"轻弹跑步鞋\",\"sub\":\"¥219\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"👗\",\"label\":\"服饰\"},{\"icon\":\"💻\",\"label\":\"数码\"},{\"icon\":\"💄\",\"label\":\"美妆\"},{\"icon\":\"🍎\",\"label\":\"生鲜\"}]",
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"seckill.grab\",\"cart.add\",\"guess.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索 iPhone 16 / 羽绒服 / 脐橙\"},{\"type\":\"banner-card\",\"title\":\"11.11 主会场\",\"subtitle\":\"跨店每满300减50 · 已领 8.2万张券\"},{\"type\":\"column\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\",\"tone\":\"accent\"},{\"type\":\"badge\",\"text\":\"距结束 02:14:36\"},{\"type\":\"button\",\"label\":\"抢购\",\"action\":\"seckill.grab\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#F0F8FF\"},\"title\":\"无线降噪耳机\",\"sub\":\"¥199 已抢82%\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#FFFACD\"},\"title\":\"智能运动手表\",\"sub\":\"¥299 已抢64%\"},{\"cover\":{\"emoji\":\"💄\",\"color\":\"#FFDAB9\"},\"title",
+      "finalRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"seckill.grab\",\"cart.add\",\"guess.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"11.11 主会场\",\"subtitle\":\"跨店每满300减50 · 已领8.2万张券\"},{\"type\":\"search-bar\",\"placeholder\":\"搜索 iPhone 16 / 羽绒服 / 脐橙\"},{\"type\":\"column\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"title\",\"tone\":\"accent\"},{\"type\":\"badge\",\"text\":\"距结束 02:14:36\"},{\"type\":\"button\",\"label\":\"抢购\",\"action\":\"seckill.grab\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#F0F8FF\"},\"title\":\"无线降噪耳机\",\"sub\":\"¥199 已抢82%\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#FFFACD\"},\"title\":\"智能运动手表\",\"sub\":\"¥299 已抢64%\"},{\"cover\":{\"emoji\":\"💄\",\"color\":\"#FFDAB9\"},\"title\"",
       "retried": true
-    },
-    {
-      "category": "ecommerce",
-      "axis": "ui",
-      "run": 2,
-      "firstOk": false,
-      "structuralOk": false,
-      "finalOk": false,
-      "tokens": 0,
-      "latency": 0,
-      "a2uiComponents": 0,
-      "counts": {
-        "topBlocks": 6,
-        "maxDepth": 4,
-        "titles": 1,
-        "emoji": 4,
-        "templates": [
-          "banner-card",
-          "search-bar",
-          "hcard-row",
-          "service-grid"
-        ],
-        "actions": 1,
-        "interactive": 1
-      },
-      "expect": [
-        {
-          "kind": "template",
-          "id": "hcard-row",
-          "hit": true
-        },
-        {
-          "kind": "template",
-          "id": "search-bar",
-          "hit": true
-        }
-      ],
-      "errors": [
-        {
-          "code": "HTTP",
-          "msg": "fetch failed"
-        }
-      ],
-      "rubricFails": [],
-      "firstPassErrors": [],
-      "firstPassRubricFails": [
-        {
-          "code": "RUBRIC_DEPTH",
-          "msg": "nesting depth 4 > 3"
-        }
-      ],
-      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#FF0000\", \"background\": \"#FFF5EE\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"分类\", \"购物车\", \"我的\"],\n  \"actions\": [\"feed.refresh\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"限时秒杀\",\n        \"subtitle\": \"12点场 · 距结束 02:31:08 · 全场低至5折\"\n      },\n      { \"type\": \"search-bar\", \"placeholder\": \"搜索商品、店铺、品牌\" },\n      {\n        \"type\": \"hcard-row\",\n        \"items\": [\n          { \"cover\": { \"emoji\": \"⌚\", \"color\": \"#FFD700\" }, \"title\": \"智能手表 Pro\", \"sub\": \"¥199 · 已抢82%\" },\n          { \"cover\": { \"emoji\": \"🎧\", \"color\": \"#FFDAB9\" }, \"title\": \"无线降噪耳机\", \"sub\": \"¥129 · 已抢65%\" },\n          { \"cover\": { \"emoji\": \"💄\", \"color\": \"#E6E6FA\" }, \"title\": \"丝绒口红套装\", \"sub\": \"¥89 · 已抢91%\" },\n          { \"cover"
     },
     {
       "category": "fitness",
@@ -896,9 +865,9 @@
       "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 7703,
-      "latency": 158427,
-      "a2uiComponents": 43,
+      "tokens": 3417,
+      "latency": 34092,
+      "a2uiComponents": 41,
       "counts": {
         "topBlocks": 5,
         "maxDepth": 2,
@@ -936,21 +905,21 @@
       "firstOk": true,
       "structuralOk": true,
       "finalOk": true,
-      "tokens": 6353,
-      "latency": 127108,
-      "a2uiComponents": 47,
+      "tokens": 4838,
+      "latency": 59839,
+      "a2uiComponents": 45,
       "counts": {
-        "topBlocks": 5,
+        "topBlocks": 6,
         "maxDepth": 2,
         "titles": 0,
         "emoji": 0,
         "templates": [
-          "balance-card",
+          "banner-card",
           "hcard-row",
           "tab-bar"
         ],
-        "actions": 3,
-        "interactive": 3
+        "actions": 2,
+        "interactive": 2
       },
       "expect": [
         {
