@@ -1,0 +1,365 @@
+{
+  "meta": {
+    "at": "2026-11-02T22:15:08.578Z",
+    "generator": "glm-5.3-flash",
+    "judge": "glm-4.6v",
+    "instructions": 12,
+    "tier": "rendered-surface screenshots (visual leg v2, product validate+normalize render path)",
+    "appearanceRubric": "v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors",
+    "judgeSelfVariance": "same screenshot judged 2× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics",
+    "darkAudit": "sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=2); luminance <0.35 = dark"
+  },
+  "visual": {
+    "backgroundYes": 10,
+    "backgroundPartial": 0,
+    "backgroundNo": 1,
+    "scored": 11,
+    "rejected": 0,
+    "appearanceScale": 100,
+    "meanAppearance": 70.6,
+    "judgeSelfVariance": {
+      "runs": 2,
+      "n": 13,
+      "meanAbsDelta": 1.5,
+      "maxDelta": 5,
+      "exactRate": 0.6153846153846154,
+      "within5Rate": 1
+    },
+    "darkSampled": 2,
+    "darkOk": 2,
+    "darkMeanLuminance": 0.126,
+    "darkMeanAppearance": 62.5
+  },
+  "pixelCheck": {
+    "paintedExact": 11,
+    "checked": 11
+  },
+  "rows": [
+    {
+      "source_id": "000036",
+      "theme": {
+        "accent": "#DC143C",
+        "background": "#FAFAFC",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FAFAFC",
+          "#FFFAFA"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000036.png",
+      "pixelBackground": {
+        "target": "#FFFAFA",
+        "hitFraction": 0.63,
+        "painted": true
+      },
+      "background_painted": "NO",
+      "colors_visible": "crimson (header, buttons), white (background), light pink (card)",
+      "appearance": 70,
+      "why": "Layout is structured with clear sections but background doesn’t match seashell",
+      "polish_hint": "Apply seashell to the background",
+      "appearance2": 72,
+      "judgeDelta": 2,
+      "background_painted2": "NO",
+      "dark": {
+        "opened": true,
+        "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000036.dark.png",
+        "meanLuminance": 0.113,
+        "dark": true,
+        "appearance": 65,
+        "why": "Clean layout with generic spacing and hierarchy",
+        "colors_visible": "dark background, crimson buttons/text",
+        "appearance2": 65,
+        "judgeDelta": 0
+      }
+    },
+    {
+      "source_id": "000038",
+      "theme": {
+        "accent": "#800000",
+        "background": "#FAF7F2",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FAF7F2",
+          "#FFF5EE"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000038.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.84,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "Linen background, maroon header/buttons, white tabs, gray text",
+      "appearance": 70,
+      "why": "Clean layout with clear sections, but generic spacing",
+      "polish_hint": "Adjust spacing between apartment listings for better flow",
+      "appearance2": 70,
+      "judgeDelta": 0,
+      "background_painted2": "YES",
+      "dark": {
+        "opened": true,
+        "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000038.dark.png",
+        "meanLuminance": 0.138,
+        "dark": true,
+        "appearance": 60,
+        "why": "Layout is functional but lacks deliberate composition; spacing is uneven",
+        "colors_visible": "maroon (buttons), dark gray (background), white (text), light gray (search bar/icon backgrounds)",
+        "appearance2": 60,
+        "judgeDelta": 0
+      }
+    },
+    {
+      "source_id": "000041",
+      "theme": {
+        "accent": "#D2691E",
+        "background": "#FFF5EE",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000041.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.73,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "lemon chiffon background, chocolate buttons, orange header",
+      "appearance": 72,
+      "why": "Well-structured layout with clear item grouping",
+      "polish_hint": "Add card shadows for depth",
+      "appearance2": 70,
+      "judgeDelta": 2,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000043",
+      "theme": {
+        "accent": "#483D8B",
+        "background": "#F5F5FA",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#F5F5FA",
+          "#F0F8FF"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000043.png",
+      "pixelBackground": {
+        "target": "#F0F8FF",
+        "hitFraction": 0.66,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "background azure mist, components dark slate blue",
+      "appearance": 75,
+      "why": "Clean layout with clear hierarchy and consistent spacing",
+      "polish_hint": "Refine active tab indicator for clarity",
+      "appearance2": 75,
+      "judgeDelta": 0,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000066",
+      "theme": {
+        "accent": "#D2691E",
+        "background": "#FFF5EE",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000066.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.69,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "background lemon chiffon, components chocolate/orange",
+      "appearance": 70,
+      "why": "Clean layout with clear sections, but generic spacing",
+      "polish_hint": "Add subtle card shadows for depth",
+      "appearance2": 70,
+      "judgeDelta": 0,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000068",
+      "theme": {
+        "accent": "#483D8B",
+        "background": "#F0FFFF",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000068.png",
+      "pixelBackground": {
+        "target": "#F0FFFF",
+        "hitFraction": 0.69,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "background azure mist, top bar purple, warning box light purple, buttons dark purple, text black",
+      "appearance": 75,
+      "why": "Clean layout with clear section grouping and even spacing",
+      "polish_hint": "Align warning box color with azure mist background",
+      "appearance2": 75,
+      "judgeDelta": 0,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000078",
+      "theme": {
+        "accent": "#2E8B57",
+        "background": "#F2F7F4",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#F2F7F4",
+          "#F5FFFA"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000078.png",
+      "pixelBackground": {
+        "target": "#F5FFFA",
+        "hitFraction": 0.59,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "mint cream background, teal buttons/headers",
+      "appearance": 70,
+      "why": "Clean, structured layout with clear sections",
+      "polish_hint": "Refine button and card corner radius for consistency",
+      "appearance2": 65,
+      "judgeDelta": 5,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000080",
+      "theme": {
+        "accent": "#4B0082",
+        "background": "#F0F8FF",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000080.png",
+      "pixelBackground": {
+        "target": "#F0F8FF",
+        "hitFraction": 0.51,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "lavender background, indigo components",
+      "appearance": 70,
+      "why": "Clean layout with clear hierarchy, lavender/indigo colors match spec",
+      "polish_hint": "Refine task item spacing for uniformity",
+      "appearance2": 75,
+      "judgeDelta": 5,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000092",
+      "error": "Expected ',' or '}' after property value in JSON at position 1628 (line 1 column 1629)"
+    },
+    {
+      "source_id": "000095",
+      "theme": {
+        "accent": "#808000",
+        "background": "#F5F4EC",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#F5F4EC",
+          "#FAF0E6"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000095.png",
+      "pixelBackground": {
+        "target": "#FAF0E6",
+        "hitFraction": 0.82,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "light goldenrod background, olive drab top bar, white components, beige cards",
+      "appearance": 70,
+      "why": "Clear hierarchy and spacing, but generic layout",
+      "polish_hint": "Add subtle shadows to content cards",
+      "appearance2": 70,
+      "judgeDelta": 0,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000096",
+      "theme": {
+        "accent": "#CD5C5C",
+        "background": "#FFF5EE",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000096.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.72,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "peach puff background, indian red header/buttons",
+      "appearance": 70,
+      "why": "Clear hierarchy and spacing, but lacks refined detail",
+      "polish_hint": "Refine red tone consistency across components",
+      "appearance2": 75,
+      "judgeDelta": 5,
+      "background_painted2": "YES"
+    },
+    {
+      "source_id": "000099",
+      "theme": {
+        "accent": "#696969",
+        "background": "#F0F8FF",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-deepseek-v4-flash-rr27/000099.png",
+      "pixelBackground": {
+        "target": "#F0F8FF",
+        "hitFraction": 0.75,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "background snow, top bar gray, search bar white, buttons dim gray, card backgrounds light gray",
+      "appearance": 65,
+      "why": "Clean layout with clear sections but generic styling",
+      "polish_hint": "Align buttons for consistent spacing",
+      "appearance2": 65,
+      "judgeDelta": 0,
+      "background_painted2": "YES"
+    }
+  ]
+}
