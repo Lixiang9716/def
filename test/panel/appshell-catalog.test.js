@@ -116,6 +116,25 @@ describe('app-shell/0.9 — the eight templates expand to pure primitive trees',
   });
 });
 
+describe('app-shell/0.9 — hcard-row cover palette (「4 色板逐项错开」 render-side guarantee)', () => {
+  it('items without a spec color get staggered palette slots; explicit colors win', () => {
+    const r = validate(okSpec({ type: 'hcard-row', items: [
+      { cover: { emoji: '🌙' }, title: '甲' },
+      { cover: { emoji: '🎧', color: '#223344' }, title: '乙' },
+      { cover: { emoji: '📻' }, title: '丙' },
+      { cover: { emoji: '🎹' }, title: '丁' },
+    ] }));
+    expect(r.ok, JSON.stringify(r.errors)).toBe(true);
+    const covers = r.expanded.children.map((card) => card.children[0]);
+    expect(covers[0].color).toBe('#1677ff'); // palette slot 0
+    expect(covers[1].color).toBe('#223344'); // explicit spec color wins
+    expect(covers[2].color).toBe('#d97706'); // palette slot 2
+    expect(covers[3].color).toBe('#7c3aed'); // palette slot 3
+    // The stagger guarantee: a colorless strip never collapses to one color.
+    expect(new Set(covers.map((c) => c.color)).size).toBeGreaterThanOrEqual(3);
+  });
+});
+
 describe('app-shell/0.9 — non-expandable pseudo-templates are rejected with EXPAND_FAILED', () => {
   it('pseudo-template whose expand() returns a template node is rejected', () => {
     const name = 'pseudo-returns-template';
