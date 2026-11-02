@@ -16,6 +16,11 @@ const PRIMITIVES = new Set(['text', 'image', 'button', 'row', 'column', 'card', 
 const CAPS = { SPEC_BYTES: 32 * 1024, NODES: 200, DEPTH: 8, TEXT_RUNES: 500, CHILDREN: 24 };
 const ACTION_RE = /^[a-z][a-z0-9.:-]{0,63}$/;
 
+// Cover palette — lockstep with the plugin catalog: hcard-row items without
+// a spec color take palette slot i%4 (the 「4 色板逐项错开」 guarantee);
+// explicit spec colors always win.
+const COVER_PALETTE = ['#1677ff', '#0d9488', '#d97706', '#7c3aed'];
+
 const TEMPLATES = {
   'search-bar': (n) => ({ type: 'card', style: { borderRadius: '14px', padding: '6px 10px' }, children: [{ type: 'text', text: '🔍 ' + String(n.placeholder || '搜索'), size: 'small', tone: 'muted' }] }),
   // Lockstep with the plugin's tab-bar expander (catalog.js): the active tab
@@ -42,8 +47,8 @@ const TEMPLATES = {
     { type: 'text', text: String(n.title || ''), size: 'title' },
     { type: 'text', text: String(n.subtitle || ''), size: 'small', tone: 'muted' },
   ] }),
-  'hcard-row': (n) => ({ type: 'row', children: (n.items || []).slice(0, 6).map((it) => ({ type: 'card', children: [
-    { type: 'image', emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || '#1677ff' },
+  'hcard-row': (n) => ({ type: 'row', children: (n.items || []).slice(0, 6).map((it, i) => ({ type: 'card', children: [
+    { type: 'image', emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || COVER_PALETTE[i % 4] },
     { type: 'text', text: String(it.title || ''), size: 'small' },
     { type: 'text', text: String(it.sub || ''), size: 'small', tone: 'muted' },
   ] })) }),

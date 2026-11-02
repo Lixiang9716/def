@@ -120,6 +120,12 @@ export function p(type, fields) {
 /* values — the validator treats them as inert strings (gate 2).       */
 /* ---------------------------------------------------------------- */
 
+/** The cover palette — the machine twin of the constitution's 「hcard-row
+ * 每项 cover 带 color, 4 色板逐项错开」: an item whose spec omits
+ * cover.color gets palette slot i%4, so a cover strip never collapses to
+ * one flat default blue. Explicit spec colors always win. */
+const COVER_PALETTE = ['#1677ff', '#0d9488', '#d97706', '#7c3aed'];
+
 defineTemplate('search-bar', {
   expand: (n) => p('card', { style: { borderRadius: '14px', padding: '6px 10px' }, children: [
     p('text', { text: '🔍 ' + String(n.placeholder || '搜索'), size: 'small', tone: 'muted' }),
@@ -169,8 +175,8 @@ defineTemplate('banner-card', {
 });
 
 defineTemplate('hcard-row', {
-  expand: (n) => p('row', { children: (n.items || []).slice(0, 6).map((it) => p('card', { children: [
-    p('image', { emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || '#1677ff' }),
+  expand: (n) => p('row', { children: (n.items || []).slice(0, 6).map((it, i) => p('card', { children: [
+    p('image', { emoji: (it.cover && it.cover.emoji) || '🎵', color: (it.cover && it.cover.color) || COVER_PALETTE[i % 4] }),
     p('text', { text: String(it.title || ''), size: 'small' }),
     p('text', { text: String(it.sub || ''), size: 'small', tone: 'muted' }),
   ] })) }),

@@ -98,7 +98,11 @@ const readLedger = (dir, prefix) => {
 const legStems = { port: 'webgen-port-deepseek-v4-flash-r', chain: 'appgen-chain-deepseek-v4-flash-r', census: 'appgen-census-deepseek-v4-flash-r', visual: 'appgen-visual-deepseek-v4-flash-r' };
 const result = { round, legs: {} };
 
-await Promise.all(legs.map((leg) => runAsync(leg, `${legStems[leg]}r${round}`)));
+const legResults = await Promise.allSettled(legs.map((leg) => runAsync(leg, `${legStems[leg]}r${round}`)));
+for (const [i, leg] of legs.entries()) {
+  const r = legResults[i];
+  if (r && r.status === 'rejected') console.error(`ROUND LEG FAILED: ${leg}: ${String(r.reason?.message ?? r.reason).slice(0, 160)}`);
+}
 const stemOf = { port: 'webgen-port-deepseek-v4-flash-r', chain: 'appgen-chain-deepseek-v4-flash-r', census: 'appgen-census-deepseek-v4-flash-r', visual: 'appgen-visual-deepseek-v4-flash-r' };
 if (legs.includes('port')) {
   const l = readLedger('appgen-bench', stemOf.port);

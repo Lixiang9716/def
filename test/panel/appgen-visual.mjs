@@ -19,7 +19,9 @@
  * default). Screenshots land under artifacts/appgen-bench/shots-<stem>/
  * (local visual evidence — the committed ledger carries the judge's
  * textual verdicts; E2E-by-logs law). Knobs: VISUAL_N (instructions),
- * LEDGER_STEM. Not a CI gate.
+ * LEDGER_STEM, VISUAL_JUDGE_RUNS (default 2: every screenshot is judged
+ * twice; the |Δ| on the 0-100 scale is recorded as the judge's own
+ * variance in visual.judgeSelfVariance). Not a CI gate.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { openCarriedPage, closeCarriedPage } from '../tools/helpers/carrier-page.mjs';
@@ -46,6 +48,11 @@ const JUDGE = {
 const LEDGER_STEM = process.env.LEDGER_STEM || 'appgen-visual';
 const VISUAL_N = Number(process.env.VISUAL_N || 12);
 const DARK_N = Number(process.env.VISUAL_DARK_N || 2);
+/** Judge self-variance: each screenshot is judged JUDGE_RUNS times (default
+ * 2); the |Δ| between the two 0-100 appearance scores is the judge's own
+ * noise floor — the resolution limit of every appearance delta the loop
+ * reports. 1 disables the second pass (back-compatible, cheaper). */
+const JUDGE_RUNS = Number(process.env.VISUAL_JUDGE_RUNS || 2);
 for (const [k, v] of Object.entries({ gen: GEN, judge: JUDGE })) {
   if (!v.apiKey || !v.baseURL) { console.error(`appgen-visual: missing ${k} credentials`); process.exit(1); }
 }
@@ -151,6 +158,20 @@ async function judgeVisual(instruction, shotB64) {
   return null;
 }
 
+/** Second independent judge pass over the SAME screenshot — the judge's own
+ * variance on the 0-100 appearance scale (record.judgeDelta, record.judge2_failed
+ * on failure). Returns the second verdict, or null when disabled (JUDGE_RUNS<2)
+ * or the pass failed. The delta is metadata only: primary appearance metrics
+ * stay single-run for cross-round comparability. */
+async function judgeAgain(instruction, shotB64, record) {
+  if (JUDGE_RUNS < 2) return null;
+  const verdict2 = await judgeVisual(instruction, shotB64);
+  if (verdict2 === null) { record.judge2_failed = true; return null; }
+  record.appearance2 = verdict2.appearance;
+  record.judgeDelta = Math.abs(record.appearance - verdict2.appearance);
+  return verdict2;
+}
+
 const shotsDir = new URL(`../../tools/dev-web-carrier/artifacts/appgen-bench/shots-${LEDGER_STEM}/`, import.meta.url);
 mkdirSync(shotsDir, { recursive: true });
 const session = await openCarriedPage({ colorScheme: 'light' });
@@ -207,6 +228,10 @@ try {
           row.appearance = verdict.appearance;
           row.why = verdict.why;
           row.polish_hint = verdict.polish_hint ?? null;
+          // Second independent pass over the SAME bytes — the judge's own
+          // variance, never folded into the primary appearance metrics.
+          const verdict2 = await judgeAgain(instruction, shot.toString('base64'), row);
+          if (verdict2) row.background_painted2 = verdict2.background_painted;
         }
       }
     } catch (e) {
@@ -251,7 +276,10 @@ try {
         dark.dark = dark.meanLuminance < 0.35;
         const verdict = await judgeVisual(job.instruction, shot.toString('base64'));
         if (verdict === null) dark.judge_failed = true;
-        else { dark.appearance = verdict.appearance; dark.why = verdict.why; dark.colors_visible = verdict.colors_visible; }
+        else {
+          dark.appearance = verdict.appearance; dark.why = verdict.why; dark.colors_visible = verdict.colors_visible;
+          await judgeAgain(job.instruction, shot.toString('base64'), dark);
+        }
       } catch (e) {
         dark.error = e.message.slice(0, 160);
       }
@@ -280,10 +308,23 @@ const darkApps = darkRows.map((r) => r.dark.appearance).filter((v) => v !== unde
 const darkMeanLum = darkLums.length ? Math.round(darkLums.reduce((a, b) => a + b, 0) / darkLums.length * 1000) / 1000 : null;
 const darkMeanApp = darkApps.length ? Math.round(darkApps.reduce((a, b) => a + b, 0) * 10 / darkApps.length) / 10 : null;
 console.log(`DARK SAMPLE: ${darkOk}/${darkRows.length} went dark, mean luminance ${darkMeanLum}, mean appearance ${darkMeanApp}`);
+const judgeDeltas = rows.flatMap((r) => [r.judgeDelta, r.dark?.judgeDelta]).filter((v) => typeof v === 'number');
+let judgeSelfVariance = null;
+if (judgeDeltas.length) {
+  judgeSelfVariance = {
+    runs: JUDGE_RUNS,
+    n: judgeDeltas.length,
+    meanAbsDelta: Math.round(judgeDeltas.reduce((a, b) => a + b, 0) / judgeDeltas.length * 10) / 10,
+    maxDelta: Math.max(...judgeDeltas),
+    exactRate: judgeDeltas.filter((d) => d === 0).length / judgeDeltas.length,
+    within5Rate: judgeDeltas.filter((d) => d <= 5).length / judgeDeltas.length,
+  };
+  console.log(`JUDGE SELF-VARIANCE: n ${judgeSelfVariance.n}, mean |Δ| ${judgeSelfVariance.meanAbsDelta}, max ${judgeSelfVariance.maxDelta}, exact ${judgeDeltas.filter((d) => d === 0).length}/${judgeSelfVariance.n}, within5 ${judgeDeltas.filter((d) => d <= 5).length}/${judgeSelfVariance.n}`);
+}
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', darkAudit: `sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_N}); luminance <0.35 = dark` },
-  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance, darkSampled: darkRows.length, darkOk, darkMeanLuminance: darkMeanLum, darkMeanAppearance: darkMeanApp },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', judgeSelfVariance: `same screenshot judged ${JUDGE_RUNS}× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics`, darkAudit: `sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_N}); luminance <0.35 = dark` },
+  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance, judgeSelfVariance, darkSampled: darkRows.length, darkOk, darkMeanLuminance: darkMeanLum, darkMeanAppearance: darkMeanApp },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
 };

@@ -60,10 +60,14 @@ const corpus = JSON.parse(
 const selected = BENCH_N > 0 ? corpus.slice(0, BENCH_N) : corpus;
 
 const VERDICTS = new Set(['YES', 'PARTIAL', 'NO']);
+// Per-call abort (10 min): a hung judge connection must not wedge the
+// whole leg past the driver's timeout — the leg ledger is only written
+// at the end, so a wedge loses every completed instruction.
 const call = (which, messages, temperature) => fetch(`${which.baseURL}/chat/completions`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${which.apiKey}` },
   body: JSON.stringify({ model: which.model, messages, temperature }),
+  signal: AbortSignal.timeout(600_000),
 });
 
 async function generate(prompt) {
