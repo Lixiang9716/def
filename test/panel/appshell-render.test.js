@@ -202,6 +202,21 @@ describe('renderSpec — the eight primitives, direct render assertions (layout 
   });
 });
 
+describe('renderSpec — badge tone accent, the tab-bar active visual state', () => {
+  it('tone accent rides the ash-accent class, no inline skin', () => {
+    const r = renderSpec(okSpec({ type: 'badge', text: '新', tone: 'accent' }));
+    expect(r.ok, JSON.stringify(r.errors)).toBe(true);
+    expect(r.vnode.props.class).toBe('ash-badge ash-accent');
+    expect(r.vnode.props.style).toBeUndefined(); // the fill lives in app.css
+  });
+
+  it('unknown tones are inert: a plain badge, no invented classes', () => {
+    const plain = renderSpec(okSpec({ type: 'badge', text: '新', tone: 'lime' }));
+    expect(plain.ok).toBe(true);
+    expect(plain.vnode.props.class).toBe('ash-badge');
+  });
+});
+
 /* --- error path --------------------------------------------------------- */
 
 describe('renderSpec — illegal specs fail with structured errors, no vnode', () => {

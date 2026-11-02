@@ -46,7 +46,9 @@ function progressNode(n) {
   return h('div', { class: 'ash-progress', style: { width: Math.max(0, Math.min(100, n.value || 0)) + '%' }, text: n.label || '' });
 }
 function badgeNode(n) {
-  return h('span', { class: 'ash-badge', text: n.text });
+  // tone:'accent' (the tab-bar active state) rides a class — the fill itself
+  // lives in app.css (.ash-badge.ash-accent), skin stays out of the tree.
+  return h('span', { class: 'ash-badge' + (n.tone === 'accent' ? ' ash-accent' : ''), text: n.text });
 }
 
 /* --- registration + pipeline ------------------------------------------- */

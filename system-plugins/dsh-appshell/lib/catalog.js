@@ -127,8 +127,14 @@ defineTemplate('search-bar', {
 });
 
 defineTemplate('tab-bar', {
+  // The active tab is a REAL visual state, not a text suffix: it expands to
+  // a tone:'accent' badge — the same tone vocabulary as text — which the
+  // presented surface styles as the accent fill (app.css .ash-badge.ash-accent).
+  // A text marker (' ·') reads as punctuation to a vision judge and carries
+  // zero color; a tone rides the theme accent by construction.
   expand: (n) => p('row', { children: (n.tabs || []).map((t, i) => p('badge', {
-    text: t.label + (i === (n.active || 0) ? ' ·' : ''),
+    text: t.label,
+    ...(i === (n.active || 0) ? { tone: 'accent' } : {}),
   })) }),
 });
 
