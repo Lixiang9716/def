@@ -817,6 +817,9 @@
 .ash-tab { border-radius: 9px; }
 .ash-tab.active { background: #fff; box-shadow: 0 1px 3px rgba(16,24,40,.10); }
 .ash-badge { background: rgba(16,24,40,.05); border-radius: 9px; }
+/* tab-bar active state (tone:'accent' from the template expander): the accent
+   fill IS the selected-tab affordance — color, weight, and a soft accent halo */
+.ash-badge.ash-accent { background: var(--p-accent, #1677ff); color: #fff; font-weight: 600; box-shadow: 0 1px 4px color-mix(in srgb, var(--p-accent, #1677ff) 40%, transparent); }
 
 /* ---- appshell presence pass: color-field dominance, glass, motion, dark mode ---- */
 /* type scale: the title is a poster */
@@ -847,6 +850,9 @@
 #appshell-view[data-mode="dark"] .ash-tabbar { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.10); backdrop-filter: blur(20px) saturate(1.5); }
 #appshell-view[data-mode="dark"] .ash-tab.active { background: rgba(255,255,255,.10); }
 #appshell-view[data-mode="dark"] .ash-badge { background: rgba(255,255,255,.08); }
+/* dark mode keeps the tab-bar active fill: the (1,1,0) neutral rule above
+   would otherwise out-specify .ash-badge.ash-accent and gray the state out */
+#appshell-view[data-mode="dark"] .ash-badge.ash-accent { background: var(--p-accent, #1677ff); color: #fff; }
 /* motion: entrance cascade + hero glow + touch spring (all reduced-motion safe) */
 @keyframes ash-rise { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
 @keyframes ash-glow { 0%, 100% { background-position: 0% 40%; } 50% { background-position: 100% 60%; } }

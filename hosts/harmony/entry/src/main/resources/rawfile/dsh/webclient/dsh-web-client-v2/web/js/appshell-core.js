@@ -18,7 +18,9 @@ const ACTION_RE = /^[a-z][a-z0-9.:-]{0,63}$/;
 
 const TEMPLATES = {
   'search-bar': (n) => ({ type: 'card', style: { borderRadius: '14px', padding: '6px 10px' }, children: [{ type: 'text', text: '🔍 ' + String(n.placeholder || '搜索'), size: 'small', tone: 'muted' }] }),
-  'tab-bar': (n) => ({ type: 'row', children: (n.tabs || []).map((t, i) => ({ type: 'badge', text: t.label + (i === (n.active || 0) ? ' ·' : '') })) }),
+  // Lockstep with the plugin's tab-bar expander (catalog.js): the active tab
+  // is a tone:'accent' badge (the accent-fill visual state), never a text dot.
+  'tab-bar': (n) => ({ type: 'row', children: (n.tabs || []).map((t, i) => ({ type: 'badge', text: t.label, ...(i === (n.active || 0) ? { tone: 'accent' } : {}) })) }),
   'chat-row': (n) => ({ type: 'row', children: [
     { type: 'badge', text: (n.avatar && n.avatar.emoji) || '💬' },
     { type: 'column', children: [

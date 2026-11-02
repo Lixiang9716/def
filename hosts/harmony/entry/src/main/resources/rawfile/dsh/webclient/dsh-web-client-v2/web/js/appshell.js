@@ -41,7 +41,7 @@ const PRIMITIVE_RENDER = {
     track.appendChild(bar);
     return track;
   },
-  badge: (n) => el('span', 'ash-badge', String(n.text ?? '')),
+  badge: (n) => el('span', 'ash-badge' + (n.tone === 'accent' ? ' ash-accent' : ''), String(n.text ?? '')),
 };
 
 function renderPrimitive(node, ctx) {

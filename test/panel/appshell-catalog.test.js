@@ -50,7 +50,7 @@ const TEMPLATE_CASES = [
     { type: 'search-bar', placeholder: '站内搜索' }, 'card', '站内搜索'],
   ['tab-bar',
     { type: 'tab-bar', tabs: [{ label: '首页' }, { label: '发现' }, { label: '我的' }], active: 1 },
-    'row', '发现 ·'],
+    'row', '发现'],
   ['chat-row',
     { type: 'chat-row', avatar: { emoji: '张', color: '#5a7cd4' }, name: '张伟', preview: '晚上吃饭吗', time: '9:41' },
     'row', '晚上吃饭吗'],
@@ -99,6 +99,21 @@ describe('app-shell/0.9 — the eight templates expand to pure primitive trees',
       expect(collectStrings(r.expanded).some((s) => s.includes(mustContain))).toBe(true);
     });
   }
+
+  it('expand tab-bar: the active tab is a real visual state (tone accent), not a text dot', () => {
+    const r = validate(okSpec({ type: 'tab-bar', tabs: [{ label: '首页' }, { label: '发现' }, { label: '我的' }], active: 1 }));
+    expect(r.ok, JSON.stringify(r.errors)).toBe(true);
+    const badges = [];
+    (function collect(node) {
+      if (node.type === 'badge') badges.push(node);
+      for (const c of node.children || []) collect(c);
+    })(r.expanded);
+    expect(badges.map((b) => b.text)).toEqual(['首页', '发现', '我的']);
+    // exactly the active index carries the accent tone; the others stay plain
+    expect(badges.map((b) => b.tone || null)).toEqual([null, 'accent', null]);
+    // the old text-suffix marker is gone from every string in the tree
+    expect(collectStrings(r.expanded).some((s) => s.includes('·'))).toBe(false);
+  });
 });
 
 describe('app-shell/0.9 — non-expandable pseudo-templates are rejected with EXPAND_FAILED', () => {
