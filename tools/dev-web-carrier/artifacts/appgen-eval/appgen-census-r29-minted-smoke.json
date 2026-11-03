@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "at": "2026-11-03T08:39:55.184Z",
+    "model": "glm-4.6",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 1,
+    "categories": [
+      "wallet",
+      "chat"
+    ],
+    "temperature": 0.7,
+    "rubricVersion": 2,
+    "okDefinition": "validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)"
+  },
+  "summary": {
+    "wallet": {
+      "axis": "ui",
+      "runs": 1,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 1,
+      "finalPass": 1,
+      "expectHits": 3,
+      "expectTotal": 3,
+      "tokensP50": 8425,
+      "latencyP50": 148831
+    },
+    "chat": {
+      "axis": "ui",
+      "runs": 1,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 0,
+      "finalPass": 1,
+      "expectHits": 3,
+      "expectTotal": 3,
+      "tokensP50": 11915,
+      "latencyP50": 181461
+    }
+  },
+  "percentages": {
+    "structuralValid": 100,
+    "constitution": 50,
+    "alignment": 100
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_NO_ACTIONS",
+      1
+    ]
+  ],
+  "finalFailureClasses": [],
+  "rows": [
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 8425,
+      "latency": 148831,
+      "a2uiComponents": 55,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "service-grid",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 11915,
+      "latency": 181461,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_NO_ACTIONS",
+          "msg": "actions[] empty — a poster, not an app"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#008000\",\n    \"background\": \"#FFFFFF\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"消息\", \"通讯录\", \"发现\", \"我\"],\n  \"actions\": [],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"消息\",\n        \"subtitle\": \"3 条未读 · 2 个群消息待处理\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索消息、联系人\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🏃\", \"color\": \"#D2691E\" },\n            \"name\": \"张伟\",\n            \"preview\": \"晚上八点老地方见\",\n            \"time\": \"18:42\"\n          },\n          {\n            \"type\": \"chat-row\",\n            \"avatar\": { \"emoji\": \"🎨\", \"color\": \"#696969\" },\n            \"n",
+      "retried": true
+    }
+  ]
+}
