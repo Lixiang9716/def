@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "at": "2026-11-03T23:29:15.557Z",
+    "model": "glm-5.3-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 1,
+    "categories": [
+      "chat",
+      "tools-dashboard"
+    ],
+    "temperature": 0.7,
+    "rubricVersion": 2,
+    "okDefinition": "validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)"
+  },
+  "summary": {
+    "chat": {
+      "axis": "ui",
+      "runs": 1,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 1,
+      "finalPass": 1,
+      "expectHits": 3,
+      "expectTotal": 3,
+      "tokensP50": 5963,
+      "latencyP50": 74585
+    },
+    "tools-dashboard": {
+      "axis": "ui",
+      "runs": 1,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 0,
+      "finalPass": 1,
+      "expectHits": 3,
+      "expectTotal": 3,
+      "tokensP50": 9372,
+      "latencyP50": 92482
+    }
+  },
+  "percentages": {
+    "structuralValid": 100,
+    "constitution": 50,
+    "alignment": 100
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_HERO_FIRST",
+      1
+    ]
+  ],
+  "finalFailureClasses": [],
+  "rows": [
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5963,
+      "latency": 74585,
+      "a2uiComponents": 46,
+      "counts": {
+        "topBlocks": 4,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 9372,
+      "latency": 92482,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 9,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": {\n    \"accent\": \"#FFA500\",\n    \"background\": \"#FFF8F1\",\n    \"mode\": \"light\"\n  },\n  \"tabs\": [\"工具\", \"发现\", \"我的\"],\n  \"actions\": [\n    \"tool.calendar\",\n    \"tool.calculator\",\n    \"tool.notes\",\n    \"tool.weather\",\n    \"tool.translate\",\n    \"tool.scan\",\n    \"tool.compass\",\n    \"tool.record\",\n    \"promo.view\"\n  ],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索工具\"\n      },\n      {\n        \"type\": \"text\",\n        \"text\": \"常用工具\",\n        \"size\": \"small\",\n        \"tone\": \"muted\"\n      },\n      {\n        \"type\": \"service-grid\",\n        \"items\": [\n          { \"icon\": \"📅\", \"label\": \"日历\" },\n          { \"icon\": \"🧮\", \"label\": \"计算器\" },\n          { \"icon\": \"📝\", \"label\": \"备忘录\" },\n          { \"icon",
+      "retried": true
+    }
+  ]
+}
