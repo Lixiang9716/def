@@ -15,9 +15,11 @@
  *
  * Generator: LLM_* (fallback DSH_LLM_*, then ZAI_*); judge: JUDGE_* (keep
  * a different family). Knobs: CHAIN_SEEDS (first N seeds), LEDGER_STEM.
- * Chain shape: 5 dependent tasks per seed since round 18 (the r18 battery
- * saturated 3 tasks at 100% — no decay was observable; tasks 4-5 probe the
- * late chain; earlier ledgers ran 3 and carry their own rows). Not a CI
+ * Chain shape: 7 dependent tasks per seed since round 30 (r18 deepened 3 →
+ * 5 when the r18 battery saturated 3 tasks at 100%; rr29-rr30 then sat at
+ * 100% through position 5 with zero visible decay — tasks 6-7 (count-change
+ * / text-change, each built on what the earlier tasks added) probe the back
+ * segment; earlier ledgers ran 3 or 5 and carry their own rows). Not a CI
  * gate — the loop's backend-axis percentage benchmark
  * (doc/appgen-auto-research.md).
  */
@@ -60,6 +62,8 @@ const SEEDS = [
       '在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片',
       '在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）',
       '把每日推荐横幅卡片的标题文本改成「今日精选」',
+      '把「本周新碟」横向卡片行从两张封面卡片增加到三张',
+      '把「今日精选」横幅卡片的副标题改成「每晚 18:00 更新」',
     ],
   },
   {
@@ -71,6 +75,8 @@ const SEEDS = [
       '在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）',
       '在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）',
       '把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」',
+      '把本月结余进度条的已消费比例从 68% 改成 85%',
+      '把「账单导出」按钮的文案改成「导出本月账单」',
     ],
   },
   {
@@ -82,6 +88,8 @@ const SEEDS = [
       '在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）',
       '在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）',
       '把今日完成的番茄数文本改成「今日已完成 6 个番茄」',
+      '把今日已完成的番茄数从 6 个改成 9 个',
+      '把「专注报告」按钮的文案改成「生成专注报告」',
     ],
   },
   {
@@ -93,6 +101,8 @@ const SEEDS = [
       '在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）',
       '把「未读消息 12 条」横幅的文本改成「未读消息 3 条」',
       '在底部标签栏最后新增一个「我的」标签',
+      '把「未读消息 3 条」横幅的计数改成「未读消息 9 条」',
+      '把「全部已读」按钮的文案改成「一键已读」',
     ],
   },
 ].slice(0, N_SEEDS);
@@ -247,7 +257,7 @@ const ledger = {
   meta: {
     at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model,
     systemPrompt: 'SYSTEM_' + SYSTEM_VERSION, seeds: rows.map((r) => r.seed),
-    chainShape: '5 dependent tasks per seed (round-18 deepening; ledgers before round 18 ran 3 tasks per seed)',
+    chainShape: '7 dependent tasks per seed (round-30 deepening: 6=count-change, 7=text-change; rounds 18-29 ran 5 per seed, pre-18 ran 3)',
     formula: 'accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)',
   },
   overall, positions,
