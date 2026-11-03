@@ -9,8 +9,10 @@
  * static tier could never know: is the requested background actually
  * painted, are the named colors visible, and how does it look (the
  * appearance score; rubric v3 grades 0-100 — v2's 1-5 saturated at 4
- * every round, hiding polish progress). A dark-scheme audit samples the
- * SAME minted specs re-rendered with theme.mode=dark (VISUAL_DARK_N):
+ * every round, hiding polish progress). A dark-scheme audit re-renders the
+ * SAME minted specs with theme.mode=dark (VISUAL_DARK_N, ALL rendered
+ * instructions by default — a numeric value caps the sample for cheap
+ * runs):
  * identical content, only the scheme differs — the pixel luminance check
  * owns the dark assertion (the stage must go nocturnal), the judge
  * re-grades polish only.
@@ -47,7 +49,13 @@ const JUDGE = {
 };
 const LEDGER_STEM = process.env.LEDGER_STEM || 'appgen-visual';
 const VISUAL_N = Number(process.env.VISUAL_N || 12);
-const DARK_N = Number(process.env.VISUAL_DARK_N || 2);
+/** Dark-audit coverage: ALL rendered instructions by default (round 27 —
+ * the 2-slot sample audited 2 of 12 instructions, so the nocturnal
+ * assertion never touched the other 10); a numeric VISUAL_DARK_N caps the
+ * sample for cheap runs ('all' or unset = everything). */
+const DARK_N_RAW = process.env.VISUAL_DARK_N;
+const DARK_ALL = DARK_N_RAW === undefined || DARK_N_RAW === '' || DARK_N_RAW === 'all';
+const DARK_N = Number(DARK_N_RAW || 2);
 /** Judge self-variance: each screenshot is judged JUDGE_RUNS times (default
  * 2); the |Δ| between the two 0-100 appearance scores is the judge's own
  * noise floor — the resolution limit of every appearance delta the loop
@@ -252,7 +260,7 @@ try {
   // is not recorded for dark rows because the mode flip legitimately
   // replaces the requested light hex and the channel would read NO by
   // construction.
-  const darkJobs = rendered.slice(0, DARK_N);
+  const darkJobs = DARK_ALL ? rendered : rendered.slice(0, DARK_N);
   if (darkJobs.length) {
     await session.page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
     for (const job of darkJobs) {
@@ -323,7 +331,7 @@ if (judgeDeltas.length) {
 }
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', judgeSelfVariance: `same screenshot judged ${JUDGE_RUNS}× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics`, darkAudit: `sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_N}); luminance <0.35 = dark` },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', judgeSelfVariance: `same screenshot judged ${JUDGE_RUNS}× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics`, darkAudit: `re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_ALL ? 'all' : DARK_N} of ${rendered.length} rendered); luminance <0.35 = dark` },
   visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance, judgeSelfVariance, darkSampled: darkRows.length, darkOk, darkMeanLuminance: darkMeanLum, darkMeanAppearance: darkMeanApp },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
