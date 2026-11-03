@@ -18,7 +18,6 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { validate } from '../../system-plugins/dsh-appshell/lib/validate.js';
-import { NAMED_COLORS, colorDistance } from '../../system-plugins/dsh-appshell/lib/catalog.js';
 import { specToA2UI } from '../../system-plugins/dsh-appshell/lib/appshell-to-a2ui.js';
 import { SYSTEM_V1, SYSTEM_V2 } from './appgen-eval/system-prompt.js';
 
@@ -120,20 +119,13 @@ function rubric(spec) {
     }
   }
   if (f.actions.length === 0) push('RUBRIC_NO_ACTIONS', 'actions[] empty — a poster, not an app');
-  // Near-miss named colors: a theme color within reach of a CSS-named
-  // color but not equal is the #FFF5F5-for-seashell failure mode — the
-  // machine-checkable twin of the judge's exactness complaints.
-  for (const [slot, value] of [['accent', spec.theme?.accent], ['background', spec.theme?.background]]) {
-    if (typeof value !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(value)) continue;
-    const upper = value.toUpperCase();
-    if (Object.values(NAMED_COLORS).includes(upper)) continue;
-    let best = null;
-    for (const [name, hex] of Object.entries(NAMED_COLORS)) {
-      const d = colorDistance(upper, hex);
-      if (d <= 150 && (best === null || d < best.d)) best = { name, hex, d };
-    }
-    if (best) push('RUBRIC_NAMED_COLOR_NEAR_MISS', `theme.${slot} ${value} is near ${best.name} ${best.hex} — use the exact hex`);
-  }
+  // Theme-color exactness is deliberately NOT re-checked here: the rubric
+  // receives the minted form (see judge()), where validate() has already
+  // snapped every obvious near-miss to the exact named hex (#716) — a
+  // raw-request RUBRIC_NAMED_COLOR_NEAR_MISS check would only re-count what
+  // the product repairs before render (rubric v1 did exactly that and it
+  // dominated every recent ledger). The pixel channel in appgen-visual.mjs
+  // owns exactness, measured against the minted render.
 
   return {
     fails,
@@ -190,7 +182,20 @@ function judge(content, wants) {
     return { structuralOk: false, ok: false, errors: [{ code: 'UNPARSEABLE', msg: e.message }], rubricFails: [], a2uiComponents: 0, spec: null };
   }
   const structural = validate(spec);
-  const rub = structural.ok ? rubric(spec) : { fails: [], counts: null };
+  // The rubric judges the MINTED form (validate()'s normalizedSpec), not the
+  // raw request: since #716 validate() canonicalizes near-miss theme colors
+  // (snapNamedColor) and appshell_render mints the normalized spec — the
+  // rendered surface IS the named color, and the visual leg's pixel channel
+  // grades exactness against that minted render. Judging the raw request
+  // kept re-counting a class the product accepts and repairs as the census's
+  // dominant failure (RUBRIC_NAMED_COLOR_NEAR_MISS: top class in rr24 ×9,
+  // rr29 ×10/16 — constitution crushed to 18.8 while structuralValid was
+  // 100): the rubric drifting from the product constitution, exactly the
+  // drift the research doc's weekly self-audit names. Prompt teaching for
+  // this class measured at its ceiling long ago (#716: 11 → 10), so the
+  // census measures the product's real bar and lets the residual classes
+  // (hero-first, depth, templates) carry the signal.
+  const rub = structural.ok ? rubric(structural.normalizedSpec ?? spec) : { fails: [], counts: null };
   const a2ui = structural.ok && rub.fails.length === 0 ? specToA2UI(spec, {}) : null;
   return {
     structuralOk: structural.ok,
@@ -306,7 +311,13 @@ const ledger = {
   meta: {
     at: new Date().toISOString(), model: MODEL, promptSet: PROMPTSET_VERSION, systemPrompt: 'SYSTEM_' + SYSTEM_VERSION,
     runsPerCategory: RUNS, categories: selected.map((c) => c.id), temperature: 0.7,
-    okDefinition: 'validate() four gates AND design-constitution rubric (machine-checkable half)',
+    // v2 (2026-11-03, r29): the rubric judges the minted/normalized spec —
+    // #716's near-miss snap semantics; the raw-request
+    // RUBRIC_NAMED_COLOR_NEAR_MISS check is gone. v1 ledgers (everything
+    // before this meta marker) judged the raw request — never mix the two
+    // in one delta claim.
+    rubricVersion: 2,
+    okDefinition: 'validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)',
   },
   summary: byCategory,
   percentages,
