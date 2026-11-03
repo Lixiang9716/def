@@ -180,6 +180,63 @@ async function judgeAgain(instruction, shotB64, record) {
   return verdict2;
 }
 
+/** Near-miss snap A/B (r33): the pixel-layer confirmation of #716's snap
+ * decision, using the ledger's colorSnap [raw, minted] pair. The RAW spec
+ * is re-rendered alongside the minted one; the two renders share geometry
+ * (same tree, only theme.background differs), so each pixel's B−A delta
+ * isolates the snap — content pixels sit at Δ≈0, background pixels move by
+ * the exact hex delta, and the stage's fixed blend offset (measured −3 per
+ * channel) cancels in the difference. (Whole-surface per-hex means are
+ * unusable here: content noise ~d²9k drowns snap signals of d²2-54, and
+ * per-hex grading of either render alone is marginal because the blend
+ * offset's d²27 is the same order as the snap distances.) confirmed = the
+ * exact hex-delta fingerprint appears in ≥5% of grid samples. Judge-free:
+ * pure pixel channel, one extra render+screenshot per snapped row. */
+async function renderSnapAB(session, shotsDir, sourceId, rawSpec, mintedShot, snapPair, row) {
+  const [rawHex, mintedHex] = snapPair.background;
+  try {
+    const opened = await session.page.evaluate(async (raw) => {
+      const mod = await import(new URL('js/appshell.js', location.href).href);
+      const ok = mod.openSurface({ title: 'App', spec: raw, onAction: null });
+      await new Promise((r) => setTimeout(r, 350));
+      return ok;
+    }, rawSpec);
+    if (opened !== true) throw new Error('raw surface failed to open');
+    const rawView = await session.page.$('#appshell-view');
+    const rawShot = await rawView.screenshot({ type: 'png' });
+    const rawShotPath = new URL(`${sourceId}.raw.png`, shotsDir);
+    writeFileSync(rawShotPath, rawShot);
+    const chan = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const hexDelta = chan(mintedHex).map((c, i) => c - chan(rawHex)[i]);
+    const a = readPng(rawShot), b = readPng(mintedShot);
+    if (a.width !== b.width || a.height !== b.height) throw new Error(`render size mismatch ${a.width}x${a.height} vs ${b.width}x${b.height}`);
+    const buckets = new Map();
+    let samples = 0;
+    for (let y = 8; y < a.height - 8; y += 12) {
+      for (let x = 8; x < a.width - 8; x += 12) {
+        const i = (y * a.width + x) * 4;
+        const d = [0, 1, 2].map((c) => b.data[i + c] - a.data[i + c]);
+        samples += 1;
+        if (d.some((v) => v !== 0)) buckets.set(d.join(','), (buckets.get(d.join(',')) ?? 0) + 1);
+      }
+    }
+    const fingerprintCount = buckets.get(hexDelta.join(',')) ?? 0;
+    row.snapAB = {
+      rawShot: rawShotPath.pathname.split('/').slice(-2).join('/'),
+      rawHex, mintedHex, hexDelta,
+      samples,
+      fingerprintCount,
+      fingerprintShare: samples ? Math.round(fingerprintCount / samples * 1000) / 1000 : 0,
+      confirmed: fingerprintCount >= Math.max(0.05 * samples, 50),
+      topDeltas: [...buckets.entries()].sort((x, y) => y[1] - x[1]).slice(0, 3)
+        .map(([key, count]) => ({ delta: key.split(',').map(Number), count })),
+    };
+    console.log(`snapAB ${sourceId}: ${row.snapAB.confirmed ? 'CONFIRMED' : 'NOT-CONFIRMED'} | hexDelta [${hexDelta}] fingerprint ${fingerprintCount}/${samples} (${(row.snapAB.fingerprintShare * 100).toFixed(1)}%)`);
+  } catch (e) {
+    row.snapABError = e.message.slice(0, 120);
+  }
+}
+
 const shotsDir = new URL(`../../tools/dev-web-carrier/artifacts/appgen-bench/shots-${LEDGER_STEM}/`, import.meta.url);
 mkdirSync(shotsDir, { recursive: true });
 const session = await openCarriedPage({ colorScheme: 'light' });
@@ -228,6 +285,12 @@ try {
           const { fraction } = backgroundHitFraction(shot, minted.theme.background);
           row.pixelBackground = { target: minted.theme.background, hitFraction: fraction, painted: fraction >= 0.25 };
         }
+        // Near-miss snap A/B (r33): when the minted hex differs from the raw
+        // request, re-render the RAW spec too — the pixel-layer confirmation
+        // of #716's snap decision, via the ALIGNED DELTA MAP (renderSnapAB:
+        // the two renders share geometry, so each pixel's B−A delta isolates
+        // the snap; judge-free, one extra render+screenshot per snapped row).
+        if (row.colorSnap?.background && row.opened) await renderSnapAB(session, shotsDir, instruction.source_id, spec, shot, row.colorSnap, row);
         const verdict = await judgeVisual(instruction, shot.toString('base64'));
         if (verdict === null) { row.judge_failed = true; row.background_painted = null; row.appearance = null; }
         else {
@@ -329,10 +392,13 @@ if (judgeDeltas.length) {
   };
   console.log(`JUDGE SELF-VARIANCE: n ${judgeSelfVariance.n}, mean |Δ| ${judgeSelfVariance.meanAbsDelta}, max ${judgeSelfVariance.maxDelta}, exact ${judgeDeltas.filter((d) => d === 0).length}/${judgeSelfVariance.n}, within5 ${judgeDeltas.filter((d) => d <= 5).length}/${judgeSelfVariance.n}`);
 }
+const abRows = rows.filter((r) => r.snapAB);
+const abConfirmed = abRows.filter((r) => r.snapAB.confirmed).length;
+if (abRows.length) console.log(`SNAP A/B: ${abConfirmed}/${abRows.length} confirmed (the exact hex-delta fingerprint in the aligned render diff)`);
 
 const ledger = {
-  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', judgeSelfVariance: `same screenshot judged ${JUDGE_RUNS}× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics`, darkAudit: `re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_ALL ? 'all' : DARK_N} of ${rendered.length} rendered); luminance <0.35 = dark` },
-  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance, judgeSelfVariance, darkSampled: darkRows.length, darkOk, darkMeanLuminance: darkMeanLum, darkMeanAppearance: darkMeanApp },
+  meta: { at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model, instructions: rows.length, tier: 'rendered-surface screenshots (visual leg v2, product validate+normalize render path)', appearanceRubric: 'v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors', judgeSelfVariance: `same screenshot judged ${JUDGE_RUNS}× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics`, darkAudit: `re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=${DARK_ALL ? 'all' : DARK_N} of ${rendered.length} rendered); luminance <0.35 = dark`, snapAB: `rows whose theme snapped (colorSnap pair) re-render the RAW spec; the two renders share geometry, so the aligned per-pixel B−A delta map isolates the snap (content Δ≈0, background Δ=hex delta — the stage blend offset cancels); confirmed = the exact hex-delta fingerprint appears in ≥5% of grid samples — the pixel-layer confirmation of #716` },
+  visual: { backgroundYes: yes, backgroundPartial: partial, backgroundNo: scored.length - yes - partial, scored: scored.length, rejected: refused, appearanceScale: 100, meanAppearance, judgeSelfVariance, darkSampled: darkRows.length, darkOk, darkMeanLuminance: darkMeanLum, darkMeanAppearance: darkMeanApp, snapAB: { sampled: abRows.length, confirmed: abConfirmed } },
   pixelCheck: { paintedExact: rows.filter((r) => r.pixelBackground?.painted).length, checked: rows.filter((r) => r.pixelBackground).length },
   rows,
 };
