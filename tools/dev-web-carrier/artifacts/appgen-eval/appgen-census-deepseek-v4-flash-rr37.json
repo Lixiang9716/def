@@ -1,0 +1,861 @@
+{
+  "meta": {
+    "at": "2026-11-04T09:33:48.317Z",
+    "model": "glm-5.3-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 2,
+    "categories": [
+      "music-player",
+      "wallet",
+      "chat",
+      "tools-dashboard",
+      "pomodoro",
+      "calendar",
+      "ecommerce",
+      "fitness"
+    ],
+    "temperature": 0.7,
+    "rubricVersion": 2,
+    "okDefinition": "validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)"
+  },
+  "summary": {
+    "music-player": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 8,
+      "expectTotal": 8,
+      "tokensP50": 6323,
+      "latencyP50": 106884
+    },
+    "wallet": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 7547,
+      "latencyP50": 132501
+    },
+    "chat": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 11939,
+      "latencyP50": 245858
+    },
+    "tools-dashboard": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 6056,
+      "latencyP50": 106431
+    },
+    "pomodoro": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 10253,
+      "latencyP50": 145520
+    },
+    "calendar": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 9009,
+      "latencyP50": 164873
+    },
+    "ecommerce": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 20292,
+      "latencyP50": 355208
+    },
+    "fitness": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 6782,
+      "latencyP50": 106519
+    }
+  },
+  "percentages": {
+    "structuralValid": 100,
+    "constitution": 81.3,
+    "alignment": 100
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_HERO_FIRST",
+      2
+    ],
+    [
+      "RUBRIC_TOP_BLOCKS",
+      2
+    ],
+    [
+      "RUBRIC_TEMPLATES",
+      1
+    ]
+  ],
+  "finalFailureClasses": [],
+  "rows": [
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6074,
+      "latency": 96883,
+      "a2uiComponents": 53,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6323,
+      "latency": 106884,
+      "a2uiComponents": 47,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 1,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player"
+        ],
+        "actions": 5,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7321,
+      "latency": 139258,
+      "a2uiComponents": 55,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "service-grid",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7547,
+      "latency": 132501,
+      "a2uiComponents": 60,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "service-grid",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7941,
+      "latency": 139786,
+      "a2uiComponents": 49,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 11939,
+      "latency": 245858,
+      "a2uiComponents": 60,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7755,
+      "latency": 149149,
+      "a2uiComponents": 60,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 1,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 10,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6056,
+      "latency": 106431,
+      "a2uiComponents": 53,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 9,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 8943,
+      "latency": 197223,
+      "a2uiComponents": 49,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 2,
+        "templates": [
+          "balance-card",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 6
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 10253,
+      "latency": 145520,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 6
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_TEMPLATES",
+          "msg": "mobile templates = 1 (want ≥2): balance-card"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF6347\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"专注\",\"任务\",\"统计\"],\"actions\":[\"timer.start\",\"timer.break\",\"task.toggle.report\",\"task.toggle.read\",\"task.toggle.mail\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"balance-card\",\"label\":\"番茄钟 · 准备开始\",\"value\":\"25:00\",\"actionLabel\":\"开始专注\",\"action\":\"timer.start\"},{\"type\":\"progressbar\",\"label\":\"今日目标 8 个 · 已完成 4 个\",\"value\":50},{\"type\":\"row\",\"children\":[{\"type\":\"card\",\"children\":[{\"type\":\"text\",\"text\":\"4 个\",\"size\":\"title\"},{\"type\":\"text\",\"text\":\"已完成番茄\",\"size\":\"small\",\"tone\":\"muted\"}]},{\"type\":\"card\",\"children\":[{\"type\":\"text\",\"text\":\"100 分钟\",\"size\":\"title\"},{\"type\":\"text\",\"text\":\"今日专注时长\",\"size\":\"small\",\"tone\":\"muted\"}]}]},{\"type\":\"card\",\"children\":[{\"type\":\"text\",\"text\":\"今日任务\",\"size\":\"body\"},{\"type\":\"",
+      "retried": true
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 13737,
+      "latency": 258445,
+      "a2uiComponents": 94,
+      "counts": {
+        "topBlocks": 4,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "chat-row"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 9009,
+      "latency": 164873,
+      "a2uiComponents": 96,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 3,
+        "templates": [
+          "banner-card",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 4
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 25239,
+      "latency": 468473,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 4,
+        "templates": [
+          "hcard-row",
+          "search-bar",
+          "service-grid"
+        ],
+        "actions": 14,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        },
+        {
+          "code": "RUBRIC_TOP_BLOCKS",
+          "msg": "top-level blocks = 7 (want 4-6)"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#F7F8FA\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.query\",\"flash.buy.headphone\",\"flash.buy.bottle\",\"flash.buy.shoes\",\"flash.buy.cream\",\"category.digital\",\"category.beauty\",\"category.fashion\",\"category.fresh\",\"guess.refresh\",\"guess.buy.tshirt\",\"guess.buy.juicer\",\"guess.buy.mug\",\"guess.buy.speaker\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"iPhone 17 Pro 限时直降 500\",\"action\":\"search.query\"},{\"type\":\"banner-card\",\"title\":\"限时秒杀\",\"subtitle\":\"距结束 02:18:45 · 全场 5 折起\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#FFE1E1\"},\"title\":\"降噪耳机\",\"sub\":\"¥199 · 5折\",\"action\":\"flash.buy.headphone\"},{\"cover\":{\"emoji\":\"🥤\",\"color\":\"#FFF3D1\"},\"title\":\"智能保温杯\",\"sub\":\"¥59 · 3折\",\"act",
+      "retried": true
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 20292,
+      "latency": 355208,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 4,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        },
+        {
+          "code": "RUBRIC_TOP_BLOCKS",
+          "msg": "top-level blocks = 7 (want 4-6)"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FBF3F1\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.query\",\"category.fashion\",\"category.digital\",\"category.home\",\"category.beauty\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索商品、品牌、店铺\"},{\"type\":\"banner-card\",\"title\":\"618年终大促\",\"subtitle\":\"跨店每满300减50 · 全场包邮\"},{\"type\":\"card\",\"children\":[{\"type\":\"row\",\"children\":[{\"type\":\"text\",\"text\":\"限时秒杀\",\"size\":\"body\"},{\"type\":\"badge\",\"text\":\"20点场 · 01:23:45\"}]},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"📱\",\"color\":\"#D2691E\"},\"title\":\"12+256G 旗舰手机\",\"sub\":\"¥2,999 · 已抢82%\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#CD5C5C\"},\"title\":\"智能运动手表\",\"sub\":\"¥399 · 已抢64%\"},{\"cover\":{\"emoji\":\"🧴\",\"color\":\"#696969\"},\"title\":\"修护精华礼盒\",\"sub\":\"¥129 · 已抢91%\"}]}",
+      "retried": true
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6012,
+      "latency": 85082,
+      "a2uiComponents": 39,
+      "counts": {
+        "topBlocks": 4,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6782,
+      "latency": 106519,
+      "a2uiComponents": 53,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    }
+  ]
+}
