@@ -1,0 +1,295 @@
+{
+  "meta": {
+    "at": "2026-11-04T20:35:38.673Z",
+    "generator": "glm-5.3-flash",
+    "judge": "glm-4.6",
+    "systemPrompt": "SYSTEM_V2",
+    "seeds": [
+      "music-player",
+      "wallet",
+      "pomodoro",
+      "chat"
+    ],
+    "chainShape": "9 dependent tasks per seed (round-39 deepening: 8=count-change, 9=text-change, second modifications of chain-created elements; rounds 30-38 ran 7 per seed, 18-29 ran 5, pre-18 ran 3)",
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
+  },
+  "overall": {
+    "yes": 36,
+    "partial": 0,
+    "no": 0,
+    "accuracy": 100
+  },
+  "positions": {
+    "1": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "2": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "3": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "4": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "5": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "6": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "7": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "8": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "9": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    }
+  },
+  "diagnostics": {
+    "rejectedUpdates": 0
+  },
+  "rows": [
+    {
+      "seed": "music-player",
+      "tasks": 9,
+      "steps": [
+        {
+          "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
+          "verdict": "YES",
+          "why": "搜索栏左侧已有扫一扫按钮，action 为 scan.open"
+        },
+        {
+          "task": "把主题色从红色换成紫色 #7c4dff",
+          "verdict": "YES",
+          "why": "theme.accent set to #7C4DFF as requested"
+        },
+        {
+          "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
+          "verdict": "YES",
+          "why": "「本周新碟」卡片位于歌单列表后，含两张封面卡"
+        },
+        {
+          "task": "在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）",
+          "verdict": "YES",
+          "why": "「查看全部」按钮带 album.more 已置于本周新碟行右侧"
+        },
+        {
+          "task": "把每日推荐横幅卡片的标题文本改成「今日精选」",
+          "verdict": "YES",
+          "why": "banner-card标题已是「今日精选」"
+        },
+        {
+          "task": "把「本周新碟」横向卡片行从两张封面卡片增加到三张",
+          "verdict": "YES",
+          "why": "本周新碟 hcard-row has three cover cards as requested"
+        },
+        {
+          "task": "把「今日精选」横幅卡片的副标题改成「每晚 18:00 更新」",
+          "verdict": "YES",
+          "why": "banner-card subtitle already equals「每晚 18:00 更新」"
+        },
+        {
+          "task": "把「本周新碟」横向卡片行从三张封面裁回两张",
+          "verdict": "YES",
+          "why": "本周新碟 hcard-row now contains exactly two covers"
+        },
+        {
+          "task": "把「今日精选」横幅卡片的副标题从「每晚 18:00 更新」改成「工作日 6:00 更新」",
+          "verdict": "YES",
+          "why": "横幅副标题已是「工作日 6:00 更新」"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 34949
+    },
+    {
+      "seed": "wallet",
+      "tasks": 9,
+      "steps": [
+        {
+          "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
+          "verdict": "YES",
+          "why": "进度条紧跟总资产卡片下方，标签'已消费 68%'数值68均正确"
+        },
+        {
+          "task": "把主题色换成金色 #d4a017",
+          "verdict": "YES",
+          "why": "theme.accent set to #D4A017 as requested"
+        },
+        {
+          "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
+          "verdict": "YES",
+          "why": "Button 账单导出 with action bill.export appears after transaction rows."
+        },
+        {
+          "task": "在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）",
+          "verdict": "YES",
+          "why": "Grid adds 票券(ticket.enter) and 客服(support.chat) as second row"
+        },
+        {
+          "task": "把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」",
+          "verdict": "YES",
+          "why": "文本行已改为「本月收入 ¥12,800，支出 ¥6,400」，完全匹配。"
+        },
+        {
+          "task": "把本月结余进度条的已消费比例从 68% 改成 85%",
+          "verdict": "YES",
+          "why": "本月结余进度条已更新为已消费 85%，value 85"
+        },
+        {
+          "task": "把「账单导出」按钮的文案改成「导出本月账单」",
+          "verdict": "YES",
+          "why": "按钮 label 已为「导出本月账单」，action bill.export 保留"
+        },
+        {
+          "task": "把本月结余进度条的已消费比例从 85% 改成 60%",
+          "verdict": "YES",
+          "why": "progressbar shows 已消费 60%, value 60 as requested"
+        },
+        {
+          "task": "把「票券」入口的文案改成「卡券中心」",
+          "verdict": "YES",
+          "why": "票券入口label已改为「卡券中心」，action仍为ticket.enter"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 43015
+    },
+    {
+      "seed": "pomodoro",
+      "tasks": 9,
+      "steps": [
+        {
+          "task": "在统计区下面新增今日任务清单（可勾选的三行）",
+          "verdict": "YES",
+          "why": "统计卡下方含三行任务卡，每行带 toggle 勾选操作"
+        },
+        {
+          "task": "把主题色换成墨绿色 #1f6f54",
+          "verdict": "YES",
+          "why": "theme.accent 已设置为墨绿色 #1f6f54"
+        },
+        {
+          "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
+          "verdict": "YES",
+          "why": "Top row has 白噪音 text plus button wired to noise.toggle"
+        },
+        {
+          "task": "在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）",
+          "verdict": "YES",
+          "why": "「专注报告」按钮已与白噪音开关同排，action 为 report.view"
+        },
+        {
+          "task": "把今日完成的番茄数文本改成「今日已完成 6 个番茄」",
+          "verdict": "YES",
+          "why": "Spec contains a text row with exactly「今日已完成 6 个番茄」"
+        },
+        {
+          "task": "把今日已完成的番茄数从 6 个改成 9 个",
+          "verdict": "YES",
+          "why": "Spec shows 今日已完成 9 个番茄，count updated to 9"
+        },
+        {
+          "task": "把「专注报告」按钮的文案改成「生成专注报告」",
+          "verdict": "YES",
+          "why": "按钮文案已是「生成专注报告」，action 为 report.view"
+        },
+        {
+          "task": "把今日已完成的番茄数从 9 个改成 3 个",
+          "verdict": "YES",
+          "why": "Spec shows 今日已完成 3 个番茄, matching requested change"
+        },
+        {
+          "task": "把页面顶部的白噪音开关按钮的文案改成「雨声白噪音」",
+          "verdict": "YES",
+          "why": "Top row button label is「雨声白噪音」with noise.toggle action"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 38755
+    },
+    {
+      "seed": "chat",
+      "tasks": 9,
+      "steps": [
+        {
+          "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
+          "verdict": "YES",
+          "why": "Banner-card「未读消息 12 条」位于会话列表上方"
+        },
+        {
+          "task": "把主题色换成天蓝色 #2f9ee8",
+          "verdict": "YES",
+          "why": "theme.accent 正是 #2F9EE8 天蓝色"
+        },
+        {
+          "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
+          "verdict": "YES",
+          "why": "「全部已读」按钮与 action msg.readall 已放在横幅卡片同行"
+        },
+        {
+          "task": "把「未读消息 12 条」横幅的文本改成「未读消息 3 条」",
+          "verdict": "YES",
+          "why": "横幅标题已是「未读消息 3 条」，完全符合"
+        },
+        {
+          "task": "在底部标签栏最后新增一个「我的」标签",
+          "verdict": "YES",
+          "why": "「我的」标签已添加至标签栏末尾，符合要求"
+        },
+        {
+          "task": "把「未读消息 3 条」横幅的计数改成「未读消息 9 条」",
+          "verdict": "YES",
+          "why": "横幅标题已是「未读消息 9 条」"
+        },
+        {
+          "task": "把「全部已读」按钮的文案改成「一键已读」",
+          "verdict": "YES",
+          "why": "按钮文案已是「一键已读」，修改完全生效"
+        },
+        {
+          "task": "把「未读消息 9 条」横幅的计数改成「未读消息 5 条」",
+          "verdict": "YES",
+          "why": "Banner-card title 已为「未读消息 5 条」"
+        },
+        {
+          "task": "把「一键已读」按钮的文案改成「忽略未读」",
+          "verdict": "YES",
+          "why": "按钮文案已改为「忽略未读」，且绑定读取操作保留。"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 36380
+    }
+  ]
+}
