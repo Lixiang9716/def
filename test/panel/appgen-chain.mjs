@@ -15,11 +15,13 @@
  *
  * Generator: LLM_* (fallback DSH_LLM_*, then ZAI_*); judge: JUDGE_* (keep
  * a different family). Knobs: CHAIN_SEEDS (first N seeds), LEDGER_STEM.
- * Chain shape: 7 dependent tasks per seed since round 30 (r18 deepened 3 →
- * 5 when the r18 battery saturated 3 tasks at 100%; rr29-rr30 then sat at
- * 100% through position 5 with zero visible decay — tasks 6-7 (count-change
- * / text-change, each built on what the earlier tasks added) probe the back
- * segment; earlier ledgers ran 3 or 5 and carry their own rows). Not a CI
+ * Chain shape: 9 dependent tasks per seed since round 39 (r18 deepened 3 →
+ * 5 when 3 saturated; r30 deepened 5 → 7 when 5 saturated; the 7-shape then
+ * held 100 / 98.2 / 96.4 / 100 / 100 across five batteries with positions
+ * 6-7 pinned at 100% every time — tasks 8 (count-change) and 9 (text-
+ * change) are SECOND modifications of elements earlier tasks created, the
+ * compounding stress the shape exists to probe; earlier ledgers ran 3, 5
+ * or 7 and carry their own rows). Not a CI
  * gate — the loop's backend-axis percentage benchmark
  * (doc/appgen-auto-research.md).
  */
@@ -64,6 +66,8 @@ const SEEDS = [
       '把每日推荐横幅卡片的标题文本改成「今日精选」',
       '把「本周新碟」横向卡片行从两张封面卡片增加到三张',
       '把「今日精选」横幅卡片的副标题改成「每晚 18:00 更新」',
+      '把「本周新碟」横向卡片行从三张封面裁回两张',
+      '把「今日精选」横幅卡片的副标题从「每晚 18:00 更新」改成「工作日 6:00 更新」',
     ],
   },
   {
@@ -77,6 +81,8 @@ const SEEDS = [
       '把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」',
       '把本月结余进度条的已消费比例从 68% 改成 85%',
       '把「账单导出」按钮的文案改成「导出本月账单」',
+      '把本月结余进度条的已消费比例从 85% 改成 60%',
+      '把「票券」入口的文案改成「卡券中心」',
     ],
   },
   {
@@ -90,6 +96,8 @@ const SEEDS = [
       '把今日完成的番茄数文本改成「今日已完成 6 个番茄」',
       '把今日已完成的番茄数从 6 个改成 9 个',
       '把「专注报告」按钮的文案改成「生成专注报告」',
+      '把今日已完成的番茄数从 9 个改成 3 个',
+      '把页面顶部的白噪音开关按钮的文案改成「雨声白噪音」',
     ],
   },
   {
@@ -103,6 +111,8 @@ const SEEDS = [
       '在底部标签栏最后新增一个「我的」标签',
       '把「未读消息 3 条」横幅的计数改成「未读消息 9 条」',
       '把「全部已读」按钮的文案改成「一键已读」',
+      '把「未读消息 9 条」横幅的计数改成「未读消息 5 条」',
+      '把「一键已读」按钮的文案改成「忽略未读」',
     ],
   },
 ].slice(0, N_SEEDS);
@@ -257,7 +267,7 @@ const ledger = {
   meta: {
     at: new Date().toISOString(), generator: GEN.model, judge: JUDGE.model,
     systemPrompt: 'SYSTEM_' + SYSTEM_VERSION, seeds: rows.map((r) => r.seed),
-    chainShape: '7 dependent tasks per seed (round-30 deepening: 6=count-change, 7=text-change; rounds 18-29 ran 5 per seed, pre-18 ran 3)',
+    chainShape: '9 dependent tasks per seed (round-39 deepening: 8=count-change, 9=text-change, second modifications of chain-created elements; rounds 30-38 ran 7 per seed, 18-29 ran 5, pre-18 ran 3)',
     formula: 'accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)',
   },
   overall, positions,
