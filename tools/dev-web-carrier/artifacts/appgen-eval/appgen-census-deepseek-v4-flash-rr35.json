@@ -1,0 +1,841 @@
+{
+  "meta": {
+    "at": "2026-11-04T00:48:15.499Z",
+    "model": "glm-5.3-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 2,
+    "categories": [
+      "music-player",
+      "wallet",
+      "chat",
+      "tools-dashboard",
+      "pomodoro",
+      "calendar",
+      "ecommerce",
+      "fitness"
+    ],
+    "temperature": 0.7,
+    "rubricVersion": 2,
+    "okDefinition": "validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)"
+  },
+  "summary": {
+    "music-player": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 0,
+      "finalPass": 2,
+      "expectHits": 8,
+      "expectTotal": 8,
+      "tokensP50": 10957,
+      "latencyP50": 135679
+    },
+    "wallet": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 7387,
+      "latencyP50": 104475
+    },
+    "chat": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 6591,
+      "latencyP50": 89893
+    },
+    "tools-dashboard": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 7981,
+      "latencyP50": 120428
+    },
+    "pomodoro": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 5924,
+      "latencyP50": 89695
+    },
+    "calendar": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 7755,
+      "latencyP50": 110180
+    },
+    "ecommerce": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 0,
+      "finalPass": 1,
+      "expectHits": 2,
+      "expectTotal": 2,
+      "tokensP50": 21631,
+      "latencyP50": 335618
+    },
+    "fitness": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 5101,
+      "latencyP50": 62573
+    }
+  },
+  "percentages": {
+    "structuralValid": 93.8,
+    "constitution": 73.3,
+    "alignment": 100
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_HERO_FIRST",
+      3
+    ],
+    [
+      "HTTP",
+      1
+    ],
+    [
+      "RUBRIC_TOP_BLOCKS",
+      1
+    ]
+  ],
+  "finalFailureClasses": [
+    [
+      "HTTP",
+      1
+    ]
+  ],
+  "rows": [
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 9350,
+      "latency": 113728,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 1,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player"
+        ],
+        "actions": 5,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#141414\",\"mode\":\"dark\"},\"tabs\":[\"首页\",\"播客\",\"我的\"],\"actions\":[\"fm.open\",\"daily.recommend\",\"playlist.browse\",\"ranking.open\",\"player.toggle\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索歌曲、歌手或歌单\"},{\"type\":\"banner-card\",\"title\":\"每日推荐\",\"subtitle\":\"已更新 30 首 · 按你的口味生成\"},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📻\",\"label\":\"私人FM\",\"action\":\"fm.open\"},{\"icon\":\"📅\",\"label\":\"每日推荐\",\"action\":\"daily.recommend\"},{\"icon\":\"🎼\",\"label\":\"歌单\",\"action\":\"playlist.browse\"},{\"icon\":\"🏆\",\"label\":\"排行榜\",\"action\":\"ranking.open\"}]},{\"type\":\"text\",\"text\":\"推荐歌单\",\"size\":\"body\",\"tone\":\"muted\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎸\",\"color\":\"#C62828\"},\"title\":\"华语经典拾光\",\"sub\":\"42首 · 28万收藏\"},{\"cover\":{\"emoji\":\"🌙\",\"colo",
+      "retried": true
+    },
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 10957,
+      "latency": 135679,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 1,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player"
+        ],
+        "actions": 7,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is column"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#1C1C1E\",\"mode\":\"dark\"},\"tabs\":[\"首页\",\"发现\",\"我的\"],\"actions\":[\"search.query\",\"recommend.daily\",\"fm.open\",\"playlist.browse\",\"chart.top\",\"playlist.open\",\"player.toggle\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索歌曲、歌手、播客\"},{\"type\":\"banner-card\",\"title\":\"每日推荐\",\"subtitle\":\"根据你的口味生成 · 30首 · 已连续推荐128天\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"📡\",\"label\":\"私人FM\"},{\"icon\":\"📅\",\"label\":\"每日推荐\"},{\"icon\":\"🎵\",\"label\":\"歌单\"},{\"icon\":\"📈\",\"label\":\"排行榜\"}]},{\"type\":\"text\",\"text\":\"推荐歌单\",\"size\":\"title\",\"tone\":\"default\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎸\",\"color\":\"#CD5C5C\"},\"title\":\"深夜摇滚精选\",\"sub\":\"32首 · 今日更新\"},{\"cover\":{\"emoji\":\"🎷\",\"color\":\"#D2691E\"},\"title\":\"都市爵士漫",
+      "retried": true
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7942,
+      "latency": 118882,
+      "a2uiComponents": 54,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 3,
+        "templates": [
+          "balance-card",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7387,
+      "latency": 104475,
+      "a2uiComponents": 57,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "service-grid",
+          "hcard-row"
+        ],
+        "actions": 6,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 11185,
+      "latency": 155627,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 4,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#008000\",\"mode\":\"light\"},\"tabs\":[\"消息\",\"通讯录\",\"发现\",\"我\"],\"actions\":[\"chat.open\",\"tab.messages\",\"tab.contacts\",\"tab.discover\",\"tab.me\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索联系人、群聊、消息\"},{\"type\":\"chat-row\",\"avatar\":{\"emoji\":\"🧑\",\"color\":\"#4A90E2\"},\"name\":\"张伟\",\"preview\":\"好的，明天上午10点见\",\"time\":\"09:42\"},{\"type\":\"chat-row\",\"avatar\":{\"emoji\":\"👩\",\"color\":\"#F0A030\"},\"name\":\"设计小组\",\"preview\":\"李娜：新版首页稿已上传\",\"time\":\"09:15\"},{\"type\":\"chat-row\",\"avatar\":{\"emoji\":\"🧕\",\"color\":\"#8E6BB8\"},\"name\":\"妈\",\"preview\":\"周末回家吃饭吗？\",\"time\":\"昨天\"},{\"type\":\"chat-row\",\"avatar\":{\"emoji\":\"🧔\",\"color\":\"#3CB371\"},\"name\":\"陈晨\",\"preview\":\"会议纪要发你了，查收\",\"time\":\"周二\"},{\"type\":\"tab-bar\",\"tabs\":[{\"label\":\"消息\"},{\"label\":\"通讯录\"},{\"label\":\"发现\"},{\"label\":\"我\"}],\"active",
+      "retried": true
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 6591,
+      "latency": 89893,
+      "a2uiComponents": 47,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7480,
+      "latency": 112929,
+      "a2uiComponents": 57,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 1,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 8,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7981,
+      "latency": 120428,
+      "a2uiComponents": 44,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 1,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 8,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 10076,
+      "latency": 151775,
+      "a2uiComponents": 49,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "tab-bar"
+        ],
+        "actions": 4,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5924,
+      "latency": 89695,
+      "a2uiComponents": 46,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 1,
+        "templates": [
+          "banner-card",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7352,
+      "latency": 103631,
+      "a2uiComponents": 81,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 3,
+        "templates": [
+          "banner-card",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 7755,
+      "latency": 110180,
+      "a2uiComponents": 86,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 4,
+        "templates": [
+          "banner-card",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": false,
+      "finalOk": false,
+      "tokens": 0,
+      "latency": 0,
+      "errors": [
+        {
+          "code": "HTTP",
+          "msg": "fetch failed"
+        }
+      ],
+      "rubricFails": []
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 21631,
+      "latency": 335618,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 4,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 7,
+        "interactive": 0
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_TOP_BLOCKS",
+          "msg": "top-level blocks = 7 (want 4-6)"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF5EE\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"search.submit\",\"flash.sale\",\"category.fashion\",\"category.digital\",\"category.fresh\",\"category.home\",\"product.view\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"banner-card\",\"title\":\"限时秒杀\",\"subtitle\":\"距结束 01:23:45 · 全场低至 1 折\"},{\"type\":\"search-bar\",\"placeholder\":\"搜索商品 / 品牌 / 店铺\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#FFD700\"},\"title\":\"无线降噪耳机\",\"sub\":\"¥199 · 已抢82%\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#696969\"},\"title\":\"智能运动手表\",\"sub\":\"¥299 · 已抢64%\"},{\"cover\":{\"emoji\":\"👟\",\"color\":\"#F0F8FF\"},\"title\":\"轻弹缓震跑鞋\",\"sub\":\"¥129 · 已抢91%\"},{\"cover\":{\"emoji\":\"☕\",\"color\":\"#D2691E\"},\"title\":\"迷你咖啡机\",\"sub\":\"¥249 · 已抢47%\"}]},{\"type\":\"service-grid\",\"items\":[{\"",
+      "retried": true
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5044,
+      "latency": 56832,
+      "a2uiComponents": 47,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 1,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5101,
+      "latency": 62573,
+      "a2uiComponents": 44,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "balance-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    }
+  ]
+}
