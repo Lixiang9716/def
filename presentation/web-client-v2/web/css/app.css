@@ -800,8 +800,10 @@
 /* hero: a card whose first child is a title (banner-card / balance-card shape) gets the accent wash */
 .ash-card:has(> .ash-text.ash-title) { background: color-mix(in srgb, var(--p-accent, #1677ff) 9%, #ffffff); border-color: color-mix(in srgb, var(--p-accent, #1677ff) 22%, transparent); }
 .ash-card:has(> .ash-text.ash-title) .ash-text.ash-title { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
-/* image tiles: the emoji sits on its accent tint */
-.ash-image { width: 46px; height: 46px; min-width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 21px; margin: 0 0 8px; }
+/* image tiles: the emoji sits on its accent tint — explicit spec colors mix
+ * over white at 14% (appshell.js inline); a chip whose spec omits the color
+ * takes this stylesheet wash so neutral tiles never read off-theme */
+.ash-image { width: 46px; height: 46px; min-width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 21px; margin: 0 0 8px; background: color-mix(in srgb, var(--p-accent, #1677ff) 10%, #ffffff); }
 .ash-card .ash-col .ash-image, .ash-card > .ash-image { margin: 0; }
 .ash-row > .ash-card { padding: 12px; }
 .ash-text.ash-title { font-size: 17px; font-weight: 650; }
@@ -816,7 +818,9 @@
 .ash-tabbar { position: sticky; top: -5px; z-index: 5; margin: 0 -6px 12px; background: color-mix(in srgb, #ffffff 82%, transparent); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,.05); border-radius: 13px; padding: 4px; gap: 2px; }
 .ash-tab { border-radius: 9px; }
 .ash-tab.active { background: #fff; box-shadow: 0 1px 3px rgba(16,24,40,.10); }
-.ash-badge { background: rgba(16,24,40,.05); border-radius: 9px; }
+/* inactive badges (tabs, tags) take a whisper of the accent so the chrome
+ * reads themed; the active state keeps its full fill + halo (line below) */
+.ash-badge { background: color-mix(in srgb, var(--p-accent, #1677ff) 8%, #ECEEF1); border-radius: 9px; }
 /* tab-bar active state (tone:'accent' from the template expander): the accent
    fill IS the selected-tab affordance — color, weight, and a soft accent halo */
 .ash-badge.ash-accent { background: var(--p-accent, #1677ff); color: #fff; font-weight: 600; box-shadow: 0 1px 4px color-mix(in srgb, var(--p-accent, #1677ff) 40%, transparent); }

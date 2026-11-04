@@ -1,0 +1,358 @@
+{
+  "meta": {
+    "at": "2026-11-04T02:48:53.403Z",
+    "generator": "glm-5.3-flash",
+    "judge": "glm-4.6v",
+    "instructions": 6,
+    "tier": "rendered-surface screenshots (visual leg v2, product validate+normalize render path)",
+    "appearanceRubric": "v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors",
+    "judgeSelfVariance": "same screenshot judged 1× (VISUAL_JUDGE_RUNS); |Δ| on the 0-100 appearance scale = the judge's noise floor, never folded into primary metrics",
+    "darkAudit": "re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=1 of 6 rendered); luminance <0.35 = dark",
+    "snapAB": "rows whose theme snapped (colorSnap pair) re-render the RAW spec; the two renders share geometry, so the aligned per-pixel B−A delta map isolates the snap (content Δ≈0, background Δ=hex delta — the stage blend offset cancels); confirmed = the exact hex-delta fingerprint appears in ≥5% of grid samples — the pixel-layer confirmation of #716"
+  },
+  "visual": {
+    "backgroundYes": 6,
+    "backgroundPartial": 0,
+    "backgroundNo": 0,
+    "scored": 6,
+    "rejected": 0,
+    "appearanceScale": 100,
+    "meanAppearance": 71.5,
+    "judgeSelfVariance": null,
+    "darkSampled": 1,
+    "darkOk": 1,
+    "darkMeanLuminance": 0.16,
+    "darkMeanAppearance": 70,
+    "snapAB": {
+      "sampled": 4,
+      "confirmed": 4
+    }
+  },
+  "pixelCheck": {
+    "paintedExact": 6,
+    "checked": 6
+  },
+  "rows": [
+    {
+      "source_id": "000036",
+      "theme": {
+        "accent": "#DC143C",
+        "background": "#FDF7F6",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FDF7F6",
+          "#FFFAFA"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000036.png",
+      "pixelBackground": {
+        "target": "#FFFAFA",
+        "hitFraction": 0.63,
+        "painted": true
+      },
+      "snapAB": {
+        "rawShot": "shots-appgen-visual-r35-wash-smoke/000036.raw.png",
+        "rawHex": "#FDF7F6",
+        "mintedHex": "#FFFAFA",
+        "hexDelta": [
+          2,
+          3,
+          4
+        ],
+        "samples": 8960,
+        "fingerprintCount": 820,
+        "fingerprintShare": 0.092,
+        "confirmed": true,
+        "topDeltas": [
+          {
+            "delta": [
+              0,
+              1,
+              1
+            ],
+            "count": 2246
+          },
+          {
+            "delta": [
+              2,
+              3,
+              4
+            ],
+            "count": 820
+          },
+          {
+            "delta": [
+              0,
+              0,
+              1
+            ],
+            "count": 349
+          }
+        ]
+      },
+      "background_painted": "YES",
+      "colors_visible": "seashell background, crimson buttons/header, light pink cards",
+      "appearance": 70,
+      "why": "Clear hierarchy and spacing, but generic layout",
+      "polish_hint": "Add subtle shadow to cards for depth",
+      "dark": {
+        "opened": true,
+        "shot": "shots-appgen-visual-r35-wash-smoke/000036.dark.png",
+        "meanLuminance": 0.16,
+        "dark": true,
+        "appearance": 70,
+        "why": "Well-structured layout with clear hierarchy and consistent crimson accents",
+        "colors_visible": "crimson (components) and dark seashell (background)"
+      }
+    },
+    {
+      "source_id": "000038",
+      "theme": {
+        "accent": "#800000",
+        "background": "#FFF5EE",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000038.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.68,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "linen background, maroon header/buttons, white cards, black text, gray subtitles",
+      "appearance": 72,
+      "why": "Clean layout with clear hierarchy, minor polish gaps",
+      "polish_hint": "Smooth card corner radii for consistency"
+    },
+    {
+      "source_id": "000041",
+      "theme": {
+        "accent": "#D2691E",
+        "background": "#FFF5EE",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000041.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.75,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "background lemon chiffon, components chocolate",
+      "appearance": 75,
+      "why": "Clear hierarchy, consistent spacing, distinct color scheme",
+      "polish_hint": "Add subtle shadows to cards for depth"
+    },
+    {
+      "source_id": "000043",
+      "theme": {
+        "accent": "#483D8B",
+        "background": "#F4F4FB",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#F4F4FB",
+          "#F0F8FF"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000043.png",
+      "pixelBackground": {
+        "target": "#F0F8FF",
+        "hitFraction": 0.68,
+        "painted": true
+      },
+      "snapAB": {
+        "rawShot": "shots-appgen-visual-r35-wash-smoke/000043.raw.png",
+        "rawHex": "#F4F4FB",
+        "mintedHex": "#F0F8FF",
+        "hexDelta": [
+          -4,
+          4,
+          4
+        ],
+        "samples": 8960,
+        "fingerprintCount": 1033,
+        "fingerprintShare": 0.115,
+        "confirmed": true,
+        "topDeltas": [
+          {
+            "delta": [
+              -2,
+              2,
+              1
+            ],
+            "count": 3185
+          },
+          {
+            "delta": [
+              -4,
+              4,
+              4
+            ],
+            "count": 1033
+          },
+          {
+            "delta": [
+              -2,
+              1,
+              1
+            ],
+            "count": 422
+          }
+        ]
+      },
+      "background_painted": "YES",
+      "colors_visible": "azure mist background, dark slate blue buttons/headers",
+      "appearance": 70,
+      "why": "Clean layout with clear sections but generic design",
+      "polish_hint": "Add subtle shadows to card components for depth"
+    },
+    {
+      "source_id": "000066",
+      "theme": {
+        "accent": "#D2691E",
+        "background": "#FFF8F2",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FFF8F2",
+          "#FFF5EE"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000066.png",
+      "pixelBackground": {
+        "target": "#FFF5EE",
+        "hitFraction": 0.77,
+        "painted": true
+      },
+      "snapAB": {
+        "rawShot": "shots-appgen-visual-r35-wash-smoke/000066.raw.png",
+        "rawHex": "#FFF8F2",
+        "mintedHex": "#FFF5EE",
+        "hexDelta": [
+          0,
+          -3,
+          -4
+        ],
+        "samples": 8960,
+        "fingerprintCount": 1399,
+        "fingerprintShare": 0.156,
+        "confirmed": true,
+        "topDeltas": [
+          {
+            "delta": [
+              0,
+              -2,
+              -2
+            ],
+            "count": 2732
+          },
+          {
+            "delta": [
+              0,
+              -3,
+              -4
+            ],
+            "count": 1399
+          },
+          {
+            "delta": [
+              0,
+              -1,
+              -1
+            ],
+            "count": 346
+          }
+        ]
+      },
+      "background_painted": "YES",
+      "colors_visible": "background lemon chiffon, top bar/buttons chocolate, text dark",
+      "appearance": 72,
+      "why": "Clear layout with good spacing, but lacks refined details",
+      "polish_hint": "Add subtle shadows to cards for depth"
+    },
+    {
+      "source_id": "000068",
+      "theme": {
+        "accent": "#483D8B",
+        "background": "#F2F3F9",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#F2F3F9",
+          "#F0F8FF"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-r35-wash-smoke/000068.png",
+      "pixelBackground": {
+        "target": "#F0F8FF",
+        "hitFraction": 0.63,
+        "painted": true
+      },
+      "snapAB": {
+        "rawShot": "shots-appgen-visual-r35-wash-smoke/000068.raw.png",
+        "rawHex": "#F2F3F9",
+        "mintedHex": "#F0F8FF",
+        "hexDelta": [
+          -2,
+          5,
+          6
+        ],
+        "samples": 8960,
+        "fingerprintCount": 971,
+        "fingerprintShare": 0.108,
+        "confirmed": true,
+        "topDeltas": [
+          {
+            "delta": [
+              -2,
+              2,
+              1
+            ],
+            "count": 1690
+          },
+          {
+            "delta": [
+              -2,
+              5,
+              6
+            ],
+            "count": 971
+          },
+          {
+            "delta": [
+              -1,
+              1,
+              1
+            ],
+            "count": 319
+          }
+        ]
+      },
+      "background_painted": "YES",
+      "colors_visible": "azure mist background, dark slate blue elements/buttons",
+      "appearance": 70,
+      "why": "Clean layout with consistent spacing and clear hierarchy",
+      "polish_hint": "Add card shadows for depth"
+    }
+  ]
+}
