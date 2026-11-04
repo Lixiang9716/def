@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "at": "2026-11-04T15:51:12.755Z",
+    "generator": "glm-5.3-flash",
+    "judge": "glm-4.6",
+    "systemPrompt": "SYSTEM_V2",
+    "seeds": [
+      "music-player",
+      "wallet",
+      "pomodoro",
+      "chat"
+    ],
+    "chainShape": "7 dependent tasks per seed (round-30 deepening: 6=count-change, 7=text-change; rounds 18-29 ran 5 per seed, pre-18 ran 3)",
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
+  },
+  "overall": {
+    "yes": 27,
+    "partial": 0,
+    "no": 1,
+    "accuracy": 96.4
+  },
+  "positions": {
+    "1": {
+      "yes": 3,
+      "partial": 0,
+      "no": 1,
+      "accuracy": 75
+    },
+    "2": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "3": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "4": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "5": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "6": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "7": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    }
+  },
+  "diagnostics": {
+    "rejectedUpdates": 0
+  },
+  "rows": [
+    {
+      "seed": "music-player",
+      "tasks": 7,
+      "steps": [
+        {
+          "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
+          "verdict": "YES",
+          "why": "按钮「扫一扫」action=scan.open 位于同一行搜索栏左侧"
+        },
+        {
+          "task": "把主题色从红色换成紫色 #7c4dff",
+          "verdict": "YES",
+          "why": "主题 accent 已设为 #7C4DFF 紫色，完全匹配"
+        },
+        {
+          "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
+          "verdict": "YES",
+          "why": "「本周新碟」card with two hcard covers placed after playlist card"
+        },
+        {
+          "task": "在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）",
+          "verdict": "YES",
+          "why": "「查看全部」按钮已置于本周新碟行，action 为 album.more"
+        },
+        {
+          "task": "把每日推荐横幅卡片的标题文本改成「今日精选」",
+          "verdict": "YES",
+          "why": "banner-card title 已为「今日精选」，完全符合要求"
+        },
+        {
+          "task": "把「本周新碟」横向卡片行从两张封面卡片增加到三张",
+          "verdict": "YES",
+          "why": "本周新碟 hcard-row now contains three cover cards"
+        },
+        {
+          "task": "把「今日精选」横幅卡片的副标题改成「每晚 18:00 更新」",
+          "verdict": "YES",
+          "why": "横幅卡副标题已为「每晚 18:00 更新」，与任务一致"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 34862
+    },
+    {
+      "seed": "wallet",
+      "tasks": 7,
+      "steps": [
+        {
+          "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
+          "verdict": "YES",
+          "why": "进度条位于总资产卡片正下方，标签含本月结余已消费68%，值为68"
+        },
+        {
+          "task": "把主题色换成金色 #d4a017",
+          "verdict": "YES",
+          "why": "主题accent已设为金色#d4a017"
+        },
+        {
+          "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
+          "verdict": "YES",
+          "why": "交易卡片末尾已有「账单导出」按钮，action 为 bill.export"
+        },
+        {
+          "task": "在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）",
+          "verdict": "YES",
+          "why": "service-grid下的row含票券/客服按钮，actions正确"
+        },
+        {
+          "task": "把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」",
+          "verdict": "YES",
+          "why": "卡片内文本完全等于请求的「本月收入 ¥12,800，支出 ¥6,400」"
+        },
+        {
+          "task": "把本月结余进度条的已消费比例从 68% 改成 85%",
+          "verdict": "YES",
+          "why": "进度条标签和数值均已改为85%"
+        },
+        {
+          "task": "把「账单导出」按钮的文案改成「导出本月账单」",
+          "verdict": "YES",
+          "why": "按钮标签已是「导出本月账单」，保留 bill.export 动作"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 30464
+    },
+    {
+      "seed": "pomodoro",
+      "tasks": 7,
+      "steps": [
+        {
+          "task": "在统计区下面新增今日任务清单（可勾选的三行）",
+          "verdict": "NO",
+          "why": "update unparseable: Expected ',' or ']' after array element in JSON at position "
+        },
+        {
+          "task": "把主题色换成墨绿色 #1f6f54",
+          "verdict": "YES",
+          "why": "theme.accent 已设为 #1f6f54，改动完整落实"
+        },
+        {
+          "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
+          "verdict": "YES",
+          "why": "Top row contains 白噪音 button with noise.toggle action plus on badge."
+        },
+        {
+          "task": "在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）",
+          "verdict": "YES",
+          "why": "「专注报告」按钮已存在同一行，action report.view 已声明"
+        },
+        {
+          "task": "把今日完成的番茄数文本改成「今日已完成 6 个番茄」",
+          "verdict": "YES",
+          "why": "卡片文本已是「今日已完成 6 个番茄」，完全符合"
+        },
+        {
+          "task": "把今日已完成的番茄数从 6 个改成 9 个",
+          "verdict": "YES",
+          "why": "卡片文本显示\"今日已完成 9 个番茄\"，修改已生效。"
+        },
+        {
+          "task": "把「专注报告」按钮的文案改成「生成专注报告」",
+          "verdict": "YES",
+          "why": "按钮文案已是「生成专注报告」，action 保留 report.view"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 34411
+    },
+    {
+      "seed": "chat",
+      "tasks": 7,
+      "steps": [
+        {
+          "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
+          "verdict": "YES",
+          "why": "banner-card「未读消息 12 条」位于会话列表上方"
+        },
+        {
+          "task": "把主题色换成天蓝色 #2f9ee8",
+          "verdict": "YES",
+          "why": "主题色 accent 已设为 #2F9EE8,与任务完全一致"
+        },
+        {
+          "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
+          "verdict": "YES",
+          "why": "Button '全部已读' with action msg.readall sits in the banner-card row"
+        },
+        {
+          "task": "把「未读消息 12 条」横幅的文本改成「未读消息 3 条」",
+          "verdict": "YES",
+          "why": "banner-card 标题已是「未读消息 3 条」，改动完全落实"
+        },
+        {
+          "task": "在底部标签栏最后新增一个「我的」标签",
+          "verdict": "YES",
+          "why": "「我的」标签已作为标签栏最后一项完整新增"
+        },
+        {
+          "task": "把「未读消息 3 条」横幅的计数改成「未读消息 9 条」",
+          "verdict": "YES",
+          "why": "Banner-card title 已是「未读消息 9 条」, 计数更新到位"
+        },
+        {
+          "task": "把「全部已读」按钮的文案改成「一键已读」",
+          "verdict": "YES",
+          "why": "按钮文案已改为「一键已读」, 两个已读按钮均显示新文案"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 33510
+    }
+  ]
+}
