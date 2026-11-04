@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "at": "2026-11-04T14:07:13.139Z",
+    "model": "glm-5.3-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V2",
+    "runsPerCategory": 2,
+    "categories": [
+      "ecommerce"
+    ],
+    "temperature": 0.7,
+    "rubricVersion": 2,
+    "okDefinition": "validate() four gates AND design-constitution rubric v2 (machine-checkable half, judged on the minted spec)"
+  },
+  "summary": {
+    "ecommerce": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 1,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 13622,
+      "latencyP50": 277097
+    }
+  },
+  "percentages": {
+    "structuralValid": 100,
+    "constitution": 50,
+    "alignment": 100
+  },
+  "failureClasses": [
+    [
+      "RUBRIC_HERO_FIRST",
+      1
+    ]
+  ],
+  "finalFailureClasses": [],
+  "rows": [
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 12919,
+      "latency": 211280,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_HERO_FIRST",
+          "msg": "screen.children[0] is search-bar"
+        }
+      ],
+      "firstRawExcerpt": "{\"spec\":\"app-shell/0.9\",\"theme\":{\"accent\":\"#FF0000\",\"background\":\"#FFF4F2\",\"mode\":\"light\"},\"tabs\":[\"首页\",\"分类\",\"购物车\",\"我的\"],\"actions\":[\"category.dress\",\"category.digital\",\"category.beauty\",\"category.fresh\",\"feed.refresh\"],\"screen\":{\"type\":\"column\",\"children\":[{\"type\":\"search-bar\",\"placeholder\":\"搜索：秋冬新款羽绒服\"},{\"type\":\"banner-card\",\"title\":\"限时秒杀\",\"subtitle\":\"距结束 02:31:08 · 全场低至1折\"},{\"type\":\"hcard-row\",\"items\":[{\"cover\":{\"emoji\":\"🎧\",\"color\":\"#696969\"},\"title\":\"无线降噪耳机\",\"sub\":\"¥199 · 已抢82%\"},{\"cover\":{\"emoji\":\"👟\",\"color\":\"#D2691E\"},\"title\":\"缓震跑步鞋\",\"sub\":\"¥239 · 已抢64%\"},{\"cover\":{\"emoji\":\"⌚\",\"color\":\"#FFD700\"},\"title\":\"智能运动手表\",\"sub\":\"¥399 · 已抢47%\"},{\"cover\":{\"emoji\":\"🍊\",\"color\":\"#CD5C5C\"},\"title\":\"赣南脐橙5斤\",\"sub\":\"¥19.9 · 已抢91%\"}]},{\"type\":\"service-grid\",\"items\":[{\"icon\":\"👗\",\"label\":\"服饰\",\"action\":",
+      "retried": true
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 13622,
+      "latency": 277097,
+      "a2uiComponents": 67,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 1,
+        "emoji": 3,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 6,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    }
+  ]
+}
