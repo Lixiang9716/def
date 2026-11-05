@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "at": "2026-10-29T21:38:03.044Z",
+    "generator": "deepseek-v4-flash",
+    "judge": "glm-4.6v",
+    "instructions": 2,
+    "tier": "rendered-surface screenshots (visual leg v2, product validate+normalize render path)",
+    "appearanceRubric": "v3 - layout/polish only, color exactness separated; 0-100 integer, banded anchors",
+    "darkAudit": "sampled re-render with theme.mode=dark on the same minted specs (VISUAL_DARK_N=2); luminance <0.35 = dark"
+  },
+  "visual": {
+    "backgroundYes": 2,
+    "backgroundPartial": 0,
+    "backgroundNo": 0,
+    "scored": 2,
+    "rejected": 0,
+    "appearanceScale": 100,
+    "meanAppearance": 71,
+    "darkSampled": 2,
+    "darkOk": 2,
+    "darkMeanLuminance": 0.15,
+    "darkMeanAppearance": 62.5
+  },
+  "pixelCheck": {
+    "paintedExact": 2,
+    "checked": 2
+  },
+  "rows": [
+    {
+      "source_id": "000036",
+      "theme": {
+        "accent": "#DC143C",
+        "background": "#FFFAFA",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": null,
+      "opened": true,
+      "shot": "shots-appgen-visual-dark-probe/000036.png",
+      "pixelBackground": {
+        "target": "#FFFAFA",
+        "hitFraction": 0.65,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "seashell background, crimson buttons/top bar",
+      "appearance": 70,
+      "why": "Clear layout with good spacing, but generic design",
+      "polish_hint": "Add subtle elevation to product cards",
+      "dark": {
+        "opened": true,
+        "shot": "shots-appgen-visual-dark-probe/000036.dark.png",
+        "meanLuminance": 0.177,
+        "dark": true,
+        "appearance": 70,
+        "why": "Clean layout but background color doesn't match seashell request",
+        "colors_visible": "dark background, crimson buttons/header, light gray text, white icons"
+      }
+    },
+    {
+      "source_id": "000038",
+      "theme": {
+        "accent": "#800000",
+        "background": "#FDF8F6",
+        "mode": "light"
+      },
+      "validated": true,
+      "colorSnap": {
+        "background": [
+          "#FDF8F6",
+          "#FFFAFA"
+        ]
+      },
+      "opened": true,
+      "shot": "shots-appgen-visual-dark-probe/000038.png",
+      "pixelBackground": {
+        "target": "#FFFAFA",
+        "hitFraction": 0.6,
+        "painted": true
+      },
+      "background_painted": "YES",
+      "colors_visible": "maroon buttons/header, white text fields/cards, light beige background",
+      "appearance": 72,
+      "why": "Clean layout with clear hierarchy and consistent spacing",
+      "polish_hint": "Refine banner background to match linen tone",
+      "dark": {
+        "opened": true,
+        "shot": "shots-appgen-visual-dark-probe/000038.dark.png",
+        "meanLuminance": 0.122,
+        "dark": true,
+        "appearance": 55,
+        "why": "Background color doesn't match linen, layout is basic",
+        "colors_visible": "dark background, maroon buttons, white text"
+      }
+    }
+  ]
+}

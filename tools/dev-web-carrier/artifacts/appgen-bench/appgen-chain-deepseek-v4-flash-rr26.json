@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "at": "2026-11-02T18:38:53.596Z",
+    "generator": "glm-5.3-flash",
+    "judge": "glm-4.6",
+    "systemPrompt": "SYSTEM_V2",
+    "seeds": [
+      "music-player",
+      "wallet",
+      "pomodoro",
+      "chat"
+    ],
+    "chainShape": "5 dependent tasks per seed (round-18 deepening; ledgers before round 18 ran 3 tasks per seed)",
+    "formula": "accuracy = (N_yes + 0.5*N_partial) / N_total * 100 (task level, WebGen-Bench formula over the Web-Bench chain shape)"
+  },
+  "overall": {
+    "yes": 18,
+    "partial": 0,
+    "no": 2,
+    "accuracy": 90
+  },
+  "positions": {
+    "1": {
+      "yes": 3,
+      "partial": 0,
+      "no": 1,
+      "accuracy": 75
+    },
+    "2": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "3": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "4": {
+      "yes": 4,
+      "partial": 0,
+      "no": 0,
+      "accuracy": 100
+    },
+    "5": {
+      "yes": 3,
+      "partial": 0,
+      "no": 1,
+      "accuracy": 75
+    }
+  },
+  "diagnostics": {
+    "rejectedUpdates": 0
+  },
+  "rows": [
+    {
+      "seed": "music-player",
+      "tasks": 5,
+      "steps": [
+        {
+          "task": "在搜索栏左边加一个扫一扫入口按钮（action 叫 scan.open）",
+          "verdict": "YES",
+          "why": "扫一扫 button with scan.open action placed left of search-bar"
+        },
+        {
+          "task": "把主题色从红色换成紫色 #7c4dff",
+          "verdict": "YES",
+          "why": "theme.accent 已设为紫色 #7C4DFF，封面色同步应用"
+        },
+        {
+          "task": "在歌单列表下面新增一行「本周新碟」横向卡片，含两张封面卡片",
+          "verdict": "YES",
+          "why": "「本周新碟」标题与两张封面卡片已添加在歌单列表下方"
+        },
+        {
+          "task": "在「本周新碟」横向卡片行的右侧加一个「查看全部」按钮（action 叫 album.more）",
+          "verdict": "YES",
+          "why": "「查看全部」按钮带 album.more action，已位于本周新碟标题右侧"
+        },
+        {
+          "task": "把每日推荐横幅卡片的标题文本改成「今日精选」",
+          "verdict": "YES",
+          "why": "banner-card title 已为「今日精选」，完全符合要求"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 23161
+    },
+    {
+      "seed": "wallet",
+      "tasks": 5,
+      "steps": [
+        {
+          "task": "在总资产下面加一行本月结余的进度条（progress），显示已消费 68%",
+          "verdict": "YES",
+          "why": "进度条紧跟总资产卡片，标签含本月结余与68%"
+        },
+        {
+          "task": "把主题色换成金色 #d4a017",
+          "verdict": "YES",
+          "why": "theme.accent exactly set to requested gold #d4a017"
+        },
+        {
+          "task": "在交易记录列表下面新增一个「账单导出」按钮（action 叫 bill.export）",
+          "verdict": "YES",
+          "why": "账单导出 button with action bill.export appears after transaction hcard-row"
+        },
+        {
+          "task": "在四个常用功能入口下面再加一行两个入口：票券和客服（action 分别叫 ticket.enter 和 support.chat）",
+          "verdict": "YES",
+          "why": "Row with 票券/ticket.enter and 客服/support.chat directly follows the four-item service-grid."
+        },
+        {
+          "task": "把本月收支一行的文本改成「本月收入 ¥12,800，支出 ¥6,400」",
+          "verdict": "YES",
+          "why": "banner-card 副标题已完全匹配请求的收支文本"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 20286
+    },
+    {
+      "seed": "pomodoro",
+      "tasks": 5,
+      "steps": [
+        {
+          "task": "在统计区下面新增今日任务清单（可勾选的三行）",
+          "verdict": "YES",
+          "why": "任务清单卡片位于统计区后，含三行可勾选任务"
+        },
+        {
+          "task": "把主题色换成墨绿色 #1f6f54",
+          "verdict": "YES",
+          "why": "主题 accent 已设为 #1f6f54，完全符合"
+        },
+        {
+          "task": "在页面顶部加一个白噪音开关按钮（action 叫 noise.toggle）",
+          "verdict": "YES",
+          "why": "顶部按钮'白噪音'含noise.toggle动作，且actions已声明"
+        },
+        {
+          "task": "在白噪音开关旁边加一个「专注报告」按钮（action 叫 report.view）",
+          "verdict": "YES",
+          "why": "专注报告 button with report.view sits beside 白噪音 toggle"
+        },
+        {
+          "task": "把今日完成的番茄数文本改成「今日已完成 6 个番茄」",
+          "verdict": "YES",
+          "why": "文本已改为「今日已完成 6 个番茄」，完全匹配"
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 23634
+    },
+    {
+      "seed": "chat",
+      "tasks": 5,
+      "steps": [
+        {
+          "task": "在会话列表上面加一行「未读消息 12 条」的横幅卡片",
+          "verdict": "NO",
+          "why": "update unparseable: Expected ',' or ']' after array element in JSON at position "
+        },
+        {
+          "task": "把主题色换成天蓝色 #2f9ee8",
+          "verdict": "YES",
+          "why": "theme.accent 已设为 #2f9ee8，完全符合请求"
+        },
+        {
+          "task": "在横幅卡片上加一个「全部已读」按钮（action 叫 msg.readall）",
+          "verdict": "YES",
+          "why": "Row contains banner-card with adjacent 全部已读 button wired to msg.readall"
+        },
+        {
+          "task": "把「未读消息 12 条」横幅的文本改成「未读消息 3 条」",
+          "verdict": "YES",
+          "why": "横幅标题已是「未读消息 3 条」，完整符合要求"
+        },
+        {
+          "task": "在底部标签栏最后新增一个「我的」标签",
+          "verdict": "NO",
+          "why": "update unparseable: Expected ',' or ']' after array element in JSON at position "
+        }
+      ],
+      "renderOk": true,
+      "gen_tokens": 19957
+    }
+  ]
+}

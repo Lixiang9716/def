@@ -1,0 +1,877 @@
+{
+  "meta": {
+    "at": "2026-10-28T16:25:59.857Z",
+    "model": "deepseek-v4-flash",
+    "promptSet": 1,
+    "systemPrompt": "SYSTEM_V1",
+    "runsPerCategory": 2,
+    "categories": [
+      "music-player",
+      "wallet",
+      "chat",
+      "tools-dashboard",
+      "pomodoro",
+      "calendar",
+      "ecommerce",
+      "fitness"
+    ],
+    "temperature": 0.7,
+    "okDefinition": "validate() four gates AND design-constitution rubric (machine-checkable half)"
+  },
+  "summary": {
+    "music-player": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 8,
+      "expectTotal": 8,
+      "tokensP50": 4725,
+      "latencyP50": 20866
+    },
+    "wallet": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 1,
+      "finalPass": 1,
+      "expectHits": 4,
+      "expectTotal": 6,
+      "tokensP50": 3433,
+      "latencyP50": 25318
+    },
+    "chat": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 3868,
+      "latencyP50": 17343
+    },
+    "tools-dashboard": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 6,
+      "expectTotal": 6,
+      "tokensP50": 2992,
+      "latencyP50": 12545
+    },
+    "pomodoro": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 3542,
+      "latencyP50": 14068
+    },
+    "calendar": {
+      "axis": "backend",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 3,
+      "expectTotal": 4,
+      "tokensP50": 2584,
+      "latencyP50": 8928
+    },
+    "ecommerce": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 1,
+      "rubricFirstPass": 0,
+      "finalPass": 0,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 8499,
+      "latencyP50": 30122
+    },
+    "fitness": {
+      "axis": "ui",
+      "runs": 2,
+      "structuralFirstPass": 2,
+      "rubricFirstPass": 2,
+      "finalPass": 2,
+      "expectHits": 4,
+      "expectTotal": 4,
+      "tokensP50": 2508,
+      "latencyP50": 8764
+    }
+  },
+  "failureClasses": [
+    [
+      "BAD_ACTION",
+      4
+    ],
+    [
+      "RUBRIC_DEPTH",
+      1
+    ]
+  ],
+  "finalFailureClasses": [
+    [
+      "BAD_ACTION",
+      4
+    ],
+    [
+      "RUBRIC_DEPTH",
+      1
+    ]
+  ],
+  "rows": [
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2875,
+      "latency": 11660,
+      "a2uiComponents": 52,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 1,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player",
+          "tab-bar"
+        ],
+        "actions": 1,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "music-player",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 4725,
+      "latency": 20866,
+      "a2uiComponents": 59,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "hcard-row",
+          "mini-player",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "mini-player",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": false,
+      "finalOk": false,
+      "tokens": 6229,
+      "latency": 16968,
+      "a2uiComponents": 0,
+      "counts": null,
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": false
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [
+        {
+          "code": "BAD_ACTION",
+          "path": "$.actions",
+          "msg": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/"
+        },
+        {
+          "code": "BAD_ACTION",
+          "path": "$.screen.children.children.children.action",
+          "msg": "action must match /^[a-z][a-z0-9.:-]{0,63}$/"
+        }
+      ],
+      "rubricFails": [],
+      "firstPassErrors": [
+        {
+          "code": "BAD_ACTION",
+          "path": "$.actions",
+          "msg": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/"
+        },
+        {
+          "code": "BAD_ACTION",
+          "path": "$.screen.children.children.children.action",
+          "msg": "action must match /^[a-z][a-z0-9.:-]{0,63}$/"
+        }
+      ],
+      "firstPassRubricFails": [],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#1B3A8F\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"理财\", \"卡包\", \"我的\"],\n  \"actions\": [\"pay.scan\", \"txn.viewAll\", \"transfer.start\", \"topup.start\", \"bills.view\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"¥128,640.55\",\n        \"subtitle\": \"总资产 · 本月结余 +¥3,240.40\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              {\n                \"type\": \"column\",\n                \"children\": [\n                  { \"type\": \"text\", \"text\": \"本月收入\", \"size\": \"small\", \"tone\": \"muted\" },\n                  { \"type\": \"text\", \"text\": \"¥9,860.00\", \"size\": \"body\" }\n                ]\n              },\n              {\n   ",
+      "finalRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#1B3A8F\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"理财\", \"卡包\", \"我的\"],\n  \"actions\": [\"pay.scan\", \"txn.view.all\", \"transfer.start\", \"topup.start\", \"bills.view\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"¥128,640.55\",\n        \"subtitle\": \"总资产 · 本月结余 +¥3,240.40\"\n      },\n      {\n        \"type\": \"card\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              {\n                \"type\": \"column\",\n                \"children\": [\n                  { \"type\": \"text\", \"text\": \"本月收入\", \"size\": \"small\", \"tone\": \"muted\" },\n                  { \"type\": \"text\", \"text\": \"¥9,860.00\", \"size\": \"body\" }\n                ]\n              },\n              {\n  ",
+      "retried": true
+    },
+    {
+      "category": "wallet",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3433,
+      "latency": 25318,
+      "a2uiComponents": 57,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "service-grid",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 5,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "balance-card",
+          "hit": false
+        },
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2500,
+      "latency": 8844,
+      "a2uiComponents": 42,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "chat",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3868,
+      "latency": 17343,
+      "a2uiComponents": 43,
+      "counts": {
+        "topBlocks": 4,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 1,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "chat-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3464,
+      "latency": 13863,
+      "a2uiComponents": 49,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "tools-dashboard",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2992,
+      "latency": 12545,
+      "a2uiComponents": 50,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "service-grid",
+          "balance-card",
+          "tab-bar"
+        ],
+        "actions": 1,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "service-grid",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 5460,
+      "latency": 23722,
+      "a2uiComponents": 64,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 2,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 5
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "pomodoro",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 3542,
+      "latency": 14068,
+      "a2uiComponents": 46,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 3,
+        "emoji": 1,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 4
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "min-actions",
+          "count": 3,
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 4320,
+      "latency": 15814,
+      "a2uiComponents": 81,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 1,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": false
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "calendar",
+      "axis": "backend",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2584,
+      "latency": 8928,
+      "a2uiComponents": 57,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 2,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "service-grid",
+          "chat-row",
+          "tab-bar"
+        ],
+        "actions": 3,
+        "interactive": 1
+      },
+      "expect": [
+        {
+          "kind": "min-actions",
+          "count": 2,
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "banner-card",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": false,
+      "structuralOk": false,
+      "finalOk": false,
+      "tokens": 9346,
+      "latency": 31662,
+      "a2uiComponents": 0,
+      "counts": null,
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [
+        {
+          "code": "BAD_ACTION",
+          "path": "$.actions",
+          "msg": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/"
+        },
+        {
+          "code": "BAD_ACTION",
+          "path": "$.screen.children.children.children.action",
+          "msg": "action must match /^[a-z][a-z0-9.:-]{0,63}$/"
+        }
+      ],
+      "rubricFails": [],
+      "firstPassErrors": [
+        {
+          "code": "BAD_ACTION",
+          "path": "$.actions",
+          "msg": "actions must be an array of /^[a-z][a-z0-9.:-]{0,63}$/"
+        },
+        {
+          "code": "BAD_ACTION",
+          "path": "$.screen.children.children.children.action",
+          "msg": "action must match /^[a-z][a-z0-9.:-]{0,63}$/"
+        }
+      ],
+      "firstPassRubricFails": [],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#E01F1F\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"分类\", \"购物车\", \"我的\"],\n  \"actions\": [\"flash.see_all\", \"coupon.claim\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"column\",\n        \"children\": [\n          { \"type\": \"search-bar\", \"placeholder\": \"搜索 iPhone 15 手机壳\" },\n          { \"type\": \"banner-card\", \"title\": \"数码狂欢 5折起\", \"subtitle\": \"满 ¥300 减 ¥50 · 今晚 24 点结束\" },\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"button\", \"label\": \"一键领券\", \"action\": \"coupon.claim\" },\n              { \"type\": \"button\", \"label\": \"去秒杀\", \"action\": \"flash.see_all\" }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"hcard-row\",\n        \"items\": [\n          { \"cover\": { \"emoji\":",
+      "finalRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#E01F1F\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"分类\", \"购物车\", \"我的\"],\n  \"actions\": [\"flash.see\", \"coupon.claim\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"column\",\n        \"children\": [\n          { \"type\": \"search-bar\", \"placeholder\": \"搜索 iPhone 15 手机壳\" },\n          { \"type\": \"banner-card\", \"title\": \"数码狂欢 5折起\", \"subtitle\": \"满 ¥300 减 ¥50 · 今晚 24 点结束\" },\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"button\", \"label\": \"一键领券\", \"action\": \"coupon.claim\" },\n              { \"type\": \"button\", \"label\": \"去秒杀\", \"action\": \"flash.see\" }\n            ]\n          }\n        ]\n      },\n      {\n        \"type\": \"hcard-row\",\n        \"items\": [\n          { \"cover\": { \"emoji\": \"📱\", \"",
+      "retried": true
+    },
+    {
+      "category": "ecommerce",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": false,
+      "structuralOk": true,
+      "finalOk": false,
+      "tokens": 8499,
+      "latency": 30122,
+      "a2uiComponents": 0,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 4,
+        "titles": 2,
+        "emoji": 2,
+        "templates": [
+          "banner-card",
+          "search-bar",
+          "hcard-row",
+          "service-grid",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 3
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "hcard-row",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "search-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        }
+      ],
+      "firstPassErrors": [],
+      "firstPassRubricFails": [
+        {
+          "code": "RUBRIC_DEPTH",
+          "msg": "nesting depth 4 > 3"
+        }
+      ],
+      "firstRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#E60012\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"秒杀\", \"购物车\", \"我的\"],\n  \"actions\": [\"flash.open\", \"cart.add\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"限时秒杀5折起\",\n        \"subtitle\": \"今晚8点开抢 满300减50\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索 口红 / 跑鞋 / 蓝牙耳机\"\n      },\n      {\n        \"type\": \"column\",\n        \"children\": [\n          {\n            \"type\": \"row\",\n            \"children\": [\n              { \"type\": \"text\", \"text\": \"限时秒杀\", \"size\": \"small\", \"tone\": \"default\" },\n              { \"type\": \"badge\", \"text\": \"仅剩2小时\" },\n              { \"type\": \"button\", \"label\": \"全部\", \"action\": \"flash.open\" }\n            ]\n          },\n          {\n           ",
+      "finalRawExcerpt": "{\n  \"spec\": \"app-shell/0.9\",\n  \"theme\": { \"accent\": \"#E60012\", \"mode\": \"light\" },\n  \"tabs\": [\"首页\", \"秒杀\", \"购物车\", \"我的\"],\n  \"actions\": [\"flash.open\", \"feed.refresh\"],\n  \"screen\": {\n    \"type\": \"column\",\n    \"children\": [\n      {\n        \"type\": \"banner-card\",\n        \"title\": \"限时秒杀5折起\",\n        \"subtitle\": \"今晚8点开抢 满300减50\"\n      },\n      {\n        \"type\": \"search-bar\",\n        \"placeholder\": \"搜索 口红 / 跑鞋 / 蓝牙耳机\"\n      },\n      {\n        \"type\": \"row\",\n        \"children\": [\n          { \"type\": \"text\", \"text\": \"限时秒杀\", \"size\": \"small\", \"tone\": \"default\" },\n          { \"type\": \"badge\", \"text\": \"仅剩01:59:22\" },\n          { \"type\": \"button\", \"label\": \"全部\", \"action\": \"flash.open\" }\n        ]\n      },\n      {\n        \"type\": \"hcard-row\",\n        \"items\": [\n          {\n            \"cover\": { \"emoji\": \"\ud83c",
+      "retried": true
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 1,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2671,
+      "latency": 10082,
+      "a2uiComponents": 45,
+      "counts": {
+        "topBlocks": 6,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    },
+    {
+      "category": "fitness",
+      "axis": "ui",
+      "run": 2,
+      "firstOk": true,
+      "structuralOk": true,
+      "finalOk": true,
+      "tokens": 2508,
+      "latency": 8764,
+      "a2uiComponents": 43,
+      "counts": {
+        "topBlocks": 5,
+        "maxDepth": 3,
+        "titles": 0,
+        "emoji": 0,
+        "templates": [
+          "banner-card",
+          "hcard-row",
+          "tab-bar"
+        ],
+        "actions": 2,
+        "interactive": 2
+      },
+      "expect": [
+        {
+          "kind": "template",
+          "id": "progressbar",
+          "hit": true
+        },
+        {
+          "kind": "template",
+          "id": "tab-bar",
+          "hit": true
+        }
+      ],
+      "errors": [],
+      "rubricFails": [],
+      "firstPassErrors": [],
+      "firstPassRubricFails": []
+    }
+  ]
+}

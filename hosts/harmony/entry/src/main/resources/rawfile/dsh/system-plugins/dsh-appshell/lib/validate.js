@@ -16,9 +16,31 @@
 
 import {
   SPEC_VERSION, CAPS, ACTION_RE, primitives, templates, KNOWN_PRIMITIVES,
+  snapNamedColor,
 } from './catalog.js';
 
 function isPlainString(v) { return typeof v === 'string'; }
+
+/**
+ * Actionable-refusal helpers (the census's dominant failure class was
+ * BAD_ACTION with a refusal that echoed the regex but never named the
+ * offending value — the model cannot repair what it cannot see).
+ */
+const quoteValue = (v) => {
+  const s = String(v);
+  return s.length > 40 ? '"' + s.slice(0, 40) + '…"' : '"' + s + '"';
+};
+/** A compliant rewrite of an offending action id: lowercase, invalid
+ * runes folded to '.', collapsed/trimmed, capped; falls back to a safe
+ * generic id when normalization cannot satisfy gate 4. */
+const suggestActionId = (v) => {
+  const s = String(v).toLowerCase()
+    .replace(/[^a-z0-9.:-]+/g, '.')
+    .replace(/^\.+|\.+$/g, '')
+    .replace(/\.{2,}/g, '.')
+    .slice(0, 64);
+  return ACTION_RE.test(s) ? s : 'app.action';
+};
 
 /** Expand one node recursively; returns { node } or { error }. depth guards structural self-recursion. */
 function expandNode(node, path, errors, depth) {
@@ -78,7 +100,7 @@ function walkExpanded(node, path, errors, depth, state) {
   }
   if (node.action !== undefined) {
     if (!isPlainString(node.action) || !ACTION_RE.test(node.action)) {
-      errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action must match ' + ACTION_RE });
+      errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action must match ' + ACTION_RE + '; got ' + quoteValue(node.action) + ' — try "' + suggestActionId(node.action) + '"' });
     }
   }
   for (const c of node.children || []) walkExpanded(c, path + '.children', errors, depth + 1, state);
@@ -88,42 +110,70 @@ function walkExpanded(node, path, errors, depth, state) {
  * Validate a full app-shell spec.
  * @returns {{ ok: boolean, errors: Array<{code: string, path: string, msg: string}>, expanded: object|null }}
  */
+/** Canonicalize obvious near-miss theme colors (#FFF5F5 → seashell) on a
+ * shallow clone; the caller's spec is never mutated. normalizedSpec is
+ * null unless at least one color snapped. */
+function withSnappedColors(spec) {
+  if (!spec.theme || typeof spec.theme !== 'object') return { working: spec, normalizedSpec: null };
+  const snap = {};
+  for (const slot of ['accent', 'background']) {
+    const v = spec.theme[slot];
+    if (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v)) {
+      const exact = snapNamedColor(v);
+      if (exact) snap[slot] = exact;
+    }
+  }
+  if (!Object.keys(snap).length) return { working: spec, normalizedSpec: null };
+  const working = { ...spec, theme: { ...spec.theme, ...snap } };
+  return { working, normalizedSpec: working };
+}
+
 export function validate(spec) {
   const errors = [];
   if (!spec || typeof spec !== 'object') return { ok: false, errors: [{ code: 'BAD_FIELD', path: '$', msg: 'spec must be an object' }], expanded: null };
-  if (spec.spec !== SPEC_VERSION) errors.push({ code: 'BAD_FIELD', path: '$.spec', msg: 'spec must be "' + SPEC_VERSION + '"' });
-  if (spec.theme && (typeof spec.theme !== 'object' || !isPlainString(spec.theme.accent))) {
+  // Near-miss color snap: a theme color that is an obvious near-miss of a
+  // named CSS color (the #FFF5F5-for-seashell failure mode) is
+  // canonicalized to the exact hex before validation — the author's intent
+  // is unambiguous, and the surface renders the named color. The caller's
+  // object is never mutated; normalizedSpec carries the snapped form.
+  const { working, normalizedSpec } = withSnappedColors(spec);
+  if (working.spec !== SPEC_VERSION) errors.push({ code: 'BAD_FIELD', path: '$.spec', msg: 'spec must be "' + SPEC_VERSION + '"' });
+  if (working.theme && (typeof working.theme !== 'object' || !isPlainString(working.theme.accent))) {
     errors.push({ code: 'BAD_FIELD', path: '$.theme', msg: 'theme.accent must be a string' });
+  }
+  if (working.theme && working.theme.background !== undefined && !isPlainString(working.theme.background)) {
+    errors.push({ code: 'BAD_FIELD', path: '$.theme.background', msg: 'theme.background must be a string when present' });
   }
   if (!Array.isArray(spec.tabs) || spec.tabs.length < 2 || spec.tabs.length > 5 || !spec.tabs.every(isPlainString)) {
     errors.push({ code: 'BAD_FIELD', path: '$.tabs', msg: 'tabs must be 2..5 strings' });
   }
   if (spec.actions !== undefined && !(Array.isArray(spec.actions) && spec.actions.every((a) => isPlainString(a) && ACTION_RE.test(a)))) {
-    errors.push({ code: 'BAD_ACTION', path: '$.actions', msg: 'actions must be an array of ' + ACTION_RE });
+    const bad = Array.isArray(spec.actions) ? spec.actions.find((a) => !isPlainString(a) || !ACTION_RE.test(a)) : spec.actions;
+    errors.push({ code: 'BAD_ACTION', path: '$.actions', msg: 'actions must be an array of ' + ACTION_RE + '; offending entry ' + quoteValue(bad) + ' — try "' + suggestActionId(bad) + '"' });
   }
-  const serialized = JSON.stringify(spec);
+  const serialized = JSON.stringify(working);
   if (serialized.length > CAPS.SPEC_BYTES) {
     errors.push({ code: 'SPEC_TOO_LARGE', path: '$', msg: 'serialized spec > ' + CAPS.SPEC_BYTES + ' bytes' });
     return { ok: false, errors, expanded: null };
   }
-  const expandedRoot = expandNode(spec.screen, '$.screen', errors, 1);
+  const expandedRoot = expandNode(working.screen, '$.screen', errors, 1);
   let expanded = null;
   if (expandedRoot) {
     const state = { nodes: 0 };
     walkExpanded(expandedRoot, '$.screen', errors, 1, state);
     if (state.nodes > CAPS.NODES) errors.push({ code: 'NODE_OVERFLOW', path: '$.screen', msg: 'expanded nodes > ' + CAPS.NODES });
     if (errors.length === 0) {
-      const actions = new Set(spec.actions || []);
+      const actions = new Set(working.actions || []);
       (function checkActions(node, path) {
         if (node.action !== undefined && !actions.has(node.action)) {
-          errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action not declared in spec.actions' });
+          errors.push({ code: 'BAD_ACTION', path: path + '.action', msg: 'action ' + quoteValue(node.action) + ' is not declared in spec.actions — declare it there or remove the action' });
         }
         for (const [i, c] of (node.children || []).entries()) checkActions(c, path + '.children[' + i + ']');
       })(expandedRoot, '$.screen');
     }
   }
   expanded = errors.length ? null : expandedRoot;
-  return { ok: errors.length === 0, errors, expanded };
+  return { ok: errors.length === 0, errors, expanded, normalizedSpec };
 }
 
 /**

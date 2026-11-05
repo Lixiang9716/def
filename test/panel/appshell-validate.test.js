@@ -154,3 +154,22 @@ describe('app-shell/0.9 — markup in text is inert by construction (accepted, n
     });
   }
 });
+
+describe('near-miss theme color snap', () => {
+  it('snaps an obvious near-miss background to the exact named hex without mutating the caller', () => {
+    const spec = okSpec({ type: 'button', label: 'go', action: 'a.open' });
+    spec.theme = { accent: '#DC143C', background: '#FFF5F5', mode: 'light' };
+    const r = validate(spec);
+    expect(r.ok).toBe(true);
+    expect(r.normalizedSpec.theme.background).toBe('#FFF5EE');
+    expect(spec.theme.background).toBe('#FFF5F5');
+  });
+
+  it('leaves custom colors and exact named colors untouched', () => {
+    const spec = okSpec({ type: 'button', label: 'go', action: 'a.open' });
+    spec.theme = { accent: '#7c4dff', background: '#FFF5EE', mode: 'light' };
+    const r = validate(spec);
+    expect(r.ok).toBe(true);
+    expect(r.normalizedSpec).toBeNull();
+  });
+});
