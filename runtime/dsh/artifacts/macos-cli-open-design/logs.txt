@@ -4,12 +4,13 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"launch env 
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon configuration resolved","data":[{"base":"http://127.0.0.1:63164","auth":"none"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon configuration resolved","data":[{"base":"http://127.0.0.1:57030","auth":"none"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
@@ -31,18 +32,19 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.cxRsb5"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.aYju4n"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"session/created","sessionId":"s-open-design-0001"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"agent/created","id":"main","sessionId":"s-open-design-0001"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"offered phase begin","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od/offered","tools":3}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"projects phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_projects","stepCount":0,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"create"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"POST","path":"/api/projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/projects","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/projects","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:4","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":162}]}
@@ -54,14 +56,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":4}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.project/created","id":"od-proj-001","name":"Aurora Deck"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_projects","stepCount":1,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"list"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"GET","path":"/api/projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/projects","method":"GET"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/projects","method":"GET"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:7","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":166}]}
@@ -73,14 +76,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":7}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.project/listed","count":1}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_projects","stepCount":2,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"get"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"GET","path":"/api/projects/od-proj-001"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/projects/od-proj-001","method":"GET"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/projects/od-proj-001","method":"GET"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:10","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":175}]}
@@ -92,14 +96,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":10}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.project/fetched","files":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_projects","stepCount":3,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"save_file"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"POST","path":"/api/projects/od-proj-001/files"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/projects/od-proj-001/files","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/projects/od-proj-001/files","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:13","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":103}]}
@@ -111,15 +116,16 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":13}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.project/fileSaved","name":"index.html","size":34}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"generate phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_generate"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_generate","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_generate","stepCount":4,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_generate","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"generate"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"GET","path":"/api/projects/od-proj-001"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/projects/od-proj-001","method":"GET"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/projects/od-proj-001","method":"GET"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:16","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":311}]}
@@ -132,7 +138,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream 
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"design generation starting","data":[{"provider":"openai","model":"mock-designer-1","projectId":"od-proj-001"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"proxy stream open","data":[{"provider":"openai","maxTokens":64000}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/proxy/openai/stream","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/proxy/openai/stream","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:17","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":111}]}
@@ -166,15 +172,16 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"design generation complete","data":[{"chars":246}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_generate","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_generate","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.generate/completed","model":"mock-designer-1","chars":246}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"artifact phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_artifact"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_artifact","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_artifact","stepCount":5,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_artifact","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"save"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"POST","path":"/api/artifacts/save"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/artifacts/save","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/artifacts/save","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":17}]}
@@ -189,14 +196,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":20}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_artifact","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_artifact","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.artifact/saved","url":"http://127.0.0.1/artifact/od-proj-001","path":"artifacts/od-proj-001.html"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_artifact"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_artifact","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_artifact","stepCount":6,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_artifact","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"lint"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"daemon request","data":[{"method":"POST","path":"/api/artifacts/lint"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:63164/api/artifacts/lint","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:57030/api/artifacts/lint","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:23","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":223}]}
@@ -208,14 +216,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway even
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":23}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_artifact","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_artifact","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.artifact/linted","findings":1,"severity":"info"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"negative phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"open_design_projects"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"open_design_projects","stepCount":7,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.openDesign","message":"tool invoked","data":[{"name":"explode"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"open_design_projects","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"od.verb/refused","named":true}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"open.design","event":"upstream/completed","status":"pass","upstream":"0.1.6-alpha.2","openDesign":"system-plugins/dsh-open-design over gateway httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}

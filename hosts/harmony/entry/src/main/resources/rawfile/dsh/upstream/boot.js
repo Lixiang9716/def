@@ -177,7 +177,7 @@ export const spineInventory = (ctx) => {
     service('agent-loop', '@deepseek-ai/dsh-agent-loop', 'agentLoop'),
     service('llm', '@deepseek-ai/dsh-llm', 'llm'),
     tool('tool-todo', '@deepseek-ai/dsh-tool-todo', 'todo_write'),
-    tool('shell-js', 'system-plugins/dsh-shell-js', 'shell'),
+    tool('shell-js', 'system-plugins/dsh-shell-js', 'jsshell'),
     tool('open-design', 'system-plugins/dsh-open-design', 'open_design_projects'),
     tool('tool-plugin-manager', 'system-plugins/dsh-plugin-manager-tools', 'plugin_manager'),
     // The create-approve-hotmount loop's product face: chat-authored plugin

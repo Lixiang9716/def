@@ -5,7 +5,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
@@ -470,16 +470,19 @@ dsh.runtime.log: {"level":"debug","module":"dsh.llm","message":"utf8 end","data"
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.linked","spec":"forms-policy","module":"plugins/forms-policy/index.js"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"fiber settle begin","data":[{"spec":"forms-policy"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.mounted","spec":"forms-policy","version":"1.0.0"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"greet","stepCount":0,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"plugin.forms","event":"policy.denied","denied":true}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"greet","stepCount":1,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budgetMs":120000}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budget":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"greet","stepCount":2,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"unmount begin","data":[{"spec":"forms-policy"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.unmount","event":"plugin.unmount.live","spec":"forms-policy"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.unmount","event":"plugin.unmount.disposed","spec":"forms-policy"}]}
@@ -492,12 +495,14 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"tmp/plugin-forms/dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.unmount","event":"plugin.unmount.unregistered","spec":"forms-policy"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"greet","stepCount":3,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budgetMs":120000}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budget":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"greet","stepCount":4,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"greet","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"unmount begin","data":[{"spec":"forms-greet"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.unmount","event":"plugin.unmount.live","spec":"forms-greet"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.unmount","event":"plugin.unmount.disposed","spec":"forms-greet"}]}
