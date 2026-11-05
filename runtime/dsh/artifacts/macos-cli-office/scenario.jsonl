@@ -4,11 +4,12 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"launch env 
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
@@ -31,14 +32,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.WyTN5k"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase done","data":[{"root":"/tmp/dsh-runtime-smoke.mVseTo"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"session/created","sessionId":"s-office-0001"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"agent/created","id":"main","sessionId":"s-office-0001"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"offered phase begin","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office/offered","tools":8}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"word phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"word_create"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_create","stepCount":0,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_create","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_create","data":[{"path":"docs/demo.docx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":false}]}
@@ -48,10 +50,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","da
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"docs/demo.docx","sizeBytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_create","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.word/created","path":"docs/demo.docx","paragraphs":3,"bullets":3,"tableRows":2}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"word_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_read","stepCount":1,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_read","data":[{"path":"docs/demo.docx","format":"markdown"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":true}]}
@@ -63,10 +66,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"docs/demo.docx","sizeBytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":3244}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.word/readMarkdown","headings":1,"bullets":3,"tableRows":2}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"word_update"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_update","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_update","stepCount":2,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_update","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_update","data":[{"path":"docs/demo.docx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":true}]}
@@ -82,9 +86,10 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","da
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"docs/demo.docx","sizeBytes":3263}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_update","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_update","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"word_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_read","stepCount":3,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_read","data":[{"path":"docs/demo.docx","format":"text"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":true}]}
@@ -96,11 +101,12 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"docs/demo.docx","sizeBytes":3263}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":3263}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.word/appended","paragraphs":1,"verified":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"excel phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"excel_create"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"excel_create","stepCount":4,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_create","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel_create","data":[{"path":"sheets/demo.xlsx","sheets":1}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"sheets/demo.xlsx","mustExist":false}]}
@@ -110,10 +116,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","da
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"sheets/demo.xlsx","sizeBytes":2695}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_create","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.excel/created","path":"sheets/demo.xlsx","sheets":1,"rows":4}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"excel_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"excel_read","stepCount":5,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel_read","data":[{"path":"sheets/demo.xlsx","sheet":"Q3"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"sheets/demo.xlsx","mustExist":true}]}
@@ -125,10 +132,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"sheets/demo.xlsx","sizeBytes":2695}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":2695}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.excel/readBack","rows":4,"cells":12,"truncated":false}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"excel_update"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_update","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"excel_update","stepCount":6,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_update","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel_update","data":[{"path":"sheets/demo.xlsx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"sheets/demo.xlsx","mustExist":true}]}
@@ -144,9 +152,10 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","da
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"sheets/demo.xlsx","sizeBytes":2697}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_update","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_update","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"excel_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"excel_read","stepCount":7,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel_read","data":[{"path":"sheets/demo.xlsx","sheet":"Q3"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"sheets/demo.xlsx","mustExist":true}]}
@@ -158,11 +167,12 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"sheets/demo.xlsx","sizeBytes":2697}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":2697}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.excel/updated","cellWrites":1,"value":"1.24"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"ppt phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"ppt_create"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"ppt_create","stepCount":8,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_create","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.ppt.create","message":"ppt_create","data":[{"path":"decks/demo.pptx","slides":1}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"decks/demo.pptx","mustExist":false}]}
@@ -172,10 +182,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","da
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes written","data":[{"path":"decks/demo.pptx","sizeBytes":9456}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_create","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.ppt/created","path":"decks/demo.pptx","slides":2,"canvas":"13.33x7.5"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"ppt_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"ppt_read","stepCount":9,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.ppt.read","message":"ppt_read","data":[{"path":"decks/demo.pptx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"decks/demo.pptx","mustExist":true}]}
@@ -187,7 +198,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"decks/demo.pptx","sizeBytes":9456}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":9456}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.ppt/readBack","slides":2,"elements":4}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"fixture phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"fixtures/sample.docx"}]}
@@ -197,7 +208,8 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsWrite","data":[{"scope":"app","path":"fixtures/sample.pptx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsWrite"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"word_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_read","stepCount":10,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_read","data":[{"path":"fixtures/sample.docx","format":"markdown"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"fixtures/sample.docx","mustExist":true}]}
@@ -209,10 +221,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"fixtures/sample.docx","sizeBytes":36675}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":36675}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.fixture/docx","chars":95,"markdown":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"excel_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"excel_read","stepCount":11,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel_read","data":[{"path":"fixtures/sample.xlsx","sheet":"(all)"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"fixtures/sample.xlsx","mustExist":true}]}
@@ -224,10 +237,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"fixtures/sample.xlsx","sizeBytes":4882}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":4882}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"excel_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.fixture/xlsx","rows":3,"sheet":"Data"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"tool dispatch","data":[{"name":"ppt_read"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"ppt_read","stepCount":12,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"ppt_read","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.ppt.read","message":"ppt_read","data":[{"path":"fixtures/sample.pptx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"fixtures/sample.pptx","mustExist":true}]}
@@ -239,16 +253,17 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"base64 decod
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"office bytes read","data":[{"path":"fixtures/sample.pptx","sizeBytes":29109}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.zip","message":"office zip open","data":[{"bytes":29109}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_read","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"ppt_read","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.fixture/pptx","slides":2,"width":13.33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"negative phase begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"raw dispatch (outcome unshaped)","data":[{"name":"word_create"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"word_create","stepCount":13,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"word_create","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word_create","data":[{"path":"docs/demo.docx"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.fs","message":"resolve office path","data":[{"rawPath":"docs/demo.docx","mustExist":false}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsStat"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_create","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"word_create","budget":120000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"office.negative/refused","named":"overwrite"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"office","event":"upstream/completed","status":"pass","upstream":"0.1.6-alpha.2","office":"system-plugins/dsh-office (dsh-office-tools surface over gateway fs)"}]}

@@ -56,6 +56,7 @@ RESOURCES = [
     ("upstream_mcp_http_transport_js", DSH / "upstream" / "mcp-http-transport.js"),
     ("upstream_settings_memory_js", DSH / "upstream" / "settings-memory.js"),
     ("upstream_web_write_js", DSH / "upstream" / "web-write.js"),
+    ("upstream_web_write_app_js", DSH / "upstream" / "web-write-app.js"),
     ("upstream_web_write_session_js", DSH / "upstream" / "web-write-session.js"),
     ("upstream_web_write_session_delete_js", DSH / "upstream" / "web-write-session-delete.js"),
     ("upstream_web_write_presets_js", DSH / "upstream" / "web-write-presets.js"),

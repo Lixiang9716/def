@@ -65,7 +65,7 @@ const launchEnv = () => {
 const dispatch = async (ctx, command) => {
   log.debug('shell dispatch', { command });
   const outcome = await ctx.tools.execute({
-    name: 'shell',
+    name: 'jsshell',
     arguments: { command },
     callId: `${SCENARIO}.shell`,
     signal: new AbortController().signal,
@@ -142,7 +142,7 @@ const offeredPhase = (ctx) => {
   log.debug('offered phase begin', {});
   const visible = ctx.tools?.view?.(undefined)?.visible;
   demand(visible instanceof Map, 'the tool layer exposed no visibility view');
-  demand(visible.has('shell'), 'the shell tool is not offered');
+  demand(visible.has('jsshell'), 'the jsshell tool is not offered');
   emit('shell/offered', { tools: 1 });
 };
 

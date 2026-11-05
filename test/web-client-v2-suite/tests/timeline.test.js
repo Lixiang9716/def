@@ -211,10 +211,13 @@ describe('durable events: the status and system families', () => {
     fold.applyRecord(event('system/message', { text: 'hi' }));
     fold.applyRecord(event('todo/write', { items: [] }));
     fold.applyRecord(event('approval/asked', { id: 'a' }));
+    // The interaction plane folds asked/decided into FIRST-CLASS cards (the
+    // in-band approval card), not into a system group — the card carries the
+    // decision state the card UI renders.
     expect(fold.state.items).toEqual([
       { kind: 'system', label: 'system', types: ['system/message'] },
       { kind: 'system', label: 'todo', types: ['todo/write'] },
-      { kind: 'system', label: 'approval', types: ['approval/asked'] },
+      { kind: 'approval', id: 'a', title: '挂载审批', reason: '', decided: false, approved: false },
     ]);
   });
 });

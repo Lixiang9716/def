@@ -42,6 +42,7 @@ import {
   buildCoverageApi, openCoverageStream, createChangeFeed,
 } from 'upstream/web-write-coverage.js';
 import { readStore as readCredentialStore } from './web-write-llm.js';
+import { makeAppServiceCall } from 'upstream/web-write-app.js';
 // The catalog adapters (skills/goals/commands) and the MODEL-CATALOG plane
 // (session/modelCatalog's shell loads, session/selectModel, session/fork)
 // live in web-write-catalog.js; these ride the HISTORICAL claim set (the
@@ -82,6 +83,9 @@ export { COVERAGE_ENDPOINTS, COVERAGE_STREAMS };
  * legs: the 预设 panel's roster (agentPresets/*), the 插件 list's read-only
  * snapshot (pluginInventory/list), and the settings namespaces. */
 export const WRITE_ENDPOINTS = [
+  // The app bridge: the page calls a mounted plugin's exported service
+  // (the generated app's frontend reaches its backend through this claim).
+  'app/service-call',
   'session.list', 'session/list', 'session/create', 'session/prompt',
   // The teardown leg (web-write-session-delete.js): running refuses.
   'session/cancel', 'session/delete',
@@ -202,10 +206,11 @@ const canonicalTimeZone = (value) => {
     || (value !== 'UTC' && !IANA_TIME_ZONE.test(value))) return undefined;
   try {
     if (typeof Intl === 'undefined') return value;
+    // A full Intl resolves a proper Area/Location to ITSELF — the
+    // resolution succeeding IS the validity proof (the recorded device
+    // wire prompts with Asia/Shanghai). Only a throw above invalidates.
     const fmt = new Intl.DateTimeFormat('en-US', { timeZone: value });
-    const canonical = fmt.resolvedOptions().timeZone;
-    if (canonical !== 'UTC' && IANA_TIME_ZONE.test(canonical)) return undefined;
-    return canonical;
+    return fmt.resolvedOptions().timeZone;
   } catch {
     return undefined;
   }
@@ -242,14 +247,14 @@ const makeListSessions = (ctx) => async () => {
  * the vendored service warns at `agent/created` — BEFORE this join runs — so
  * every page-created session logs that warn even when the join then covers
  * it; the paired line names what the session actually composed from. */
-const joinCreatedSessionToDefault = async (ctx, sessionId) => {
+const joinCreatedSessionToDefault = async (ctx, sessionId, presetId) => {
   const service = ctx.get('agentPresets');
   if (service === undefined) {
     throw remoteError('gateway/unavailable',
       'session.create presetJoin: the agentPresets service is not mounted', {});
   }
   const agent = ctx.agents.get(sessionId);
-  const preset = await service.mount(agent.ctx, undefined);
+  const preset = await service.mount(agent.ctx, presetId);
   log.debug('session preset joined', { sessionId, preset: preset?.id, agent: agent.id });
   return preset;
 };
@@ -283,8 +288,11 @@ const makeCreateSession = (ctx, deps) => async (args) => {
       meta: { cwd },
     });
     deps.agentDisposes.set(sessionId, handle.dispose);
-    // The seat's preset-join opt-in (joinCreatedSessionToDefault).
-    if (deps.presetJoin === true) await joinCreatedSessionToDefault(ctx, sessionId);
+    // The seat's preset-join opt-in; a request MAY name the preset (the
+    // creation flow's appgen sessions) — unknown ids refuse loud at mount.
+    if (deps.presetJoin === true) {
+      await joinCreatedSessionToDefault(ctx, sessionId, request.preset);
+    }
   } else if (live.session?.header?.cwd !== cwd) {
     throw remoteError('session/conflict',
       `session "${sessionId}" already exists at another directory`,
@@ -377,21 +385,17 @@ const makeCancelSession = (ctx) => async (args) => {
  * @returns {api, openStream, dispose}
  */
 
-/** The /api handler map (split from createWriteSurface at the file-size
- * gate): every claimed endpoint's handler, keyed by wire name. */
+/** The /api handler map: every claimed endpoint's handler by wire name. */
 const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       'session.list': makeListSessions(ctx),
       'session/list': makeListSessions(ctx),
+      'app/service-call': makeAppServiceCall(),
       'session/create': makeCreateSession(ctx, deps),
       'session/prompt': makePromptSession(ctx),
       'session/cancel': makeCancelSession(ctx),
       ...makeSessionDeleteHandlers(ctx, deps),
-      // The composer model dialog's commit leg: validates the pick against
-      // the boot route and appends the model/selection intent to the live
-      // session journal (the desktop controller's selectModel semantics).
+      // The composer model dialog's commit + fork legs.
       ...makeModelSelectionHandlers(ctx, deps.llmRoute), ...makeSessionFeedbackHandlers(ctx),
-      // The composer dialog's Fork session leg: seeds the child from one
-      // completed-turn prefix and attaches it to the profile's workspace.
       ...makeSessionForkHandlers(ctx, deps),
       // The session deep-page legs + opener gate + preset catalog
       // (upstream/web-write-session.js).

@@ -168,6 +168,29 @@ const applyStatusEvent = (state, type, data) => {
   }
 };
 
+/** The interaction-plane cases (the approval + user-question cards): the
+ * asked/decided pair each folds into one card item; the journal and the
+ * seat's app/cards channel both speak these shapes. */
+const applyInteractionEvent = (state, type, data) => {
+  const asked = type.endsWith('asked');
+  if (type.startsWith('approval')) {
+    add(state, {
+      kind: 'approval',
+      id: data?.id ?? data?.key ?? data?.callId ?? '',
+      title: data?.title ?? data?.toolName ?? '挂载审批',
+      reason: data?.reason ?? data?.detail ?? '',
+      decided: !asked, approved: data?.approved === true,
+    });
+    return;
+  }
+  add(state, {
+    kind: 'question',
+    id: data?.id ?? '',
+    questions: asked && Array.isArray(data?.questions) ? data.questions : [],
+    decided: !asked,
+  });
+};
+
 const applyEvent = (state, event) => {
   const type = event?.type;
   const data = event?.data ?? {};
@@ -183,8 +206,13 @@ const applyEvent = (state, event) => {
       });
       break;
     case 'session/title': applyTitle(state, data); break;
-    case 'system/message': case 'todo/write': case 'approval/asked':
-    case 'approval/decided': case 'goal/change': case 'plan/mode': {
+    case 'approval/asked': case 'approval/decided':
+    case 'question/asked': case 'question/decided': {
+      applyInteractionEvent(state, type, data);
+      break;
+    }
+    case 'system/message': case 'todo/write':
+    case 'goal/change': case 'plan/mode': {
       add(state, { kind: 'system', label: type.split('/')[0], types: [type] });
       break;
     }

@@ -287,7 +287,7 @@ describe('the CLI presets seed satisfies the settings-surfaces default demand', 
   });
 
   it('the roster order is the vendored scanRoot rule: order asc, then id', () => {
-    expect(rows.map((row) => row.id)).toEqual(['standard', 'mobile', 'ptc', 'minimal', 'cordis']);
+    expect(rows.map((row) => row.id)).toEqual(['standard', 'mobile', 'ptc', 'appgen', 'minimal', 'cordis']);
   });
 });
 

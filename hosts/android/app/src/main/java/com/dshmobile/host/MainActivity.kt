@@ -27,9 +27,6 @@ import java.io.File
  */
 class MainActivity : Activity() {
 
-    /** The per-tree asset manifest stamp (syncAssetDir). */
-    private val assetStampName = ".dsh-asset-stamp"
-
     internal lateinit var verdictView: TextView
     private var spikeHost: BindingHost? = null
     private var webView: WebView? = null
@@ -434,57 +431,11 @@ class MainActivity : Activity() {
 
     /** Copies the asset rt bundle to filesDir/rt preserving the layout. */
     internal fun materializeBundle() {
-        syncAssetDir("dsh", File(filesDir, "dsh"))
+        AssetStager.materializeBundle(assets, filesDir)
     }
 
-    /** The asset-set stamp written INSIDE each synced tree: the exact sorted
-     * relative-path manifest of what the current APK ships. */
-    private fun collectAssetNames(assetPath: String, prefix: String, names: MutableSet<String>) {
-        val children = assets.list(assetPath).orEmpty()
-        if (children.isEmpty()) {
-            names.add(prefix)
-            return
-        }
-        for (child in children) {
-            collectAssetNames("$assetPath/$child", if (prefix.isEmpty()) child else "$prefix/$child", names)
-        }
-    }
-
-    /** Reconciles one served tree with the APK's assets (loop-g): an
-     * overwrite-only copy let every entry an OLDER APK shipped survive
-     * `install -r` forever — the device's files/rt/vendor/dsh carried
-     * 274 pre-lean dirs the current closure never materializes, and no
-     * clean-install proof could pass over them. The stamped manifest makes
-     * drift loud and self-healing: matching stamp → no-op; missing or
-     * differing stamp (first boot after this fix, a lean change, a new
-     * file) → wipe the tree and re-materialize exactly the shipped set.
-     * Crash-safe: the stamp lands only after the copy completes. Trees are
-     * app-owned scratch (the workspace lives under files/profiles/, and the
-     * presets seed re-delivers its rows every boot), so the wipe never
-     * takes user data with it. */
+    /** The served-tree reconciler (loop-g) — the mechanics live in AssetStager. */
     internal fun syncAssetDir(assetPath: String, target: File) {
-        val stamp = File(target, assetStampName)
-        val names = sortedSetOf<String>()
-        collectAssetNames(assetPath, "", names)
-        val desired = names.joinToString("\n")
-        if (stamp.isFile && stamp.readText() == desired) return
-        // User state inside the tree (the session journal) survives the
-        // wipe — see JournalKeeper.
-        val kept = JournalKeeper.preserve(target)
-        if (target.exists()) target.deleteRecursively()
-        target.mkdirs()
-        for (rel in names) {
-            val out = File(target, rel)
-            out.parentFile?.mkdirs()
-            copyAssetFile("$assetPath/$rel", out)
-        }
-        JournalKeeper.restore(kept)
-        stamp.writeText(desired)
-    }
-
-    private fun copyAssetFile(assetPath: String, target: File) {
-        assets.open(assetPath).use { input ->
-            target.outputStream().use { output -> input.copyTo(output) }
-        }
+        AssetStager.syncAssetDir(assets, assetPath, target)
     }
 }

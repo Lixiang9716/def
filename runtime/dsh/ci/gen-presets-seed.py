@@ -44,6 +44,10 @@ MARKER_SPIKE = "resolution marker (the bare map vendors this package)"
 # silent half-stage).
 MOBILE_PRESET = SPIKE / "presets-mobile" / "mobile"
 MOBILE_FILES = ("preset.yml", "agent.cordis.yml")
+# The APPGEN preset (the app-generation mode): the same synthesis rule, the
+# same two-file roster, staged at the presets/appgen/ rel by every stager.
+APPGEN_PRESET = SPIKE / "presets-mobile" / "appgen"
+SYNTH_PRESETS = ((MOBILE_PRESET, MOBILE_FILES), (APPGEN_PRESET, MOBILE_FILES))
 
 
 def collect_files() -> dict[str, str]:
@@ -58,7 +62,8 @@ def collect_files() -> dict[str, str]:
         sys.exit(1)
     files: dict[str, str] = {}
     files.update(presets_tree())
-    files.update(mobile_tree())
+    for preset_dir, preset_files in SYNTH_PRESETS:
+        files.update(synth_tree(preset_dir, preset_files))
     files.update(marker_entries(pkg_dirs))
     return files
 
@@ -80,33 +85,33 @@ def presets_tree() -> dict[str, str]:
     return out
 
 
-def mobile_tree() -> dict[str, str]:
-    """The MOBILE preset's rows: our outboard composition doc + roster
-    metadata, base64 under the presets/mobile/ rel — byte-identical to what
+def synth_tree(preset_dir, preset_files) -> dict[str, str]:
+    """One synthesized preset's rows: our outboard composition doc + roster
+    metadata, base64 under its presets/<name>/ rel — byte-identical to what
     the device stagers stage and the device seeders enumerate. Fail loud when
-    the source dir carries anything the stagers do not stage (see
-    MOBILE_FILES) — a silently divergent roster is the defect this guard
-    exists for."""
-    if not MOBILE_PRESET.is_dir():
-        print(f"gen-presets-seed: missing {MOBILE_PRESET}", file=sys.stderr)
+    the source dir carries anything the stagers do not stage — a silently
+    divergent roster is the defect this guard exists for."""
+    if not preset_dir.is_dir():
+        print(f"gen-presets-seed: missing {preset_dir}", file=sys.stderr)
         sys.exit(1)
-    present = sorted(p.name for p in MOBILE_PRESET.iterdir())
-    unexpected = [n for n in present if n not in MOBILE_FILES]
+    present = sorted(p.name for p in preset_dir.iterdir())
+    unexpected = [n for n in present if n not in preset_files]
     if unexpected:
         print(
-            f"gen-presets-seed: {MOBILE_PRESET} carries files the device "
+            f"gen-presets-seed: {preset_dir} carries files the device "
             f"stagers do not stage: {unexpected} — extend vendor-official.sh, "
-            f"gen_bundle_resources.py and MOBILE_FILES together",
+            f"gen_bundle_resources.py and the preset's file tuple together",
             file=sys.stderr,
         )
         sys.exit(1)
     out: dict[str, str] = {}
-    for name in MOBILE_FILES:
-        path = MOBILE_PRESET / name
+    rel = preset_dir.name
+    for name in preset_files:
+        path = preset_dir / name
         if not path.is_file():
             print(f"gen-presets-seed: missing {path}", file=sys.stderr)
             sys.exit(1)
-        vfs = f"{VFS_BASE}0.1.6-alpha.2/presets/mobile/{name}"
+        vfs = f"{VFS_BASE}0.1.6-alpha.2/presets/{rel}/{name}"
         out[vfs] = base64.b64encode(path.read_bytes()).decode()
     return out
 

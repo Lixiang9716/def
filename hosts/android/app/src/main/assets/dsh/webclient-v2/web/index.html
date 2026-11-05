@@ -25,10 +25,25 @@
           <span class="dot dot-amber"></span><span class="capsule-text">连接中</span>
         </div>
       </header>
-      <h1 class="home-hero">你的移动<br>Agent 工作台</h1>
-      <button id="new-session" class="glass new-session-btn" type="button">
+      <h1 class="home-hero">我的 App</h1>
+      <button id="new-app" class="glass new-session-btn" type="button">
         <span class="new-session-plus" aria-hidden="true">＋</span>
-        新建会话
+        新建 App
+      </button>
+      <div id="app-grid" class="app-grid" role="list"></div>
+      <p id="app-grid-empty" class="session-list-empty" hidden>
+        还没有 App — 点「新建 App」告诉 def 你想要什么
+      </p>
+      <dialog id="new-app-form" class="glass new-app-form">
+        <form method="dialog" id="new-app-form-inner">
+          <h2>新建 App</h2>
+          <label>名字 <input id="new-app-name" name="name" maxlength="24" required placeholder="例如:番茄钟"></label>
+          <label>一句话描述 <input id="new-app-desc" name="desc" maxlength="80" required placeholder="例如:25 分钟专注计时,带统计"></label>
+          <menu><button value="cancel" formnovalidate>取消</button><button id="new-app-go" value="ok" class="primary">开始创建</button></menu>
+        </form>
+      </dialog>
+      <button id="new-session" class="glass new-session-btn assistant-entry" type="button">
+        助手会话(非 App 任务)
       </button>
       <button id="market-open" class="glass market-open-btn" type="button">
         <span aria-hidden="true">◆</span>

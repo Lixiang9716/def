@@ -38,6 +38,39 @@ const log = createLogger('dsh.tool-deadline');
  * own timeoutMs), far under the 10+ minute wedge the hang showed. */
 export const DEFAULT_BUDGET_MS = 120_000;
 
+/** Interactive tools park on a HUMAN (the in-band question/approval cards):
+ * their budget is human latency, not machine latency (measured 2026-10-28:
+ * the 120 s default aborted the model's ask_user_question before the user
+ * could answer, and the plugin-manager's mount approval raced the same
+ * wall — both cards answered correctly, the deadline had already fired). */
+const INTERACTIVE_BUDGET_MS = 600_000;
+const INTERACTIVE_TOOLS = new Set(['ask_user_question', 'plugin_manager']);
+const budgetFor = (tool, budgetMs) => (INTERACTIVE_TOOLS.has(tool) ? INTERACTIVE_BUDGET_MS : budgetMs);
+
+/** The per-turn STEP budget (the appgen wander, measured 2026-10-28: a
+ * probe-happy turn ran 421 tool dispatches; legitimate creation runs land
+ * ≤ 110). The count is per dispatch chain — an idle gap longer than the
+ * reset window means a NEW user turn started, so the count zeroes. Over
+ * budget fails IN-BAND with a wrap-up instruction the model can read. */
+const STEP_BUDGET = 150;
+const STEP_RESET_MS = 180_000;
+let stepCount = 0;
+let lastStepAt = 0;
+const stepBudgetCheck = (tool) => {
+  const now = Date.now();
+  log.debug('step budget check', { tool, stepCount, STEP_BUDGET });
+  if (now - lastStepAt > STEP_RESET_MS) stepCount = 0;
+  lastStepAt = now;
+  stepCount += 1;
+  if (stepCount <= STEP_BUDGET || INTERACTIVE_TOOLS.has(tool)) return null;
+  return {
+    content: [{ type: 'text', text: `Error: the turn's step budget is exhausted (${stepCount} tool calls). `
+      + 'Stop exploring. Wrap up NOW: deliver what exists with the present tool (or report the blocker) and end the turn.' }],
+    isError: true,
+    error: { message: 'step budget exhausted — wrap up and deliver', info: { code: 'STEP_BUDGET', tool, steps: stepCount } },
+  };
+};
+
 /** The capability-owned timeout code (dsh-timeout's vocabulary: the code
  * rides the TimeoutReason and the failure result's error.info). */
 export const TIMEOUT_CODE = 'tool/deadline';
@@ -75,9 +108,12 @@ export const deadlineResult = (tool, budgetMs) => {
  * the in-band result; the fused abort signal asks it to stop). */
 export const makeToolsExecuteListener = (budgetMs) => async (exec, next) => {
   const tool = exec?.name ?? '(unknown tool)';
-  log.debug('tool deadline armed', { tool, budgetMs });
+  const stepStop = stepBudgetCheck(tool);
+  if (stepStop !== null) return stepStop;
+  const budget = budgetFor(tool, budgetMs);
+  log.debug('tool deadline armed', { tool, budget });
   const wrapperSignal = exec?.signal;
-  const guard = deadline(wrapperSignal, budgetMs, TIMEOUT_CODE);
+  const guard = deadline(wrapperSignal, budget, TIMEOUT_CODE);
   if (exec !== undefined) exec.signal = guard.signal;
   // Resolves exactly when OUR deadline reason lands on the fused signal —
   // an upstream cancellation aborting the same signal is not a timeout and
@@ -102,11 +138,11 @@ export const makeToolsExecuteListener = (budgetMs) => async (exec, next) => {
     guard[Symbol.dispose]();
   }
   if (settled.kind === 'done') {
-    log.debug('tool deadline disarmed (done)', { tool, budgetMs });
+    log.debug('tool deadline disarmed (done)', { tool, budget });
     return settled.result;
   }
-  log.warn('tool deadline fired', { tool, budgetMs });
-  return deadlineResult(tool, budgetMs);
+  log.warn('tool deadline fired', { tool, budget });
+  return deadlineResult(tool, budget);
 };
 
 export const name = 'tool-deadline';

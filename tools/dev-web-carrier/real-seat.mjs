@@ -2,23 +2,20 @@
 // dsh:logging-exempt (node-side driver: console IS the product)
 /**
  * real-seat.mjs — the dev carrier's REAL runtime seat: bootUpstream boots in
- * THIS Node process (composer-web-live's boot path — runtime.config → route
- * → spine → write surface → creation mount → resident), and the official
+ * THIS Node process (composer-web-live's boot path), and the official
  * client's wire (POST /api envelopes + WS /api/remote.mux + the boot-graph
  * index injection) bridges onto the same bus the device hosts deliver.
- *
- * The LLM route is --llm:
- *   staged  → a REAL endpoint (DSH_LLM_BASE_URL/DSH_LLM_MODEL/DSH_LLM_API_KEY,
- *             userEndpoint:true — the BYOK shape, key never rendered), or
- *   mock    → the loopback scripted chat-completions server (deterministic
- *             dry-run; ci/mock-llm-server.mjs, spawned here).
- *
+ * --llm staged → a REAL endpoint (the BYOK shape; env carries the key), or
+ * mock → the loopback scripted chat-completions server (deterministic).
  * usage: node --import <repo>/test/panel/spine/register.mjs \
- *             tools/dev-web-carrier/real-seat.mjs [--port N] [--llm staged|mock]
- * env:   DSH_LLM_BASE_URL DSH_LLM_API_KEY DSH_LLM_MODEL (staged mode)
+ *             tools/dev-web-carrier/real-seat.mjs [--llm staged|mock]
  */
 import { createServer } from 'node:http';
 import { stageLoopbackHttpFetch } from './loopback-seam.mjs';
+import { createCardPlane } from './app-cards.mjs';
+import { installBundleSeam, installHostGateway, installProcSeams } from './host-gateway.mjs';
+import { decideApproval, pruneApproval, subscribeApproval, wireApprovalEmit } from './approval-channel.mjs';
+import { stageRuntimePlugins, walkFiles } from './seat-staging.mjs';
 import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -26,7 +23,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { PluginsRoute } from './plugins-route.mjs';
 import { stagedDescriptors } from './compose-boot.mjs';
 import { acceptUpgrade } from './ws-lite.mjs';
-import { createRequire } from 'node:module';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(HERE, '..', '..');
@@ -34,7 +30,6 @@ const DIST_ROOT = join(REPO_ROOT, 'presentation/official-web/dist');
 const WS_ROOT = join(REPO_ROOT, 'tmp/hero-seat/workspace');
 const COOKIE_NAME = 'dsh-dev-carrier';
 
-// ---- args ----
 const plugins = new PluginsRoute(
   stagedDescriptors(REPO_ROOT).map((d) => ({
     id: d.loaderName,
@@ -42,9 +37,10 @@ const plugins = new PluginsRoute(
   })),
 );
 
-const args = { port: 0, llm: 'staged' };
+const args = { port: 0, llm: 'staged', ui: 'official' };
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--port') args.port = Number(process.argv[++i]);
+  if (process.argv[i] === '--ui') args.ui = process.argv[++i];
   else if (process.argv[i] === '--llm') args.llm = process.argv[++i];
   else throw new Error(`real-seat: unknown argument '${process.argv[i]}'`);
 }
@@ -52,14 +48,11 @@ if (args.llm !== 'staged' && args.llm !== 'mock') {
   throw new Error(`real-seat: --llm want staged|mock, got '${args.llm}'`);
 }
 
-// ---- workspace (the profile container the boot demands) ----
+// ---- workspace + harness globals ----
 for (const d of [WS_ROOT, join(WS_ROOT, 'home'), join(WS_ROOT, '.tmp')]) mkdirSync(d, { recursive: true });
-
-// ---- the harness globals, BEFORE the runtime import ----
 const queue = [];
 let wake = null;
 let dispatch = null;
-const posted = [];
 const muxSockets = new Map(); // streamId → ws
 const apiWaiters = new Map(); // rpcId → (result) => void
 let bootRows = null;
@@ -73,8 +66,31 @@ globalThis.__dshBusOnMessage = (line) => {
   wake?.();
   wake = null;
 };
+const cards = createCardPlane((streamId, frame) => {
+  muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
+});
+// The app/cards channel also carries the in-band approval asks + the
+// user-question asks (the channel modules own their subscriber registries;
+// the runtime's bridges reach the fan-out through these global hooks).
+const emitToAppCards = (frame) => {
+  for (const streamId of approvalSubscribers) {
+    muxSockets.get(streamId)?.sendText(JSON.stringify({ type: 'item', streamId, value: frame }));
+  }
+};
+wireApprovalEmit(emitToAppCards);
+globalThis.__dshEmitApproval = (ask) => {
+  const { parkApproval } = requireApprovalChannel();
+  emitToAppCards({ type: 'approval.request', id: ask.id, ...ask });
+  parkApproval(ask);
+};
+globalThis.__dshEmitQuestion = emitToAppCards;
+const approvalSubscribers = new Set();
+const requireApprovalChannel = async () => await import('./approval-channel.mjs');
+
 globalThis.__dshBusPost = (line) => {
   const msg = JSON.parse(line);
+  if (typeof msg.type === 'string' && msg.type.startsWith('card.')) cards.forward(msg);
+  if (typeof msg.type === 'string' && msg.type.startsWith('question.')) emitToAppCards(msg);
   console.log('[real-seat] bus post:', msg.type);
   switch (msg.type) {
     case 'web.boot': bootRows = msg; console.log('[real-seat] runtime revs:', JSON.stringify(msg.plugins)); plugins?.applyRuntimeRevs(msg.plugins); bootReady(); return;
@@ -87,7 +103,6 @@ globalThis.__dshBusPost = (line) => {
     case 'mux.item': console.log('[real-seat] mux.item stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?') + ' value=' + JSON.stringify(msg.value)?.slice(0, 200)); muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'item', streamId: msg.streamId, value: msg.value })); return;
     case 'mux.end': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'end', streamId: msg.streamId })); return;
     case 'mux.error': muxSockets.get(msg.streamId)?.sendText(JSON.stringify({ type: 'error', streamId: msg.streamId, error: msg.error })); return;
-    default: posted.push(msg);
   }
 };
 globalThis.__dshComplete = (ok, reason) => {
@@ -111,7 +126,7 @@ if (args.llm === 'staged' && (!llm.baseURL || !llm.apiKey)) {
   throw new Error('real-seat: staged mode needs DSH_LLM_BASE_URL + DSH_LLM_API_KEY');
 }
 
-// ---- the loopback mock (mock mode): a REAL scripted chat-completions server ----
+// ---- the loopback mock (mock mode): a scripted chat-completions server ----
 let mockHandle = null;
 if (args.llm === 'mock') {
   const { startMockLlmServer } = await import(pathToFileURL(join(REPO_ROOT, 'external/dsh/llm-mock-server@0.1.6-alpha.2/lib/index.js')).href);
@@ -125,144 +140,52 @@ if (args.llm === 'mock') {
   console.log(`[real-seat] mock LLM on ${mockHandle.baseURL}`);
 }
 
-// ---- the host seams (test/panel/spine/spine-seams.mjs): bundle reads,
-// async-context slots, node timers, and the gateway dispatch (loud-fail +
-// staged httpFetch). Then the two wire stagers: the loopback mock rides
-// http://127.0.0.1, the staged real key rides https (stageRealHttpFetch). ----
+// ---- the host seams (spine-seams.mjs) + the wire stagers: the loopback
+// mock rides http://127.0.0.1, the staged real key rides https ----
 const seams = await import(pathToFileURL(join(REPO_ROOT, 'test/panel/spine/spine-seams.mjs')).href);
 if (args.llm === 'mock') stageLoopbackHttpFetch(seams, llm.baseURL);
 else seams.stageRealHttpFetch();
-
-// ---- the web.plugins delivery: the staged client bundles, walked to
-// b64 files (web-boot.js stageWebPlugins' shape: plugins[] with
-// {loaderName, pkgJsonPath, entryPath, files:{relpath:{b64,mtimeMs}}}) ----
-const walkFiles = (dir, base, out) => {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name);
-    const rel = `${base}/${entry.name}`;
-    if (entry.isDirectory()) walkFiles(full, rel, out);
-    else {
-      out[rel] = { b64: readFileSync(full).toString('base64'), mtimeMs: 0 };
-    }
-  }
-};
-const MOBILE_PRESET_PACKAGES = [
-  'dsh-persona', 'dsh-agent-instructions', 'dsh-tool-fs', 'dsh-tool-jobs',
-  'dsh-skill-filesystem', 'dsh-tool-skill', 'dsh-command-goal',
-  'dsh-tool-goal', 'dsh-plan-mode', 'dsh-compaction-basic',
-  'dsh-command-compact', 'dsh-compaction-tool-result-pruner',
-  'dsh-tool-subagent-control', 'dsh-tool-subagent', 'dsh-tool-ask-user',
-  'dsh-tool-todo', 'dsh-tool-present',
-];
-
-/** Stage one runtime plugin package (the mobile composition's rows name
- * them): walk the farm-resolved vendored dir, key the VFS at
- * /web-plugins/<loader><rel>, and mirror the bytes for the HTTP face. */
-const stageRuntimePlugin = (plugins, pkg) => {
-  const real = join(REPO_ROOT, 'runtime/dsh/node_modules/@deepseek-ai', pkg);
-  if (!existsSync(join(real, 'package.json'))) {
-    console.log(`[real-seat] plugin package missing on the farm: ${pkg}`);
-    return;
-  }
-  const loaderName = `@deepseek-ai/${pkg}`;
-  const diskDir = join(WS_ROOT, 'web-plugins', loaderName);
-  mkdirSync(diskDir, { recursive: true });
-  const keyed = {};
-  walkFiles(real, '', keyed);
-  const stagedFiles = {};
-  for (const [rel, file] of Object.entries(keyed)) {
-    const vfsPath = `/web-plugins/${loaderName}${rel}`;
-    stagedFiles[vfsPath] = file;
-    const dst = join(WS_ROOT, 'web-plugins', loaderName, rel);
-    mkdirSync(dirname(dst), { recursive: true });
-    writeFileSync(dst, Buffer.from(file.b64, 'base64'));
-  }
-  plugins.push({
-    loaderName,
-    pkgJsonPath: join(real, 'package.json'),
-    entryPath: `${WS_ROOT}/web-plugins/${loaderName}/lib/index.js`,
-    files: stagedFiles,
-  });
-};
-/** The mobile composition's runtime plugin packages, staged beside the
- * client bundles (the 19-row preset join names them). */
-const stageRuntimePlugins = (plugins) => {
-// The mobile composition's RUNTIME plugin rows (the 19-row join): each
-// names a vendored package the loader must resolve — stage the package's
-// own files the same way the device's web-plugins staging does.
-for (const pkg of MOBILE_PRESET_PACKAGES) {
-  const real = join(REPO_ROOT, 'runtime/dsh/node_modules/@deepseek-ai', pkg);
-  if (!existsSync(join(real, 'package.json'))) {
-    console.log(`[real-seat] plugin package missing on the farm: ${pkg}`);
-    continue;
-  }
-  const loaderName = `@deepseek-ai/${pkg}`;
-  const diskDir = join(WS_ROOT, 'web-plugins', loaderName);
-  mkdirSync(diskDir, { recursive: true });
-  const keyed = {};
-  walkFiles(real, '', keyed);
-  const stagedFiles = {};
-  for (const [rel, file] of Object.entries(keyed)) {
-    const vfsPath = `/web-plugins/${loaderName}${rel}`;
-    stagedFiles[vfsPath] = file;
-    const dst = join(WS_ROOT, 'web-plugins', loaderName, rel);
-    mkdirSync(dirname(dst), { recursive: true });
-    writeFileSync(dst, Buffer.from(file.b64, 'base64'));
-  }
-  plugins.push({
-    loaderName,
-    pkgJsonPath: join(real, 'package.json'),
-    entryPath: `${WS_ROOT}/web-plugins/${loaderName}/lib/index.js`,
-    files: stagedFiles,
-  });
+installProcSeams(WS_ROOT);
+{
+  const { DshBuffer } = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/buffer.js')).href);
+  globalThis.Buffer.fromBytes ??= (b) => DshBuffer.fromBytes(b);
 }
+installBundleSeam(join(REPO_ROOT, 'runtime/dsh'));
+await installHostGateway(REPO_ROOT, WS_ROOT);
 
-};
+// ---- the web.plugins delivery: the staged client bundles walked to b64
+// files (web-boot.js stageWebPlugins' shape) ----
+
 
 const webPluginDelivery = () => {
-  const plugins = [];
-  for (const d of stagedDescriptors(REPO_ROOT)) {
-    const pkgDir = dirname(d.pkgJsonPath);
-    const diskDir = join(WS_ROOT, 'web-plugins', d.loaderName);
-    mkdirSync(diskDir, { recursive: true });
+  const plugins = stagedDescriptors(REPO_ROOT).map((d) => {
+    const walked = {};
+    walkFiles(dirname(d.pkgJsonPath), '', walked);
     const files = {};
-    walkFiles(pkgDir, '', files);
-    const keyed = {};
-    for (const [rel, file] of Object.entries(files)) {
-      const vfsPath = `/web-plugins/${d.loaderName}${rel}`;
-      keyed[vfsPath] = file;
-      // the HTTP face serves the same bytes from disk (the page fetches
-      // the graph URLs over the origin; the runtime reads the VFS)
+    for (const [rel, file] of Object.entries(walked)) {
+      files[`/web-plugins/${d.loaderName}${rel}`] = file;
+      // the HTTP face serves the same bytes from disk (the page fetches the
+      // graph URLs over the origin; the runtime reads the VFS)
       const dst = join(WS_ROOT, 'web-plugins', d.loaderName, rel);
       mkdirSync(dirname(dst), { recursive: true });
       writeFileSync(dst, Buffer.from(file.b64, 'base64'));
     }
-    plugins.push({
+    return {
       loaderName: d.loaderName,
       pkgJsonPath: d.pkgJsonPath,
       entryPath: `${WS_ROOT}/web-plugins/${d.loaderName}/lib/client.js`,
-      files: keyed,
-    });
-  }
-  stageRuntimePlugins(plugins);
-   return { type: 'web.plugins', plugins };
+      files,
+    };
+  });
+  stageRuntimePlugins(REPO_ROOT, WS_ROOT, plugins);
+  return { type: 'web.plugins', plugins };
 };
 const deliverWebPluginsNow = () => deliver(webPluginDelivery());
 
-// ---- the preset plane, re-based into the workspace (T-0218 leg 4's Node
-// face): the presets service reads its shipped tree through the fs shim,
-// and the shim only serves the workspace (ws seam = real disk) plus the
-// seeded VFS. The vendored tree materializes under the workspace root —
-// real files the ws seam serves — with the synthesized mobile preset
-// (AGENT_PRESETS_DEFAULT) copied from presets-mobile beside the shipped
-// four, and the farm node_modules linked where the composition's upward
-// package walk lands. ----
+// ---- the preset plane: the vendored tree + the synthesized presets
+// materialize under the workspace; the VFS seed keys at the WORKSPACE
+// vendor root (the mount's async readFile has no real-disk twin). ----
 const WS_VENDOR = `${WS_ROOT}/vendor/dsh/agent-presets@0.1.6-alpha.2`;
-// The presets VFS seed (the third delivery): the generated manifest keyed
-// at the WORKSPACE vendor root — the mount's async readFile has no
-// real-disk twin (only readFileSync does), so the workspace copy is
-// invisible to it until the VFS gate answers: underVFS(WS_VENDOR/…) with
-// these exact keys.
 const realRoot = `${WS_VENDOR}/`;
 const presetsSeedSetup = async () => {
   const shim = await import(pathToFileURL(join(REPO_ROOT, 'runtime/dsh/upstream/shims/fs-seeded.js')).href);
@@ -284,33 +207,50 @@ const deliverPresetsSeed = async () => {
 const materializePresetsPlane = () => {
   const vendored = join(REPO_ROOT, 'runtime/dsh/vendor/dsh/agent-presets@0.1.6-alpha.2');
   cpSync(vendored, WS_VENDOR, { recursive: true });
-  // AGENT_PRESETS_DEFAULT is the SYNTHESIZED mobile (T-0048): the vendored
-  // tree ships cordis/minimal/ptc/standard only
+  // The synthesized presets (the vendored tree ships cordis/minimal/ptc/
+  // standard only): mobile (T-0048) + appgen (the app-generation mode).
   mkdirSync(join(WS_VENDOR, 'presets'), { recursive: true });
-  cpSync(join(REPO_ROOT, 'runtime/dsh/presets-mobile/mobile'), join(WS_VENDOR, 'presets', 'mobile'), { recursive: true });
+  for (const preset of ['mobile', 'appgen']) {
+    cpSync(join(REPO_ROOT, 'runtime/dsh/presets-mobile', preset), join(WS_VENDOR, 'presets', preset), { recursive: true });
+  }
   // the composition's upward package walk lands on the farm itself
   const wsNm = join(WS_ROOT, 'node_modules');
   if (!existsSync(wsNm)) symlinkSync(join(REPO_ROOT, 'runtime/dsh/node_modules'), wsNm);
 };
-// ---- runtime.config, then the runtime import (main() runs at import) ----// ---- runtime.config, then the runtime import (main() runs at import) ----
-const WSArg = (p) => p; // the boot demands '/'-prefixed POSIX roots
+// ---- runtime.config, then the runtime import (main() runs at import) ----
 const cfg = {
   scenario: 'hero.seat',
   agentId: 'main',
   sessionId: 's-hero-0001',
-  cwd: WSArg(WS_ROOT),
-  containerRoot: WSArg(WS_ROOT),
-  container: { cwd: WSArg(WS_ROOT), tmpdir: WSArg(join(WS_ROOT, '.tmp')), home: WSArg(join(WS_ROOT, 'home')), env: {}, argv: ['dsh', '--profile', 'mobile'] },
+  cwd: WS_ROOT,
+  containerRoot: WS_ROOT,
+  // fsScopeRoot == the container (real-create's bare-spelling posture):
+  // boot-options builds the container from it — __dshProfileScopeRoot, the
+  // shell tool's workspace gate (cwd must start with the scope root).
+  fsScopeRoot: WS_ROOT,
   llm,
   mockLlmUrl: args.llm === 'mock' ? llm.baseURL : undefined,
   apiKey: args.llm === 'mock' ? 'hero-mock-key' : llm.apiKey,
+  // The staged route reads the FLAT fields (Android host's shape —
+  // llm-route.js stagedRoute); the nested `llm` above is seat-local.
+  ...(args.llm === 'staged' ? {
+    llmBaseUrl: llm.baseURL, llmApiKey: llm.apiKey, llmModel: llm.model, llmProvider: llm.provider,
+  } : {}),
   commands: true,
   skills: {},
   goals: true,
   fileReferences: true,
   creation: true,
   presetJoin: true,
-  byokModels: true,
+  // The BYOK-models section mounts an empty pi-ai catalog whose 'deepseek'
+  // row collides with the STAGED route's own provider declaration (the
+  // mount refuses loudly). A staged key IS the configured state the section
+  // exists to produce — off when staged, on for the mock seat.
+  byokModels: args.llm === 'mock',
+  // The coverage surface (the file sidebar/preview family, skills, goals,
+  // commands, directoryPicker) — the Android interactive seat's row; the
+  // page's workspaceFiles/readAll answers from it.
+  fullCoverage: true,
   agentPresetsBaseUrl: pathToFileURL(WS_VENDOR + '/').href,
   agentPresetRoots: [{ path: WS_VENDOR + '/presets/', trust: 'system' }],
   settingsProbes: false, // the recording seat proves chat+create, not settings
@@ -326,11 +266,8 @@ deliverWebPluginsNow();
 deliverPresetsSeed();
 console.log('[real-seat] resident when the boot graph lands');
 
-// ---- wait for the runtime's boot graph, then compose the served rows ----
-await bootReadyP;
-// The page wire composes OUT-OF-PROCESS (compose-only.mjs, a fresh clean
-// context — the loader's internal-resolver guard refuses a second in-process
-// compose); the runtime's own web.boot posted the recovery defaults.
+// ---- wait for the boot graph, then compose the served rows
+// (OUT-OF-PROCESS via compose-only.mjs; see the loader-resolver note) ----
 const staged = join(REPO_ROOT, 'tmp/dev-web-carrier');
 const composed = JSON.parse(readFileSync(join(staged, 'hero-rows.json'), 'utf8'));
 plugins.applyRuntimeRevs(composed.plugins);
@@ -388,7 +325,6 @@ dispatch = (msg) => {
   switch (msg.type) {
     case 'api.claim': console.log('[real-seat] api claimed:', (msg.endpoints ?? []).join(', ')); return;
     case 'mux.claim': console.log('[real-seat] mux claimed:', (msg.endpoints ?? []).join(', ')); return;
-    default: posted.push(msg);
   }
 };
 // drain whatever queued before resident
@@ -396,28 +332,75 @@ for (const msg of queue.splice(0)) dispatch(msg);
 
 // ---- HTTP + WS ----
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
+const V2_ROOT = join(REPO_ROOT, 'presentation/web-client-v2/web');
 const serveDist = (req, url, respond) => {
+  // --ui v2: the def mobile face (web-client-v2, plain vanilla — no boot
+  // injection, no client-modules graph; it speaks the loopback wire
+  // directly). --ui official: the composed graph + the index injection.
+  const root = args.ui === 'v2' ? V2_ROOT : DIST_ROOT;
   const rel = url.pathname === '/' ? '/index.html' : url.pathname;
-  const file = join(DIST_ROOT, rel);
-  if (!file.startsWith(DIST_ROOT) || !existsSync(file)) return respond(404, 'text/plain', '');
+  const file = join(root, rel);
+  if (!file.startsWith(root) || !existsSync(file)) return respond(404, 'text/plain', '');
   const mime = MIME[file.slice(file.lastIndexOf('.'))] ?? 'application/octet-stream';
-  const body = rel === '/index.html' ? renderIndex(readFileSync(file, 'utf8')) : readFileSync(file);
+  const body = args.ui !== 'v2' && rel === '/index.html'
+    ? renderIndex(readFileSync(file, 'utf8')) : readFileSync(file);
   respond(200, mime, body);
 };
+/** The in-band answer endpoints (approval/decide + question/answer): the
+ * page's cards resolve the seat-parked arms. Returns the HTTP answer when
+ * the pathname is one of them, null to fall through to the runtime. */
+const answerInBand = (pathname, inner, respond, rpcId) => {
+  const args = inner?.args ?? inner ?? {};
+  if (pathname === '/api/question/answer') {
+    const answered = globalThis.__dshQuestionAnswer?.(String(args.id ?? ''), Array.isArray(args.answers) ? args.answers : []);
+    respond(200, 'application/json', JSON.stringify({
+      type: 'server-response', rpcId,
+      result: answered
+        ? { ok: true, value: { answered: true } }
+        : { ok: false, error: { code: 'question/not-found', message: 'no pending question with that id', details: {} } },
+    }));
+    return true;
+  }
+  if (pathname === '/api/approval/decide') {
+    const decided = decideApproval(String(args.id ?? ''), args.approved === true);
+    respond(200, 'application/json', JSON.stringify({
+      type: 'server-response', rpcId,
+      result: decided
+        ? { ok: true, value: { decided: true } }
+        : { ok: false, error: { code: 'approval/not-found', message: 'no pending approval with that id', details: {} } },
+    }));
+    return true;
+  }
+  return null;
+};
+
 const handleApi = (req, url, respond) => {
   if (req.method !== 'POST') return respond(405, 'text/plain', '');
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
   req.on('end', () => {
-    const rpcId = `hero-${randomBytes(6).toString('hex')}`;
     let payload;
     try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); } catch { return respond(400, 'text/plain', ''); }
+    // The client matches responses by ITS request rpcId (dsh-client-connection
+    // throws on any mismatch) — echo it; mint only for hand-rolled probes.
+    const rpcId = typeof payload.rpcId === 'string' && payload.rpcId !== ''
+      ? payload.rpcId : `hero-${randomBytes(6).toString('hex')}`;
+    // The client posts the full client-request envelope {type, rpcId,
+    // payload:{args}}; the runtime's handler reads msg.payload.args — unwrap
+    // one level (a bare {"args":…} hand-probe body passes through).
+    const inner = payload.payload ?? payload;
     console.log(`[real-seat] page -> ${url.pathname.slice('/api/'.length)}`);
+    // The in-band answers (approval + user-question): the page's cards
+    // answer the seat-parked arms here (never forwarded into the runtime —
+    // the runtime is blocked ON them). Returns null when the endpoint is
+    // NOT an in-band answer (the caller falls through to the runtime).
+    const answered = answerInBand(url.pathname, inner, respond, rpcId);
+    if (answered !== null) return;
     apiWaiters.set(rpcId, (result) => {
       console.log(`[real-seat] <- ${url.pathname.slice('/api/'.length)} ok=${result.ok}${result.ok ? '' : ' err=' + JSON.stringify(result.error ?? {})}`);
       respond(200, 'application/json', JSON.stringify({ type: 'server-response', rpcId, result }));
     });
-    deliver({ type: 'api.request', rpcId, endpoint: url.pathname.slice('/api/'.length), payload });
+    deliver({ type: 'api.request', rpcId, endpoint: url.pathname.slice('/api/'.length), payload: inner });
     setTimeout(() => {
       if (apiWaiters.has(rpcId)) {
         apiWaiters.delete(rpcId);
@@ -469,8 +452,17 @@ server.on('upgrade', (req, socket) => {
     if (msg.type === 'open' && typeof msg.streamId === 'string') {
       console.log('[real-seat] mux.open stream=' + msg.streamId + ' endpoint=' + (msg.endpoint ?? '?'));
       muxSockets.set(msg.streamId, ws);
+      if (msg.endpoint === 'app/cards') {
+        // The seat owns this endpoint: replay the live cards, then stream.
+        cards.subscribe(msg.streamId);
+        approvalSubscribers.add(msg.streamId);
+        subscribeApproval(msg.streamId);
+        return;
+      }
       deliver({ type: 'mux.open', streamId: msg.streamId, endpoint: msg.endpoint ?? '', payload: msg.payload });
     } else if (msg.type === 'cancel' && typeof msg.streamId === 'string') {
+      cards.prune(msg.streamId);
+      pruneApproval(msg.streamId);
       deliver({ type: 'mux.cancel', streamId: msg.streamId });
     }
   });

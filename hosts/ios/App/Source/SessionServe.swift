@@ -102,7 +102,7 @@ final class SessionServe {
     private let interactive: Bool
 
     private let server = CarrierServer()
-    private var bridge: CarrierAPIBridge?
+    var bridge: CarrierAPIBridge?
     private var dist: CarrierWebDist?
     private var plugins: CarrierPlugins?
     private var runtime: WebBootRuntimeDrive?
@@ -405,6 +405,13 @@ final class SessionServe {
         switch msg["type"] as? String {
         case "card.present", "card.state", "card.dismiss", "card.complete":
             onCardEvent?(msg)
+        case "question.request":
+            // The in-band user-questions ask: the NATIVE alert is the
+            // device's answer face (the desktop seat renders a web card);
+            // the answer rides the same runtime delivery the config rows
+            // use — question-bridge.js's composer intercept resolves the
+            // parked ask_user_question with it and the turn resumes.
+            presentQuestionDialog(msg)
         case "web.boot":
             guard let rows = msg["rows"] as? [[String: Any]] else { return }
             webBootRows = rows
@@ -443,23 +450,15 @@ final class SessionServe {
     }
 
     /// One mux frame from the runtime → the bridge toward the page.
-    private func deliverMuxFrame(_ msg: [String: Any]) {
-        guard let streamId = msg["streamId"] as? String else { return }
-        switch msg["type"] as? String {
-        case "mux.item":
-            guard let value = msg["value"] as? [String: Any] else { return }
-            bridge?.muxItem(streamId: streamId, value: value)
-        case "mux.error":
-            let code = msg["code"] as? String ?? "gateway/unavailable"
-            let details = msg["details"] as? [String: Any] ?? [:]
-            let message = msg["message"] as? String ?? ""
-            bridge?.muxError(streamId: streamId, code: code, message: message, details: details)
-        default:
-            bridge?.muxEnd(streamId: streamId)
+    /// Page → runtime (the /api bridge's outbound direction).
+    private func presentQuestionDialog(_ msg: [String: Any]) {
+        DispatchQueue.main.async {
+            showQuestionDialog(msg) { [weak self] answer in
+                self?.deliverRuntime(answer)
+            }
         }
     }
 
-    /// Page → runtime (the /api bridge's outbound direction).
     private func deliverRuntime(_ msg: [String: Any]) {
         runtime?.deliverRuntime(msg)
     }

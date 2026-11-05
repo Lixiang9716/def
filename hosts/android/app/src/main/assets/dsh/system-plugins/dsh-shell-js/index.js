@@ -89,14 +89,19 @@ export function activate({ register }) {
 }
 
 /** The spine's mount shape (boot.js): the same executor, plus the
- * model-facing `shell` tool (the dsh-shell-wasm layout — one
- * implementation seen from two sides). */
+ * model-facing `jsshell` tool (the dsh-shell-wasm layout — one
+ * implementation seen from two sides). The tool name says WHAT RUNS (a
+ * JavaScript-executed shell) rather than borrowing the bash name — the
+ * three-shell taxonomy: jsshell native and always-on; bash/pwsh are
+ * host-granted external shells (tool-bash/tool-pwsh, parked where the
+ * host grants no sandbox). */
 export const name = 'dsh-shell-js';
 export const inject = ['tools'];
 
 export const shellExecutor = shellCapability;
 
-const SHELL_DESCRIPTION = 'A bash-subset shell running IN-PROCESS over this '
+const SHELL_DESCRIPTION = 'A JavaScript-executed shell: every command runs '
+  + 'IN-PROCESS over this '
   + "host's scoped workspace (no /bin exists; the applets: "
   + `${APPLET_NAMES}). Supported: pipelines (a | b), && / ||, ; sequences, `
   + 'redirects > >> 2> 2>>, FOO=bar assignments, $VAR/${VAR} expansion, '
@@ -120,7 +125,7 @@ const SHELL_DESCRIPTION = 'A bash-subset shell running IN-PROCESS over this '
 
 export const apply = (ctx) => {
   ctx.tools.register(defineTool({
-    name: 'shell',
+    name: 'jsshell',
     description: SHELL_DESCRIPTION,
     parameters: {
       command: {

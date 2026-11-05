@@ -188,6 +188,22 @@ cp "$DSH/../../external/npm/@deepseek-ai/cordis-plugin-include@1.0.7/lib/index.j
 mkdir -p "$ASSETS/vendor/npm/js-yaml@4.1.0/dist"
 cp "$DSH/../../external/npm/js-yaml@4.1.0/dist/js-yaml.mjs" \
    "$ASSETS/vendor/npm/js-yaml@4.1.0/dist/js-yaml.mjs"
+
+# The COMPOSITION HOST PLANE's packages (the presetJoin seats — T-0048's
+# tail item): the four npm faces the plane imports. Without them the
+# plane's first import fails and the whole runtime boot dies silently
+# (every endpoint answered gateway/unimplemented; measured live on the
+# emulator 2026-10-29). Whole-package stages (lib + package.json — the
+# marker walk reads the manifest for name+version).
+for pkg in dsh-shell@0.1.6-alpha.2 dsh-shell-env@0.1.6-alpha.2 \
+           dsh-jobs-local@0.1.6-alpha.2 dsh-token-meter@0.1.6-alpha.2; do
+    say "staging the composition host plane package $pkg"
+    (cd "$DSH/../../external/npm/@deepseek-ai/$pkg" && find . -type f) |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/vendor/dsh/$pkg/$(dirname "$rel")"
+            cp "$DSH/../../external/npm/@deepseek-ai/$pkg/$rel" "$ASSETS/vendor/dsh/$pkg/$rel"
+        done
+done
 # The SUBAGENT row's listing service (T-0050 item 2): boot.js mounts the
 # vendored sessionQuery engine (subagents/list's corpus source).
 for pkg in dsh-anonymous-user-id dsh-compaction-image-offload dsh-file-reference dsh-file-reference-local \
@@ -417,6 +433,21 @@ for client in v2 compact; do
         done
 done
 
+# The OUTBOARD mobile presets (runtime/dsh/presets-mobile/{mobile,appgen})
+# stage as their own assets dir — the device seeder (AgentPresetsSeed)
+# delivers them at the vendored package's presets/ VFS rel, so the device
+# roster answers mobile + appgen beside the upstream four. Staging outside
+# the vendored tree keeps the vendor pins byte-clean (adding rows there
+# would fail the pin check; measured 2026-10-29).
+for preset in mobile appgen; do
+    say "staging presets-mobile/$preset → assets/dsh/presets-mobile/$preset"
+    (cd "$ROOT/runtime/dsh/presets-mobile/$preset" && find . -type f) |
+        while IFS= read -r rel; do
+            mkdir -p "$ASSETS/presets-mobile/$preset/$(dirname "$rel")"
+            cp "$ROOT/runtime/dsh/presets-mobile/$preset/$rel" "$ASSETS/presets-mobile/$preset/$rel"
+        done
+done
+
 # The scenarios ride the same copy (assets stay byte-identical to the
 # runtime bundle, like every other staged scenario). The upstream-suite
 # driver + harness MUST be in this list: copyAssetDir re-merges assets over
@@ -443,8 +474,8 @@ done
 # on a fresh install (the embed-list trap this file's own comments name).
 for s in android-composer-live-write.js android-officialweb-web-live.js android-session-live-read.js api-handler-respond.js \
          boot-options.js composer-bus.js composer-web-live.js manager-legs-probe.js \
-         plugin-live-mount.js probe-respond-await.js scenario-verdict.js turn-evidence.js \
-         turn-failure.js write-surface-options.js; do
+         plugin-live-mount.js probe-respond-await.js question-bridge.js scenario-verdict.js \
+         turn-evidence.js turn-failure.js write-surface-options.js; do
     if [ -f "$DSH/web-live/$s" ]; then
         cp "$DSH/web-live/$s" "$ASSETS/web-live/$s"
     fi
@@ -636,8 +667,8 @@ done
 # same stale-copy shadowing defect, the product mount entries' own row).
 for s in android-composer-live-write.js android-officialweb-web-live.js android-session-live-read.js api-handler-respond.js \
          boot-options.js composer-bus.js composer-web-live.js manager-legs-probe.js \
-         plugin-live-mount.js probe-respond-await.js scenario-verdict.js turn-evidence.js \
-         turn-failure.js write-surface-options.js; do
+         plugin-live-mount.js probe-respond-await.js question-bridge.js scenario-verdict.js \
+         turn-evidence.js turn-failure.js write-surface-options.js; do
     if [ "$MODE" = "check" ]; then
         if ! is_tracked "web-live/$s"; then
             # untracked source (fresh checkout without the staged copy): a

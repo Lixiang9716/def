@@ -102,7 +102,7 @@ const bootPhase = async (env) => {
 const dispatch = async (ctx, command) => {
   log.debug('shell dispatch', { chars: command.length });
   const outcome = await ctx.tools.execute({
-    name: 'shell',
+    name: 'jsshell',
     arguments: { command },
     callId: `${SCENARIO}.shell`,
     signal: new AbortController().signal,

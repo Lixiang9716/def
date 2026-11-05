@@ -40,6 +40,87 @@ export const appletCat = async (argv, ctx) => {
   return shellStringOutcome(result);
 };
 
+/** The sibling directory of a workspace-relative file path ('' at root). */
+const htmlPathOf = (path) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '');
+
+/** jscheck's compile probe (module level for size): push the verdict line,
+ * return the broken count. */
+const jscheckCompile = (lines, label, code) => {
+  log.debug('jscheck compile', { label, bytes: code.length });
+  try {
+    new Function(code);
+    lines.push(`${label}: syntax OK (${code.length} bytes)`);
+    return 0;
+  } catch (error) {
+    lines.push(`${label}: SYNTAX ERROR: ${error?.message ?? error}`);
+    return 1;
+  }
+};
+
+/** The RELATIVE local src files an HTML references (external/data refs are
+ * the delivery contract's exclusions): each is read through the same
+ * snapshot face and compiled. Returns the broken count. */
+const jscheckExternalScripts = async (html, dir, lines) => {
+  log.debug('jscheck external walk', { dir });
+  let bad = 0;
+  const seen = new Set();
+  for (const m of html.matchAll(/<script\b[^>]*\ssrc=["']([^"']+)["']/gi)) {
+    const src = m[1];
+    if (!src || /^(https?:|data:|blob:|\/\/)/i.test(src) || seen.has(src)) continue;
+    seen.add(src);
+    const target = dir ? `${dir}/${src}` : src;
+    let code;
+    try {
+      code = await runShelljs(
+        async (snap) => { await snap.readFile(target); },
+        () => shellState.shell.cat(target),
+      ).stdout;
+    } catch (error) {
+      lines.push(`${target}: NOT FOUND (${error?.message ?? error})`);
+      bad += 1;
+      continue;
+    }
+    bad += jscheckCompile(lines, target, code);
+  }
+  return bad;
+};
+
+/** jscheck: compile-probe an HTML file's scripts — the inline <script>
+ * blocks AND the relative local src files the file references (the
+ * multi-file delivery contract links style.css/data.js/app.js from
+ * index.html; a probe that ignored linked files reported the misleading
+ * `no inline <script> blocks found` and the author rebuilt snippets by
+ * hand — measured live 2026-10-28). No DOM anywhere: a compile-only
+ * probe, never an execution; a SyntaxError names the exact block or file. */
+export const appletJscheck = async (argv) => {
+  log.debug('applet', { applet: 'jscheck' });
+  if (argv.length === 0) {
+    throw new ShellRefusal(2, 'jscheck: no file given');
+  }
+  const result = await runShelljs(
+    async (snap) => { for (const file of argv) await snap.readFile(file); },
+    () => shellState.shell.cat(...argv),
+  );
+  const html = result.stdout;
+  const lines = [];
+  let bad = 0;
+  const blocks = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
+    .map((m) => m[1]).filter((s) => s.trim().length > 0);
+  for (let i = 0; i < blocks.length; i++) {
+    bad += jscheckCompile(lines, `inline script[${i}]`, blocks[i]);
+  }
+  const dir = htmlPathOf(argv[0]);
+  bad += await jscheckExternalScripts(html, dir, lines);
+  if (lines.length === 0) {
+    throw new ShellRefusal(2, 'jscheck: no inline <script> blocks and no local <script src> files found');
+  }
+  return {
+    stdout: `${lines.join('\n')}\njscheck: ${lines.length} checked, ${bad} broken\n`,
+    stderr: '',
+    code: bad === 0 ? 0 : 1,
+  };
+};
+
 /** echo: no fs; util.format conventions (the body owns -n/-e). */
 export const appletEcho = async (argv) => {
   log.debug('applet', { applet: 'echo' });

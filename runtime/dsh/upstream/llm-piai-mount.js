@@ -375,3 +375,20 @@ const sectionCollision = (error, ctx) => {
       : `the live route's declaration of provider "${id}"`)
     + ' — rename the staged provider or turn the pi-ai section gate off');
 };
+
+/** The boot-gate face (boot.js BYOK-MODELS gate): mount the section, but a
+ * LIVE route row that already declares a catalog id (the saved BYOK key's
+ * deepseek row; measured on the Android seat 2026-10-28) must not kill the
+ * whole spine — the live route is authoritative, so the collision degrades
+ * to a warn-level skip and the models chooser just loses the catalog rows
+ * until no live row holds the id. Any other error rethrows. */
+export const mountPiAiSectionTolerant = async (ctx, onEvent) => {
+  try {
+    await mountPiAiSection(ctx, onEvent);
+  } catch (error) {
+    if (!/pi-ai section mount collided/.test(String(error?.message))) throw error;
+    createLogger('llm-piai-mount').warn('pi-ai section skipped — the live llm route already declares its provider', {
+      error: String(error?.message).slice(0, 200),
+    });
+  }
+};

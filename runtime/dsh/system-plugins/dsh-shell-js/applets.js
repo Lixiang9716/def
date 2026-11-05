@@ -84,6 +84,7 @@ import {
 import { ensureApplets, expandGlob } from './applets-shelljs.js';
 import {
   appletCat, appletEcho, appletCd, appletLs, appletGrep, appletSed,
+  appletJscheck,
   headTail, appletSort, appletUniq, appletMkdir, appletRm, appletMv,
   appletCp, appletFind,
 } from './applets-shelljs-cmds.js';
@@ -98,6 +99,7 @@ import {
 
 export const APPLETS = {
   cat: appletCat,
+  jscheck: appletJscheck,
   echo: appletEcho,
   pwd: async () => ({ stdout: session.cwd === '' ? '/\n' : `/${session.cwd}\n`, stderr: '', code: 0 }),
   cd: appletCd,

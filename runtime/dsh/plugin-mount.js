@@ -59,6 +59,16 @@ const log = createLogger('dsh.plugin-mount');
 /** Live mounts: spec → the fiber `ctx.plugin` returned (its `dispose()`
  * unloads the plugin and settles once cordis finished the cleanup). */
 const liveFibers = new Map();
+/** The mounted services registry: a workspace plugin MAY export a `service`
+ * object alongside `apply` — its methods become callable by the client
+ * through the `app/service-call` claim (the app bridge: the generated
+ * app's frontend reaches its own backend this way). Keyed by spec; the
+ * unmount drops the row, so a call to an unmounted plugin refuses. */
+const mountedServices = new Map();
+
+/** The mounted service object for one plugin spec, or undefined. */
+export const mountedServiceOf = (spec) => mountedServices.get(spec);
+
 /** Link epochs per spec: a remount after an unmount links under `?e=<n>` so
  * the import cache serves a FRESH compile of the (possibly edited) source. */
 const epochs = new Map();
@@ -211,6 +221,11 @@ const linkEntry = async (manifest, spec, prefix) => {
       'the entry exports no plugin: need an `apply` export, a `default` plugin,'
       + ' or a single Service class export');
   }
+  if (ns && ns.service && typeof ns.service === 'object') {
+    mountedServices.set(spec, ns.service);
+  } else {
+    mountedServices.delete(spec);
+  }
   log.info('e2e', { scenario: 'plugin.mount', event: 'plugin.mount.linked',
     spec, module: importName });
   return { plugin, moduleName: importName };
@@ -321,6 +336,7 @@ export const unmountWorkspacePlugin = async (spec, opts = {}) => {
   }
   log.info('e2e', { scenario: 'plugin.unmount', event: 'plugin.unmount.disposed', spec });
   liveFibers.delete(spec);
+  mountedServices.delete(spec);
   epochs.set(spec, (epochs.get(spec) ?? 0) + 1);
   const prefix = typeof opts.prefix === 'string' ? opts.prefix : workspacePrefix();
   const registry = await setRegistryRowEnabled({

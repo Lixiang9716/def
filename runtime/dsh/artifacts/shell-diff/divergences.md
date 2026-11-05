@@ -251,7 +251,7 @@ cat n*.txt | sort | wc -l
 
 | | exit | stdout | stderr |
 |---|---|---|---|
-| dsh (dsh-shell-js) | -1 | `(empty)` | `dispatch-error: tool "shell" exceeded its 120000ms budget (tool/deadline) — the call failed in-band; the runtime stayed responsive. Do not retry the same call unchanged.` |
+| dsh (dsh-shell-js) | -1 | `(empty)` | `dispatch-error: tool "jsshell" exceeded its 120000ms budget (tool/deadline) — the call failed in-band; the runtime stayed responsive. Do not retry the same call unchanged.` |
 | bash (reference) | 0 | `       2\n` | `(empty)` |
 
 

@@ -162,6 +162,20 @@ class CarrierAPIBridge(private val sessionToken: String) {
         payload: Any,
         out: OutputStream,
     ): Boolean {
+        // The in-band question answer: the page's question card resolves the
+        // parked ask_user_question (the runtime is blocked ON it — never
+        // forwarded; the carrier hops the answer to the runtime thread).
+        if (endpoint == "question/answer") {
+            val args = (payload as? JSONObject)?.optJSONObject("args") ?: JSONObject()
+            val answer = JSONObject()
+                .put("type", "question.answer")
+                .put("id", args.optString("id"))
+                .put("answers", args.optJSONArray("answers") ?: JSONObject())
+            deliverToRuntime?.invoke(answer)
+            val result = JSONObject().put("ok", true).put("value", JSONObject().put("answered", true))
+            answerEnvelope(rpcId, result, out)
+            return true
+        }
         val request = JSONObject()
             .put("type", "api.request")
             .put("rpcId", rpcId)

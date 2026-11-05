@@ -15,6 +15,8 @@ import { renderConnection, renderSessionList } from './render-home.js';
 import { createComposer } from './composer.js';
 import { setupOnboarding } from './onboarding.js';
 import { setupMarketplace } from './marketplace.js';
+import { setupCreationView, openCreation } from './creation-view.js';
+import { handleCardFrame } from './card-face.js';
 import { setupAppshell, openSurface as openAppshell, surfaceSpec, createSwarmStrip } from './appshell.js';
 import { mergeUpdate } from './appshell-core.js';
 
@@ -36,6 +38,39 @@ const shortId = (sessionId) => String(sessionId).slice(0, 8);
 const composer = createComposer($('composer'), toast);
 setupAppshell();
 const mux = new Mux();
+
+// The seat-owned app/cards channel: live card frames AND the in-band
+// approval asks (the mount checkpoint's ask rides here; the decision goes
+// back through /api/approval/decide — see the dsh-approval-decide listener).
+// A synthetic journal record folds the frame into whichever session view is
+// open, so the card renders inside the conversation.
+mux.open('app/cards', {}, {
+  onItem: (value) => {
+    if (value?.type?.startsWith('card.')) { handleCardFrame(value); return; }
+    if (value?.type === 'approval.request' || value?.type === 'approval.decided') {
+      timeline.applyRecord({
+        type: 'event',
+        event: {
+          type: value.type === 'approval.request' ? 'approval/asked' : 'approval/decided',
+          data: value,
+        },
+      });
+      return;
+    }
+    // The in-band user-questions ask (ask_user_question): the card renders
+    // the questions with their options; the answer rides /api/question/answer
+    // and the parked turn resumes.
+    if (value?.type === 'question.request' || value?.type === 'question.decided') {
+      timeline.applyRecord({
+        type: 'event',
+        event: {
+          type: value.type === 'question.request' ? 'question/asked' : 'question/decided',
+          data: value,
+        },
+      });
+    }
+  },
+});
 
 /** The app-shell action loop-back: wait out the authoring turn's drain
  * window, then submit the tagged turn — retrying if the host answers
@@ -145,6 +180,120 @@ const refreshSessions = async () => {
   }
 };
 
+// ---- def home: the app inventory (the product's core visible surface) ----
+
+let appGridRetries = 0;
+
+/** The workspace's created-app directories: every workspace child directory
+ * holding an index.html is a delivered app (the present contract's on-disk
+ * spelling). The plugin registry is the v2.1 install plane; until a
+ * creation installs, the delivered files ARE the app (measured 2026-10-28:
+ * the netease-music run left four files and an empty plugin roster). */
+const refreshCreatedApps = async () => {
+  const dirs = [];
+  try {
+    const value = await rpc('workspaceFiles/list', { args: { path: '.' } });
+    const entries = Array.isArray(value?.entries) ? value.entries : [];
+    for (const entry of entries) {
+      if ((entry.type ?? entry.kind) !== 'directory') continue;
+      const name = entry.name;
+      if (!name || name.startsWith('.') || name === 'app-scope' || name === 'vendor') continue;
+      try {
+        await rpc('workspaceFiles/stat', { args: { path: `${name}/index.html` } });
+        dirs.push(name);
+      } catch { /* no entry HTML — not an app face */ }
+    }
+  } catch { /* the files face unavailable: the grid degrades to installed-only */ }
+  return dirs;
+};
+
+/** The home card grid rows: installed plugins (the mount plane) + the
+ * workspace's created apps (the deliverable plane), deduplicated by name. */
+const refreshApps = async () => {
+  const grid = $('app-grid');
+  const emptyNote = $('app-grid-empty');
+  if (!grid) return;
+  const [plugins, createdDirs] = await Promise.all([
+    rpc('pluginInventory/list')
+      .then((value) => (Array.isArray(value?.plugins) ? value.plugins : []))
+      .catch(() => []),
+    refreshCreatedApps(),
+  ]);
+  const createdNames = new Set(createdDirs);
+  const rows = [
+    ...createdDirs.map((name) => ({ app: name, created: true })),
+    ...plugins.filter((plugin) => !createdNames.has(plugin.name ?? plugin.id)),
+  ];
+  grid.replaceChildren(...rows.map((row, i) => {
+    const label = row.created ? row.app : (row.app.name ?? row.app.id ?? '');
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'app-card glass';
+    card.setAttribute('role', 'listitem');
+    const hue = (i * 47) % 360;
+    card.innerHTML = `
+      <div class="app-card-face" style="background:linear-gradient(140deg, hsl(${hue} 45% 30%), hsl(${(hue + 40) % 360} 40% 22%))">
+        <span class="app-card-glyph" aria-hidden="true">${label.slice(0, 2)}</span>
+      </div>
+      <div class="app-card-title">${label}</div>
+      <div class="app-card-meta">${row.created ? '已交付' : (row.app.enabled === false ? '未启用' : '已挂载')}</div>`;
+    card.addEventListener('click', () => {
+      if (row.created) openCreation(`${row.app}/index.html`, label);
+      else openAppCard(row.app);
+    });
+    return card;
+  }));
+  emptyNote.hidden = rows.length > 0;
+  // The boot-race guard: the first refresh often lands while the runtime is
+  // still materializing (the mux opens before the spine answers), so an
+  // empty grid retries a bounded few times before conceding.
+  if (rows.length === 0 && appGridRetries < 10) {
+    appGridRetries += 1;
+    setTimeout(refreshApps, 4000);
+  } else if (rows.length > 0) {
+    appGridRetries = 0;
+  }
+};
+
+/** Open one app card: the fullscreen face + the talk-to-this-app chat. */
+const openAppCard = (plugin) => {
+  toast(`${plugin.name ?? plugin.id}:卡面全屏与 App 会话在 v2.1`);
+};
+
+/** The creation flow: the light form → an appgen session → the seeded
+ * creation prompt (the appgen preset's playbook takes over from there). */
+$('new-app').addEventListener('click', () => {
+  const form = $('new-app-form');
+  form.querySelector('#new-app-name').value = '';
+  form.querySelector('#new-app-desc').value = '';
+  form.showModal();
+});
+$('new-app-form-inner').addEventListener('submit', async (event) => {
+  if (event.submitter?.value !== 'ok') return;
+  const name = $('new-app-name').value.trim();
+  const desc = $('new-app-desc').value.trim();
+  if (!name || !desc) return;
+  try {
+    const value = await rpc('session/create', { args: { request: { preset: 'appgen' } } });
+    const sessionId = value?.sessionId;
+    if (typeof sessionId !== 'string') throw new Error('no sessionId');
+    openSession(sessionId);
+    const prompt = `创建一个名为「${name}」的移动 App:${desc}。单文件 HTML、390px、深色主题、真实可交互;写完用 present 交付。`;
+    const deadline = Date.now() + 15000;
+    while (composer.isGenerating() && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    let accepted = await composer.submitText(prompt);
+    while (!accepted && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      accepted = await composer.submitText(prompt);
+    }
+    toast(accepted ? `开始创建「${name}」` : `创建流已打开,请手动发送「${name}」的描述`);
+  } catch (error) {
+    toast(isRemoteError(error) ? `创建失败（${error.code}）` : '创建失败');
+  }
+});
+
 const showView = (name) => {
   for (const [key, node] of Object.entries(views)) node.hidden = key !== name;
 };
@@ -153,7 +302,7 @@ const onConnStatus = (status) => {
   connState = status;
   renderConnection($('conn-capsule'), status);
   refreshChrome();
-  if (status === 'open') refreshSessions();
+  if (status === 'open') { refreshSessions(); refreshApps(); }
 };
 mux.onStatus(onConnStatus);
 
@@ -225,51 +374,8 @@ const openSession = (sessionId) => {
   });
 };
 
-// The creation viewer: a presented workspace file, fetched over the
-// claimed workspaceFiles/read leg and shown fullscreen in a sandboxed
-// frame — the on-screen half of the creation-mode loop.
-const creationView = $('creation-view');
-const openCreation = async (path, title) => {
-  $('creation-title-text').textContent = title || path;
-  creationView.hidden = false;
-  try {
-    // readAll: one complete-file read (the paginated read's streamText
-    // waits on a data event an in-memory just-created file never sends).
-    // The files family takes its parameters at args level directly (only
-    // the session family wraps them in args.request); its result carries
-    // base64 bytes, decoded here as UTF-8 (the deliverables are text).
-    const value = await rpc('workspaceFiles/readAll', {
-      args: { path },
-    });
-    let text = '';
-    if (typeof value === 'string') text = value;
-    else if (typeof value?.text === 'string') text = value.text;
-    else if (typeof value?.data === 'string') {
-      const bytes = Uint8Array.from(atob(value.data), (ch) => ch.charCodeAt(0));
-      text = new TextDecoder().decode(bytes);
-    }
-    // ArkWeb (HarmonyOS) stops reflecting iframe.srcdoc after the frame's
-    // first clear — writes succeed but the engine neither navigates nor
-    // reflects, so a SECOND opened deliverable renders blank (measured,
-    // issue #230). Swap in a FRESH frame node per open: a first write on a
-    // new node is the path every engine handles.
-    const frame = document.getElementById('creation-frame');
-    const fresh = frame.cloneNode(false);
-    fresh.removeAttribute('srcdoc');
-    frame.parentNode.replaceChild(fresh, frame);
-    fresh.srcdoc = text;
-  } catch (error) {
-    creationView.hidden = true;
-    toast(isRemoteError(error) ? `创作不可读（${error.code}）` : '创作不可读');
-  }
-};
-document.addEventListener('dsh-open-creation', (event) => {
-  openCreation(event.detail.path, event.detail.title);
-});
-$('creation-close').addEventListener('click', () => {
-  creationView.hidden = true;
-  document.getElementById('creation-frame').srcdoc = '';
-});
+
+
 
 composer.onSent(() => {
   // The durable user/message echoes over the journal; nothing optimistic
@@ -301,6 +407,7 @@ setupOnboarding({ mux, rpc, toast, onReady: refreshSessions });
 // marketplace face — the page invents nothing).
 setupMarketplace({ mux, rpc, toast, onReady: refreshSessions });
 
+setupCreationView({ toast });
 showView('home');
 mux.connect();
 refreshSessions();
