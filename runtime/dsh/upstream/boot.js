@@ -95,15 +95,16 @@ import * as OpenDesign from 'system-plugins/dsh-open-design/index.js';
 // Mounted after `tools` (inject waits for it).
 import * as PluginManagerTools from 'system-plugins/dsh-plugin-manager-tools/index.js';
 import * as DshCreate from 'system-plugins/dsh-create/index.js';
-// The FILE-TOOLS row: upstream's fs tool family over the vendored
-// fs-local backend in ONE in-memory workspace world. The npm bridge that
-// registers bare `diff` (tool-fs' structuredPatch dep) is a STATIC
-// import so its body runs at graph load; the tool packages themselves resolve
-// DYNAMICALLY inside mountSpine — quickjs links a static import graph before
-// any module body runs, so a static tool-fs import would demand `diff` before
-// the bridge exists (measured 2026-09-22).
+// The FILE-TOOLS row: upstream's fs tool family over OUR dsh-fs cordis
+// provider (system-plugins/dsh-fs/cordis.js — the fs seam-collapse pilot):
+// the upstream ctx.fs seam served over the gateway fs primitives, with the
+// workspace root as the granted scope's workspace prefix. The npm bridge
+// that registers bare `diff` (tool-fs' structuredPatch dep) is a STATIC
+// import so its body runs at graph load; the tool packages themselves
+// resolve DYNAMICALLY inside mountSpine — quickjs links a static import
+// graph before any module body runs, so a static tool-fs import would
+// demand `diff` before the bridge exists (measured 2026-09-22).
 import 'upstream/shims/npm-bridges.js';
-import { mountWorkspace } from 'upstream/shims/fs.js';
 // The Agent 预设 panel's data source (contract parity with the desktop shell):
 // the REAL upstream services, verbatim — the cordis Loader service (which the
 // presets service `inject`s) and the agent-presets roster over the four shipped
@@ -184,7 +185,7 @@ export const spineInventory = (ctx) => {
     // → native Approve → registry install → LIVE native card (PR-2/3).
     tool('tool-plugin-create', 'system-plugins/dsh-create', 'plugin_create'),
     tool('appshell', 'system-plugins/dsh-appshell', 'appshell_render'),
-    service('fs', '@deepseek-ai/dsh-fs-local', 'fs'),
+    service('fs', 'system-plugins/dsh-fs/cordis.js (the gateway-fs FileSystem provider)', 'fs'),
     tool('tool-fs', '@deepseek-ai/dsh-tool-fs', 'read'),
     tool('tool-str-replace-editor', '@deepseek-ai/dsh-tool-str-replace-editor', 'str_replace_editor'),
     service('web', '@deepseek-ai/dsh-web', 'web'),
@@ -195,16 +196,19 @@ export const spineInventory = (ctx) => {
 };
 
 /** The FILE-TOOLS row's mounts (see the import note at the top of this
- * file): the workspace world, the vendored fs-local backend as the `fs`
- * service, the file tools into the REAL ToolRuntime (editor via the loop-z3 path anchor). */
+ * file): OUR dsh-fs cordis provider as the `fs` service (the seam-collapse
+ * seat — the vendored fs-local stays in the closure for the parity/suite
+ * legs), the file tools into the REAL ToolRuntime (editor via the loop-z3
+ * path anchor). The in-memory workspace VFS is retired here with the
+ * fs-local seat: no product consumer remains (the workspaceFiles wire
+ * reads through ctx.fs). */
 const mountFileTools = async (ctx, cwd) => {
-  mountWorkspace(cwd);
-  const [{ LocalFileSystem }, ToolFs, StrReplaceEditor] = await Promise.all([
-    import('@deepseek-ai/dsh-fs-local'),
+  const [{ DshFsProvider }, ToolFs, StrReplaceEditor] = await Promise.all([
+    import('system-plugins/dsh-fs/cordis.js'),
     import('@deepseek-ai/dsh-tool-fs'),
     import('@deepseek-ai/dsh-tool-str-replace-editor'),
   ]);
-  await ctx.plugin(LocalFileSystem, { cwd });
+  await ctx.plugin(DshFsProvider, { cwd });
   await ctx.plugin(ToolFs, {});
   await ctx.plugin((await import('upstream/tool-path-anchor.js')).anchoredEditorPlugin(StrReplaceEditor, cwd), {});
 };

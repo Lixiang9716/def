@@ -1,18 +1,20 @@
 // dsh:logging-exempt (boot module; logging happens through the mounted logger)
 /**
  * tool-fs-probe.js — the FILE-TOOLS row (the dsh-desktop fs tool family),
- * driven the way the panel will drive it: the vendored @deepseek-ai/dsh-fs-local
- * backend mounted as `ctx.fs` over a pinned in-memory workspace, with the
- * vendored @deepseek-ai/dsh-tool-fs (`read`/`write`/`edit`) and
+ * driven the way the panel will drive it: the dsh-fs cordis provider
+ * (system-plugins/dsh-fs/cordis.js — the fs seam-collapse seat) mounted as
+ * `ctx.fs` over the granted scope's workspace world, with the vendored
+ * @deepseek-ai/dsh-tool-fs (`read`/`write`/`edit`) and
  * @deepseek-ai/dsh-tool-str-replace-editor (`str_replace_editor`:
  * view/create/str_replace/insert) registering into the existing ToolRuntime.
  *
  * NOT an E2E manifest fixture: this is the composition probe for the
- * 完全接入 dsh-desktop 插件 work. boot.js does NOT mount the row yet — this
- * probe builds the composition itself (the presets-probe pattern) and every
- * step asserts its expected value inline before logging got+want as one
- * record, so the scenario stream is a one-to-one expected↔logged match under
- * the unique scenario id `tool.fs`.
+ * 完全接入 dsh-desktop 插件 work. boot.js mounts the row (the product boot
+ * owns it) and this probe verifies the mounted truth — cordis refuses a
+ * second `fs` registration, by design. Every step asserts its expected
+ * value inline before logging got+want as one record, so the scenario
+ * stream is a one-to-one expected↔logged match under the unique scenario
+ * id `tool.fs`.
  *
  * Import order matters twice:
  *   1. `upstream/boot.js` first — its web-shims prelude must evaluate before
@@ -20,19 +22,20 @@
  *   2. `upstream/shims/npm-bridges.js` must EVALUATE before the tool
  *      packages RESOLVE — ESM links a static import graph before any module
  *      body runs, so a statically imported tool-fs would demand the bare
- *      `diff` specifier before the bridge exists. The tool packages (and
- *      fs-local, whose `Config` static evaluates `process.cwd()` at module
- *      load — only answerable after bootUpstream pins the container) are
- *      therefore imported DYNAMICALLY inside main().
+ *      `diff` specifier before the bridge exists. The tool packages are
+ *      therefore imported DYNAMICALLY inside the product boot's own
+ *      mountFileTools.
  */
 import { bootUpstream } from 'upstream/boot.js';
 import 'upstream/shims/npm-bridges.js';
-import { mountWorkspace } from 'upstream/shims/fs.js';
 import { createLogger } from 'logger.js';
 
 const SCENARIO = 'tool.fs';
 const log = createLogger('tool-fs.dsh');
 const emit = (event, fields = {}) => log.info('e2e', { scenario: SCENARIO, event, ...fields });
+
+/** The booted context the tool-call helpers dispatch through (set by main). */
+let ctx;
 
 const WORKSPACE = '/workspace';
 const NOTES = `${WORKSPACE}/notes`;
@@ -67,10 +70,10 @@ const valueOf = (name, outcome) => {
 const main = async () => {
   log.debug('scenario start', { name: SCENARIO });
 
-  // The row's world: ONE pinned in-memory workspace root (the mount that
-  // boot.js will own once the row ships in the product boot).
-  mountWorkspace(WORKSPACE);
-  emit('workspace', { root: WORKSPACE, engine: 'in-memory VFS (upstream/shims/fs.js)' });
+  // The row's world: the workspace root IS the granted scope's workspace
+  // prefix (the container pins cwd = scopeRoot), so the provider's gateway
+  // addresses are the workspace-relative paths directly.
+  emit('workspace', { root: WORKSPACE, engine: 'gateway fs scope (dsh-fs cordis provider)' });
 
   const { ctx: booted } = await bootUpstream({
     scenario: SCENARIO,
@@ -93,18 +96,19 @@ const main = async () => {
   ctx = booted;
 
   // ---- THE FILE-TOOLS ROW ------------------------------------------------
-  // The row now mounts INSIDE boot.js's mountSpine (the product boot owns
-  // it): the fs-local backend over the container cwd passed above, plus the
-  // file tools. This probe verifies the mounted truth instead of mounting a
-  // second copy — cordis refuses a second `fs` registration, by design.
+  // The row mounts INSIDE boot.js's mountSpine (the product boot owns it):
+  // the dsh-fs cordis provider over the container cwd passed above, plus
+  // the file tools. This probe verifies the mounted truth instead of
+  // mounting a second copy — cordis refuses a second `fs` registration, by
+  // design.
   const fs = ctx.get('fs');
   expectEq('fs service mounted', fs !== undefined, true);
-  expectEq('fs backend class', fs?.constructor?.name, 'LocalFileSystem');
+  expectEq('fs backend class', fs?.constructor?.name, 'DshFsProvider');
   const toolNames = ['read', 'write', 'edit', 'str_replace_editor']
     .map((name) => ctx.tools.get(name) !== undefined);
   expectEq('tools registered', toolNames, [true, true, true, true]);
   emit('mounted', {
-    fs: 'LocalFileSystem (vendored @deepseek-ai/dsh-fs-local) under ctx.fs',
+    fs: 'DshFsProvider (system-plugins/dsh-fs cordis face over the gateway fs primitives) under ctx.fs',
     tools: ['read', 'write', 'edit', 'str_replace_editor'],
     readImageMounted: ctx.tools.get('read_image') !== undefined,
   });
@@ -193,15 +197,16 @@ const ladderFinal = async () => {
   expectEq('view has the file row', viewRows.includes(`f\t${NOTES_MD}`), true);
   emit('view', { path: NOTES, rows: viewRows });
 
-  // 8. FAIL LOUD — a write OUTSIDE the pinned workspace refuses (the row
-  //    cannot escape its world; the refusal names the seam).
+  // 8. FAIL LOUD — a write OUTSIDE the workspace root refuses at the
+  //    provider's containment gate (FS_SANDBOX_DENIED, before any
+  //    primitive call; the refusal names the boundary).
   const outside = await call('write', {
     file_path: '/outside-the-workspace/evil.md',
     content: 'should not land',
   });
   expectEq('outside-write isError', outside.isError, true);
   const outsideText = outside.content?.[0]?.text ?? '';
-  expectEq('outside-write names the boundary', outsideText.includes('outside the writable workspace root'), true);
+  expectEq('outside-write names the boundary', outsideText.includes('escapes its scope'), true);
   emit('guard.outside', {
     path: '/outside-the-workspace/evil.md',
     refused: outside.isError,
@@ -217,5 +222,15 @@ const ladderFinal = async () => {
   emit('scenario.complete', { steps: 9, tools: ['read', 'write', 'edit', 'str_replace_editor'] });
   globalThis.__dshComplete(true);
 };
+
+/** The drive. The committed probe never invoked main (it predates its own
+ * wiring — no runner drove it and no manifest pinned it), so the file was
+ * inert; this invocation is what makes it a probe again. */
+main().catch((error) => {
+  const reason = String(error?.message ?? error);
+  log.debug('scenario failed', { reason });
+  emit('scenario.failed', { reason: reason.slice(0, 300) });
+  globalThis.__dshComplete(false, reason);
+});
 
 

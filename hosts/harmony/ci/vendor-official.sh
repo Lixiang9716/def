@@ -819,6 +819,8 @@ system-plugins/dsh-ble/manifest.json
 system-plugins/dsh-ble/index.js
 system-plugins/dsh-fs/manifest.json
 system-plugins/dsh-fs/index.js
+system-plugins/dsh-fs/cordis.js
+system-plugins/dsh-fs/cordis-io.js
 system-plugins/dsh-office/manifest.json
 system-plugins/dsh-office/index.js
 system-plugins/dsh-office/excel.js

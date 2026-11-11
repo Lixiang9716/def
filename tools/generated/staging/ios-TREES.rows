@@ -132,6 +132,11 @@ system-plugins/dsh-ble=system-plugins/dsh-ble
 system-plugins/dsh-device-plane=system-plugins/dsh-device-plane
 system-plugins/dsh-plugin-manager-tools=system-plugins/dsh-plugin-manager-tools
 system-plugins/dsh-shell-js=system-plugins/dsh-shell-js
+# The fs seat is dsh-fs's since the 2026-11-11 seam collapse — boot's
+# file-tools row mounts DshFsProvider (cordis.js + cordis-io.js) over the
+# gateway fs primitives; the vendored fs-local tree keeps its parity/
+# suite-leg staging (D6).
+system-plugins/dsh-fs=system-plugins/dsh-fs
 system-plugins/dsh-create=system-plugins/dsh-create
 upstream/shims=upstream/shims
 scenario=scenario

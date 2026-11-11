@@ -149,6 +149,8 @@ const BUNDLE_FILES: string[] = [
   'system-plugins/dsh-create/manifest.json',
   'system-plugins/dsh-device-plane/index.js',
   'system-plugins/dsh-device-plane/manifest.json',
+  'system-plugins/dsh-fs/cordis-io.js',
+  'system-plugins/dsh-fs/cordis.js',
   'system-plugins/dsh-fs/index.js',
   'system-plugins/dsh-fs/manifest.json',
   'system-plugins/dsh-office/excel-core.js',
