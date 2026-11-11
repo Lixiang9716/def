@@ -143,6 +143,22 @@
 6. 🟠 5.x 契约、6.x 文档、7.1 GenUI 评审——按 owner 优先级，互不阻塞。
 7. 👀 3.16 周扫首次 Node 驱动跑（2026-10-26）。
 
+## 13. 塌层程序（2026-11-11）
+
+把双重能力面塌到上游 ctx 缝上并换 provider——决策笔记见
+[.agents/notes/implemented/architecture/2026-11-11-collapse-the-dual-capability-planes.md](.agents/notes/implemented/architecture/2026-11-11-collapse-the-dual-capability-planes.md)。
+它要治的病：同一 fs 能力活在两个世界——产品 boot 挂 vendored fs-local +
+内存 VFS（`runtime/dsh/upstream/boot.js:198-210`，`mountFileTools`），契约面
+另有 dsh-fs 走网关原语（`system-plugins/dsh-fs/index.js`）——一层能力，两份
+审计。新代码必须遵守的写作规则见 [doc/writing-method.md](doc/writing-method.md)。
+
+| # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
+|---|---|---|---|---|---|
+| P0 | 决策笔记 + writing-method 双语对 + 本节 | 笔记与文档对随程序的开篇 PR 落地；笔记记录为何否决 fork 提案、D6/D9 维持 | S | — | done（2026-11-11——本分支） |
+| P1 | fs 试点：dsh-fs 承载上游 FileSystem（`ctx.fs`）cordis 面，走网关原语；boot 的 `mountFileTools` 换座到 provider；清单行更新 | 换座先例：2026-10-11 shell 换座（同目录笔记）；上游缝行（third-party/deepseek-harness/docs/capability-seams.md 的 `ctx.fs`：tool-fs 消费 ctx.fs，fs-local/fs-sandbox/fs-ssh 是可换实现）；内存 VFS 保留 loader 角色（boot.js:12-13） | M | — | open |
+| P2 | shell/subprocess 塌层审计：`ctx.shell`/`ctx.subprocess` 对照模拟 userland 原语族（contract/primitives.md v1.3.0）；逐行裁决 = 换座或明确保留 vendored | fs 笔记记录的同一「两份审计」模式；产品 shell 是工作区 fs 面上的外置 dsh-shell-js（boot.js 导入注释） | M | — | open |
+| P3 | 契约瘦身 + 工具写作契约升级：把 writing-method 约定在命令可检查处升级为门（doc/writing-method.md 规则 1–8 各带门禁状态） | `gates.json` 今天对规则 1–7 一律无门，规则 8 只有记账半边（`e2e-matrix`、`test-taxonomy`） | M | 🔒（哪些约定立门 = owner 拍板） | open |
+
 ## 附录 A — dsh-desktop-plugins "still staged"（#632 之后）
 
 | 行 | 缺口 | 备注 |

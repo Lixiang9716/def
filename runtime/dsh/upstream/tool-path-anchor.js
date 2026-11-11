@@ -43,8 +43,9 @@ export const anchorModelPath = (path, root) =>
  * object rejects service-property writes from another fiber (`cannot set
  * property "tools" in multiple fibers`, measured by the iOS e2e on the
  * first push), and the vendored apply + handlers touch exactly tools.register
- * / fs / get / emit (the fs/observed events) — the faces the delegate serves
- * from the real scope. */
+ * / fs / get / emit / waterfall (the fs/write-intent + fs/edit-intent
+ * guards the editor's create/str_replace/insert legs drive) — the faces the
+ * delegate serves from the real scope. */
 export const anchoredEditorPlugin = (plugin, root) => ({
   name: plugin.name,
   inject: plugin.inject,
@@ -59,5 +60,6 @@ export const anchoredEditorPlugin = (plugin, root) => ({
     fs: scope.fs,
     get: (key) => scope.get(key),
     emit: (...argv) => scope.emit(...argv),
+    waterfall: (...argv) => scope.waterfall(...argv),
   }, {}),
 });

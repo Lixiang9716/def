@@ -26,7 +26,10 @@
  *
  * usage: node test/upstream-suite/session-preset-join.mjs
  * preconditions: the vendored closure materialized (vendor/ensure-dsh.sh)
- * AND the node resolution layout (ci/parity-node-modules.sh).
+ * AND the node resolution layout (ci/parity-node-modules.sh). The C-host
+ * gateway seam (__dshGatewayCall: timerSchedule/timerCancel + the fs family
+ * the dsh-fs cordis provider rides) is staged Node-side by
+ * session-preset-join-gateway-node.mjs over a real temp scope root.
  */
 import { register } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -60,6 +63,26 @@ globalThis.__dshModuleDefine = (name, source) => {
 const als = new NodeAls();
 globalThis.__asyncContextGet = () => als.getStore();
 globalThis.__asyncContextSet = (v) => als.enterWith(v);
+// The gateway seam (the fs seam-collapse: the dsh-fs cordis provider's
+// fsStat/fsRead/fsList/fsMkdir/fsPublishAtomic AND the timers shim's
+// timerSchedule/timerCancel all ride __dshGatewayCall — on the C host the
+// host serves it; here the adapter stages it over real node fs/timers).
+// The granted scope root is a REAL temp dir: the workspace label '/p5probe'
+// was only ever the in-memory VFS's spelling, and the provider's gateway
+// addresses resolve under the granted root exactly like the host's.
+// Dynamic import: it must load AFTER register() — its gateway.js re-export
+// imports the dsh: virtual specifier the hooks map.
+const { installGatewaySeams } = await import('./session-preset-join-gateway-node.mjs');
+const WS = mkdtempSync(pathResolve(tmpdir(), 'dsh-p5-ws-'));
+process.on('exit', () => rmSync(WS, { recursive: true, force: true }));
+installGatewaySeams(WS);
+// The granted workspace IS a project root on every real seat — the joined
+// composition's instruction row (dsh-agent-instructions) walks parents for
+// the .git marker through ctx.fs, and a bare temp dir would send that walk
+// above the granted scope, where the dsh-fs cordis provider refuses
+// (FS_SANDBOX_DENIED — fs-local's uncontained miss was the old seat's
+// answer). Stage the marker so the walk settles at the workspace root.
+mkdirSync(pathResolve(WS, '.git'), { recursive: true });
 
 const NM = pathResolve(ROOT, 'external/node_modules');
 globalThis.__dshBundleRequire = (base, rel) => {
@@ -130,7 +153,8 @@ const MOCK_URL = `http://127.0.0.1:${server.address().port}/v1`;
 
 const { bootUpstream } = await import('upstream/boot.js');
 const { createWriteSurface } = await import('upstream/web-write.js');
-const WS = '/p5probe';
+// WS — the granted scope root staged with the gateway seam above (the
+// in-memory VFS label it used to be is retired with the fs seam-collapse).
 
 const { ctx } = await bootUpstream({
   scenario: 'session.preset-join', agentId: 'p5-agent', sessionId: 's-p5-boot',

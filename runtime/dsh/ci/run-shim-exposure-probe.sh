@@ -34,7 +34,11 @@ sh ../../external/ensure-dsh.sh
 #    SAME run on purpose (default-off switch; the env only opens the
 #    side-channel file — the log is unchanged): the committed manifest.txt is
 #    the survey mechanism's standing in-repo proof, every line a shim load.
+#    The loader APPENDS to the manifest file (measured: a rerun against a
+#    populated file grew 57 -> 114 lines), so truncate first — the committed
+#    manifest is exactly ONE run's sweep and a rerun is deterministic.
 mkdir -p "$ART_DIR"
+: > "$ART_DIR/manifest.txt"
 DSH_MODULE_MANIFEST="$ART_DIR/manifest.txt" \
     ./build/dsh-cli . scenario/shim-exposure-probe.js > logs-shim-exposure-probe.txt
 cp logs-shim-exposure-probe.txt "$ART_DIR/logs.txt"

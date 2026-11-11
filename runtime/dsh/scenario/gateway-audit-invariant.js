@@ -80,6 +80,20 @@ const pollUntilAccepted = (serverId) => {
 const CANARY_B64 = 'YXVkaXQtaW52LWNhbmFyeS1ieXRlcw==';
 const SOCKET_B64 = 'YXVkaXQtaW52LWNhbmFyeS1zb2NrZXQ=';
 
+/** The v1.1.0 additions the ported fs service rides (the fs seam-collapse
+ * seat: its atomic-write parents create directories and its listings walk
+ * them through these two rows): mkdir -p, then one real listing over the
+ * directory the publish legs populated — the entry IS the roundtrip. */
+const fsCollapseCells = async () => {
+  const made = await raw('fs.mkdir.ok', 'fsMkdir', 'fsMkdir', 'ok',
+    { scope: 'app', path: 'audit-inv/canary-mkdir' });
+  demand(made.ok, 'fs.mkdir.ok failed');
+  const listed = await raw('fs.list.ok', 'fsList', 'fsList', 'ok',
+    { scope: 'app', path: 'audit-inv/canary-fswrite' });
+  const names = (listed.ok ? listed.res?.entries ?? [] : []).map((e) => e.name);
+  demand(names.includes('published.txt'), 'fs.list.ok missed the published canary');
+};
+
 /** The success quadrant: one granted+ok cell per servable row, each verified
  * past its resolution where a roundtrip exists. */
 const successCells = async (mockUrl) => {
@@ -112,6 +126,7 @@ const successCells = async (mockUrl) => {
     { scope: 'app', path: pubPath, kind: 'file' });
   await raw('fs.sync.dir.ok', 'fsSync', 'fsSync', 'ok',
     { scope: 'app', path: 'audit-inv/canary-fswrite', kind: 'dir' });
+  await fsCollapseCells();
   await raw('keychain.set.ok', 'keychainSet', 'keychainSet', 'ok',
     { ref: 'audit-inv/canary-cred', secretB64: CANARY_B64 });
   const got = await raw('keychain.get.ok', 'keychainGet', 'keychainGet', 'ok',
@@ -208,11 +223,12 @@ const socketCells = async () => {
 
 /** The unavailable quadrant: rows this seat declares or serves as honestly
  * absent (contract §7 #1 — absence is information), through v1.9.0's channel
- * seam and v1.10.0's render surface. */
+ * seam and v1.10.0's render surface. fsList/fsMkdir left this quadrant when
+ * the fs seam-collapse seat made them file-tools-row product needs — they
+ * are served success cells above now; fsRename stays honestly absent (no
+ * product row needs it on this seat). */
 const unavailableCells = async () => {
   const cells = [
-    ['fs.list', 'fsList', { scope: 'app', path: '.' }],
-    ['fs.mkdir', 'fsMkdir', { scope: 'app', path: 'audit-inv/dir' }],
     ['fs.rename', 'fsRename', { scope: 'app', from: 'a', to: 'b' }],
     ['ish.run', 'ishRun', { scope: 'app', path: '.', argv: ['/bin/true'], timeoutMs: 0 }],
     ['notify', 'notify', { title: 'audit-inv-canary-notify', body: 'x' }],

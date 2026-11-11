@@ -150,7 +150,8 @@ typedef struct smoke_backend {
 #define SMOKE_WASM_AVAILABLE "\"wasmRun\""
 
 static const char *SMOKE_DESCRIPTOR =
-    "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsPublishAtomic\",\"fsSync\","
+    "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsStat\",\"fsMkdir\",\"fsList\","
+    "\"fsPublishAtomic\",\"fsSync\","
     "\"timerSchedule\",\"timerCancel\","
     SMOKE_SOCKET_AVAILABLE ","
     SMOKE_KEYCHAIN_AVAILABLE ","
@@ -1133,6 +1134,145 @@ static void smoke_fs_stat(smoke_backend *b, int call_id, const char *args) {
     smoke_fs_args_free(&a);
 }
 
+/* `fsMkdir` — the contract v1.1.0 mkdir -p (contract/primitives.md §4): the
+ * ported fs service's atomic-write parents and the directoryPicker create
+ * leg create directories through it. `existing: "ok"` (default) is the
+ * mkdir -p behaviour the tools rely on; "error" refuses an existing
+ * directory with `io` (the picker's exists refusal). */
+static void smoke_fs_mkdir(smoke_backend *b, int call_id, const char *args) {
+    smoke_fs_args a = { json_str_dup(args, "scope"), json_str_dup(args, "path"),
+                        NULL, 0, 1 };
+    char *existing = json_str_dup(args, "existing");
+    int error_on_existing = existing && strcmp(existing, "error") == 0;
+    free(existing);
+    char *full = NULL;
+    if (!a.scope || !a.path) {
+        smoke_reject(b, call_id, "fsMkdir", "invalid", "missing scope/path");
+    } else if (strcmp(a.scope, "app") != 0) {
+        smoke_reject(b, call_id, "fsMkdir", "denied", "scope not granted");
+    } else if (!smoke_path_ok(a.path)) {
+        smoke_reject(b, call_id, "fsMkdir", "invalid", "path escapes its scope");
+    } else {
+        full = smoke_path(b, a.path);
+        struct stat st;
+        int exists = full && stat(full, &st) == 0;
+        if (exists && error_on_existing) {
+            smoke_reject(b, call_id, "fsMkdir", "io", "directory already exists");
+        } else if (exists && !S_ISDIR(st.st_mode)) {
+            smoke_reject(b, call_id, "fsMkdir", "io", "path exists and is not a directory");
+        } else {
+            /* mkdir -p over the full directory spelling (smoke_mkdirs makes
+             * a FILE's parent; this makes the directory itself). */
+            char *copy = full ? strdup(full) : NULL;
+            if (copy) {
+                for (char *at = copy + 1; *at; at++) {
+                    if (*at == '/') { *at = 0; mkdir(copy, 0755); *at = '/'; }
+                }
+                int rc = mkdir(copy, 0755);
+                free(copy);
+                if (rc != 0 && errno != EEXIST) {
+                    smoke_reject(b, call_id, "fsMkdir", "io", "mkdir failed");
+                } else {
+                    smoke_settle(b, call_id, 1, "{}");
+                }
+            } else {
+                smoke_reject(b, call_id, "fsMkdir", "io", "out of memory");
+            }
+        }
+    }
+    free(full);
+    smoke_fs_args_free(&a);
+}
+
+/* `fsList` — the contract v1.1.0 one-level listing: entries sorted by name
+ * in byte order, kind in the fsStat vocabulary (the workspaceFiles
+ * adapters and the ported fs service list through it). A missing path or a
+ * non-directory rejects `io` naming the path — the message says which
+ * (fsStat's §4 miss shape: the message names the path and says not found). */
+static void smoke_fs_list(smoke_backend *b, int call_id, const char *args) {
+    smoke_fs_args a = { json_str_dup(args, "scope"), json_str_dup(args, "path"),
+                        NULL, 0, 1 };
+    char *full = NULL;
+    if (!a.scope || !a.path) {
+        smoke_reject(b, call_id, "fsList", "invalid", "missing scope/path");
+    } else if (strcmp(a.scope, "app") != 0) {
+        smoke_reject(b, call_id, "fsList", "denied", "scope not granted");
+    } else if (!smoke_path_ok(a.path)) {
+        smoke_reject(b, call_id, "fsList", "invalid", "path escapes its scope");
+    } else {
+        full = smoke_path(b, a.path);
+        struct stat st;
+        int exists = full && stat(full, &st) == 0;
+        int is_dir = exists && S_ISDIR(st.st_mode);
+        DIR *dir = is_dir ? opendir(full) : NULL;
+        if (!dir) {
+            char reason[192];
+            if (!exists) {
+                snprintf(reason, sizeof(reason), "cannot list %s: not found", a.path);
+            } else if (!is_dir) {
+                snprintf(reason, sizeof(reason), "cannot list %s: not a directory", a.path);
+            } else {
+                snprintf(reason, sizeof(reason), "cannot list directory %s", a.path);
+            }
+            smoke_reject(b, call_id, "fsList", "io", reason);
+        } else {
+            /* Collect, sort (byte order), then kind-classify each child. */
+            char **names = NULL;
+            size_t n = 0, cap = 0;
+            struct dirent *entry;
+            while ((entry = readdir(dir)) != NULL) {
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) continue;
+                if (n == cap) {
+                    cap = cap ? cap * 2 : 16;
+                    char **grown = realloc(names, cap * sizeof(*names));
+                    if (!grown) break;
+                    names = grown;
+                }
+                char *copy = strdup(entry->d_name);
+                if (!copy) break;
+                names[n++] = copy;
+            }
+            closedir(dir);
+            for (size_t i = 1; i < n; i++) { /* insertion sort, byte order */
+                char *key = names[i];
+                size_t j = i;
+                while (j > 0 && strcmp(names[j - 1], key) > 0) {
+                    names[j] = names[j - 1];
+                    j--;
+                }
+                names[j] = key;
+            }
+            size_t room = 32;
+            for (size_t i = 0; i < n; i++) room += strlen(names[i]) * 2 + 40;
+            char *payload = malloc(room);
+            size_t off = 0;
+            if (payload) {
+                off += (size_t)snprintf(payload + off, room - off, "{\"entries\":[");
+                for (size_t i = 0; i < n; i++) {
+                    char childpath[strlen(full) + strlen(names[i]) + 2];
+                    snprintf(childpath, sizeof(childpath), "%s/%s", full, names[i]);
+                    struct stat cst;
+                    const char *kind = stat(childpath, &cst) != 0 ? "other"
+                        : S_ISDIR(cst.st_mode) ? "dir"
+                        : S_ISREG(cst.st_mode) ? "file" : "other";
+                    off += (size_t)snprintf(payload + off, room - off,
+                        "%s{\"name\":\"%s\",\"kind\":\"%s\"}", i ? "," : "",
+                        names[i], kind);
+                }
+                snprintf(payload + off, room - off, "]}");
+                smoke_settle(b, call_id, 1, payload);
+                free(payload);
+            } else {
+                smoke_reject(b, call_id, "fsList", "io", "out of memory");
+            }
+            for (size_t i = 0; i < n; i++) free(names[i]);
+            free(names);
+        }
+    }
+    free(full);
+    smoke_fs_args_free(&a);
+}
+
 /* The remove primitive's recursive delete (a small depth-first unlink —
  * the scope mirror tree is small and trusted). */
 static void smoke_rm_real(const char *path) {
@@ -1372,6 +1512,8 @@ static void smoke_serve(smoke_backend *b, int call_id, const char *name,
     if (strcmp(name, "fsPublishAtomic") == 0) return smoke_fs_publish_atomic(b, call_id, args);
     if (strcmp(name, "fsSync") == 0) return smoke_fs_sync(b, call_id, args);
     if (strcmp(name, "fsStat") == 0) return smoke_fs_stat(b, call_id, args);
+    if (strcmp(name, "fsMkdir") == 0) return smoke_fs_mkdir(b, call_id, args);
+    if (strcmp(name, "fsList") == 0) return smoke_fs_list(b, call_id, args);
     if (strcmp(name, "ishRun") == 0) return smoke_ish_run(b, call_id, args);
     if (strcmp(name, "fsRead") == 0) return smoke_fs_read(b, call_id, args);
     if (strcmp(name, "fsRemove") == 0) return smoke_fs_remove(b, call_id, args);
@@ -1714,7 +1856,8 @@ static int spike_run_main(int argc, char **argv) {
     b.http = http;
     dsh_runtime_set_gateway_dispatch(b.rt, smoke_on_call, &b);
     dsh_runtime_set_descriptor(b.rt, http
-        ? "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsPublishAtomic\",\"fsSync\","
+        ? "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsStat\",\"fsMkdir\",\"fsList\","
+          "\"fsPublishAtomic\",\"fsSync\","
           "\"httpFetch\","
           SMOKE_SOCKET_AVAILABLE ","
           SMOKE_KEYCHAIN_AVAILABLE "],"

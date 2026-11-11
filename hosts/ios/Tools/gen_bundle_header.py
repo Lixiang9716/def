@@ -115,6 +115,7 @@ TREES = [
     ("system-plugins/dsh-device-plane", DSH / "system-plugins" / "dsh-device-plane"),
     ("system-plugins/dsh-plugin-manager-tools", DSH / "system-plugins" / "dsh-plugin-manager-tools"),
     ("system-plugins/dsh-shell-js", DSH / "system-plugins" / "dsh-shell-js"),
+    ("system-plugins/dsh-fs", DSH / "system-plugins" / "dsh-fs"),
     ("system-plugins/dsh-create", DSH / "system-plugins" / "dsh-create"),
     ("upstream/shims", DSH / "upstream" / "shims"),
     ("scenario", DSH / "scenario"),
