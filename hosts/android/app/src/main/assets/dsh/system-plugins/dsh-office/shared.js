@@ -96,3 +96,22 @@ export const decodeXmlEntities = (value) => {
     return Number.isFinite(number) ? String.fromCodePoint(number) : entity;
   });
 };
+
+// ---- the pinned card face (P3 of the seam-collapse program) ---------------
+// These helpers are PURE (no I/O, no session state, no clock — the upstream
+// presenter discipline) and TOTAL: a shape they do not recognize degrades to
+// `undefined`, which the pin's defineTool wrapper turns into the generic
+// card. They exist so every office tool narrows its persisted result.meta
+// the same way — the tool-fs read pattern (its presentationMeta projects
+// the structure, its presentResult narrows result.meta back into a view).
+
+/** Narrow a persisted result.meta to an object, or undefined when the
+ * journal carried something else (replay of an older log shape). */
+export const metaObjectOf = (meta) => (
+  meta !== null && typeof meta === 'object' && !Array.isArray(meta) ? meta : undefined
+);
+
+/** Project text into the line-numbered vocabulary the pin's read card
+ * carries (ReadResultView's lines/totalLines). */
+export const linesOf = (text) => String(text).split('\n')
+  .map((line, index) => ({ number: index + 1, text: line }));

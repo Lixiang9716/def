@@ -281,6 +281,17 @@ const execute = async (args) => {
   return [done, ...warns].join('\n');
 };
 
+/** The completed create card over the persisted meta: the title the native
+ * card face would carry (the same fields the card bus eats today), degraded
+ * to the generic card when the meta is not this shape. */
+const createResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = result.meta !== null && typeof result.meta === 'object' && !Array.isArray(result.meta)
+    ? result.meta : undefined;
+  if (meta === undefined || meta.view !== 'create' || typeof meta.title !== 'string') return undefined;
+  return { card: 'generic', title: `插件「${meta.title}」(${meta.kind})` };
+};
+
 const pluginCreateTool = () => defineTool({
   name: 'plugin_create',
   description: PLUGIN_CREATE_DESCRIPTION,
@@ -302,7 +313,24 @@ const pluginCreateTool = () => defineTool({
   output: {
     schema: { type: 'string' },
     render: (_args, value) => [{ type: 'text', text: value }],
+    // The pinned card face (P3): the card fields the native CardPlayer eats
+    // today as bus lines ({title, kind, durationMs} — scenario/card-player.js)
+    // projected as replayable meta, closing the tool→card gap without the
+    // bus round-trip. Pure and args-derived; runs only on a validated body.
+    presentationMeta: (args) => ({
+      view: 'create',
+      name: args.name,
+      title: args.title,
+      kind: typeof args.kind === 'string' ? args.kind : 'info',
+      ...(typeof args.durationMs === 'number' ? { durationMs: args.durationMs } : {}),
+    }),
   },
+  presentCall: (args) => ({
+    card: 'generic',
+    title: `Create plugin ${typeof args?.name === 'string' ? args.name : '(?)'}`,
+    kind: 'edit',
+  }),
+  presentResult: createResultView,
   execute,
 });
 

@@ -162,6 +162,8 @@ enum BundleStager {
                   data: resData(dsh_runtime_res_plugin_open_design_manifest), under: root)
         try write("system-plugins/dsh-open-design/index.js",
                   data: resData(dsh_runtime_res_plugin_open_design_js), under: root)
+        try write("system-plugins/dsh-open-design/present.js",
+                  data: resData(dsh_runtime_res_plugin_open_design_present_js), under: root)
         try write("system-plugins/dsh-ui/manifest.json",
                   data: resData(dsh_runtime_res_plugin_ui_manifest), under: root)
         try write("system-plugins/dsh-ui/index.js",

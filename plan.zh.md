@@ -155,9 +155,9 @@
 | # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
 |---|---|---|---|---|---|
 | P0 | 决策笔记 + writing-method 双语对 + 本节 | 笔记与文档对随程序的开篇 PR 落地；笔记记录为何否决 fork 提案、D6/D9 维持 | S | — | done（2026-11-11——本分支） |
-| P1 | fs 试点：dsh-fs 承载上游 FileSystem（`ctx.fs`）cordis 面，走网关原语；boot 的 `mountFileTools` 换座到 provider；清单行更新 | 换座先例：2026-10-11 shell 换座（同目录笔记）；上游缝行（third-party/deepseek-harness/docs/capability-seams.md 的 `ctx.fs`：tool-fs 消费 ctx.fs，fs-local/fs-sandbox/fs-ssh 是可换实现）；内存 VFS 保留 loader 角色（boot.js:12-13） | M | — | open |
-| P2 | shell/subprocess 塌层审计：`ctx.shell`/`ctx.subprocess` 对照模拟 userland 原语族（contract/primitives.md v1.3.0）；逐行裁决 = 换座或明确保留 vendored | fs 笔记记录的同一「两份审计」模式；产品 shell 是工作区 fs 面上的外置 dsh-shell-js（boot.js 导入注释） | M | — | open |
-| P3 | 契约瘦身 + 工具写作契约升级：把 writing-method 约定在命令可检查处升级为门（doc/writing-method.md 规则 1–8 各带门禁状态） | `gates.json` 今天对规则 1–7 一律无门，规则 8 只有记账半边（`e2e-matrix`、`test-taxonomy`） | M | 🔒（哪些约定立门 = owner 拍板） | open |
+| P1 | fs 试点：dsh-fs 承载上游 FileSystem（`ctx.fs`）cordis 面，走网关原语；boot 的 `mountFileTools` 换座到 provider；清单行更新 | 换座先例：2026-10-11 shell 换座（同目录笔记）；上游缝行（third-party/deepseek-harness/docs/capability-seams.md 的 `ctx.fs`：tool-fs 消费 ctx.fs，fs-local/fs-sandbox/fs-ssh 是可换实现）；内存 VFS 保留 loader 角色（boot.js:12-13） | M | — | done（2026-11-11——#762） |
+| P2 | shell/subprocess 塌层审计：`ctx.shell`/`ctx.subprocess` 对照模拟 userland 原语族（contract/primitives.md v1.3.0）；逐行裁决 = 换座或明确保留 vendored | fs 笔记记录的同一「两份审计」模式；产品 shell 是工作区 fs 面上的外置 dsh-shell-js（boot.js 导入注释） | M | — | done（2026-11-12——两缝审计均判无双面；诚实定谳 + 文档归真，见 2026-11-12-p2-shell-subprocess-seam-audit.md） |
+| P3 | 契约瘦身 + 工具写作契约升级：把 writing-method 约定在命令可检查处升级为门（doc/writing-method.md 规则 1–8 各带门禁状态） | `gates.json` 今天对规则 1–7 一律无门，规则 8 只有记账半边（`e2e-matrix`、`test-taxonomy`） | M | 🔒（哪些约定立门 = owner 拍板） | done（2026-11-11——契约两半：瘦身提案 `contract/proposals/2026-11-11-gateway-primitive-slimming.md`（标注不可约 ABI、废弃空置的 ishRun/channel 行、折叠已在服务的能力面行）+ 基于 pin 定版 `defineTool` 面的工具卡契约升级（office/appshell/create/plugin-manager-tools/open-design 全部声明 `output.presentationMeta` + `presentCall`/`presentResult`，纯函数 + 软失败；`test/panel/tool-card-face.test.js` 钉住；office/appshell/plugin-forms/open-design 四条 e2e 腿重跑全绿）——均落 feat/seam-collapse-p2p3 席位；writing-method→门 的升级仍 🔒 owner 拍板，留作后续，见 P3 Agent Note） |
 
 ## 附录 A — dsh-desktop-plugins "still staged"（#632 之后）
 

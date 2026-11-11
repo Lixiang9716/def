@@ -10,7 +10,7 @@
  */
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { CELL_VALUE_SCHEMA, ROW_SCHEMA, FILE_RESULT_SCHEMA } from './shared.js';
+import { CELL_VALUE_SCHEMA, ROW_SCHEMA, FILE_RESULT_SCHEMA, metaObjectOf } from './shared.js';
 import { buildOfficeZip } from './zip.js';
 import { resolveOfficePath, readOfficeBytes, saveOfficeBytes, assertMayCreate } from './fschannel.js';
 import {
@@ -74,6 +74,49 @@ const presentCallFor = (verb) => (args) => ({
   kind: verb === 'Read' ? 'read' : 'edit',
   locations: [{ path: args.path }],
 });
+
+/** One sheet's grid summary for the replayable card face: name, shape,
+ * truncation — a card renders this without parsing the render text's JSON. */
+const sheetSummaryOf = (sheet) => ({
+  name: sheet.name,
+  rowCount: Array.isArray(sheet.rows) ? sheet.rows.length : 0,
+  colCount: Array.isArray(sheet.rows)
+    ? sheet.rows.reduce((width, row) => Math.max(width, Array.isArray(row) ? row.length : 0), 0)
+    : 0,
+  truncated: sheet.truncated === true,
+});
+
+/** The completed card over a read-shaped meta: the workbook's sheet grid
+ * summaries as one compact line per sheet (generic card — a spreadsheet is
+ * not line-numbered code, so the read-card vocabulary does not fit it). */
+const readResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'read' || typeof meta.path !== 'string'
+      || !Array.isArray(meta.sheets)) return undefined;
+  return {
+    card: 'generic',
+    title: `Read ${meta.path} (${meta.sheets.length} sheet(s))`,
+    content: [{ type: 'text', text: meta.sheets
+      .map((sheet) => `${sheet.name} ${sheet.rowCount}x${sheet.colCount}${sheet.truncated ? ' (truncated)' : ''}`)
+      .join('\n') }],
+  };
+};
+
+/** The completed card over an edit-shaped meta (create/update). */
+const editResultView = (titlePrefix) => (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'edit' || typeof meta.path !== 'string') return undefined;
+  const sheets = Array.isArray(meta.sheets)
+    ? meta.sheets.map((sheet) => `${sheet.name} ${sheet.rowCount}x${sheet.colCount}`).join(', ')
+    : `${Array.isArray(meta.updatedSheets) ? meta.updatedSheets.length : 0} sheet(s) replaced, ${(Array.isArray(meta.cellUpdates) ? meta.cellUpdates.length : 0)} cell write(s)`;
+  return {
+    card: 'generic',
+    title: `${titlePrefix} ${meta.path}`,
+    content: [{ type: 'text', text: `${meta.sizeBytes} bytes · ${sheets}` }],
+  };
+};
 
 const modelOf = (spec, index, part) => {
   const grid = gridOf(spec.rows);
@@ -205,6 +248,37 @@ const EXCEL_READ_OUTPUT = {
     text: value.sheets.map((sheet) => `${sheet.name} (${sheet.rows.length} row(s)`
       + `${sheet.truncated ? ', truncated' : ''}):\n` + JSON.stringify(sheet.rows)).join('\n\n'),
   }],
+  // The grid summary (P3 of the seam-collapse program): sheet shapes without
+  // the row JSON — the card face reads this, the model reads the render.
+  presentationMeta: (_args, value) => ({
+    view: 'read',
+    path: value.path,
+    sizeBytes: value.sizeBytes,
+    sheets: value.sheets.map(sheetSummaryOf),
+  }),
+};
+
+const EXCEL_CREATE_OUTPUT = {
+  schema: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      ...FILE_RESULT_SCHEMA.properties,
+      sheets: { type: 'array', required: true, items: SHEET_RESULT_SCHEMA },
+    },
+  },
+  render: (_args, value) => [{
+    type: 'text',
+    text: `Created Excel workbook ${value.path} (${value.sizeBytes} bytes; `
+      + `${value.sheets.length} sheet(s): `
+      + `${value.sheets.map((sheet) => `${sheet.name} ${sheet.rowCount}x${sheet.colCount}`).join(', ')}).`,
+  }],
+  presentationMeta: (_args, value) => ({
+    view: 'edit',
+    path: value.path,
+    sizeBytes: value.sizeBytes,
+    sheets: value.sheets,
+  }),
 };
 
 const EXCEL_UPDATE_PARAMS = {
@@ -266,6 +340,13 @@ const EXCEL_UPDATE_OUTPUT = {
       + `Replaced/created sheets: ${value.updatedSheets.length === 0 ? '(none)' : value.updatedSheets.join(', ')}. `
       + `Cell writes: ${value.cellUpdates.length}.`,
   }],
+  presentationMeta: (_args, value) => ({
+    view: 'edit',
+    path: value.path,
+    sizeBytes: value.sizeBytes,
+    updatedSheets: value.updatedSheets,
+    cellUpdates: value.cellUpdates,
+  }),
 };
 
 const registerExcelCreate = () => {
@@ -286,23 +367,9 @@ const registerExcelCreate = () => {
         description: 'Replace the file when it already exists. Defaults to false.',
       },
     },
-    output: {
-      schema: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          ...FILE_RESULT_SCHEMA.properties,
-          sheets: { type: 'array', required: true, items: SHEET_RESULT_SCHEMA },
-        },
-      },
-      render: (_args, value) => [{
-        type: 'text',
-        text: `Created Excel workbook ${value.path} (${value.sizeBytes} bytes; `
-          + `${value.sheets.length} sheet(s): `
-          + `${value.sheets.map((sheet) => `${sheet.name} ${sheet.rowCount}x${sheet.colCount}`).join(', ')}).`,
-      }],
-    },
+    output: EXCEL_CREATE_OUTPUT,
     presentCall: presentCallFor('Create'),
+    presentResult: editResultView('Created Excel workbook'),
     async execute(args) {
       log.debug('excel_create', { path: args.path, sheets: args.sheets?.length });
       const target = await resolveOfficePath(args.path, ['.xlsx'], false);
@@ -326,6 +393,7 @@ const registerExcelRead = () => {
     parameters: EXCEL_READ_PARAMS,
     output: EXCEL_READ_OUTPUT,
     presentCall: presentCallFor('Read'),
+    presentResult: readResultView,
     async execute(args) {
       log.debug('excel_read', { path: args.path, sheet: args.sheet ?? '(all)' });
       const target = await resolveOfficePath(args.path, ['.xlsx'], true);
@@ -353,6 +421,7 @@ const registerExcelUpdate = () => {
     parameters: EXCEL_UPDATE_PARAMS,
     output: EXCEL_UPDATE_OUTPUT,
     presentCall: presentCallFor('Update'),
+    presentResult: editResultView('Updated Excel workbook'),
     async execute(args) {
       log.debug('excel_update', { path: args.path });
       const target = await resolveOfficePath(args.path, ['.xlsx'], true);

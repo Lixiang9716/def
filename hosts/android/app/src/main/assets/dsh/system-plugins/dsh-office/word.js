@@ -13,7 +13,7 @@
  */
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { encodeXmlText, encodeXmlAttribute, decodeXmlEntities, FILE_RESULT_SCHEMA } from './shared.js';
+import { encodeXmlText, encodeXmlAttribute, decodeXmlEntities, FILE_RESULT_SCHEMA, metaObjectOf, linesOf } from './shared.js';
 import { readOfficeZip, zipPartText, buildOfficeZip } from './zip.js';
 import { resolveOfficePath, readOfficeBytes, saveOfficeBytes, assertMayCreate } from './fschannel.js';
 
@@ -270,6 +270,11 @@ const WORD_CREATE_OUTPUT = {
     text: `Created Word document ${value.path} (${value.sizeBytes} bytes; `
       + `${value.paragraphCount} paragraphs, ${value.bulletCount} bullets, ${value.tableRows} table body rows).`,
   }],
+  // The replayable card face (P3): a completed card reads the document
+  // structure without parsing the render text.
+  presentationMeta: (_args, value) => ({ view: 'edit', path: value.path,
+    sizeBytes: value.sizeBytes, paragraphs: value.paragraphCount,
+    bullets: value.bulletCount, tableRows: value.tableRows }),
 };
 
 const WORD_READ_OUTPUT = {
@@ -288,6 +293,15 @@ const WORD_READ_OUTPUT = {
     type: 'text',
     text: value.text + (value.truncated ? `\n[text truncated; total ${value.totalChars} characters]` : ''),
   }],
+  // The read card's structure (the tool-fs read pattern): lines/totalLines
+  // projected here, narrowed back into the view by presentResult below.
+  presentationMeta: (args, value) => {
+    const lines = linesOf(value.text);
+    return { view: 'read', path: value.path, offset: 1, lines,
+      totalLines: lines.length, truncated: value.truncated,
+      totalChars: value.totalChars,
+      format: args.format === 'markdown' ? 'markdown' : 'text' };
+  },
 };
 
 const WORD_UPDATE_OUTPUT = {
@@ -307,6 +321,9 @@ const WORD_UPDATE_OUTPUT = {
       + `${value.appendedParagraphs} paragraph(s), ${value.appendedBullets} bullet(s), `
       + `${value.appendedTableRows} table body row(s) appended).`,
   }],
+  presentationMeta: (_args, value) => ({ view: 'edit', path: value.path,
+    sizeBytes: value.sizeBytes, appendedParagraphs: value.appendedParagraphs,
+    appendedBullets: value.appendedBullets, appendedTableRows: value.appendedTableRows }),
 };
 
 const presentCallFor = (verb) => (args) => ({
@@ -315,6 +332,40 @@ const presentCallFor = (verb) => (args) => ({
   kind: verb === 'Read' ? 'read' : 'edit',
   locations: [{ path: args.path }],
 });
+
+/** The completed card over an edit-shaped meta (create/update): a compact
+ * structure line replaces the pending title; undefined (generic) whenever
+ * the persisted meta is not the shape this pin wrote. */
+const editResultView = (titlePrefix) => (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'edit' || typeof meta.path !== 'string') return undefined;
+  const structure = `${meta.sizeBytes} bytes · ${meta.paragraphs ?? meta.appendedParagraphs ?? 0} paragraph(s)`
+    + ` · ${meta.bullets ?? meta.appendedBullets ?? 0} bullet(s)`
+    + ` · ${meta.tableRows ?? meta.appendedTableRows ?? 0} table row(s)`;
+  return { card: 'generic', title: `${titlePrefix} ${meta.path}`, content: [{ type: 'text', text: structure }] };
+};
+
+/** The completed read card (the pin's ReadResultView): structure from the
+ * persisted meta, body from the single text content block — the tool-fs
+ * read posture, degraded to the generic card on any shape mismatch. */
+const readResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'read' || typeof meta.path !== 'string' || !Array.isArray(meta.lines)) return undefined;
+  const only = result.content.length === 1 ? result.content[0] : undefined;
+  const body = only !== undefined && only.type === 'text' && typeof only.text === 'string'
+    ? only.text.replace(/\n\[text truncated; total \d+ characters\]$/u, '')
+    : meta.lines.map((line) => line.text).join('\n');
+  return {
+    card: 'read',
+    path: meta.path,
+    offset: meta.offset ?? 1,
+    lines: meta.lines,
+    totalLines: meta.totalLines ?? meta.lines.length,
+    content: [{ type: 'text', text: body }],
+  };
+};
 
 const registerWordCreate = () => {
   return defineTool({
@@ -326,6 +377,7 @@ const registerWordCreate = () => {
     parameters: WORD_CREATE_PARAMS,
     output: WORD_CREATE_OUTPUT,
     presentCall: presentCallFor('Create'),
+    presentResult: editResultView('Created Word document'),
     async execute(args) {
       log.debug('word_create', { path: args.path });
       const target = await resolveOfficePath(args.path, ['.docx'], false);
@@ -377,6 +429,7 @@ const registerWordRead = () => {
     },
     output: WORD_READ_OUTPUT,
     presentCall: presentCallFor('Read'),
+    presentResult: readResultView,
     async execute(args) {
       log.debug('word_read', { path: args.path, format: args.format ?? 'text' });
       const target = await resolveOfficePath(args.path, ['.docx'], true);
@@ -403,6 +456,7 @@ const registerWordUpdate = () => {
     parameters: WORD_UPDATE_PARAMS,
     output: WORD_UPDATE_OUTPUT,
     presentCall: presentCallFor('Update'),
+    presentResult: editResultView('Appended to Word document'),
     async execute(args) {
       log.debug('word_update', { path: args.path });
       const target = await resolveOfficePath(args.path, ['.docx'], true);

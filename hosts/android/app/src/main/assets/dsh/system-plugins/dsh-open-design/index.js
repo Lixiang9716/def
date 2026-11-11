@@ -34,6 +34,7 @@
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
 import { httpFetch } from 'gateway.js';
+import { openDesignMeta, presentCallFor, openDesignResultView } from './present.js';
 
 const log = createLogger('dsh.openDesign');
 
@@ -271,8 +272,10 @@ const projectVerbs = {
 };
 
 /** Shared tool-result shape: the plugin stringifies one outcome object per
- * call, and the render surface shows it verbatim. */
-const toolOutput = () => ({
+ * call, and the render surface shows it verbatim. presentationMeta carries
+ * the replayable card intent (P3 of the seam-collapse program — the pure
+ * presenters live in present.js). */
+const toolOutput = (tool) => ({
   schema: {
     type: 'object',
     additionalProperties: false,
@@ -282,6 +285,7 @@ const toolOutput = () => ({
     },
   },
   render: (_args, value) => [{ type: 'text', text: value.result }],
+  presentationMeta: openDesignMeta(tool),
 });
 
 const wrap = async (name, run) => {
@@ -322,7 +326,9 @@ const projectsTool = (config) => defineTool({
     fileName: { type: 'string', description: 'File name for save_file (e.g. index.html).' },
     content: { type: 'string', description: 'File content for save_file.' },
   },
-  output: toolOutput(),
+  output: toolOutput('open_design_projects'),
+  presentCall: presentCallFor('open_design_projects'),
+  presentResult: openDesignResultView('open_design_projects'),
   async execute(args) {
     return wrap(args.verb, async () => {
       const handler = projectVerbs[args.verb];
@@ -363,7 +369,9 @@ const generateTool = (config) => defineTool({
       description: 'Completion cap forwarded to the provider (default 64000).',
     },
   },
-  output: toolOutput(),
+  output: toolOutput('open_design_generate'),
+  presentCall: presentCallFor('open_design_generate'),
+  presentResult: openDesignResultView('open_design_generate'),
   async execute(args) {
     return wrap('generate', async () => runGenerate(config, args));
   },
@@ -426,7 +434,9 @@ const artifactTool = (config) => defineTool({
     title: { type: 'string', description: 'Human title for save.' },
     html: { type: 'string', description: 'The artifact HTML (save and lint).' },
   },
-  output: toolOutput(),
+  output: toolOutput('open_design_artifact'),
+  presentCall: presentCallFor('open_design_artifact'),
+  presentResult: openDesignResultView('open_design_artifact'),
   async execute(args) {
     return wrap(args.verb, async () => runArtifactVerb(config, args));
   },

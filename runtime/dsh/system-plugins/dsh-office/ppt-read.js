@@ -8,7 +8,7 @@
  */
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { decodeXmlEntities, FILE_RESULT_SCHEMA } from './shared.js';
+import { decodeXmlEntities, FILE_RESULT_SCHEMA, metaObjectOf } from './shared.js';
 import { readOfficeZip, zipPartText } from './zip.js';
 import { resolveOfficePath, readOfficeBytes } from './fschannel.js';
 import { roundedInches, sketchSlide, SLIDE_WIDTH_INCHES, SLIDE_HEIGHT_INCHES } from './ppt-write.js';
@@ -217,6 +217,39 @@ const PPT_READ_OUTPUT = {
           ? `\n${sketchSlide(value.slideWidthInches, value.slideHeightInches, slide.elements)}` : '')).join('\n\n')
       + (value.truncated ? '\n[text truncated]' : ''),
   }],
+  // The deck's replayable outline (P3): slide count, canvas, one row per
+  // slide (title when present) — a card renders this without parsing the
+  // per-slide paragraph/wireframe text above.
+  presentationMeta: (_args, value) => ({
+    view: 'read',
+    path: value.path,
+    sizeBytes: value.sizeBytes,
+    slideCount: value.slideCount,
+    canvas: { widthInches: value.slideWidthInches, heightInches: value.slideHeightInches },
+    truncated: value.truncated,
+    outline: value.slides.map((slide) => {
+      const row = { index: slide.index, paragraphs: slide.paragraphs.length, images: slide.imageCount };
+      if (typeof slide.title === 'string') row.title = slide.title;
+      return row;
+    }),
+  }),
+};
+
+/** The completed read card over the persisted outline meta (generic card —
+ * slides are not line-numbered code): one line per slide, degraded on any
+ * meta shape mismatch to the pin's generic fallback. */
+const pptReadResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'read' || typeof meta.path !== 'string'
+      || !Array.isArray(meta.outline)) return undefined;
+  return {
+    card: 'generic',
+    title: `Read ${meta.path} (${meta.slideCount} slide(s))`,
+    content: [{ type: 'text', text: meta.outline
+      .map((slide) => `Slide ${slide.index}${typeof slide.title === 'string' ? ` — ${slide.title}` : ''}`)
+      .join('\n') + (meta.truncated ? '\n(truncated)' : '') }],
+  };
 };
 
 export const registerPptRead = () => {
@@ -237,6 +270,7 @@ export const registerPptRead = () => {
       kind: 'read',
       locations: [{ path: args.path }],
     }),
+    presentResult: pptReadResultView,
     async execute(args) {
       log.debug('ppt_read', { path: args.path });
       const target = await resolveOfficePath(args.path, ['.pptx'], true);

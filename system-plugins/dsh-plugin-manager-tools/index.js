@@ -280,6 +280,58 @@ const execute = async (args) => {
   }
 };
 
+/** The replayable roster meta (P3 of the seam-collapse program): the ids
+ * out of the JSON line the model reads, so a list card renders without
+ * text parsing. Pure — JSON.parse over the validated string; any mismatch
+ * keeps the minimal shape (the registry pins presentationMeta as lossless
+ * JSON, so it never returns undefined). */
+const rosterMetaOf = (args, value) => {
+  const meta = { view: 'roster', ok: false, action: typeof args?.action === 'string' ? args.action : '' };
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed !== null && typeof parsed === 'object') {
+      meta.ok = parsed.ok === true;
+      if (Array.isArray(parsed.entries)) {
+        meta.ids = parsed.entries
+          .filter((row) => row !== null && typeof row === 'object' && typeof row.entryId === 'string')
+          .map((row) => row.entryId);
+      }
+      if (Array.isArray(parsed.bundles)) {
+        meta.bundles = parsed.bundles
+          .filter((bundle) => bundle !== null && typeof bundle === 'object' && typeof bundle.name === 'string')
+          .map((bundle) => bundle.name);
+      }
+      if (typeof parsed.target === 'string') meta.target = parsed.target;
+    }
+  } catch {
+    // a non-JSON body (unreachable on this schema) keeps the minimal shape
+  }
+  return meta;
+};
+
+/** The pending card: the action as the title, the target as salient input. */
+const rosterCallView = (args) => ({
+  card: 'generic',
+  title: `plugin_manager ${typeof args?.action === 'string' ? args.action : ''}`.trim(),
+  kind: 'other',
+  ...(typeof args?.target === 'string' ? { rawInput: args.target } : {}),
+});
+
+/** The completed card over the roster meta: the count in the title, the id
+ * list as one content line. */
+const rosterResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = result.meta !== null && typeof result.meta === 'object' && !Array.isArray(result.meta)
+    ? result.meta : undefined;
+  if (meta === undefined || meta.view !== 'roster') return undefined;
+  const ids = Array.isArray(meta.ids) ? meta.ids : Array.isArray(meta.bundles) ? meta.bundles : undefined;
+  return {
+    card: 'generic',
+    title: `plugin_manager ${meta.action}${ids !== undefined ? ` (${ids.length})` : ''}`,
+    ...(ids !== undefined ? { content: [{ type: 'text', text: ids.join(', ') }] } : {}),
+  };
+};
+
 const pluginManagerTool = () => defineTool({
   name: 'plugin_manager',
   description: 'Manage this workspace\'s plugin pipeline: list the installed '
@@ -308,7 +360,10 @@ const pluginManagerTool = () => defineTool({
   output: {
     schema: { type: 'string' },
     render: (_args, value) => [{ type: 'text', text: value }],
+    presentationMeta: rosterMetaOf,
   },
+  presentCall: rosterCallView,
+  presentResult: rosterResultView,
   execute,
 });
 

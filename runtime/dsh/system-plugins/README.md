@@ -5,10 +5,15 @@ System implementation plugins · contract adaptation (JS, shared across platform
 - `dsh-fs` → implements the `fs` service (read/write/append/exists/stat-ish
   semantics) over the fsRead/fsWrite/fsScope primitives; scope-relative POSIX
   paths, escapes rejected with the contract's `invalid` code
-- `dsh-subprocess-quickjs` → implements `ctx.subprocess` (the coroutine
-  executor): spawn returns an event-driven handle — progress and completion
-  arrive as events on the runtime queue; no OS processes, no blocking
-  whole-result API
+- `dsh-subprocess-quickjs` → implements the plugin REGISTRY's `subprocess`
+  key (the M2 coroutine executor): `spawn({steps, context})` runs a
+  steps-array task whose progress and completion arrive as events on the
+  runtime queue — no OS processes, no blocking whole-result API; consumed
+  by the session-mock-llm/install-from-http scenario legs. NOT the cordis
+  `ctx.subprocess` seat: that upstream seat (spawn(argv/cwd/stdio),
+  spawnTerminal, resolveExecutable — the vendored Definition) is vacant in
+  the product boot; the first real consumer connects it the dsh-fs cordis
+  way (the `system-plugins/dsh-fs/cordis.js` precedent)
 - `dsh-ui` → composes presentApproval / presentPicker / notify into the `ui`
   service; notify settles from the notify.response bridge event
 - `dsh-shell-wasm` → the `shell` capability over contract `wasmRun`: the
