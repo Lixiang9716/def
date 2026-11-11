@@ -119,6 +119,14 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/npm/cosmokit@1.8.3/lib/index.js', import.meta.url)),
       },
       { find: 'gateway.js', replacement: fileURLToPath(new URL('./gateway-shim.js', import.meta.url)) },
+      // dsh-office's zip container imports bare fflate; the tool-card-face
+      // suite registers the office tools, so the alias doubles the tracked
+      // android staged copy (the fs-local precedent above — the `closures`
+      // gate keeps it in sync with canonical).
+      {
+        find: 'fflate',
+        replacement: fileURLToPath(new URL('../../hosts/android/app/src/main/assets/dsh/vendor/npm/fflate@0.8.2/esm/browser.js', import.meta.url)),
+      },
       { find: '@deepseek-ai/dsh-tools', replacement: fileURLToPath(new URL('./dsh-tools-stub.js', import.meta.url)) },
       { find: 'dsh:util-crypto', replacement: fileURLToPath(new URL('./util-crypto-shim.js', import.meta.url)) },
       { find: 'sha256.js', replacement: fileURLToPath(new URL('../../runtime/dsh/sha256.js', import.meta.url)) },

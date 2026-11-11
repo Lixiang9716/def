@@ -166,6 +166,7 @@ const BUNDLE_FILES: string[] = [
   'system-plugins/dsh-office/zip.js',
   'system-plugins/dsh-open-design/index.js',
   'system-plugins/dsh-open-design/manifest.json',
+  'system-plugins/dsh-open-design/present.js',
   'system-plugins/dsh-plugin-manager-tools/index.js',
   'system-plugins/dsh-plugin-manager-tools/manifest.json',
   'system-plugins/dsh-shell-js/applets-hand.js',

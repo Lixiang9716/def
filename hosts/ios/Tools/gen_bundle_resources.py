@@ -80,6 +80,7 @@ RESOURCES = [
     ("shims_dsh_session_persistence_js", DSH / "upstream" / "shims" / "dsh-session-persistence.js"),
     ("plugin_open_design_manifest", DSH / "system-plugins" / "dsh-open-design" / "manifest.json"),
     ("plugin_open_design_js", DSH / "system-plugins" / "dsh-open-design" / "index.js"),
+    ("plugin_open_design_present_js", DSH / "system-plugins" / "dsh-open-design" / "present.js"),
     ("plugin_manager_tools_manifest", DSH / "system-plugins" / "dsh-plugin-manager-tools" / "manifest.json"),
     ("plugin_manager_tools_js", DSH / "system-plugins" / "dsh-plugin-manager-tools" / "index.js"),
     ("scenario_js", DSH / "scenario" / "boot-verification.js"),

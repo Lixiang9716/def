@@ -8,7 +8,7 @@
  */
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { FILE_RESULT_SCHEMA } from './shared.js';
+import { FILE_RESULT_SCHEMA, metaObjectOf } from './shared.js';
 import { buildOfficeZip } from './zip.js';
 import { resolveOfficePath, saveOfficeBytes, assertMayCreate } from './fschannel.js';
 import {
@@ -136,6 +136,36 @@ const PPT_CREATE_OUTPUT = {
       + value.slides.map((slide) => `Slide ${slide.index} layout:\n`
         + `${sketchSlide(value.slideWidthInches, value.slideHeightInches, slide.elements)}`).join('\n\n'),
   }],
+  // The deck's card face (P3): slide count + outline (each slide's first
+  // text box as the heading proxy) so a completed card renders without
+  // parsing the wireframe sketch text.
+  presentationMeta: (_args, value) => ({
+    view: 'edit',
+    path: value.path,
+    sizeBytes: value.sizeBytes,
+    slideCount: value.slideCount,
+    canvas: { widthInches: value.slideWidthInches, heightInches: value.slideHeightInches },
+    outline: value.slides.map((slide) => {
+      const first = slide.elements.find((element) => typeof element.text === 'string' && element.text.length > 0);
+      return { index: slide.index, ...(first !== undefined ? { heading: first.text } : {}) };
+    }),
+  }),
+};
+
+/** The completed create card over the persisted outline meta: one line per
+ * slide (index + heading proxy), degraded to the generic card on mismatch. */
+const pptCreateResultView = (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = metaObjectOf(result.meta);
+  if (meta === undefined || meta.view !== 'edit' || typeof meta.path !== 'string'
+      || !Array.isArray(meta.outline)) return undefined;
+  return {
+    card: 'generic',
+    title: `Created ${meta.path} (${meta.slideCount} slide(s))`,
+    content: [{ type: 'text', text: meta.outline
+      .map((slide) => `Slide ${slide.index}${typeof slide.heading === 'string' ? ` — ${slide.heading}` : ''}`)
+      .join('\n') }],
+  };
 };
 
 export const registerPptCreate = () => {
@@ -157,6 +187,7 @@ export const registerPptCreate = () => {
       kind: 'edit',
       locations: [{ path: args.path }],
     }),
+    presentResult: pptCreateResultView,
     async execute(args) {
       log.debug('ppt_create', { path: args.path, slides: args.slides?.length ?? 0 });
       const target = await resolveOfficePath(args.path, ['.pptx'], false);

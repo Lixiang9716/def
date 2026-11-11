@@ -9,12 +9,14 @@
  * validate->expand->render pipeline (lib/render.js).
  *
  * Tool contract (the vendored @deepseek-ai/dsh-tools shape the spine's
- * ToolRuntime enforces): every tool declares output { schema, render } —
- * execute returns the schema-shaped value, refusals THROW (the structured
- * error outcome; a forged surfaceId never yields an executable success).
- * render emits the JSON echo as the card text — the exact content shape the
- * web client's appshell toolview parses (parity with the dev-carrier's
- * synthesized tool cards).
+ * ToolRuntime enforces): every tool declares output { schema, render,
+ * presentationMeta } — execute returns the schema-shaped value, refusals
+ * THROW (the structured error outcome; a forged surfaceId never yields an
+ * executable success). render emits the JSON echo as the card text — the
+ * exact content shape the web client's appshell toolview parses (parity
+ * with the dev-carrier's synthesized tool cards); presentationMeta carries
+ * the structured surface intent (the P3 card face), so a card consumer
+ * reads {surfaceId, title, spec} without re-parsing the echo.
  */
 import { createLogger } from 'logger.js';
 import { defineTool } from '@deepseek-ai/dsh-tools';
@@ -50,6 +52,24 @@ export const _resetSurfaces = () => {
 
 const echoText = (_args, value) => [{ type: 'text', text: JSON.stringify(value) }];
 
+// The pinned card face (P3 of the seam-collapse program): presentationMeta
+// carries the STRUCTURED surface intent ({surfaceId, title, spec}) so a
+// consumer reads the card without re-parsing the echo text; presentCall
+// names the pending card; presentResult narrows the persisted meta back
+// into the completed view. All three are pure and total — a shape mismatch
+// degrades to the pin's generic card, never a throw.
+const surfaceMetaOf = (meta) => (
+  meta !== null && typeof meta === 'object' && !Array.isArray(meta)
+    && meta.view === 'surface' && typeof meta.surfaceId === 'string' ? meta : undefined
+);
+
+const surfaceResultView = (verb) => (_args, result) => {
+  if (result.isError) return undefined;
+  const meta = surfaceMetaOf(result.meta);
+  if (meta === undefined) return undefined;
+  return { card: 'generic', title: `${verb} ${meta.surfaceId}${typeof meta.title === 'string' ? ` (${meta.title})` : ''}` };
+};
+
 const ECHO_OUTPUT = {
   schema: {
     type: 'object',
@@ -62,6 +82,50 @@ const ECHO_OUTPUT = {
     },
   },
   render: echoText,
+  presentationMeta: (_args, value) => ({
+    view: 'surface',
+    surfaceId: value.surfaceId,
+    title: value.title,
+    spec: value.spec,
+  }),
+};
+
+/** The pending render card: the fixture name in mock mode, the spec's own
+ * title in real mode (pure args-derived, validated by the pin's wrapper). */
+const renderCallView = (args) => ({
+  card: 'generic',
+  title: MODE === 'mock'
+    ? `Render app surface (${typeof args?.fixture === 'string' ? args.fixture : 'wechat'})`
+    : `Render app surface (${typeof args?.spec?.title === 'string' ? args.spec.title : 'untitled'})`,
+  kind: 'other',
+});
+
+const updateCallView = (args) => ({
+  card: 'generic',
+  title: `Update surface ${typeof args?.surfaceId === 'string' ? args.surfaceId : '(?)'}`,
+  kind: 'other',
+});
+
+/** The update tool's output: the echo carries the payload AS RECEIVED (the
+ * same card shape appshell_render emits, so a client applies the update to
+ * the open surface in place — the D-4 single-surface replace), and the meta
+ * carries the structured surface intent for the card face. */
+const UPDATE_OUTPUT = {
+  schema: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      ok: { type: 'boolean', required: true },
+      surfaceId: { type: 'string', required: true },
+      spec: { type: 'object', required: true, additionalProperties: true },
+    },
+  },
+  render: echoText,
+  presentationMeta: (_args, value) => ({
+    view: 'surface',
+    surfaceId: value.surfaceId,
+    spec: value.spec,
+  }),
 };
 
 const renderTool = () => defineTool({
@@ -72,6 +136,8 @@ const renderTool = () => defineTool({
     ? { fixture: { type: 'string', description: 'fixture key: ' + fixtureKeys().join('|') } }
     : { spec: { type: 'object', description: 'the app-shell spec object', additionalProperties: true } },
   output: ECHO_OUTPUT,
+  presentCall: renderCallView,
+  presentResult: surfaceResultView('Rendered surface'),
   async execute(args) {
     const spec = MODE === 'mock' ? mockSpec(args.fixture || 'wechat') : args.spec;
     if (spec === null) throw new Error('unknown fixture; keys: ' + fixtureKeys().join('|'));
@@ -98,21 +164,9 @@ const updateTool = () => defineTool({
     surfaceId: { type: 'string', description: 'the surface to update (as returned by appshell_render)' },
     spec: { type: 'object', description: 'the new app-shell spec', additionalProperties: true },
   },
-  output: {
-    schema: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        ok: { type: 'boolean', required: true },
-        surfaceId: { type: 'string', required: true },
-        spec: { type: 'object', required: true, additionalProperties: true },
-      },
-    },
-    // The echo carries the applied spec — the same card shape appshell_render
-    // emits, so a client applies the update to the open surface in place
-    // (the D-4 single-surface replace) instead of re-asking for a render.
-    render: echoText,
-  },
+  output: UPDATE_OUTPUT,
+  presentCall: updateCallView,
+  presentResult: surfaceResultView('Updated surface'),
   async execute(args) {
     const surfaceId = String(args?.surfaceId ?? '').slice(0, 64);
     if (!liveSurfaces.has(surfaceId)) {
@@ -151,6 +205,13 @@ const catalogTool = () => defineTool({
     },
     render: (_args, value) => [{ type: 'text', text: value.rules }],
   },
+  // The catalog is static rules text — the lowest-value card face; a generic
+  // pending card suffices, no meta worth projecting.
+  presentCall: () => ({
+    card: 'generic',
+    title: 'Read the app-shell catalog',
+    kind: 'read',
+  }),
   async execute() {
     return { rules: RULES };
   },
