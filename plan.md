@@ -164,6 +164,25 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
 6. 🟠 5.x contracts, 6.x docs, 7.1 GenUI review — owner's priority call, mutually independent.
 7. 👀 3.16 weekly-sweep first Node run (2026-10-26).
 
+## 13. The seam-collapse program (2026-11-11)
+
+Collapse the dual capability planes onto the upstream ctx seams and swap the
+provider — the decision note is
+[.agents/notes/implemented/architecture/2026-11-11-collapse-the-dual-capability-planes.md](.agents/notes/implemented/architecture/2026-11-11-collapse-the-dual-capability-planes.md).
+The problem it treats: the same fs capability lives in two worlds — the
+product boot mounts the vendored fs-local over the in-memory VFS
+(`runtime/dsh/upstream/boot.js:198-210`, `mountFileTools`) while the
+contract face has dsh-fs over the gateway primitives
+(`system-plugins/dsh-fs/index.js`) — one capability, two audits. The
+writing rules new code must follow are [doc/writing-method.md](doc/writing-method.md).
+
+| # | Item | Why / entry | Size | Gate | Status |
+|---|---|---|---|---|---|
+| P0 | The decision note + the writing-method bilingual pair + this section | The note and the doc pair land with the program's opening PR; the note records why the fork proposal was rejected and D6/D9 stand | S | — | done (2026-11-11 — this branch) |
+| P1 | The fs pilot: dsh-fs carries the upstream FileSystem (`ctx.fs`) cordis face over the gateway primitives; boot's `mountFileTools` swaps its seat to the provider; the inventory row updates | Seat-swap precedent: the 2026-10-11 shell seat switch (same-directory note); the upstream seam row (`ctx.fs` in third-party/deepseek-harness/docs/capability-seams.md: tool-fs consumes ctx.fs, fs-local/fs-sandbox/fs-ssh are swappable implementations); the in-memory VFS keeps its loader role (boot.js:12-13) | M | — | open |
+| P2 | The shell/subprocess collapse audit: `ctx.shell`/`ctx.subprocess` against the emulated-userland primitive family (contract/primitives.md v1.3.0); per-row verdict = seat swap or explicit keep-vendored | The same two-audits pattern the fs note records; the product shell is the outboard dsh-shell-js over the workspace fs face (boot.js import note) | M | — | open |
+| P3 | Contract slimming + the tool-writing contract upgrade: promote the writing-method conventions to gates where a command can check them (rules 1–8 of doc/writing-method.md carry per-rule gate status) | `gates.json` today gates none of rules 1–7 and only the bookkeeping half of rule 8 (`e2e-matrix`, `test-taxonomy`) | M | 🔒 (which conventions become gates = owner call) | open |
+
 ## Appendix A — dsh-desktop-plugins "still staged" (post-#632)
 
 | Row | Gap | Note |
