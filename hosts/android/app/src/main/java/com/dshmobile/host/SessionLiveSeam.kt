@@ -52,8 +52,18 @@ class SessionLiveSeam(private val bridge: CarrierAPIBridge) {
         }
         "api.respond" -> {
             val result = msg.optJSONObject("result") ?: return true
-            bridge.respondAPI(msg.optString("rpcId"), result)
+            // The respond observation emits BEFORE the parked connection
+            // wakes: respondAPI supplies the waiter, and that conn thread
+            // then flushes the held unavailable witnesses + logs the
+            // `forwarded` line — so answering first lets that burst race
+            // `session.list.responded` across the two threads (measured
+            // 2026-11-11: the fs-seam-collapse runtime's heavier boot flipped
+            // the historically-winning side on the CI emulator, red at
+            // android.session.live-read index 24 with the identical event
+            // set). Both lines are emitted on this one runtime thread; this
+            // order is the manifest's pinned order, by construction.
             observeRespond(result)
+            bridge.respondAPI(msg.optString("rpcId"), result)
             true
         }
         "mux.item", "mux.error", "mux.end" -> {
