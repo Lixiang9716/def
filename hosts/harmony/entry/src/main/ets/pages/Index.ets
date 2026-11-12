@@ -2556,10 +2556,10 @@ struct Index {
       customStyle: true
     });
     controller.open();
-    hilog.info(TAG, 'ui-wait question %{public}s', question.qid);
+    hilog.info(0x0000, TAG, 'ui-wait question %{public}s', question.qid);
     if (E2eLeg.getScriptQuestion() === 'cancel') {
       setTimeout((): void => {
-        hilog.info(TAG, 'question script answered cancel');
+        hilog.info(0x0000, TAG, 'question script answered cancel');
         controller.close();
         onCancel();
       }, 350);

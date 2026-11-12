@@ -124,7 +124,7 @@ export class QuestionFace {
    * refused by the ladder — the caller presents nothing and the ask dies
    * with ONE warn, never a crash). */
   static parse(line: string): QuestionRequest | null {
-    let msg: Record<string, Object>;
+    let msg: Record<string, Object> = {};
     try {
       msg = JSON.parse(line) as Record<string, Object>;
     } catch (e) {
@@ -147,10 +147,10 @@ export class QuestionFace {
     const rows: Array<QuestionRow> = [];
     const arr = rawQuestions as Array<Object>;
     for (let i = 0; i < arr.length; i++) {
-      const qid = this.stringAt(arr[i], 'id', `q${i}`);
-      const header = this.stringAt(arr[i], 'header', 'def');
-      const body = this.stringAt(arr[i], 'question', '');
-      const options = this.parseOptions(this.fieldOf(arr[i], 'options'));
+      const qid = QuestionFace.stringAt(arr[i], 'id', `q${i}`);
+      const header = QuestionFace.stringAt(arr[i], 'header', 'def');
+      const body = QuestionFace.stringAt(arr[i], 'question', '');
+      const options = QuestionFace.parseOptions(QuestionFace.fieldOf(arr[i], 'options'));
       rows.push(new QuestionRow(qid, header, body, options));
     }
     return new QuestionRequest(id, versioned, rows);
@@ -250,7 +250,7 @@ export class QuestionFace {
   }
 
   private static stringAt(entry: Object, key: string, fallback: string): string {
-    const v = this.fieldOf(entry, key);
+    const v = QuestionFace.fieldOf(entry, key);
     return typeof v === 'string' ? v : fallback;
   }
 
