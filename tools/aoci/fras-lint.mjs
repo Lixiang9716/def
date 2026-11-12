@@ -19,6 +19,15 @@
  * 2 when the input itself is unreadable or not a batch (a usage error, not a
  * compliance verdict).
  *
+ * The path-pairing rule (added 2026-11-13): an entry line opens with its OWN
+ * `<path>[<tag>]` — that leading path must equal the candidate's `path`
+ * field. A mismatch means the batch assembly paired entry lines with the
+ * wrong candidates (measured 2026-11-12: line order drifted from candidate
+ * order across trio members and index-pairing shifted content across paths,
+ * which surfaced downstream as F-length findings "on the wrong entry" — the
+ * lint was faithful to the array; the pairing was the defect). The lint now
+ * names that class at lint time instead of letting it reach the machine.
+ *
  * usage: node tools/aoci/fras-lint.mjs [--file <entries.json>]
  */
 import { readFileSync } from 'node:fs';
@@ -140,6 +149,10 @@ const checkSegments = (candidate_index, path, tag, segments) => {
 
 const checkEntry = (entry, candidate_index) => {
   const path = typeof entry.path === 'string' ? entry.path : '';
+  if (typeof entry.path !== 'string' || entry.path === '') {
+    add(candidate_index, path, 'path', 'path-shape', 'a non-empty path string',
+      JSON.stringify(entry.path ?? null), 'candidate carries no lintable path');
+  }
   if (typeof entry.new_entry !== 'string' || entry.new_entry === '') {
     add(candidate_index, path, 'new_entry', 'entry-shape', 'a non-empty new_entry string',
       JSON.stringify(entry.new_entry ?? null), 'entry carries no lintable new_entry');
@@ -149,6 +162,22 @@ const checkEntry = (entry, candidate_index) => {
   if (!head) {
     add(candidate_index, path, 'new_entry', 'line-shape', '<path>[<tag>]: F:… | R:… | A:… | S:…',
       entry.new_entry.slice(0, 60), 'entry line does not open as <path>[<tag>]: body');
+    return;
+  }
+  // Path pairing: the entry line's leading path is the SECTION-LOCAL filename
+  // (aoci.code.txt entries read `README.md[SB8T]: …` under a section header),
+  // so the exact form differs from the candidate's repo-relative path by
+  // design. The basenames, however, must agree — a mismatch means the batch
+  // assembly paired entry lines with the wrong candidates (measured
+  // 2026-11-12: line order drifted from candidate order across trio members
+  // and index-pairing shifted content across paths, surfacing downstream as
+  // F-length findings "on the wrong entry" — the lint was faithful to the
+  // array; the pairing was the defect). The lint now names that class here.
+  const basename = (p) => p.split('/').pop() ?? p;
+  if (path !== '' && basename(head[1]) !== basename(path)) {
+    add(candidate_index, path, 'new_entry', 'path-mismatch', basename(path), head[1],
+      'entry line declares a different managed object than the candidate\'s path — '
+      + 'the batch assembly likely paired entry lines with the wrong candidates');
     return;
   }
   const tag = head[2];

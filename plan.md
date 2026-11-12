@@ -37,6 +37,10 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
   session. Closes T-0268 item 7. Size S. Gate 🔒. Status done (2026-10-21 — the owner approved
   `activate-1904454454` and the closeout landed: 61 sources authored across five machine
   batches, aligned, T-0268 closed).
+- **2026-11-12: the next arrears round closed the same way** — the seam-collapse program's
+  managed changes (P0→R3/R1, #762–#766) had landed with the AOCI tools unwired in that
+  session; #767 closed it (142 entries authored across 14 machine batches, drift zero,
+  verify/check/guide aligned).
 
 ## 2. Ship now (the next 2–4 weeks)
 
@@ -198,7 +202,7 @@ and the proposal is
 | # | Item | Why / entry | Size | Gate | Status |
 |---|---|---|---|---|---|
 | R1 | The def bundle declaration: `boot.js` names ZERO def plugins — def's product content at boot is ONE manifest (`runtime/dsh/upstream/def-bundle.js`, the cordis.patch row semantics: toolRows / fileRows / inventoryRows / preset; a future seat switch = editing that one data file) + the plugin packages; `boot.js` becomes the generic row loader (dynamic import + `ctx.plugin` per row) | the R1 end-state judge (T-0291): the seat's product content must be data + packages, so a seat swap never touches boot code. Honest asymmetry stays glue and is named in the declaration header: `mountGatewayLlm` (transport), the `mountSpine` service layer, `mountWebPlane` (transport injection mid-mount), the anchored-editor transform; the JSON-format ask lands as a `.js` DATA module because the staging derivation (`tools/check-staging-graph.mjs`) reads literal `import()` specifiers — the same format honesty as `config-layer.js`'s cordis.patch.json note | M | — | done (2026-11-12 — in the T-0291 seat; the mounted set is IDENTICAL: spineEntries 21 and the tool-row set byte-for-byte, `settings.surfaces` 13/13, `upstream.web-boot` 13/13, `upstream.session` 32/32, `session.mock-llm` 23/23 on the CLI; staging rows re-derived — Index.ets / harmony closure-spine / ios RESOURCES each +`upstream/def-bundle.js`) |
-| R3 | Native face payloads: census → D5 proposal → platform-neutral render-intent dispatch → pilot wiring (iOS batch 1, then Android, then harmony; each batch's acceptance = scenario legs) | the census drift: five renderers hold the card/question shapes by code symmetry with zero schema (a cancelled ask parks forever — `SessionQuestions.swift:55`); the primitive payload faces are one prose sentence each (the mount gate's `message` key is read by no host — `plugin-mount.js:146` vs `UIPrimitives.swift:39-41`); #764's converged `presentationMeta`/`presentCall`/`presentResult` has zero native consumers | M | 🔒 (fold into data-protocols.md v1.4.0 = owner call) | open (proposal landed 2026-11-12 as the DRAFT pair `contract/proposals/2026-11-12-native-face-schemas.md`; the render-intent dispatch layer, the iOS pilot batch, and the Android/harmony batches follow in the T-0290 seat) |
+| R3 | Native face payloads: census → D5 proposal → platform-neutral render-intent dispatch → pilot wiring (iOS batch 1, then Android, then harmony; each batch's acceptance = scenario legs) | the census drift: five renderers hold the card/question shapes by code symmetry with zero schema (a cancelled ask parks forever — `SessionQuestions.swift:55`); the primitive payload faces are one prose sentence each (the mount gate's `message` key is read by no host — `plugin-mount.js:146` vs `UIPrimitives.swift:39-41`); #764's converged `presentationMeta`/`presentCall`/`presentResult` has zero native consumers | M | 🔒 (fold into data-protocols.md v1.4.0 = owner call) | done (implementation 2026-11-12 — #765 the dispatch layer + the iOS pilot, #766 the Android/harmony batches; the data-protocols fold stays with the Gate column — owner call) |
 
 ## Appendix A — dsh-desktop-plugins "still staged" (post-#632)
 
