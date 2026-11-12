@@ -10,6 +10,13 @@
 # the same commit as the script's PIN= line.
 @walk all vendor/npm/@mixmark-io/domino@2.2.0/lib vendor/npm/@joplin/turndown-plugin-gfm@1.0.67/lib
 @walk js-json vendor/npm/@deepseek-ai/dsh-goal@0.1.6-alpha.2 vendor/npm/@deepseek-ai/dsh-llm-retry@0.1.6-alpha.2 vendor/npm/@deepseek-ai/dsh-file-reference@0.1.6-alpha.2 vendor/npm/@deepseek-ai/dsh-file-reference-local@0.1.6-alpha.2
+# The MCP streamable-HTTP transport's vendored SDK (#632's five product pins;
+# T-0298 4.1 host staging): the npm-bridges-pi-ai-all.js rows serve these
+# faces at runtime — client dist/*.mjs (+ core, the _shims/stdio faces) and
+# the jose/eventsource/pkce-challenge dependency faces the ESM graph names
+# bare. js-mjs-json IS the dist trim: the client dist ships .cjs/.d.ts/.map
+# (4.4 MB of maps alone) that never load; the staged face is 1.14 MB.
+@walk js-mjs-json vendor/npm/@modelcontextprotocol/client@2.0.0 vendor/npm/@modelcontextprotocol/core@2.0.0 vendor/npm/jose@6.2.3 vendor/npm/eventsource@3.0.7 vendor/npm/pkce-challenge@5.0.1
 face-schemas.js
 fs-durable.js
 gateway.js

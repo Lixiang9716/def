@@ -121,6 +121,17 @@ vendor/npm/@earendil-works/pi-ai@0.85.1=../../external/npm/@earendil-works/pi-ai
 # already embedded. The vendored probe’s npm face serves both names.
 vendor/npm/@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2=../../external/npm/@deepseek-ai/dsh-llm-pi-ai@0.1.6-alpha.2
 vendor/npm/@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2=../../external/npm/@deepseek-ai/dsh-launch-environment@0.1.6-alpha.2
+# The MCP streamable-HTTP transport's vendored SDK (#632's five product pins;
+# T-0298 4.1 host staging): whole pins ride the noble/pi-ai precedent, and the
+# spine suffix filter IS the dist trim — the client dist ships .cjs/.d.ts/.map
+# the filter drops, embedding only the runtime .mjs/.js/.json face (1.15 MB of
+# the 8.5 MB whole-tree). The bridge rows (npm-bridges-pi-ai-all.js) serve
+# these faces at runtime.
+vendor/npm/@modelcontextprotocol/client@2.0.0=../../external/npm/@modelcontextprotocol/client@2.0.0
+vendor/npm/@modelcontextprotocol/core@2.0.0=../../external/npm/@modelcontextprotocol/core@2.0.0
+vendor/npm/jose@6.2.3=../../external/npm/jose@6.2.3
+vendor/npm/eventsource@3.0.7=../../external/npm/eventsource@3.0.7
+vendor/npm/pkce-challenge@5.0.1=../../external/npm/pkce-challenge@5.0.1
 # The OFFICE row's whole plugin dir, the upstream shims (a shim joins the
 # embed by existing, not by list edit), and the scenario/web-live whole-dir
 # rows (same rule). The shell seat is dsh-shell-js's since 2026-10-11 — the
