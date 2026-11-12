@@ -1,6 +1,13 @@
 # 提案:系统能力面——相机、麦克风与 BLE 站在同一套 OS 权限模型之下(v1.10.0 candidate)
 
-> **状态:DRAFT(D5 提案——未冻结、未实现)。**
+> **状态:ADOPTED(2026-11-13,owner 授权:已在服务的行以 v1.12.0 折叠进
+> primitives.zh.md §2——`cameraCapture`、八条 BLE 行、`micStart`/`micStop`,三个宿主
+> 全在服务;下方「未实现」声明对瘦身轮验证过的宿主清单已过期——iOS
+> `GatewayCore.swift:138-141`、Android `GatewayCore.kt:35-38`、harmony
+> `HostPhase.ets:149-151`。camera-frames 半场在采纳时重塑为专用席位——
+> `cameraFramesOpen`/`cameraFramesClose` 或 capture 原语自己的 `camera.frame`——
+> 绝不走 `channelOpen("camera")`,后者已在 v1.12.0 废弃;见瘦身记录 §3。
+> 分期的 `cameraRecordStart`/`Stop` 行保持其形状,待其阶段落地时实现。)**
 > [English](2026-09-30-system-capability-plane.md) | 简体中文
 
 ## 动机

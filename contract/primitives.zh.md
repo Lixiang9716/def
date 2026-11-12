@@ -1,4 +1,4 @@
-# 能力网关 — 原语契约 v1.11.0
+# 能力网关 — 原语契约 v1.12.0
 
 > **状态:契约冻结阶段冻结**(2026-09-19,决策 D5)。本文档中的形状在主版本 1 的整个生命周期内不可变。
 > 演进策略见 [§8](#8-版本与演进)。机器可读接口:[primitives.d.ts](primitives.d.ts)。
@@ -88,10 +88,33 @@
 > 可选请求字段离一次次版本增补只差一步(§8)。与 v1.1.0–v1.10.0 同一增量规则:
 > 无此对的宿主继续协商 `gateway@1` 并逐项如实回答 `unavailable`。
 >
+> **v1.12.0(增量,2026-11-13)**:标注轮 + 能力面折叠——已冻表朝**两个**方向
+> 对照现实重审,按已采纳提案 `contract/proposals/2026-11-11-gateway-primitive-slimming.zh.md`
+> (D5 原样成立:零已冻形状修改;瘦身以标注、废弃、以及折叠宿主已在服务的行表达)。
+> **Tier A——§2 每族一句分类标注**(§2「家族分类与废弃姿态」):该行为什么不可约
+> (该能力唯一的供给者是 OS 或宿主进程本身)以及哪些宿主在服务(2026-11-11 的
+> 服务面读取)。**Tier B——废弃标记**:`ishRun`(#16)自 2026-10 退役起无在役宿主,
+> `channelOpen`/`channelClose`(#27-28)在任何地方零实现;两者现在即标废弃,移除
+> 随 v2.0.0 文档携带迁移说明(§8 的主版本机制)——`ishRun` 的迁移路径是上游
+> `ctx.subprocess` cordis 席位或 `wasmRun`;channel 对唯一的设计消费者(能力面的
+> camera-frames 半场)在采纳时重塑为专用席位,不留悬空消费者。
+> `socketListen`/`socketConnect` 保留为 Tier A 并标注空置:由共享 C 脊柱 / CLI 宿主
+> 服务,没有产品宿主装载——缺席是协商的信息,永不伪造(§7 第 1 条)。
+> **折叠——宿主已在服务的十一行**:`cameraCapture`、八条 BLE 行
+> (`bleScanStart`/`bleScanStop`、`bleConnect`/`bleDisconnect`、`bleRead`/`bleWrite`、
+> `bleSubscribe`/`bleUnsubscribe`)、`micStart`/`micStop`——采纳
+> `contract/proposals/2026-09-30-system-capability-plane.zh.md`,其状态行在采纳时修正
+> (它的「未实现」声明对瘦身轮验证过的三份宿主清单已过期)。完整的请求/响应形状、
+> `mic.frame` / `ble.event` 投递通道、以及五规则授权模型都在该已采纳记录里;下方
+> 各行点名服务面与其权限旗标。33 + 11 = 44 条原语。与 v1.1.0–v1.11.0 同一增量
+> 规则:无该行的宿主继续协商 `gateway@1` 并答 `unavailable`。
+>
 > **状态注记(2026-10-15,无版本变更)**:`ishRun`(v1.3.0)**已无在役宿主**——iSH 引擎
 > 已随 2026-10 的退役移出仓库,所有宿主对该原语答 `unavailable`,正是 §7 第 1 条对缺席
 > 原语的规定。冻结条目原样保留——下方[表格行](#2-v0-表9-条原语)与 §4「模拟用户态」:
 > 形状在 major v1 的生命周期内不可变(D5),未来的实现将沿用同一形状,而非新增原语。
+> **v1.12.0 更新**:该行现已正式标记**废弃**——移除随 v2.0.0 文档携带迁移说明
+> (§2,Tier B);冻结条目沿 v1.x 线原样保留。
 
 这是四个平台(iOS / Android / HarmonyOS / 桌面互通)共同的服务基础:**能力网关的窄原语表**。
 每个宿主实现同一张表;它之上的一切——上游 Harness 包、系统实现插件、Web Client——看到的都是
@@ -145,7 +168,7 @@
 
 | # | 原语 | 用途 | 权限旗标 | 流 |
 | --- | --- | --- | --- | --- |
-| 16 | `ishRun` | 在宿主的进程内模拟 Linux 用户态中运行一个程序 | `ishRun` | 否 |
+| 16 | `ishRun` | 在宿主的进程内模拟 Linux 用户态中运行一个程序——**已废弃(v1.12.0),v2.0.0 移除(下方 Tier B)** | `ishRun` | 否 |
 
 **v1.4.0 新增(2 个)**——在 v1.5.0 折叠时补记:v1.4.0 折叠给出了定时器的语义
 (§4「定时器」)与通道,但漏掉了表行:
@@ -185,8 +208,8 @@
 
 | # | 原语 | 用途 | 权限旗标 | 流 |
 | --- | --- | --- | --- | --- |
-| 27 | `channelOpen` | 在封闭源表上武装一个订阅 | `channel` | 否 |
-| 28 | `channelClose` | 解除订阅(幂等) | `channel` | 否 |
+| 27 | `channelOpen` | 在封闭源表上武装一个订阅——**已废弃(v1.12.0),v2.0.0 移除(下方 Tier B)** | `channel` | 否 |
+| 28 | `channelClose` | 解除订阅(幂等)——**已废弃(v1.12.0),v2.0.0 移除(下方 Tier B)** | `channel` | 否 |
 
 **v1.10.0 增量(3)** —— render 面;一个权限旗标,无逐调用审批(打开 surface 本身即用户可见,
 `presentApproval` 的姿态):
@@ -205,6 +228,72 @@
 | --- | --- | --- | --- | --- |
 | 32 | `fsPublishAtomic` | 在授权范围内做一次原子持久发布(temp → fsync → rename → 目录 fsync) | `fsWrite` | 否 |
 | 33 | `fsSync` | 按路径对一个文件或目录做显式持久化屏障 | `fsRead` | 否 |
+
+**v1.12.0 增量(11)**——系统能力面,自已采纳提案
+`contract/proposals/2026-09-30-system-capability-plane.zh.md` 折叠而来(其状态行在采纳时
+修正:这些行三个宿主全在服务——即瘦身轮审计出的「比现实更薄」漂移)。完整的
+请求/响应形状、`mic.frame` / `ble.event` 投递通道、以及五规则授权模型(每个能力
+一个授权族——`camera`、`microphone`、`ble`;两层同意,网关优先;会话作用域、
+撤销即时生效;一切过网关审计;仅前台会话)都在该已采纳记录里:
+
+| # | 原语 | 用途 | 权限旗标 | 流 |
+| --- | --- | --- | --- | --- |
+| 34 | `cameraCapture` | 一次拍照突发,落进宿主持有的捕获 scope(经 fs 原语读回) | `camera` | 否 |
+| 35 | `bleScanStart` | arm 一次 BLE 设备扫描 | `ble` | 否 |
+| 36 | `bleScanStop` | 结束已 arm 的扫描 | `ble` | 否 |
+| 37 | `bleConnect` | 打开到一台已扫描设备的 GATT 连接 | `ble` | 否 |
+| 38 | `bleDisconnect` | 断开 GATT 连接(幂等) | `ble` | 否 |
+| 39 | `bleRead` | 读取一个 GATT characteristic | `ble` | 否 |
+| 40 | `bleWrite` | 写入一个 GATT characteristic | `ble` | 否 |
+| 41 | `bleSubscribe` | arm 一个 GATT 通知 | `ble` | 否 |
+| 42 | `bleUnsubscribe` | 解除一个 GATT 通知 | `ble` | 否 |
+| 43 | `micStart` | arm 一条麦克风流 | `microphone` | 否 |
+| 44 | `micStop` | 停止一条麦克风流;stop 记录承载该流的时长与字节数 | `microphone` | 否 |
+
+### 家族分类与废弃姿态(v1.12.0——标注轮)
+
+**Tier A**——v1.12.0 之前表格的每个家族一句分类标注,说明该行**为什么**不可约
+(该能力唯一的供给者是 OS 或宿主进程本身),以及哪些宿主在服务它。标注是关于
+*该行为什么存在*的文档事实;已冻形状与协商分毫不动:
+
+| 家族 | 行(§2 编号) | 不可约原因 | 在役宿主(2026-11-11) |
+| --- | --- | --- | --- |
+| fs 核心 | `fsRead`/`fsWrite`/`fsScope` #1-3、`fsStat`/`fsList`/`fsMkdir`/`fsRemove`/`fsRename` #10-14、`fsPublishAtomic`/`fsSync` #32-33 | 宿主的文件世界没有第二条路(D2:无子进程;D6:vendored 代码永不触盘) | iOS、Android、harmony(harmony 服务核心三件套+耐久对;元数据五行答 `unavailable`) |
+| 网络 | `httpFetch` #4 | 宿主网络栈是唯一出口 | 三者 |
+| 同意面 | `notify` #5、`presentApproval` #6、`presentPicker` #7 | 面向用户的 OS 界面本身就是信任边界 | 三者 |
+| 凭据 | `keychainGet`/`keychainSet` #8-9 | OS 凭据库 | 三者 |
+| 执行 | `wasmRun` #15 | 进程内解释器定义上就是宿主机制(iOS 禁 JIT,别无替代) | iOS、Android(harmony:`unavailable`) |
+| 定时器 | `timerSchedule`/`timerCancel` #17-18 | 未来的回调必须经宿主重入串行队列(D2/D8;v1.4.0 折叠的证据:没有它 22 个套件失败) | 三者 |
+| 设备面 | `deviceInfo`/`haptic`/`clipboardRead`/`clipboardWrite`/`presentShare`/`keepAwake` #19-24 | 平台 SDK 访问,数项在 OS 权限弹窗之后 | 三者 |
+| 渲染面 | `presentSurface`/`surfaceDraw`/`closeSurface` #29-31 | 宿主原生窗口是 OS 机制 | 仅 harmony(iOS/Android 以 Web Client 创作视图为协商下限) |
+| socket | `socketListen`/`socketConnect` #25-26 | OS socket;**且审计记录就是控制本身**——把它们沉到网关之下等于删掉安全边界(五规则模型,§4「the socket seam」) | 共享 C 脊柱 / CLI 宿主;**没有产品宿主装载它们** |
+
+v1.12.0 的能力面行新增三个同类 OS 权限族——camera(#34)、microphone(#43-44)、
+BLE(#35-42)——不可约的理由相同(OS 的无线电、相机与麦克风是唯一供给者),
+三个宿主全在服务;两层同意(网关授权、再 OS 弹窗)由已采纳记录的五规则定义。
+
+**Tier B**——被废弃的行(标记见上方各表;移除随 v2.0.0 文档携带迁移说明——
+§8 的主版本机制):
+
+- `ishRun`(#16)——**现在标废弃,v2.0.0 移除。**自 2026-10 退役起无在役宿主
+  (头部状态注记);它的审计诚实缺口(§4「模拟用户态」:网关无法审计程序在
+  客体内部做的事)使该行成为围着一个已不存在引擎的授权仪式。未来需要程序
+  执行的消费者迁移路径:上游 `ctx.subprocess` cordis 席位(编写
+  `system-plugins/dsh-subprocess-<face>/cordis.js` 继承 vendored
+  `SubprocessRuntime`),或进程内解释器够用处走 `wasmRun`。机械尾巴(web-live
+  可用性探针、wrapper 导出、manifest 能力行、audit-invariant 腿的
+  `unavailable` 断言格)随移除变更一起走。
+- `channelOpen`/`channelClose`(#27-28)——**同一标记,同一窗口。**任何地方零
+  实现;v1.9.0 折叠的源表(`motion`、`battery`)没有服务宿主。唯一仍以
+  `channelOpen` 为载体的设计——能力面的 camera-frames 半场——在采纳时重塑为
+  专用席位(`cameraFramesOpen`/`cameraFramesClose`,或 capture 原语自己的
+  `camera.frame` 席位)走缝的投递*规则*(latest-wins、挂起期间不投递),绝不走
+  `channelOpen` 订阅面——标记因此不留悬空消费者。某宿主的实现会证明该缝并把
+  姿态翻回 Tier A(瘦身轮的「两个决定是同一个决定」)。
+- `socketListen`/`socketConnect`(#25-26)——**不废弃**:保留为 Tier A,标注
+  空置(上方 socket 家族行)。它们承载真实实现(共享 C 脊柱;parity/suite 腿
+  在行使)与真实审计边界;标注记录的是没有任何产品宿主 descriptor 装载它们
+  ——今天由 CLI 脊柱服务,缺席是协商的信息,永不伪造(§7 第 1 条)。
 
 ## 3. 签名约定
 
@@ -547,9 +636,10 @@ capability 缺口)。审计按 §6:原语名、判定、字节数——绝不载
   新接口面通过协商按需启用。
 - **主版本**(`2.0.0`):对既有形状的任何修改、移除或重编号。需要新的契约文档与迁移说明。
 - 留给未来次版本的候选(明确**不在** v0):生物识别、地理位置、流式 fs 读取、fs 监视——
-  以及各自需要一轮 OS 权限设计的:位置、相机、麦克风、传感器、通讯录、完整相册访问
-  (设备面自己的遴选规则,v1.5.0)。v1.5.0 交付了本清单曾载的两个名字(剪贴板、分享面板);
-  v1.11.0 新添一个延迟名(append-durable fs 写——已知消费者由整件发布满足)并判死一个:
-  `link` 原语不是延迟而是**已死**——Android SELinux 政策拒绝 App 域的 `link(2)`
-  (实测,#587),一等宿主服务不了的契约原语就是契约的缺陷。克制正是窄表的意义;
-  每一项增补都必须拿协商数据论证其必要性。
+  以及各自需要一轮 OS 权限设计的:位置、传感器、通讯录、完整相册访问。v1.5.0 交付了本
+  清单曾载的两个名字(剪贴板、分享面板);v1.11.0 新添一个延迟名(append-durable fs
+  写——已知消费者由整件发布满足)并判死一个:`link` 原语不是延迟而是**已死**——Android
+  SELinux 政策拒绝 App 域的 `link(2)`(实测,#587),一等宿主服务不了的契约原语就是契约
+  的缺陷。v1.12.0 交付了 OS 权限轮的头三个族(相机、麦克风、BLE——能力面折叠),并把
+  空置行标为废弃:`ishRun` 与 `channelOpen`/`channelClose` 随 v2.0.0 移除并携带迁移说明
+  (§2,Tier B)。克制正是窄表的意义;每一项增补都必须拿协商数据论证其必要性。

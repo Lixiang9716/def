@@ -1,6 +1,17 @@
 # Proposal: the system capability plane — camera, microphone, and BLE behind one OS-permission model (v1.10.0 candidate)
 
-> **Status: DRAFT (D5 proposal — nothing frozen, nothing implemented).**
+> **Status: ADOPTED (2026-11-13, owner authorization: the served rows folded
+> into primitives.md §2 at v1.12.0 — `cameraCapture`, the eight BLE rows,
+> `micStart`/`micStop`, all served by the three hosts; the "nothing
+> implemented" claim below was stale against the host lists the slimming
+> round verified — iOS `GatewayCore.swift:138-141`, Android
+> `GatewayCore.kt:35-38`, harmony `HostPhase.ets:149-151`. The camera-frames
+> half is re-shaped at adoption to a dedicated seat —
+> `cameraFramesOpen`/`cameraFramesClose` or the capture primitive's own
+> `camera.frame` — never `channelOpen("camera")`, which is deprecated at
+> v1.12.0; see the slimming record's §3. The phased
+> `cameraRecordStart`/`Stop` rows keep their shapes, implemented when their
+> phase lands.)**
 > English | [简体中文](2026-09-30-system-capability-plane.zh.md)
 
 ## Motivation

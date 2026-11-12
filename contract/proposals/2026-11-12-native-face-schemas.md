@@ -1,7 +1,11 @@
 # Proposal: native declarative faces — the versioned payload schema family above the irreducible primitives (`face.*@1` fold candidate)
 
-> **Status: DRAFT (D5 proposal — nothing frozen here; adoption folds additively as a
-> data-protocols.md section). No primitive row, no frozen shape, no result changes.**
+> **Status: ADOPTED (2026-11-13, owner authorization: folded additively as
+> data-protocols.md v1.4.0 §11 — the rationale record; the two producer-side
+> one-liners the sizing named already landed in #765/#766 — `plugin-mount.js`
+> now passes the canonical `detail` via `approvalPayload`, and
+> `question-bridge.js` settles `outcome: "cancelled"`). No primitive row, no
+> frozen shape, no result changes.**
 > English | [简体中文](2026-11-12-native-face-schemas.zh.md)
 
 ## Motivation

@@ -1,4 +1,4 @@
-# 提案：net fd-wrap 面 —— 面向 dsh-subprocess 控制缝的 Socket({fd})（v1.12.0 候选）
+# 提案：net fd-wrap 面 —— 面向 dsh-subprocess 控制缝的 Socket({fd})（v1.13.0 候选）
 
 > **状态：DRAFT（D5 提案——未冻结任何内容，未实现任何内容）。**
 > [English](2026-10-19-net-fd-wrap.md) | 简体中文
@@ -208,8 +208,9 @@ true, writable: true, allowHalfOpen: true })` 经子腿兑现，返回 socket �
 
 ## 版本
 
-v1.12.0 候选（加性：一个原语；无新事件通道——socket 缝自己的通道载运流量；无新
+v1.13.0 候选（加性：一个原语；无新事件通道——socket 缝自己的通道载运流量；无新
 权限旗标）。最近一个冻结 minor 是 v1.11.0（durable-fs，2026-10-19）；在案草稿
 携带的候选号已被 fold 占用（forkpty v1.9.0、system-capability-plane v1.10.0——
-「monotonic fold ordering wins」，primitives.md v1.9.0 注），故 v1.12.0 是下一
-个空闲加性号；fold 时按 next-free 规则落号。
+「monotonic fold ordering wins」，primitives.md v1.9.0 注），故 v1.12.0 曾是下一
+个空闲加性号——2026-11-11 瘦身轮在其采纳时取走了该号（其 §3 处置：单调折叠顺序
+胜出；本候选资格移至 v1.13.0，next-free 规则就此应用）；fold 时按 next-free 规则落号。

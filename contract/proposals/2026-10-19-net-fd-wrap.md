@@ -1,4 +1,4 @@
-# Proposal: the net fd-wrap face — Socket({fd}) for the dsh-subprocess control seam (v1.12.0 candidate)
+# Proposal: the net fd-wrap face — Socket({fd}) for the dsh-subprocess control seam (v1.13.0 candidate)
 
 > **Status: DRAFT (D5 proposal — nothing frozen, nothing implemented).**
 > English | [简体中文](2026-10-19-net-fd-wrap.zh.md)
@@ -268,10 +268,13 @@ with the fold.
 
 ## Version
 
-v1.12.0 candidate (additive: one primitive; no new event channel — the
+v1.13.0 candidate (additive: one primitive; no new event channel — the
 socket seam's own carries the traffic; no new permission flag). The last
 frozen minor is v1.11.0 (durable-fs, 2026-10-19); the in-flight drafts carry
 stale candidate numbers the folds took (forkpty v1.9.0,
 system-capability-plane v1.10.0 — "monotonic fold ordering wins",
-primitives.md v1.9.0 note), so v1.12.0 is the next free additive number;
+primitives.md v1.9.0 note), so v1.12.0 was the next free additive number —
+and the 2026-11-11 slimming round took it at its adoption (its §3
+disposition: monotonic fold ordering wins; this candidacy moves to v1.13.0,
+the next-free rule applied now);
 the fold renumbers per the next-free rule at adoption.

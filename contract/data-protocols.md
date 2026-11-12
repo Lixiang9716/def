@@ -1,7 +1,9 @@
-# Data Protocols — Bundle Layout, Manifest, Receipt, Signed Catalog (v1.3.0)
+# Data Protocols — Bundle Layout, Manifest, Receipt, Signed Catalog (v1.4.0)
 
 > **Status: FROZEN at the contract freeze** (2026-09-19, decision D5); **additively extended to
-> v1.3.0** (2026-10-19: §10, `a2ui.messages@0.9` — proposal
+> v1.4.0** (2026-11-13: §11, the native face payloads `face.*@1` — proposal
+> [2026-11-12-native-face-schemas.md](proposals/2026-11-12-native-face-schemas.md), ADOPTED;
+> 2026-10-19: §10, `a2ui.messages@0.9` — proposal
 > [2026-10-17-a2ui-generative-ui.md](proposals/2026-10-17-a2ui-generative-ui.md), ADOPTED;
 > v1.2.0: §8–§9; v1.1.0: §7, the signed catalog — proposal
 > [2026-10-01-plugin-marketplace.md](proposals/2026-10-01-plugin-marketplace.md), ADOPTED). These
@@ -277,3 +279,170 @@ primitives, zero new channels (proposal non-goals held).
 The legacy `card.present` bus vocabulary maps into the A2UI catalog (the
 extractor is pure JS in the runtime closure); a deprecation timeline is
 decided separately — never a forced migration.
+
+## 11. Native face payloads (v1.4.0 — `face.*@1`)
+
+The versioned payload schema family **above the irreducible primitives**: the
+native declarative faces — the PiP card bus face, the in-band ask face, and
+the request payloads riding the frozen consent-surface primitives
+(`presentApproval` / `presentPicker` / `notify`). Adopted from
+[proposals/2026-11-12-native-face-schemas.md](proposals/2026-11-12-native-face-schemas.md)
+(ADOPTED 2026-11-13); this section freezes exactly what the five independent
+renderers already hold by symmetry (three native hosts, the runtime bridge,
+the web client's card face), now declared. Zero gateway primitives, zero new
+event channels — every frame rides a channel that already exists
+([primitives.md](primitives.md) §4/§5). Naming rule: each family is
+`face.<name>@<major>`; the payload carries an integer `schemaVersion` naming
+the family version the producer speaks. Fields marked **v1-add** are the only
+new fields; everything else is today's shape, now declared.
+
+### The versioning rule (additive from day one)
+
+- `schemaVersion` is an **optional integer** on every face payload: top-level
+  on bus frames (`{type:"card.present", schemaVersion:1, card:{…}}`), inside
+  the request object on primitive payloads (`presentApproval({schemaVersion:1,
+  title, detail})`). **Absent = legacy = today's exact behavior, forever** —
+  a payload without the field renders identically on every host, with no
+  deprecation clock on bus faces (the documented producer tolerance holds:
+  unknown fields are ignored everywhere, nothing throws).
+- Additions mint the next integer (`face.card@2`) with a migration note —
+  §6 discipline. Because every addition is optional and the core shape never
+  moves, a host may render a NEWER payload by ignoring unknown fields plus
+  one warn. **A removal, a retype, or a required-field addition is forbidden
+  within a family** — it mints a new family name with a major fold and a
+  migration note (§6's loud boundary).
+
+### face.card@1 — the PiP card bus face
+
+Bus lines `card.present` / `card.state` / `card.complete` / `card.dismiss`
+(rendered by the three native hosts and the web client's card face), plus the
+v1-add host→runtime return `card.action`:
+
+| Frame | Field | Type / default |
+| --- | --- | --- |
+| `card.present` | `card.id` | string, **required** — a missing id is refused (not rendered) and warned, never silently dropped |
+| | `card.title?` | string, defaults to id |
+| | `card.subtitle?` | string; rendered where the platform supports it, ignored where it does not |
+| | `card.kind?` | **closed set** `{info, timer}` (default `info`); an unknown kind degrades to `info` with a logged warn |
+| | `card.durationMs?` | number — the local countdown anchor |
+| | `card.label?` | string — the non-timer text line |
+| | `card.actions?` | **v1-add**: `[{id, label}]` — declarative action buttons; a host without button support ignores the array with a logged warn (the card still renders) |
+| `card.state` | `state.remainingMs?` | number — re-anchors the local clock (hosts tween locally at 250 ms; 1 Hz patches suffice — never spam) |
+| | `state.label?` | string — swaps the text line |
+| `card.complete` | `message?` | string, defaults `"完成"`; iOS/Android auto-dismiss ~2.5 s, harmony keeps the card |
+| `card.dismiss` | `{}` | accepted by every host |
+| `card.action` | **v1-add** (host→runtime) | `{id, action: "close" \| "drag-end" \| "button", actionId?, at}` — the action-return event (below) |
+
+**Dismissal authority stays the plugin's** — a locally closed card just
+ignores later `card.state` / `card.complete` records. `card.action` makes the
+local close *observable*, never authoritative: the producer hears the close
+and may react (post `card.dismiss`, re-present, stop its loop); it does not
+receive control of the surface.
+
+### face.question@1 — the in-band ask face
+
+Bus frames `question.request` / `question.answer` / `question.decided`
+(rendered natively by iOS and Android; harmony answers through the WebView):
+
+| Frame | Field | Type / default |
+| --- | --- | --- |
+| `question.request` | `id` | string, **required** (the askId) |
+| | `questions[].id?` | string, defaults `q<n>` |
+| | `questions[].header?` | string — the dialog title |
+| | `questions[].question?` | string — the message body |
+| | `questions[].options[]` | **v1-add normalization**: `{id, label}` objects are canonical; a bare string remains accepted as `{id: <string>, label: <string>}`; answers identify options by **id**, never by echoed display label |
+| `question.answer` | `outcome` | **v1-add**: `"answered" \| "cancelled"` — **absent = `answered`** (legacy frames unchanged); a cancelled ask settles the parked turn |
+| | `answers[].id` | string — the question id |
+| | `answers[].selected` | `string[]` — option **ids** under v1 (labels in legacy frames) |
+| | `answers[].custom?` | string — free-text answer |
+| `question.decided` | `{id}` | unchanged — follows the settle |
+
+### face.approval@1 — the consent-ladder request face
+
+Request side ONLY: the frozen `presentApproval` result
+`{approved, remember?}` stays byte-for-byte ([primitives.md](primitives.md)
+§4). The payload is exactly the fields hosts already read, now declared
+family-wide — the same shape serves the consent twins (the clipboardRead
+consent, the BLE prompt layer), so a fourth hand-rolled dialog becomes a
+payload read:
+
+| Field | Type |
+| --- | --- |
+| `schemaVersion?` | integer (the family rule above) |
+| `title` | string (hosts default `""`/`"Approval"`) |
+| `detail?` | string — **the canonical detail field; no `message` alias is blessed** |
+| `allowRemember?` | boolean — present-remember UI when true |
+
+v1 declines (no consumer asking yet; the restraint rule applies to payload
+faces too): structured risk objects, decline-reason/comment channels, i18n
+button labels, host-side expiry. Each is an additive v2 candidate.
+
+### face.picker@1 — the OS-picker request face
+
+Request side only; the frozen `presentPicker` result `{scope, path} | null`
+stays byte-for-byte — user dismissal is still a null value, never an error:
+
+| Field | Type |
+| --- | --- |
+| `mode` | `{file, directory, media}` (iOS/Android default `file`) — the served set, including the v1.5.0 `media` extension |
+| `suggestedName?` | string — served family-wide; additive elsewhere (unknown fields are ignored) |
+
+v1 declines: content filters and multi-select — both change the frozen result
+shape (major-version material).
+
+### face.notify@1 — the local-notification request face
+
+Request side only; the frozen `notify` result `{id}` stays byte-for-byte:
+
+| Field | Type |
+| --- | --- |
+| `title` | string, **required** — a host refuses `invalid` over a missing title; it never silently substitutes a default |
+| `body?` | string |
+| `threadId?` | string — declared family-wide (additive where not yet served) |
+| `data?` | `map<string, any>` — declared family-wide (additive where not yet served) |
+
+v1 declines: notification action categories (no host registers any).
+
+### The action-return contract (D8 — event sequences, never polling)
+
+User actions return to the runtime as events over channels that already
+exist. No new gateway primitive, no new event channel, no shared host state:
+
+1. **`card.action`** rides the host→runtime bus delivery that
+   `question.answer` already uses. Order guarantee: at most one terminal
+   action per card id (`close` beats a pending `button`), sequenced by
+   occurrence.
+2. **`question.answer` with `outcome: "cancelled"`** settles the parked ask;
+   `question.decided` keeps its post-settle position.
+3. **`notify.response`** stays the frozen §5 event channel of
+   [primitives.md](primitives.md); the shipped order — `notify.response` then
+   `app.state` `"foreground"` — is pinned as family behavior.
+4. **Approval/picker/notify results ride the frozen primitive settle** — no
+   new events.
+
+### The degradation ladder (never crash, never silent)
+
+Ordered rules every face renderer implements:
+
+1. **Unknown face type or unknown `kind` → render the generic form** (title +
+   text), one structured warn through the host's unified log channel — never
+   throw, never drop silently.
+2. **`schemaVersion` above the host's known max → legacy render + warn**
+   (ignore unknown fields — the documented tolerance).
+3. **Unknown fields → ignored** (today's behavior, now declared).
+4. **Required field missing → not rendered + one structured warn naming the
+   frame and the field** — replacing the silent drop. The honesty fix is the
+   log, not the render: the producer contract documents the drop, so the drop
+   stays; silently dropping is what changes.
+5. **Primitive-payload malformation keeps the frozen `invalid` refusals**
+   ([primitives.md](primitives.md) §4).
+
+### The fail-soft / fail-loud boundary
+
+Faces are **chrome** and fail-soft: a face renderer never crashes the runtime
+and never turns payload styling into a rejected call — a face is user-visible
+chrome, never authorization material. Install documents stay the opposite
+pole: manifests / receipts / catalogs keep §6's fail-loud rule (unknown
+majors rejected loudly, never best-effort parsed). Security-bearing
+validation (permission flags, audit records) stays at the gateway, untouched —
+nothing in `face.*@1` carries authority.

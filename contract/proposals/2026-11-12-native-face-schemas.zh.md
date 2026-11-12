@@ -1,7 +1,10 @@
 # 提案:原生声明式面——不可约原语之上的版本化载荷 schema 族(`face.*@1` 折叠候选)
 
-> **状态:DRAFT(D5 提案——此处不冻结任何东西;采纳时以增量方式折叠为
-> data-protocols.md 的一节)。不动任何原语行、任何已冻形状、任何结果形状。**
+> **状态:ADOPTED(2026-11-13,owner 授权:以增量方式折叠为
+> data-protocols.zh.md v1.4.0 §11——本文件即理据记录;体量一节点名的两处生产方
+> 一行事已在 #765/#766 落地——`plugin-mount.js` 现经 `approvalPayload` 传规范的
+> `detail`,`question-bridge.js` 落地 `outcome: "cancelled"`)。不动任何原语行、
+> 任何已冻形状、任何结果形状。**
 
 [English](2026-11-12-native-face-schemas.md) | 简体中文
 

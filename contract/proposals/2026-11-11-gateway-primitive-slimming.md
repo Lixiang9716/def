@@ -1,7 +1,10 @@
 # Proposal: gateway primitive slimming — annotate the irreducible native ABI, deprecate the vacant ceremony rows (v1.12.0 annotation round)
 
-> **Status: DRAFT (D5 proposal — no frozen shape changes; this file proposes
-> annotations, deprecations, and a fold of rows the hosts already serve).**
+> **Status: ADOPTED (2026-11-13, owner authorization: folded additively as
+> primitives.md v1.12.0 — the rationale record; §1's Tier A annotations,
+> §2's deprecation markings, and §3's capability-plane fold all landed —
+> 33 + 11 = 44 primitives — and the 2026-09-30 capability-plane status line
+> was corrected at adoption per this file's own recommendation).**
 > English | [简体中文](2026-11-11-gateway-primitive-slimming.zh.md)
 
 ## Motivation

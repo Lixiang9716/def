@@ -2,7 +2,7 @@
 
 > English | [简体中文](README.zh.md)
 
-**The contract-freeze deliverable — the first priority of the entire project. Status: FROZEN v1.0.0 (2026-09-19, D5), additively extended (primitives v1.8.0 2026-09-30, v1.9.0/v1.10.0 2026-10-08, v1.11.0 — the durable-fs primitives — 2026-10-19; data-protocols v1.1.0 — the signed catalog, 2026-10-01).**
+**The contract-freeze deliverable — the first priority of the entire project. Status: FROZEN v1.0.0 (2026-09-19, D5), additively extended (primitives v1.8.0 2026-09-30, v1.9.0/v1.10.0 2026-10-08, v1.11.0 — the durable-fs primitives — 2026-10-19, v1.12.0 — the slimming annotation round + the capability-plane fold — 2026-11-13; data-protocols v1.1.0 — the signed catalog, 2026-10-01, v1.4.0 — the native face payloads `face.*@1` — 2026-11-13).**
 
 No implementation code lands before this directory is frozen (D5: contract first). It is now.
 
@@ -10,14 +10,14 @@ No implementation code lands before this directory is frozen (D5: contract first
 
 | Artifact | What it freezes |
 | --- | --- |
-| [primitives.md](primitives.md) | Capability gateway primitive table v1.11.0 — 33 primitives (v1.1.0–v1.5.0, v1.8.0–v1.11.0 additive), typed, permission-flagged, versioned; event channels; audit; conformance (`gateway@1`) · [简体中文](primitives.zh.md) |
+| [primitives.md](primitives.md) | Capability gateway primitive table v1.12.0 — 44 primitives (v1.1.0–v1.5.0, v1.8.0–v1.12.0 additive; v1.12.0 = the family-annotation round + the capability-plane fold + the `ishRun`/`channelOpen`/`channelClose` deprecation markings), typed, permission-flagged, versioned; event channels; audit; conformance (`gateway@1`) · [简体中文](primitives.zh.md) |
 | [primitives.d.ts](primitives.d.ts) | Machine-readable primitive surface (TS declarations) |
-| [data-protocols.md](data-protocols.md) | Bundle layout · plugin manifest · integrity ledger · install receipt transaction · capability string grammar · the signed catalog (§7, v1.1.0) · [简体中文](data-protocols.zh.md) |
+| [data-protocols.md](data-protocols.md) | Bundle layout · plugin manifest · integrity ledger · install receipt transaction · capability string grammar · the signed catalog (§7, v1.1.0) · the native face payloads `face.*@1` (§11, v1.4.0) · [简体中文](data-protocols.zh.md) |
 | [schemas/manifest.schema.json](schemas/manifest.schema.json) | Plugin manifest, `schemaVersion: 1` (JSON Schema 2020-12) |
 | [schemas/integrity.schema.json](schemas/integrity.schema.json) | Installed-tree digest ledger, `ledgerVersion: 1` |
 | [schemas/receipt.schema.json](schemas/receipt.schema.json) | Install/remove transaction receipt, `receiptVersion: 1` |
 | [schemas/marketplace-index.schema.json](schemas/marketplace-index.schema.json) | Marketplace signed catalog index, `schemaVersion: 1` (data-protocols §7) |
-| [proposals/](proposals/) | Draft additions under debate (D5 proposals — nothing frozen, nothing implemented; ADOPTED proposals fold into their contract doc — the socket seam → [primitives.md](primitives.md) v1.8.0, the plugin marketplace → [data-protocols.md](data-protocols.md) v1.1.0 §7, the event channel → [primitives.md](primitives.md) v1.9.0, the render surface → [primitives.md](primitives.md) v1.10.0, the durable-fs primitives → [primitives.md](primitives.md) v1.11.0) · current: [the forkpty face](proposals/2026-09-29-forkpty-face.md), [the system capability plane](proposals/2026-09-30-system-capability-plane.md), [the gateway primitive-slimming round](proposals/2026-11-11-gateway-primitive-slimming.md), [the native declarative-face schema family](proposals/2026-11-12-native-face-schemas.md), and [the capability bus](proposals/2026-11-13-capability-bus.md) (all DRAFT) |
+| [proposals/](proposals/) | Draft additions under debate (D5 proposals — nothing frozen, nothing implemented; ADOPTED proposals fold into their contract doc — the socket seam → [primitives.md](primitives.md) v1.8.0, the plugin marketplace → [data-protocols.md](data-protocols.md) v1.1.0 §7, the event channel → [primitives.md](primitives.md) v1.9.0, the render surface → [primitives.md](primitives.md) v1.10.0, the durable-fs primitives → [primitives.md](primitives.md) v1.11.0, the A2UI messages → [data-protocols.md](data-protocols.md) v1.3.0 §10, the native declarative-face schema family → [data-protocols.md](data-protocols.md) v1.4.0 §11, the system capability plane + the gateway primitive-slimming round → [primitives.md](primitives.md) v1.12.0) · current: [the forkpty face](proposals/2026-09-29-forkpty-face.md), [the net fd-wrap face](proposals/2026-10-19-net-fd-wrap.md), and [the capability bus](proposals/2026-11-13-capability-bus.md) (all DRAFT) |
 
 ## Reading order
 
