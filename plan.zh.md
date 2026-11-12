@@ -159,6 +159,19 @@
 | P2 | shell/subprocess 塌层审计：`ctx.shell`/`ctx.subprocess` 对照模拟 userland 原语族（contract/primitives.md v1.3.0）；逐行裁决 = 换座或明确保留 vendored | fs 笔记记录的同一「两份审计」模式；产品 shell 是工作区 fs 面上的外置 dsh-shell-js（boot.js 导入注释） | M | — | done（2026-11-12——两缝审计均判无双面；诚实定谳 + 文档归真，见 2026-11-12-p2-shell-subprocess-seam-audit.md） |
 | P3 | 契约瘦身 + 工具写作契约升级：把 writing-method 约定在命令可检查处升级为门（doc/writing-method.md 规则 1–8 各带门禁状态） | `gates.json` 今天对规则 1–7 一律无门，规则 8 只有记账半边（`e2e-matrix`、`test-taxonomy`） | M | 🔒（哪些约定立门 = owner 拍板） | done（2026-11-11——契约两半：瘦身提案 `contract/proposals/2026-11-11-gateway-primitive-slimming.md`（标注不可约 ABI、废弃空置的 ishRun/channel 行、折叠已在服务的能力面行）+ 基于 pin 定版 `defineTool` 面的工具卡契约升级（office/appshell/create/plugin-manager-tools/open-design 全部声明 `output.presentationMeta` + `presentCall`/`presentResult`，纯函数 + 软失败；`test/panel/tool-card-face.test.js` 钉住；office/appshell/plugin-forms/open-design 四条 e2e 腿重跑全绿）——均落 feat/seam-collapse-p2p3 席位；writing-method→门 的升级仍 🔒 owner 拍板，留作后续，见 P3 Agent Note） |
 
+## 14. 原生声明式面程序（R3，2026-11-12）
+
+给 render-intent 载荷面做版本化:让原生面(`card.*` 总线行、`question.*` 帧、
+`presentApproval`/`presentPicker`/`notify` 之上的请求载荷)拥有 `surface.ops@1`
+与 `a2ui.messages@0.9` 已有的东西——版本化增量 schema 族、事件序列式动作回传契约
+(D8)、绝不崩溃/绝不静默的降级阶梯——而脚下原语保持不可约、保持冻结。语料是四路
+普查(iOS、Android、harmony、生产方),提案是
+[contract/proposals/2026-11-12-native-face-schemas.zh.md](contract/proposals/2026-11-12-native-face-schemas.zh.md)。
+
+| # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
+|---|---|---|---|---|---|
+| R3 | 原生面载荷:普查 → D5 提案 → 平台中立 render-intent 分发 → 先导接线(iOS 批 1,随后 Android、harmony;每批验收 = 场景腿) | 普查漂移:五个渲染器靠代码对称维持 card/question 形状、零 schema(取消的 ask 永挂——`SessionQuestions.swift:55`);原语载荷面每样只有一句散文(挂载闸的 `message` 键无宿主读——`plugin-mount.js:146` 对 `UIPrimitives.swift:39-41`);#764 收敛的 `presentationMeta`/`presentCall`/`presentResult` 零原生消费者 | M | 🔒(折叠进 data-protocols.md v1.4.0 = owner 拍板) | open(提案 2026-11-12 以 DRAFT 对落地:`contract/proposals/2026-11-12-native-face-schemas.zh.md`;render-intent 分发层、iOS 先导批与 Android/harmony 批随后在 T-0290 席位落地) |
+
 ## 附录 A — dsh-desktop-plugins "still staged"（#632 之后）
 
 | 行 | 缺口 | 备注 |
