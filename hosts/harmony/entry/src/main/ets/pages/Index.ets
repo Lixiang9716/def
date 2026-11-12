@@ -2606,7 +2606,7 @@ struct Index {
                 .fontColor('#1a1a1a')
                 .backgroundColor('#E8E6E3')
                 .layoutWeight(1)
-                .margin({ end: 8 })
+                .margin({ right: 8 })
                 .onClick((): void => {
                   CardFace.buttonAction(action.id);
                 })
