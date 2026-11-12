@@ -1,4 +1,4 @@
-# Capability Gateway — Primitive Contract v1.11.0
+# Capability Gateway — Primitive Contract v1.12.0
 
 > **Status: FROZEN at the contract freeze** (2026-09-19, decision D5). Shapes in this document are immutable
 > for the life of major version 1. Evolution policy in [§8](#8-versioning--evolution).
@@ -120,6 +120,37 @@
 > away (§8). Same additive rule as v1.1.0–v1.10.0: a host without the pair
 > keeps negotiating `gateway@1` and answers each `unavailable`.
 >
+> **v1.12.0 (additive, 2026-11-13)**: the annotation round + the
+> capability-plane fold — the frozen table re-audited against reality in
+> **both** directions, per the adopted proposal
+> `contract/proposals/2026-11-11-gateway-primitive-slimming.md` (D5 held:
+> zero frozen shape edits; slimming is expressed as annotation, deprecation,
+> and a fold of rows the hosts already serve). **Tier A — one word of family
+> classification per §2 family** (§2, "Family classification"): why the row is
+> irreducible (the only provider of the capability is the OS or the host
+> process itself) and which hosts serve it (the 2026-11-11 service read).
+> **Tier B — deprecation markings**: `ishRun` (#16) has had no in-service host
+> since the 2026-10 retirement and `channelOpen`/`channelClose` (#27-28) have
+> zero implementations anywhere; both are marked deprecated now, removal rides
+> the v2.0.0 document with a migration note (§8's major-version mechanism) —
+> the `ishRun` migration path is the upstream `ctx.subprocess` cordis seat or
+> `wasmRun`; the channel pair's one designed consumer (the capability plane's
+> camera-frames half) is re-shaped to a dedicated seat, leaving no dangling
+> consumer. `socketListen`/`socketConnect` stay Tier A with the vacancy
+> annotated: served by the shared C spine / CLI host, staged by no product
+> host — absence is information for negotiation, never faked (§7 #1).
+> **The fold — eleven rows the hosts already serve**: `cameraCapture`, the
+> eight BLE rows (`bleScanStart`/`bleScanStop`, `bleConnect`/`bleDisconnect`,
+> `bleRead`/`bleWrite`, `bleSubscribe`/`bleUnsubscribe`), `micStart`/`micStop`
+> — adopting `contract/proposals/2026-09-30-system-capability-plane.md`, whose
+> status line is corrected at adoption (its "nothing implemented" claim was
+> stale against the three host lists the slimming round verified). Full
+> request/response shapes, the `mic.frame` / `ble.event` delivery channels,
+> and the five-rule authorization model live in that adopted record; the rows
+> below name the surface and its permission flags. 33 + 11 = 44 primitives.
+> Same additive rule as v1.1.0–v1.11.0: a host without a row keeps negotiating
+> `gateway@1` and answers `unavailable`.
+>
 > **Status note (2026-10-15, no version change)**: `ishRun` (v1.3.0) has **no
 > in-service host** — the iSH engine left the repository in the 2026-10
 > retirement, and every host answers the primitive `unavailable`, exactly what
@@ -127,6 +158,9 @@
 > the [table row](#2-v0-table-9-primitives) and §4 "emulated userland" below:
 > shapes are immutable for the life of major version 1 (D5), so a future
 > implementation would adopt these same shapes, not a new primitive.
+> **v1.12.0 update**: the row is now formally marked **deprecated** — removal
+> rides the v2.0.0 document with a migration note (§2, Tier B); the frozen
+> entry stays verbatim through the v1.x line.
 
 This is the shared service foundation of all four platforms (iOS / Android / HarmonyOS /
 desktop interop): the **narrow primitive table of the capability gateway**. Every host
@@ -187,7 +221,7 @@ permission flags, so no new capability has to be negotiated:
 
 | # | Primitive | Purpose | Permission flag | Streams |
 | --- | --- | --- | --- | --- |
-| 16 | `ishRun` | run one program in the host's in-process emulated Linux userland | `ishRun` | no |
+| 16 | `ishRun` | run one program in the host's in-process emulated Linux userland — **DEPRECATED (v1.12.0), removal at v2.0.0 (Tier B below)** | `ishRun` | no |
 
 **v1.4.0 additions (2)** — recorded here at the v1.5.0 fold: the v1.4.0 fold specified
 the timer's semantics (§4 "timer") and its channel but omitted the table rows:
@@ -230,8 +264,8 @@ audited — the honesty rule of §6):
 
 | # | Primitive | Purpose | Permission flag | Streams |
 | --- | --- | --- | --- | --- |
-| 27 | `channelOpen` | arm one subscription on a closed source table | `channel` | no |
-| 28 | `channelClose` | disarm a subscription (idempotent) | `channel` | no |
+| 27 | `channelOpen` | arm one subscription on a closed source table — **DEPRECATED (v1.12.0), removal at v2.0.0 (Tier B below)** | `channel` | no |
+| 28 | `channelClose` | disarm a subscription (idempotent) — **DEPRECATED (v1.12.0), removal at v2.0.0 (Tier B below)** | `channel` | no |
 
 **v1.10.0 additions (3)** — the render surface; one permission flag, no per-call
 approval (opening a surface is itself user-visible, the `presentApproval` posture):
@@ -251,6 +285,87 @@ doesn't already imply (`fsRead`):
 | --- | --- | --- | --- | --- |
 | 32 | `fsPublishAtomic` | one atomic durable publish (temp → fsync → rename → dir-fsync) inside an authorized scope | `fsWrite` | no |
 | 33 | `fsSync` | explicit durability barrier for one file or directory by path | `fsRead` | no |
+
+**v1.12.0 additions (11)** — the system capability plane, folded from the
+adopted proposal `contract/proposals/2026-09-30-system-capability-plane.md`
+(its status line is corrected at adoption: these rows are served by all three
+hosts — the thinner-than-reality drift the slimming round audited). Full
+request/response shapes, the `mic.frame` / `ble.event` delivery channels, and
+the five-rule authorization model (one grant family per capability — `camera`,
+`microphone`, `ble`; two consent layers, gateway first; session-scoped with
+live revocation; everything through the gateway audit; foreground sessions
+only) live in that adopted record:
+
+| # | Primitive | Purpose | Permission flag | Streams |
+| --- | --- | --- | --- | --- |
+| 34 | `cameraCapture` | one capture burst of photos into the host-owned capture scope (read back through the fs primitives) | `camera` | no |
+| 35 | `bleScanStart` | arm one BLE device scan | `ble` | no |
+| 36 | `bleScanStop` | end an armed scan | `ble` | no |
+| 37 | `bleConnect` | open one GATT connection to a scanned device | `ble` | no |
+| 38 | `bleDisconnect` | drop a GATT connection (idempotent) | `ble` | no |
+| 39 | `bleRead` | read one GATT characteristic | `ble` | no |
+| 40 | `bleWrite` | write one GATT characteristic | `ble` | no |
+| 41 | `bleSubscribe` | arm one GATT notification | `ble` | no |
+| 42 | `bleUnsubscribe` | disarm a GATT notification | `ble` | no |
+| 43 | `micStart` | arm one microphone stream | `microphone` | no |
+| 44 | `micStop` | stop a microphone stream; the stop record carries the stream's duration and byte count | `microphone` | no |
+
+### Family classification and deprecation posture (v1.12.0 — the annotation round)
+
+**Tier A** — one word of classification per family of the pre-v1.12.0 table,
+stating WHY the row is irreducible (the only provider of the capability is
+the OS or the host process itself) and which hosts serve it. The annotation
+is doc truth about *why the row exists*; frozen shapes and negotiation are
+unmoved:
+
+| Family | Rows (§2 #) | Irreducible because | In-service hosts (2026-11-11) |
+| --- | --- | --- | --- |
+| fs core | `fsRead`/`fsWrite`/`fsScope` #1-3, `fsStat`/`fsList`/`fsMkdir`/`fsRemove`/`fsRename` #10-14, `fsPublishAtomic`/`fsSync` #32-33 | the host's file world is reachable no other way (D2: no subprocess; D6: vendored code never touches the disk) | iOS, Android, harmony (harmony serves the core trio + durable pair; the metadata five answer `unavailable`) |
+| network | `httpFetch` #4 | the host network stack is the only egress | all three |
+| consent surfaces | `notify` #5, `presentApproval` #6, `presentPicker` #7 | a user-facing OS surface is itself the trust boundary | all three |
+| credentials | `keychainGet`/`keychainSet` #8-9 | OS credential stores | all three |
+| execution | `wasmRun` #15 | an in-process interpreter is host machinery by definition (the iOS JIT ban leaves no alternative) | iOS, Android (harmony: `unavailable`) |
+| timer | `timerSchedule`/`timerCancel` #17-18 | a future callback must re-enter the serial queue through the host (D2/D8; the v1.4.0 fold's evidence: 22 suite failures without it) | all three |
+| device plane | `deviceInfo`/`haptic`/`clipboardRead`/`clipboardWrite`/`presentShare`/`keepAwake` #19-24 | platform SDK access, several behind OS permission prompts | all three |
+| render surface | `presentSurface`/`surfaceDraw`/`closeSurface` #29-31 | a host-native window is OS machinery | harmony only (iOS/Android keep the Web Client creation viewer as the negotiation floor) |
+| socket | `socketListen`/`socketConnect` #25-26 | OS sockets; **and the audit record is the control** — sinking them below the gateway would delete the security boundary (five-rule model, §4 "the socket seam") | the shared C spine / CLI host; **no product host stages them** |
+
+The v1.12.0 capability-plane rows add three OS-permission-backed families of
+the same kind — camera (#34), microphone (#43-44), BLE (#35-42) — each
+irreducible for the same reason (the OS radio, camera, and microphone are the
+only suppliers) and served by all three hosts, with the two consent layers
+(gateway grant, then OS prompt) defined by the adopted record's five rules.
+
+**Tier B** — the deprecated rows (marked in the tables above; removal rides
+the v2.0.0 document with a migration note — §8's major-version mechanism):
+
+- `ishRun` (#16) — **deprecated now, removed at v2.0.0.** No in-service host
+  since the 2026-10 retirement (the status note in the header); its
+  audit-honesty hole (§4 "emulated userland": the gateway cannot audit what
+  the program does inside the guest) makes the row a grant ceremony around an
+  engine that no longer exists. Migration path for a future consumer that
+  needs program execution: the upstream `ctx.subprocess` cordis seat (author
+  `system-plugins/dsh-subprocess-<face>/cordis.js` extending the vendored
+  `SubprocessRuntime`), or `wasmRun` where an in-process interpreter suffices.
+  The mechanical tail (the web-live availability probe, the wrapper export,
+  the manifest capability row, the audit-invariant leg's `unavailable` cell)
+  rides the removal change.
+- `channelOpen`/`channelClose` (#27-28) — **same marking, same window.** Zero
+  implementations anywhere; the v1.9.0 fold's source table (`motion`,
+  `battery`) has no served host. The one design that still named
+  `channelOpen` as its carrier — the capability plane's camera-frames half —
+  is re-shaped at adoption to a dedicated seat (`cameraFramesOpen`/
+  `cameraFramesClose`, or the capture primitive's own `camera.frame` seat)
+  over the seam's delivery *rules* (latest-wins, no-delivery-while-suspended),
+  never the `channelOpen` subscription face — so the marking leaves no
+  dangling consumer. A host implementation would prove the seam and flip the
+  posture back to Tier A (the slimming round's one-decision rule).
+- `socketListen`/`socketConnect` (#25-26) — **not deprecated**: Tier A with
+  the vacancy annotated (the socket family row above). They carry a real
+  implementation (the shared C spine; the parity/suite legs exercise it) and
+  a real audit boundary; the annotation records that no product host
+  descriptor stages them — served by the CLI spine today, and absence is
+  information for negotiation, never faked (§7 #1).
 
 ## 3. Signature conventions
 
@@ -708,11 +823,14 @@ Platform mapping notes belong to each host (`hosts/<platform>/`), not to this co
   new contract document and a migration note.
 - Deferred candidates for future minors (explicitly **not** in v0): biometric prompt,
   geolocation, streamed fs read, fs watch — and, behind an OS-permission design round of
-  their own: location, camera, microphone, sensors, contacts, full Photos-library access
-  (the device plane's own curation rule, v1.5.0). v1.5.0 delivered two names this list
-  used to carry (clipboard, share sheet); v1.11.0 added one deferred name (append-durable
-  fs write — whole-artifact publish serves the known consumer) and killed one outright:
-  a `link` primitive is not deferred but **dead** — Android SELinux policy denies
-  `link(2)` for app domains (measured, #587), and a contract primitive a first-class
-  host cannot serve is a defect of the contract. Restraint is the point of a narrow
-  table; each addition must argue its necessity against negotiation data.
+  their own: location, sensors, contacts, full Photos-library access. v1.5.0 delivered
+  two names this list used to carry (clipboard, share sheet); v1.11.0 added one deferred
+  name (append-durable fs write — whole-artifact publish serves the known consumer) and
+  killed one outright: a `link` primitive is not deferred but **dead** — Android SELinux
+  policy denies `link(2)` for app domains (measured, #587), and a contract primitive a
+  first-class host cannot serve is a defect of the contract. v1.12.0 delivered the
+  OS-permission round's first three families (camera, microphone, BLE — the
+  capability-plane fold) and marked the vacant rows deprecated: `ishRun` and
+  `channelOpen`/`channelClose` carry removal at v2.0.0 with migration notes (§2, Tier B).
+  Restraint is the point of a narrow table; each addition must argue its necessity
+  against negotiation data.

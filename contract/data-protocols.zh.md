@@ -1,7 +1,9 @@
-# 数据协议 — Bundle 布局、Manifest、Receipt、签名目录(v1.3.0)
+# 数据协议 — Bundle 布局、Manifest、Receipt、签名目录(v1.4.0)
 
-> **状态:契约冻结阶段冻结**(2026-09-19,决策 D5);**以可加性方式扩展到 v1.3.0**
-> (2026-10-19:§10 `a2ui.messages@0.9`——提案
+> **状态:契约冻结阶段冻结**(2026-09-19,决策 D5);**以可加性方式扩展到 v1.4.0**
+> (2026-11-13:§11 原生面载荷 `face.*@1`——提案
+> [2026-11-12-native-face-schemas.zh.md](proposals/2026-11-12-native-face-schemas.zh.md),ADOPTED;
+> 2026-10-19:§10 `a2ui.messages@0.9`——提案
 > [2026-10-17-a2ui-generative-ui.zh.md](proposals/2026-10-17-a2ui-generative-ui.zh.md),ADOPTED;
 > v1.2.0:§8–§9;v1.1.0:§7 签名目录——提案
 > [2026-10-01-plugin-marketplace.zh.md](proposals/2026-10-01-plugin-marketplace.zh.md),ADOPTED)。
@@ -240,3 +242,152 @@ UI 载荷，各宿主用自己的渲染器渲染。采纳自
 
 遗留的 `card.present` 总线词汇映射进 A2UI 目录（提取器是运行时闭包内的
 纯 JS）；弃用时间表另行决定——永不强制迁移。
+
+## 11. 原生面载荷（v1.4.0 —— `face.*@1`）
+
+**不可约原语之上**的版本化载荷 schema 族：原生声明式面——PiP 卡片总线面、带内问询面，
+以及骑在冻结的同意面原语（`presentApproval` / `presentPicker` / `notify`）之上的请求载荷。
+采纳自
+[proposals/2026-11-12-native-face-schemas.zh.md](proposals/2026-11-12-native-face-schemas.zh.md)
+（2026-11-13 ADOPTED）；本节冻结的正是五个独立渲染器靠对称性已经共同持有的形状
+（三个原生宿主、运行时桥、web 客户端的卡片面），现在把它声明出来。零网关原语、
+零新事件通道——每一帧都骑在已经存在的通道上
+（[primitives.zh.md](primitives.zh.md) §4/§5）。命名规则：每个族是
+`face.<name>@<major>`；载荷携带整数 `schemaVersion`，指明生产方所讲的家庭版本。
+标 **v1-add** 的字段是仅有的新增字段；其余全是今天的形状，现在只是声明出来。
+
+### 版本化规则（自第一天起就是加性的）
+
+- `schemaVersion` 是每个面载荷上的**可选整数**：总线帧放在顶层
+  （`{type:"card.present", schemaVersion:1, card:{…}}`），原语载荷放在请求对象内
+  （`presentApproval({schemaVersion:1, title, detail})`)。**缺席 = 遗留 = 今天的
+  确切行为，永远如此**——不带该字段的载荷在每个宿主上的渲染完全一致，总线面没有
+  弃用时钟（已文档化的生产方容忍度继续成立：未知字段到处被忽略，任何东西都不抛）。
+- 增补铸造下一个整数（`face.card@2`）并附迁移说明——§6 纪律。因为每项增补都是
+  可选的、核心形状永不动，宿主可以渲染**更新**的载荷：忽略未知字段加一条 warn。
+  **在族内禁止移除、改型、必填字段新增**——那要铸造新的族名，伴随主版本折叠与
+  迁移说明（§6 的响亮边界）。
+
+### face.card@1 —— PiP 卡片总线面
+
+总线线 `card.present` / `card.state` / `card.complete` / `card.dismiss`
+（三个原生宿主与 web 客户端的卡片面渲染），加上 v1-add 的宿主→运行时回报
+`card.action`：
+
+| 帧 | 字段 | 类型 / 默认 |
+| --- | --- | --- |
+| `card.present` | `card.id` | string,**必填**——缺失 id 被拒（不渲染）并 warn,绝不静默丢弃 |
+| | `card.title?` | string,默认取 id |
+| | `card.subtitle?` | string;平台支持处渲染,不支持处忽略 |
+| | `card.kind?` | **封闭集** `{info, timer}`（默认 `info`）；未知 kind 降级为 `info` 并记一条 warn |
+| | `card.durationMs?` | number——本地倒计时锚点 |
+| | `card.label?` | string——非 timer 的文本行 |
+| | `card.actions?` | **v1-add**：`[{id, label}]`——声明式动作按钮;无按钮支持的宿主忽略该数组并记一条 warn（卡片照常渲染） |
+| `card.state` | `state.remainingMs?` | number——重锚本地时钟（宿主本地 250 ms 补间;1 Hz 补丁足够——绝不刷屏） |
+| | `state.label?` | string——替换文本行 |
+| `card.complete` | `message?` | string,默认 `"完成"`；iOS/Android 约 2.5 s 自动消失，harmony 保留卡片 |
+| `card.dismiss` | `{}` | 所有宿主都接受 |
+| `card.action` | **v1-add**（宿主→运行时） | `{id, action: "close" \| "drag-end" \| "button", actionId?, at}`——动作回报事件（见下） |
+
+**消失的权威留在插件手里**——本地关闭的卡片只是忽略后续的 `card.state` /
+`card.complete` 记录。`card.action` 让本地关闭变得*可观察*，绝不让它变成权威：
+生产方听见关闭并可以反应（发 `card.dismiss`、重新 present、停掉自己的循环），
+但它拿不到表面的控制权。
+
+### face.question@1 —— 带内问询面
+
+总线帧 `question.request` / `question.answer` / `question.decided`
+（iOS 与 Android 原生渲染；harmony 经 WebView 作答）：
+
+| 帧 | 字段 | 类型 / 默认 |
+| --- | --- | --- |
+| `question.request` | `id` | string,**必填**（askId） |
+| | `questions[].id?` | string,默认 `q<n>` |
+| | `questions[].header?` | string——对话框标题 |
+| | `questions[].question?` | string——消息正文 |
+| | `questions[].options[]` | **v1-add 规范化**：`{id, label}` 对象是规范形态；裸字符串仍被接受为 `{id: <字符串>, label: <字符串>}`；答案按 **id** 认选项，绝不按回显的显示文本 |
+| `question.answer` | `outcome` | **v1-add**：`"answered" \| "cancelled"`——**缺席 = `answered`**（遗留帧不变）；cancelled 让被搁置的轮次落地 |
+| | `answers[].id` | string——问题 id |
+| | `answers[].selected` | `string[]`——v1 下为选项 **id**（遗留帧里是 label） |
+| | `answers[].custom?` | string——自由文本答案 |
+| `question.decided` | `{id}` | 不变——跟随落地 |
+
+### face.approval@1 —— 同意阶梯请求面
+
+仅请求侧：冻结的 `presentApproval` 结果 `{approved, remember?}` 逐字节不动
+（[primitives.zh.md](primitives.zh.md) §4）。载荷恰是宿主已经在读的字段，现在
+声明为全族形状——同一形状服务同意孪生面（clipboardRead 同意、BLE 提示层），
+第四个手搓对话框由此变成一次载荷读取：
+
+| 字段 | 类型 |
+| --- | --- |
+| `schemaVersion?` | integer（上面的族规则） |
+| `title` | string（宿主默认 `""`/`"Approval"`） |
+| `detail?` | string——**规范的 detail 字段；不给 `message` 别名背书** |
+| `allowRemember?` | boolean——为 true 时呈现「记住」UI |
+
+v1 拒收（还没有消费者索要；克制规则同样约束载荷面）：结构化风险对象、
+拒绝理由/评论通道、i18n 按钮文案、宿主侧过期。每一项都是可加的 v2 候选。
+
+### face.picker@1 —— OS 选择器请求面
+
+仅请求侧；冻结的 `presentPicker` 结果 `{scope, path} | null` 逐字节不动——
+用户放弃仍是 null 值，绝不是错误：
+
+| 字段 | 类型 |
+| --- | --- |
+| `mode` | `{file, directory, media}`（iOS/Android 默认 `file`）——在服务集合，含 v1.5.0 的 `media` 扩展 |
+| `suggestedName?` | string——全族声明;尚未服务处为加性（未知字段被忽略） |
+
+v1 拒收：内容过滤与多选——两者都会改动冻结的结果形状（主版本素材）。
+
+### face.notify@1 —— 本地通知请求面
+
+仅请求侧；冻结的 `notify` 结果 `{id}` 逐字节不动：
+
+| 字段 | 类型 |
+| --- | --- |
+| `title` | string,**必填**——宿主对缺失 title 以 `invalid` 拒绝；绝不静默代入默认值 |
+| `body?` | string |
+| `threadId?` | string——全族声明（尚未服务处为加性） |
+| `data?` | `map<string, any>`——全族声明（尚未服务处为加性） |
+
+v1 拒收：通知动作类别（没有任何宿主注册过）。
+
+### 动作回报契约（D8——事件序列，绝不轮询）
+
+用户动作作为事件回到运行时，走的全是已经存在的通道。零新网关原语、零新事件
+通道、零共享宿主状态：
+
+1. **`card.action`** 骑在 `question.answer` 已经在用的宿主→运行时总线投递上。
+   顺序保证：每个卡片 id 至多一个终态动作（`close` 压过挂起的 `button`），
+   按发生次序排列。
+2. **带 `outcome: "cancelled"` 的 `question.answer`** 让被搁置的问询落地；
+   `question.decided` 保持其落地后的位置。
+3. **`notify.response`** 保持 [primitives.zh.md](primitives.zh.md) §5 的冻结
+   事件通道；已发布的顺序——先 `notify.response` 后 `app.state`
+   `"foreground"`——钉为族行为。
+4. **Approval/picker/notify 结果骑冻结的原语 settle**——零新事件。
+
+### 降级阶梯（绝不崩溃，绝不静默）
+
+每个面渲染器实现的有序规则：
+
+1. **未知面类型或未知 `kind` → 渲染通用形态**（标题 + 文本），经宿主统一日志
+   通道记**一条**结构化 warn——绝不抛，绝不静默丢弃。
+2. **`schemaVersion` 高于宿主已知上限 → 遗留渲染 + warn**（忽略未知字段——
+   已文档化的容忍度）。
+3. **未知字段 → 忽略**（今天的行为，现在声明出来）。
+4. **必填字段缺失 → 不渲染 + 一条指名帧与字段的结构化 warn**——替换静默丢弃。
+   诚实的修正是那条日志，不是渲染：生产方契约文档化了丢弃行为，所以丢弃保留；
+   要改掉的只是「静默」。
+5. **原语载荷畸形保持冻结的 `invalid` 拒绝**
+   （[primitives.zh.md](primitives.zh.md) §4）。
+
+### fail-soft / fail-loud 边界
+
+面是 **chrome**，fail-soft：面渲染器绝不压垮运行时，也绝不把载荷样式问题变成
+被拒绝的调用——面是用户可见的 chrome，绝不是授权材料。安装文档保持相反极：
+manifest / receipt / 目录继续执行 §6 的 fail-loud 规则（未知主版本响亮拒绝，
+绝不尽力解析）。承载安全的校验（权限旗标、审计记录）留在网关，分毫不动——
+`face.*@1` 中没有任何东西携带权威。

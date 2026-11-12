@@ -1,6 +1,6 @@
 # contract/
 
-**合同冻结交付物——整个项目的第一优先级。状态:FROZEN v1.0.0(2026-09-19,D5),经可加性扩展(primitives v1.8.0 2026-09-30、v1.9.0/v1.10.0 2026-10-08、v1.11.0——durable-fs 原语——2026-10-19;data-protocols v1.1.0——签名目录,2026-10-01)。**
+**合同冻结交付物——整个项目的第一优先级。状态:FROZEN v1.0.0(2026-09-19,D5),经可加性扩展(primitives v1.8.0 2026-09-30、v1.9.0/v1.10.0 2026-10-08、v1.11.0——durable-fs 原语——2026-10-19、v1.12.0——瘦身标注轮 + 能力面折叠——2026-11-13;data-protocols v1.1.0——签名目录,2026-10-01、v1.4.0——原生面载荷 `face.*@1`——2026-11-13)。**
 
 本目录冻结之前不得落任何实现代码(D5:contract first)。现在已冻结。
 
@@ -8,14 +8,14 @@
 
 | 产物 | 冻结了什么 |
 | --- | --- |
-| [primitives.md](primitives.md) | 能力网关原语表 v1.11.0——33 个原语(v1.1.0–v1.5.0、v1.8.0–v1.11.0 可加),带类型、带权限旗标、带版本;事件通道;审计;符合性(`gateway@1`)· [English](primitives.md) |
+| [primitives.md](primitives.md) | 能力网关原语表 v1.12.0——44 个原语(v1.1.0–v1.5.0、v1.8.0–v1.12.0 可加;v1.12.0 = 家族标注轮 + 能力面折叠 + `ishRun`/`channelOpen`/`channelClose` 废弃标记),带类型、带权限旗标、带版本;事件通道;审计;符合性(`gateway@1`)· [English](primitives.md) |
 | [primitives.d.ts](primitives.d.ts) | 机器可读的原语面(TS 声明) |
-| [data-protocols.md](data-protocols.md) | 束布局 · 插件 manifest · 完整性账本 · 安装回执事务 · 能力串文法 · 签名目录(§7,v1.1.0)· [English](data-protocols.md) |
+| [data-protocols.md](data-protocols.md) | 束布局 · 插件 manifest · 完整性账本 · 安装回执事务 · 能力串文法 · 签名目录(§7,v1.1.0)· 原生面载荷 `face.*@1`(§11,v1.4.0)· [English](data-protocols.md) |
 | [schemas/manifest.schema.json](schemas/manifest.schema.json) | 插件 manifest,`schemaVersion: 1`(JSON Schema 2020-12) |
 | [schemas/integrity.schema.json](schemas/integrity.schema.json) | 已安装树摘要账本,`ledgerVersion: 1` |
 | [schemas/receipt.schema.json](schemas/receipt.schema.json) | 安装/移除事务回执,`receiptVersion: 1` |
 | [schemas/marketplace-index.schema.json](schemas/marketplace-index.schema.json) | 市场签名目录索引,`schemaVersion: 1`(data-protocols §7) |
-| [proposals/](proposals/) | 争议中的草案增补(D5 提案——未冻结、未实现;已采纳的提案折叠进各自的合同文档——socket 缝 → [primitives.md](primitives.md) v1.8.0,插件市场 → [data-protocols.md](data-protocols.md) v1.1.0 §7,事件通道 → [primitives.md](primitives.md) v1.9.0,render 面 → [primitives.md](primitives.md) v1.10.0,durable-fs 原语 → [primitives.md](primitives.md) v1.11.0)· 当前:[forkpty 面](proposals/2026-09-29-forkpty-face.md)、[系统能力面](proposals/2026-09-30-system-capability-plane.md)、[网关原语瘦身轮](proposals/2026-11-11-gateway-primitive-slimming.zh.md)、[原生声明式面 schema 族](proposals/2026-11-12-native-face-schemas.zh.md)与[能力总线](proposals/2026-11-13-capability-bus.zh.md)(均 DRAFT) |
+| [proposals/](proposals/) | 争议中的草案增补(D5 提案——未冻结、未实现;已采纳的提案折叠进各自的合同文档——socket 缝 → [primitives.md](primitives.md) v1.8.0,插件市场 → [data-protocols.md](data-protocols.md) v1.1.0 §7,事件通道 → [primitives.md](primitives.md) v1.9.0,render 面 → [primitives.md](primitives.md) v1.10.0,durable-fs 原语 → [primitives.md](primitives.md) v1.11.0,A2UI 消息 → [data-protocols.md](data-protocols.md) v1.3.0 §10,原生声明式面 schema 族 → [data-protocols.md](data-protocols.md) v1.4.0 §11,系统能力面 + 网关原语瘦身轮 → [primitives.md](primitives.md) v1.12.0)· 当前:[forkpty 面](proposals/2026-09-29-forkpty-face.md)、[net fd-wrap 面](proposals/2026-10-19-net-fd-wrap.zh.md)与[能力总线](proposals/2026-11-13-capability-bus.zh.md)(均 DRAFT) |
 
 ## 阅读顺序
 

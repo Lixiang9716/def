@@ -1,12 +1,17 @@
 /**
- * dsh-mobile capability gateway — primitive contract v1.5.0 (FROZEN at M0, D5;
+ * dsh-mobile capability gateway — primitive contract v1.12.0 (FROZEN at M0, D5;
  * v1.1.0 is the additive filesystem revision of 2026-09-22, v1.2.0 the
  * in-process WebAssembly addition, v1.3.0 the emulated-userland addition,
- * v1.4.0 the timer wake-up seam, v1.5.0 the device plane).
+ * v1.4.0 the timer wake-up seam, v1.5.0 the device plane, v1.8.0 the socket
+ * seam, v1.9.0 the event-channel seam, v1.10.0 the render surface, v1.11.0
+ * the durable-fs primitives, v1.12.0 the annotation round + the
+ * capability-plane fold, with the ishRun / channelOpen / channelClose
+ * deprecation markings).
  *
- * Spec of record: contract/primitives.md. Shapes here are immutable for the
- * life of major version 1; additions require a minor bump of the contract.
- * Negotiation string: `gateway@1`.
+ * Spec of record: contract/primitives.md (authoritative — this file stays in
+ * lockstep). Shapes here are immutable for the life of major version 1;
+ * additions require a minor bump of the contract. Negotiation string:
+ * `gateway@1`.
  */
 
 // ---- shared conventions -------------------------------------------------
@@ -172,6 +177,12 @@ export declare function wasmRun(
 // means the host's output cap was reached (the guest is drained, never blocked).
 // The guest's own I/O is NOT gated by other primitives' flags and cannot be
 // audited per call — see §4 "emulated userland" and §6.
+/**
+ * @deprecated v1.12.0 — no in-service host since the 2026-10 retirement;
+ * removal at v2.0.0 with a migration note (primitives.md §2, Tier B).
+ * Migration path for program execution: the upstream `ctx.subprocess` cordis
+ * seat, or `wasmRun` where an in-process interpreter suffices.
+ */
 export declare function ishRun(
   scope: ScopeHandle,
   path: string,
@@ -315,10 +326,15 @@ export type SocketErrorEvent = {
 
 /** The closed, versioned source table (`channel.payloads@1`, data-protocols §8). */
 export type ChannelSource = "motion" | "battery";
+/** @deprecated v1.12.0 — zero implementations anywhere; removal at v2.0.0
+ * (primitives.md §2, Tier B). The capability plane's camera-frames half rides
+ * a dedicated seat, never this face. */
 export declare function channelOpen(
   source: ChannelSource,
   opts?: { hz?: number; tag?: string },
 ): Promise<{ channelId: number }>;
+/** @deprecated v1.12.0 — zero implementations anywhere; removal at v2.0.0
+ * (primitives.md §2, Tier B). */
 export declare function channelClose(channelId: number): Promise<{ closed: boolean }>;
 
 /** `channel.event` (§5): `{ event: "channel.event", channelId, source, seq, payload }`. */
@@ -409,3 +425,67 @@ export declare function fsSync(
   path: string,
   opts: { kind: "file" | "dir" },
 ): Promise<Record<string, never>>;
+
+/** ── v1.12.0: the system capability plane (§2, "v1.12.0 additions") ──────── */
+// Eleven rows the hosts already serve, folded from the adopted proposal
+// (contract/proposals/2026-09-30-system-capability-plane.md — its status line
+// corrected at adoption). One grant family per capability (`camera`,
+// `microphone`, `ble`), two consent layers gateway-first, session-scoped with
+// live revocation, everything through the gateway audit, foreground sessions
+// only — the five rules of the adopted record, which also carries the full
+// semantics and the `mic.frame` / `ble.event` delivery channels. A host
+// without a row answers unavailable — negotiation, not a branch.
+export type CameraCaptureRequest = {
+  count?: number;          // burst size, default 1; host clamps to a declared range
+  format?: "jpeg";         // v0: one closed format, specified at fold time
+  flash?: "off" | "auto" | "on";   // host may honor, clamp, or ignore with honest metadata
+  maxBytes?: number;       // per-frame cap; a frame over it is dropped, not truncated
+  tag?: string;            // caller-chosen audit tag, the timer precedent
+};
+export type CapturedPhoto = {
+  scope: ScopeHandle;      // host-owned capture scope, read back via the fs primitives
+  path: string;            // scope-relative, the fsRead discipline
+  bytes: number;           // size for the audit's byte count
+  width: number;
+  height: number;
+  format: "jpeg";
+  capturedAt: string;      // ISO-8601 UTC
+};
+export declare function cameraCapture(request?: CameraCaptureRequest): Promise<
+  { photos: CapturedPhoto[] } | null>;
+
+export type MicStartRequest = {
+  format?: "pcm-s16le";    // v0: one closed format, specified at fold time
+  sampleRate?: number;     // host clamps to a declared range
+  channels?: number;       // default 1
+  frameMs?: number;        // chunking, default host-declared
+  tag?: string;            // the audit tag
+};
+export declare function micStart(request?: MicStartRequest): Promise<
+  { streamId: string } | null>;
+export declare function micStop(streamId: string): Promise<
+  { stopped: boolean; durationMs: number; bytes: number }>;
+
+export type BleScanRequest = {
+  serviceUuids?: string[]; // advertised-service filter; omit = all
+  timeoutMs?: number;      // host clamps; the scan also ends itself at timeout
+  tag?: string;
+};
+export declare function bleScanStart(request?: BleScanRequest): Promise<
+  { scanId: string } | null>;
+export declare function bleScanStop(scanId: string): Promise<{ stopped: boolean }>;
+
+export declare function bleConnect(deviceId: string): Promise<
+  { connectionId: string } | null>;
+export declare function bleDisconnect(connectionId: string): Promise<
+  { closed: boolean }>;
+
+export declare function bleRead(connectionId: string, service: string,
+  characteristic: string): Promise<{ bytes: Uint8Array }>;
+export declare function bleWrite(connectionId: string, service: string,
+  characteristic: string, bytes: Uint8Array,
+  opts?: { response?: boolean }): Promise<{ written: boolean }>;
+export declare function bleSubscribe(connectionId: string, service: string,
+  characteristic: string): Promise<{ subscribed: boolean }>;
+export declare function bleUnsubscribe(connectionId: string, service: string,
+  characteristic: string): Promise<{ subscribed: boolean }>;
