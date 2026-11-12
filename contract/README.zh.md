@@ -15,7 +15,7 @@
 | [schemas/integrity.schema.json](schemas/integrity.schema.json) | 已安装树摘要账本,`ledgerVersion: 1` |
 | [schemas/receipt.schema.json](schemas/receipt.schema.json) | 安装/移除事务回执,`receiptVersion: 1` |
 | [schemas/marketplace-index.schema.json](schemas/marketplace-index.schema.json) | 市场签名目录索引,`schemaVersion: 1`(data-protocols §7) |
-| [proposals/](proposals/) | 争议中的草案增补(D5 提案——未冻结、未实现;已采纳的提案折叠进各自的合同文档——socket 缝 → [primitives.md](primitives.md) v1.8.0,插件市场 → [data-protocols.md](data-protocols.md) v1.1.0 §7,事件通道 → [primitives.md](primitives.md) v1.9.0,render 面 → [primitives.md](primitives.md) v1.10.0,durable-fs 原语 → [primitives.md](primitives.md) v1.11.0)· 当前:[forkpty 面](proposals/2026-09-29-forkpty-face.md)、[系统能力面](proposals/2026-09-30-system-capability-plane.md)、[网关原语瘦身轮](proposals/2026-11-11-gateway-primitive-slimming.zh.md)与[原生声明式面 schema 族](proposals/2026-11-12-native-face-schemas.zh.md)(均 DRAFT) |
+| [proposals/](proposals/) | 争议中的草案增补(D5 提案——未冻结、未实现;已采纳的提案折叠进各自的合同文档——socket 缝 → [primitives.md](primitives.md) v1.8.0,插件市场 → [data-protocols.md](data-protocols.md) v1.1.0 §7,事件通道 → [primitives.md](primitives.md) v1.9.0,render 面 → [primitives.md](primitives.md) v1.10.0,durable-fs 原语 → [primitives.md](primitives.md) v1.11.0)· 当前:[forkpty 面](proposals/2026-09-29-forkpty-face.md)、[系统能力面](proposals/2026-09-30-system-capability-plane.md)、[网关原语瘦身轮](proposals/2026-11-11-gateway-primitive-slimming.zh.md)、[原生声明式面 schema 族](proposals/2026-11-12-native-face-schemas.zh.md)与[能力总线](proposals/2026-11-13-capability-bus.zh.md)(均 DRAFT) |
 
 ## 阅读顺序
 
