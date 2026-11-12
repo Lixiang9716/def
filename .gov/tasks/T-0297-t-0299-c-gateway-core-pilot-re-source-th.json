@@ -1,0 +1,22 @@
+{
+  "title": "T-0299 C gateway core pilot + re-source the capability registry",
+  "created": "2026-11-12T20:50:21+00:00",
+  "rules": {
+    "hash": "556692558593f0fc57cfe204683dbab194011d21a1090259cdb9d8d680e101fa",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "81b8088528e6025f871510a60d60a8beb69d755ba8b479335a22592fe1b9d286"
+    }
+  },
+  "checklist": [
+    "[x] PART 0: re-source capability-registry.json to v1.12.0 (+11 capability-plane rows), generator --emit + --check + --selftest, commit",
+    "[x] PART 1A: design note .agents/notes/implemented/architecture/2026-11-13-the-c-gateway-core-pilot.md (Problem/Decision/Alternatives)",
+    "[x] PART 1B: src/dsh_gateway_core.c/h pilot \u2014 timer family dispatch (permission check -> handler -> audit emit -> settle), byte-identical audit JSON",
+    "[x] Wire C core into example/main_cli.c (CLI host dispatches timerSchedule/timerCancel through it)",
+    "GATES: sh src/build.sh compiles, gateway-audit-invariant CLI leg green, code-size gate, commit-format",
+    "PR: push, gh pr create, watch checks, fix reds, squash-merge, remove worktree"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0297"
+}
