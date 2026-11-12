@@ -1,5 +1,4 @@
-dsh.runtime.log: {"message":"e2e","module":"dsh.carrier","level":"info","data":[{"event":"client.selected","client":"dsh-web-client","scenario":"create.card"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"message":"e2e","module":"dsh.carrier","data":[{"event":"client.selected","client":"dsh-web-client","scenario":"create.card"}],"level":"info"}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.begin"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.seat.ready","gateway":"gateway@1"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
@@ -9,6 +8,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
@@ -20,7 +20,7 @@ dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"app
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/Users/lixiang/Library/Developer/CoreSimulator/Devices/A3ACF715-974C-4B6D-8523-2D498C8E5E3F/data/Containers/Data/Application/DD3BF9E0-ADBA-48C2-A682-65549DCABB8C/Documents/profiles/default"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/Users/lixiang/Library/Developer/CoreSimulator/Devices/A3ACF715-974C-4B6D-8523-2D498C8E5E3F/data/Containers/Data/Application/184C61C3-37DC-4C88-B2D8-465067D5B675/Documents/profiles/default"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
@@ -76,7 +76,7 @@ dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","da
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"fiber settle begin","data":[{"spec":"pomodoro-create"}]}
 dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"plugin.running","kind":"timer"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.present"}]}
-dsh.runtime.log: {"message":"e2e","data":[{"id":"create-pomodoro-create","scenario":"create.card","event":"card.face.presented","kind":"timer"}],"level":"info","module":"dsh.carrier"}
+dsh.runtime.log: {"message":"e2e","data":[{"kind":"timer","event":"card.face.presented","scenario":"create.card","id":"create-pomodoro-create"}],"module":"dsh.carrier","level":"info"}
 dsh.runtime.log: {"level":"info","module":"plugin.pomodoro-create","message":"e2e","data":[{"scenario":"plugin.pomodoro-create","event":"card.posted","id":"create-pomodoro-create"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.plugin-mount","message":"e2e","data":[{"scenario":"plugin.mount","event":"plugin.mount.mounted","spec":"pomodoro-create","version":"1.0.0"}]}
@@ -106,7 +106,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.complete"}]}
-dsh.runtime.log: {"module":"dsh.carrier","message":"e2e","level":"info","data":[{"scenario":"create.card","event":"card.face.completed","id":"create-pomodoro-create"}]}
+dsh.runtime.log: {"level":"info","data":[{"event":"card.face.completed","scenario":"create.card","id":"create-pomodoro-create"}],"module":"dsh.carrier","message":"e2e"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"create.card.done","durationMs":8000}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"create.card","event":"scenario.complete","status":"pass"}]}

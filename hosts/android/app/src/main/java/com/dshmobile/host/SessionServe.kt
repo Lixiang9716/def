@@ -95,6 +95,18 @@ class SessionServe private constructor(
      * seam; [CardSurface.snapshot] is thread-safe so the /api/state
      * connection thread reads it without a hop. */
     @Volatile private var cardSurface: CardSurface? = null
+
+    /** face.card@1: attaches the PiP card face and wires the action bridge —
+     * the user's acts return as `card.action` events over the SAME
+     * deliverRuntime bus delivery the question answer rides (D8). Views are
+     * main-thread confined; the caller runs on dsh-rt-js, so the attach
+     * hops. */
+    private fun attachCardFace() {
+        activity.runOnUiThread {
+            cardSurface = CardSurface.attach(activity)
+            cardSurface?.postAction = { msg -> deliverRuntime(msg) }
+        }
+    }
     private lateinit var dist: CarrierWebDist
     private lateinit var core: GatewayCore
     private lateinit var seam: SessionWriteSeam
@@ -184,7 +196,7 @@ class SessionServe private constructor(
         // the app's own chrome, and the /api/state seam reads its face.
         // Views are main-thread confined and begin() runs on dsh-rt-js —
         // the attach hops.
-        activity.runOnUiThread { cardSurface = CardSurface.attach(activity) }
+        attachCardFace()
         // The app block of the GET /api/state seam: the scripted-approval
         // flag this launch ran under + the card face's projection.
         bridge.appState = { appStateBlock() }

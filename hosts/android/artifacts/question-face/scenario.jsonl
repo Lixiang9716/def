@@ -1,0 +1,52 @@
+11-12 17:04:16.443  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"question.face","event":"client.selected","client":"dsh-web-client"}]}
+11-12 17:04:17.118  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.begin"}]}
+11-12 17:04:17.118  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.seat.ready","gateway":"gateway@1"}]}
+11-12 17:04:17.118  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"mount render intent","data":[{"installBus":true}]}
+11-12 17:04:17.118  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"chain bus handler","data":[{}]}
+11-12 17:04:17.118  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
+11-12 17:04:17.222  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+11-12 17:04:17.222  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+11-12 17:04:17.222  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
+11-12 17:04:17.227  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
+11-12 17:04:17.227  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
+11-12 17:04:17.247  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+11-12 17:04:17.270  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
+11-12 17:04:17.272  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+11-12 17:04:17.273  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
+11-12 17:04:17.275  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
+11-12 17:04:17.276  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
+11-12 17:04:17.281  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
+11-12 17:04:17.305  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+11-12 17:04:17.305  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
+11-12 17:04:17.309  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
+11-12 17:04:17.311  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
+11-12 17:04:17.311  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+11-12 17:04:17.333  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/data/user/0/com.dshmobile.host/files/profiles/default"}]}
+11-12 17:04:17.354  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
+11-12 17:04:17.355  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
+11-12 17:04:17.357  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
+11-12 17:04:17.358  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.turn-recovery","message":"turn recovery mounted","data":[{"onErroredTurn":"one durable system message + re-arm the driver when followups are queued"}]}
+11-12 17:04:17.366  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"mount model-selection plane","data":[{"sessionId":"s-question-face-0001"}]}
+11-12 17:04:17.368  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.model-selection-holder","message":"install model-selection holder","data":[{"sessionId":"s-question-face-0001"}]}
+11-12 17:04:17.369  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot","data":[{"event":"upstream/services","kernel":"@deepseek-ai/cordis@4.0.2","services":["sessions","agents","systemPrompt","tools","sessionProjections","settings","agentLoop","llm"],"llm":"vendored LlmRuntime + gateway adapter (provider \"mock\")"}]}
+11-12 17:04:17.369  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot rows begin","data":[{}]}
+11-12 17:04:17.369  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
+11-12 17:04:17.369  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
+11-12 17:04:17.369  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+11-12 17:04:17.371  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
+11-12 17:04:17.371  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.spine.booted","sessionId":"s-question-face-0001"}]}
+11-12 17:04:17.374  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.bridge.mounted"}]}
+11-12 17:04:17.374  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"await action","data":[{"type":"question.answer","timeoutMs":30000}]}
+11-12 17:04:17.374  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"on action","data":[{"type":"question.answer"}]}
+11-12 17:04:17.374  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:04:17.375  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"question.request"}]}
+11-12 17:04:17.376  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"question-bridge","message":"question parked for the face","data":[{"id":"question-1-1794474257375","posted":true,"count":1,"schemaVersion":1}]}
+11-12 17:04:17.376  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.asked","questions":1,"options":"id-label"}]}
+11-12 17:04:17.923  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"bus line","data":[{}]}
+11-12 17:04:17.923  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"deliver action","data":[{"type":"question.answer"}]}
+11-12 17:04:17.923  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"action event","data":[{"type":"question.answer","id":"question-1-1794474257375"}]}
+11-12 17:04:17.923  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+11-12 17:04:17.924  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.cancelled","outcome":"cancelled","id":"question-1-1794474257375"}]}
+11-12 17:04:17.924  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.turn.settled","answers":0}]}
+11-12 17:04:17.924  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"question.face.done","outcome":"cancelled"}]}
+11-12 17:04:17.924  7324  7384 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"question.face","event":"scenario.complete","status":"pass"}]}

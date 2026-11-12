@@ -14,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -27,15 +28,25 @@ import org.json.JSONObject
  * bar — never over the bottom-docked composer — and is DRAGGABLE anywhere
  * within the overlay and LOCALLY closable (the ✕). Dismissal authority
  * stays the plugin's per the contract: a locally closed card ignores later
- * card.state/complete records and the next card.present re-shows it. No
- * contract change.
+ * card.state/complete records and the next card.present re-shows it.
+ *
+ * face.card@1 (R3 batch 2, the iOS CardPlayerSurface posture): this surface
+ * is now a GENERIC renderer of the declarative payload — `schemaVersion` is
+ * read (a future version renders legacy + one structured warn), the
+ * declarative `card.actions: [{id, label}]` render as real buttons, a
+ * missing id is REFUSED with a warn instead of silently dropped, an unknown
+ * kind degrades to `info` with a warn, and the user's acts (close ✕, drag
+ * end, button tap) return to the runtime as `card.action` events over
+ * [postAction] — the SAME runtime bridge the question answer rides. The
+ * close is terminal-once per presented card (`close` beats a pending
+ * button) and OBSERVABLE, never authoritative.
  *
  * Timer cards tick locally between authoritative card.state patches (a
  * 250 ms handler re-renders the countdown from the anchor). Main-thread
  * only for [handle]; [snapshot] is thread-safe (it reads a volatile face
  * record) so the /api/state seam can call it from a connection thread.
  */
-class CardSurface private constructor(activity: Activity) {
+class CardSurface private constructor(private val activity: Activity) {
 
     private val main = Handler(Looper.getMainLooper())
     /** The overlay the card floats in (the activity's content, above the WebView). */
@@ -44,6 +55,16 @@ class CardSurface private constructor(activity: Activity) {
     @Volatile private var face = JSONObject().put(
         "card", JSONObject().put("attached", true).put("visible", false),
     )
+    /** face.card@1 the payload declared (0 = legacy — today's exact shape). */
+    private var cardSchemaVersion = 0
+    /** One terminal action per presented card (`close` beats a pending
+     * button — the v1 order guarantee); re-armed by every present. */
+    private var actionTerminal = false
+
+    /** The host→runtime action delivery — the SAME runtime bridge the
+     * question answer rides. The drive wires it; null (a seat without a
+     * runtime bridge) makes actions local-only. */
+    var postAction: ((JSONObject) -> Unit)? = null
 
     companion object {
         /** Attaches the overlay above everything in the activity's content. */
@@ -83,6 +104,8 @@ class CardSurface private constructor(activity: Activity) {
     private lateinit var timeView: TextView
     private lateinit var subtitleView: TextView
     private lateinit var progress: ProgressBar
+    /** The rendered declarative actions: (actionId, button) pairs. */
+    private val actionButtons = mutableListOf<Pair<String, TextView>>()
     private var card = JSONObject()
     private var remainingMs = 0.0
     private var anchorAt = 0L
@@ -91,20 +114,72 @@ class CardSurface private constructor(activity: Activity) {
     private var dragStart: FloatArray? = null
 
     private fun present(msg: JSONObject) {
-        val record = msg.optJSONObject("card") ?: return
+        // face.card@1 degradation ladder (never crash, never silent): a
+        // future schemaVersion renders legacy (unknown fields ignored) with
+        // one structured warn; a missing id is refused AND warned — the
+        // honesty fix for the silent drop every host shipped before.
+        cardSchemaVersion = msg.optInt("schemaVersion", 0)
+        if (cardSchemaVersion > 1) {
+            GatewayCore.uiMarker("card-degrade", "schema-$cardSchemaVersion")
+        }
+        val record = msg.optJSONObject("card") ?: run {
+            GatewayCore.uiMarker("card-degrade", "missing-card")
+            return
+        }
         val id = record.optString("id")
-        if (id.isEmpty()) return
+        if (id.isEmpty()) {
+            GatewayCore.uiMarker("card-degrade", "missing-id")
+            return
+        }
+        var kind = record.optString("kind", "info")
+        if (kind != "info" && kind != "timer") {
+            GatewayCore.uiMarker("card-degrade", "kind-$kind")
+            kind = "info"
+        }
+        val actions = parseCardActions(record)
+        record.put("kind", kind) // the degraded kind is what renders (snapshot truth)
         card = record
         remainingMs = record.optDouble("durationMs", 0.0)
         anchorAt = System.currentTimeMillis()
+        actionTerminal = false
         showCard(
-            id = id,
             title = record.optString("title", id),
             subtitle = record.optString("subtitle", ""),
-            kind = record.optString("kind", "info"),
+            kind = kind,
+            actions = actions,
         )
         projectFace()
         GatewayCore.uiMarker("card-present", "wait")
+    }
+
+    /** One declarative face.card@1 action: `{id, label}` renders as a button. */
+    private data class CardActionSpec(val id: String, val label: String)
+
+    /** The v1-add declarative actions: `[{id, label}]` render as real
+     * buttons; malformed entries drop with one warn (the card renders). */
+    private fun parseCardActions(record: JSONObject): List<CardActionSpec> {
+        val actions = mutableListOf<CardActionSpec>()
+        val rawActions = record.optJSONArray("actions")
+        if (rawActions != null) {
+            for (i in 0 until rawActions.length()) {
+                val entry = rawActions.optJSONObject(i) ?: continue
+                // Explicit string reads (optString would coerce a number):
+                // id non-empty REQUIRED; label any string (the schema allows
+                // the empty label — face-schemas.js's nonEmptyString(id) +
+                // typeof label === 'string' pair).
+                val actionId = if (entry.opt("id") is String) entry.getString("id") else ""
+                val label = if (entry.opt("label") is String) entry.getString("label") else null
+                if (actionId.isNotEmpty() && label != null) {
+                    actions.add(CardActionSpec(actionId, label))
+                }
+            }
+            if (actions.size != rawActions.length()) {
+                GatewayCore.uiMarker("card-degrade", "actions-dropped")
+            }
+        } else if (record.has("actions")) {
+            GatewayCore.uiMarker("card-degrade", "actions-type")
+        }
+        return actions
     }
 
     private fun state(msg: JSONObject) {
@@ -127,6 +202,7 @@ class CardSurface private constructor(activity: Activity) {
         subtitleView.text = msg.optString("message", "完成")
         render()
         GatewayCore.uiMarker("card-present", "done")
+        scriptActionIfAsked()
         main.postDelayed({ dismiss() }, 2_500)
     }
 
@@ -134,25 +210,62 @@ class CardSurface private constructor(activity: Activity) {
         stopTick()
         cardBox?.let { overlay.removeView(it) }
         cardBox = null
+        actionButtons.clear()
         projectFace()
+    }
+
+    // ---- face.card@1 user actions (host → runtime) ----------------------------
+
+    /** One `card.action` event per user act: `{id, action: close | drag-end
+     * | button, actionId?, at}`. The close is terminal-once per presented
+     * card; buttons are not terminal (a producer may collect several). */
+    private fun postCardAction(action: String, actionId: String?) {
+        if (action == "close") {
+            if (actionTerminal) return
+            actionTerminal = true
+        }
+        val bridge = postAction ?: return
+        val event = JSONObject()
+            .put("type", "card.action")
+            .put("id", card.optString("id"))
+            .put("action", action)
+            .put("at", System.currentTimeMillis())
+        if (actionId != null) event.put("actionId", actionId)
+        bridge(event)
+    }
+
+    /** The scripted-action test seam (`--es dsh.script.card-action
+     * button:<id>` — the approval seam's shape, UiPrimitives.scriptedApprovalFlag):
+     * 1s after card.complete the named declarative button fires exactly the
+     * way a tap would, so the E2E drive proves the action round-trip without
+     * UI automation. Absent the extra the human acts; the product default is
+     * unchanged. */
+    private fun scriptActionIfAsked() {
+        val script = activity.intent?.getStringExtra("dsh.script.card-action") ?: return
+        if (cardBox == null) return
+        if (!script.startsWith("button:")) return
+        val actionId = script.removePrefix("button:")
+        main.postDelayed({
+            if (cardBox == null) return@postDelayed
+            GatewayCore.uiMarker("card-action", "script")
+            android.util.Log.i("dsh.card", "script action $actionId")
+            val hit = actionButtons.firstOrNull { it.first == actionId } ?: return@postDelayed
+            postCardAction("button", actionId)
+            hit.second.isEnabled = false
+        }, 1_000)
     }
 
     // ---- rendering ------------------------------------------------------------
 
-    private fun showCard(id: String, title: String, subtitle: String, kind: String) {
+    private fun showCard(title: String, subtitle: String, kind: String,
+        actions: List<CardActionSpec>) {
         dismiss()
-        val activity = overlay.context as Activity
         val density = activity.resources.displayMetrics.density
-
-        fun cardText(size: Float, bold: Boolean = false) = TextView(activity).apply {
-            textSize = size
-            gravity = Gravity.CENTER
-            if (bold) setTypeface(typeface, Typeface.BOLD)
-        }
 
         buildViews(activity, kind, subtitle)
         val close = buildClose(activity)
         val content = buildContent(activity)
+        if (actions.isNotEmpty()) buildActions(activity, actions, content)
 
         val box = FrameLayout(activity).apply {
             background = GradientDrawable().apply {
@@ -200,16 +313,56 @@ class CardSurface private constructor(activity: Activity) {
         }
     }
 
-    /** The ✕ close control. */
+    /** The ✕ close control: the close is OBSERVABLE (the card.action event
+     * rides out first) but local — the plugin keeps its dismissal authority. */
     private fun buildClose(activity: Activity): TextView = TextView(activity).apply {
         text = "✕"
         textSize = 15f
         val d = activity.resources.displayMetrics.density
         setPadding((6 * d).toInt(), (2 * d).toInt(), (6 * d).toInt(), (2 * d).toInt())
-        setOnClickListener { dismiss() }
+        setOnClickListener {
+            postCardAction("close", null)
+            dismiss()
+        }
     }
 
-    /** The card's content column (title/time/progress/subtitle). */
+    /** The declarative action buttons (face.card@1 `actions`): one row of
+     * real buttons; a tap posts the `card.action {action:"button"}` event. */
+    private fun buildActions(activity: Activity, actions: List<CardActionSpec>,
+        content: LinearLayout) {
+        val d = activity.resources.displayMetrics.density
+        val row = LinearLayout(activity).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        for (action in actions) {
+            val button = TextView(activity).apply {
+                text = action.label
+                textSize = 13f
+                setTypeface(typeface, Typeface.BOLD)
+                gravity = Gravity.CENTER
+                setPadding((10 * d).toInt(), (4 * d).toInt(), (10 * d).toInt(), (4 * d).toInt())
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor("#E8E6E3"))
+                    cornerRadius = 9f * d
+                }
+                setOnClickListener {
+                    postCardAction("button", action.id)
+                    it.isEnabled = false
+                }
+            }
+            row.addView(button, LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f,
+            ).apply { marginEnd = (8 * d).toInt() })
+            actionButtons.add(action.id to button)
+        }
+        row.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+        ).apply { topMargin = (8 * d).toInt() }
+        content.addView(row)
+    }
+
+    /** The card's content column (title/time/progress/subtitle [+ actions]). */
     private fun buildContent(activity: Activity): LinearLayout {
         val pad = fun(v: Int) = (v * activity.resources.displayMetrics.density).toInt()
         return LinearLayout(activity).apply {
@@ -223,7 +376,8 @@ class CardSurface private constructor(activity: Activity) {
         }
     }
 
-    /** The touch drag: reposition the floating card within the overlay. */
+    /** The touch drag: reposition the floating card within the overlay; the
+     * gesture's end returns as a `card.action {action:"drag-end"}` event. */
     private val touchDrag = View.OnTouchListener { view, event ->
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -235,6 +389,11 @@ class CardSurface private constructor(activity: Activity) {
                 val start = dragStart ?: return@OnTouchListener false
                 view.translationX = start[2] + (event.rawX - start[0])
                 view.translationY = start[3] + (event.rawY - start[1])
+                true
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                dragStart = null
+                postCardAction("drag-end", null)
                 true
             }
             else -> false
@@ -274,15 +433,27 @@ class CardSurface private constructor(activity: Activity) {
         view.tag = seconds
     }
 
-    /** Projects the face the /api/state seam reads (volatile, cross-thread). */
+    /** Projects the face the /api/state seam reads (volatile, cross-thread):
+     * the projection-consistency read the iOS snapshot keeps — the rendered
+     * kind (degraded truth), the label/subtitle lines, and the declarative
+     * action ids actually on the card. */
     private fun projectFace() {
         val cardFace = JSONObject()
             .put("attached", true)
             .put("visible", cardBox != null)
         if (cardBox != null) {
             cardFace.put("id", card.optString("id"))
-            cardFace.put("title", card.optString("title"))
+            cardFace.put("title", card.optString("title", card.optString("id")))
             cardFace.put("kind", card.optString("kind", "info"))
+            val label = card.optString("label")
+            if (label.isNotEmpty()) cardFace.put("label", label)
+            val subtitle = card.optString("subtitle")
+            if (subtitle.isNotEmpty()) cardFace.put("subtitle", subtitle)
+            if (actionButtons.isNotEmpty()) {
+                val ids = JSONArray()
+                for ((actionId, _) in actionButtons) ids.put(actionId)
+                cardFace.put("actions", ids)
+            }
         }
         face = JSONObject().put("card", cardFace)
     }

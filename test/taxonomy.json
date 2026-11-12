@@ -262,6 +262,11 @@
    "note": "app-side E2E runner"
   },
   {
+   "path": "hosts/android/ci/run-question-face.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
    "path": "hosts/android/ci/run-device-plane.sh",
    "kind": "e2e",
    "note": "app-side E2E runner"
@@ -2465,6 +2470,15 @@
    "kind": "e2e",
    "drivenBy": [
     "test/e2e/run-ios-question-face.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/question-face-android.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/android/ci/run-question-face.sh"
    ],
    "orphan": false,
    "note": ""

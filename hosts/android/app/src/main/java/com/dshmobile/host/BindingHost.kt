@@ -292,6 +292,23 @@ class BindingHost internal constructor(
                 narrateCardFace(msg)
                 activity.runOnUiThread { cardSurface?.handle(msg) }
             }
+            "question.request" -> {
+                // The in-band user-questions ask: the NATIVE dialog is the
+                // device's answer face (the SessionServe twin); the answer
+                // rides the bus delivery back (question-bridge.js's composer
+                // intercept picks it up and the parked ask_user_question
+                // resumes — face.question@1's cancel settles it cancelled).
+                activity.runOnUiThread { showQuestionDialog(activity, msg, ::deliverRuntime) }
+            }
+        }
+    }
+
+    /** Host → runtime bus delivery (any caller thread; hops onto the runtime
+     * queue — the card.action / question.answer return path). */
+    internal fun deliverRuntime(msg: JSONObject) {
+        JsRuntime.post {
+            if (finished || handle == 0L) return@post
+            onRuntimeStatus(JsRuntime.m4BusDeliver(handle, msg.toString()))
         }
     }
 

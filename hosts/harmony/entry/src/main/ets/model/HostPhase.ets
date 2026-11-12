@@ -591,6 +591,13 @@ export class HostPhase {
         this.onDispatch(ctx, callId, name, args);
       }, this.scenario);
     this.started = true;
+    // face.card@1: the card face's user acts (the ✕ close, a declarative
+    // button) return as card.action events over this seat's host→runtime
+    // event channel — the SAME deliverEvent the primitives' emitters use
+    // (D8: events, never polling).
+    CardFace.actionSink = (eventJson: string): void => {
+      this.deliverEvent(eventJson);
+    };
     hilog.info(0x0000, TAG, 'phase: started %{public}s, capture %{public}s',
       this.scenario, capturePath);
   }

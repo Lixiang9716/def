@@ -456,12 +456,15 @@ done
 # The agent-flow scenario rides the same list (the vendored skill family it
 # drives is staged above); the mic-plane scenario too (the capability
 # plane's microphone leg, v1.10.0 candidate — an unlisted scenario would
-# silently freeze on a fresh install, the embed-list trap).
+# silently freeze on a fresh install, the embed-list trap). The face legs
+# join with the R3 batch-2 round (card-player was committed-only before and
+# drifted past every gate — measured 2026-11-12, the #765 actions never
+# reached the APK; question-face is the face.question@1 leg).
 for s in agent-flow.js agent-presets-probe-seed.js android-capability-binding.js ble-plane.js \
-         boot-verification.js camera-plane.js device-plane.js gateway-bridge-smoke.js \
-         mic-plane.js session-mock-llm.js upstream-fake-timers.js upstream-harness-matchers.js \
-         upstream-harness-vi.js upstream-suite-flatmap.js upstream-suite-leg.js upstream-suite-type-world.js \
-         upstream-test-harness.js; do
+         boot-verification.js camera-plane.js card-player.js device-plane.js \
+         gateway-bridge-smoke.js mic-plane.js question-face.js session-mock-llm.js \
+         upstream-fake-timers.js upstream-harness-matchers.js upstream-harness-vi.js upstream-suite-flatmap.js \
+         upstream-suite-leg.js upstream-suite-type-world.js upstream-test-harness.js; do
     if [ -f "$DSH/scenario/$s" ]; then
         cp "$DSH/scenario/$s" "$ASSETS/scenario/$s"
     fi
@@ -656,10 +659,10 @@ done
 # a stale APK copy would shadow every runtime-side fix, the exact defect the
 # 2026-09-23 round-two chase hit).
 for s in agent-flow.js agent-presets-probe-seed.js android-capability-binding.js ble-plane.js \
-         boot-verification.js camera-plane.js device-plane.js gateway-bridge-smoke.js \
-         mic-plane.js session-mock-llm.js upstream-fake-timers.js upstream-harness-matchers.js \
-         upstream-harness-vi.js upstream-suite-flatmap.js upstream-suite-leg.js upstream-suite-type-world.js \
-         upstream-test-harness.js; do
+         boot-verification.js camera-plane.js card-player.js device-plane.js \
+         gateway-bridge-smoke.js mic-plane.js question-face.js session-mock-llm.js \
+         upstream-fake-timers.js upstream-harness-matchers.js upstream-harness-vi.js upstream-suite-flatmap.js \
+         upstream-suite-leg.js upstream-suite-type-world.js upstream-test-harness.js; do
     if [ "$MODE" = "check" ] && ! is_tracked "scenario/$s"; then note_skip; continue; fi
     cmp -s "$DSH/scenario/$s" "$ASSETS/scenario/$s" || note_drift "scenario/$s"
 done

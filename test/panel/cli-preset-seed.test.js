@@ -5,6 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import seedFiles from '../../runtime/dsh/scenario/agent-presets-probe-seed.js';
+import { defBundle } from '../../runtime/dsh/upstream/def-bundle.js';
 
 // The REAL patch module loads under this shim face (it imports only the
 // runtime's node:buffer codec pair; the seed module itself never touches
@@ -56,14 +57,13 @@ const seedMap = () => {
   return files;
 };
 
-/** The deployment default, parsed from upstream/boot.js (the module imports
- * the whole spine and cannot load under node). */
-const agentPresetsDefault = () => {
-  const src = readFileSync(join(REPO, 'runtime/dsh/upstream/boot.js'), 'utf8');
-  const hit = src.match(/export const AGENT_PRESETS_DEFAULT = '([A-Za-z0-9_-]+)'/);
-  expect(hit, 'boot.js no longer declares AGENT_PRESETS_DEFAULT').toBeTruthy();
-  return hit[1];
-};
+/** The deployment default, read from the declaration itself
+ * (upstream/def-bundle.js — pure data, zero imports, loads under node).
+ * R1 moved the constant out of boot.js (whose `AGENT_PRESETS_DEFAULT`
+ * export now derives from `defBundle.preset`); the old boot.js source
+ * scrape broke on exactly that move — reading the source of truth is the
+ * drift-proof shape. */
+const agentPresetsDefault = () => defBundle.preset.default;
 
 /** The mobile-absent row ids, read from the adaptation module's source (see
  * the header — the module cannot load under node). */

@@ -40,6 +40,13 @@ const val CARD_PLAYER_ENTRY = "scenario/card-player.js"
 /** The create-card drive (`create.card`, the gaps3/android-01 spine seat). */
 const val CREATE_CARD_SCENARIO = "create.card"
 const val CREATE_CARD_ENTRY = "scenario/create-card.js"
+/** The question-face drive (`question.face`, the face.question@1 leg —
+ * the iOS QuestionFaceDrive sibling): a real ctx.userQuestions.ask() parks
+ * through the question bridge, the NATIVE dialog is the answer face, and
+ * the scripted cancel (--es dsh.script.question cancel) settles the parked
+ * turn with outcome:"cancelled" — the park-forever defect dies. */
+const val QUESTION_FACE_SCENARIO = "question.face"
+const val QUESTION_FACE_ENTRY = "scenario/question-face.js"
 /** The calendar-live drive (`create.calendar.live`, the gaps3/android-04 port). */
 const val CALENDAR_LIVE_SCENARIO = "create.calendar.live"
 const val CALENDAR_LIVE_ENTRY = "scenario/create-calendar-live.js"
@@ -123,6 +130,9 @@ private fun drive(
     host.pump.attach(webView)
     BindingHost.instance = host
     host.cardSurface = CardSurface.attach(activity) // the card face
+    // face.card@1: the surface's user acts return as card.action events over
+    // the SAME bus delivery the question answer rides (D8 — never polling).
+    host.cardSurface?.postAction = { msg -> host.deliverRuntime(msg) }
     host.start(onFinished)
     return host
 }
@@ -134,6 +144,14 @@ fun BindingHost.Companion.startMicPlane(activity: Activity, webView: WebView?, o
 /** The card-player drive (`card.player`): the card face's proof. */
 fun BindingHost.Companion.startCardPlayer(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
     drive("card-player", CARD_PLAYER_SCENARIO, CARD_PLAYER_ENTRY, activity, webView, onFinished)
+
+/** The question-face drive (`question.face`, R3 batch 2): the
+ * face.question@1 leg — a real ctx.userQuestions.ask() parks through the
+ * question bridge and the NATIVE dialog answers it (the scripted cancel
+ * settles the parked turn; the cancel/cancelled semantics match the iOS
+ * pilot). The card face rides every drive; this leg's story is the ask. */
+fun BindingHost.Companion.startQuestionFace(activity: Activity, webView: WebView?, onFinished: (String) -> Unit): BindingHost =
+    drive("question-face", QUESTION_FACE_SCENARIO, QUESTION_FACE_ENTRY, activity, webView, onFinished)
 
 /**
  * The create-card drive (`create.card`, the gaps3/android-01 spine
@@ -166,6 +184,7 @@ fun BindingHost.Companion.dispatchDrive(
     bleMock: Boolean,
     micPlane: Boolean,
     cardPlayer: Boolean,
+    questionFace: Boolean,
     llm: Boolean,
     createCard: Boolean,
 ): BindingHost = when {
@@ -177,6 +196,7 @@ fun BindingHost.Companion.dispatchDrive(
     ble -> startBle(activity, view, onVerdict, bleMock)
     micPlane -> startMicPlane(activity, view, onVerdict)
     cardPlayer -> startCardPlayer(activity, view, onVerdict)
+    questionFace -> startQuestionFace(activity, view, onVerdict)
     createCard -> startCreateCard(activity, view, onVerdict)
     llm -> startLlm(activity, view, onVerdict)
     else -> start(activity, view, onVerdict)
@@ -268,6 +288,9 @@ private fun spawn(
     host.pump.attach(webView)
     BindingHost.instance = host
     host.cardSurface = CardSurface.attach(activity)
+    // face.card@1: the surface's user acts return as card.action events over
+    // the SAME bus delivery the question answer rides (D8 — never polling).
+    host.cardSurface?.postAction = { msg -> host.deliverRuntime(msg) }
     host.start(onFinished)
     return host
 }
