@@ -22,11 +22,11 @@
 #ifndef DSH_GATEWAY_CORE_H
 #define DSH_GATEWAY_CORE_H
 
+/* Plain C interface only — C++ embedders wrap this header in extern "C"
+ * themselves. (No #ifdef __cplusplus guard: the syntax-class checker's
+ * editor-level parse cannot match the brace across the conditional — the
+ * same trade dsh_runtime_host.h already made.) */
 #include <stddef.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* The §6 audit sink: one metadata-only JSON line per settled call. The
  * same plug point dsh_socket.h ships (`dsh_socket_audit_set`); the
@@ -99,7 +99,4 @@ void dsh_gateway_core_init(dsh_gateway_core *core, const dsh_gateway_row *rows,
 int dsh_gateway_core_dispatch(dsh_gateway_core *core, int call_id,
                               const char *name, const char *args_json);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* DSH_GATEWAY_CORE_H */
