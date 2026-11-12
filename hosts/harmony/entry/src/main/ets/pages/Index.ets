@@ -68,6 +68,13 @@ const LEG_CAMERA_PLANE: string = 'camera.plane';
 const LEG_PARITY: string = 'upstream.parity';
 const LEG_BLE: string = 'ble.plane';
 const LEG_MIC_PLANE: string = 'mic.plane';
+/** The card.player leg (`--ps dsh.e2e.leg card.player`): the plugin card
+ * face's proof leg. This arm is the REPLAY the gaps salvage named: #464
+ * landed HostPhase.beginCardPlayer, the runner and the manifest but
+ * deliberately dropped the Index.ets divergence ("their gaps-side leg
+ * wiring must be replayed on main's terminal state in a follow-up") — so
+ * the launch died on the unknown-leg fail-loud branch ever since. */
+const LEG_CARD_PLAYER: string = 'card.player';
 /** The windows-test-plan T4/T5 leg (`--ps dsh.e2e.leg real.agent.loop`):
  * the spine + tools on the STAGED real backend, the probes in-scenario. */
 const LEG_REAL_AGENT: string = 'real.agent.loop';
@@ -1572,6 +1579,9 @@ struct Index {
     } else if (leg === LEG_MIC_PLANE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runMicPlaneLeg();
+    } else if (leg === LEG_CARD_PLAYER) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runCardPlayerLeg();
     } else if (leg === LEG_REAL_AGENT) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runRealAgentLeg();
@@ -2085,6 +2095,58 @@ struct Index {
       .catch((err: BusinessError): void => {
         this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
         hilog.error(0x0000, TAG, 'mic-plane leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
+  /** The card.player leg (`card.player`, ONE launch; ci/run-card-player.sh):
+   * the mic-plane leg's headless shape with the card-player scenario as the
+   * entry — no web client mounts, the runner calls nothing per-page; the
+   * card.* bus lines route through CardFace into the PiP face's @State
+   * bindings (the onCardRecord hook), and the verdict is the C
+   * `dsh.runtime.verdict: card.player` line, record by record via the
+   * checker. The gaps-salvage replay this arm completes (see
+   * LEG_CARD_PLAYER). */
+  private runCardPlayerLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const phase = HostPhase.getInstance();
+    phase.setApprovalPresenter((title: string, resolve: (approved: boolean) => void): void => {
+      this.showApproval(title, resolve);
+    });
+    phase.onPhaseComplete = (passed: boolean): void => {
+      this.verdict = (passed ? 'PASS' : 'FAIL') + ' card.player (logs are the verdict)';
+    };
+    // The card face's record hook: bus card.* records route through
+    // CardFace, then this pushes the projection into the PiP @State
+    // bindings (aboutToAppear's OfficialServe hook, mirrored on HostPhase).
+    phase.onCardRecord = (): void => this.refreshCardFace();
+    phase.pageSink = (text: string): void => {
+      this.carrier.sendText(text);
+    };
+    this.carrier.onStaticServed = (path: string): void => {
+      phase.onStaticServed(path);
+    };
+    this.carrier.onWsText = (text: string): void => {
+      phase.onPageText(text);
+    };
+    this.materializeBundle(ctx)
+      .then((root: string): Promise<number> => {
+        this.verdict = 'card-player leg: running...';
+        phase.beginCardPlayer(ctx, root,
+          ctx.cacheDir + '/dsh-card-player-capture.log', fsRoot);
+        return this.carrier.start(CARRIER_BASE_PORT).then((port: number): number => {
+          phase.onCarrierListening(port);
+          phase.evalEntryDirect();
+          return port;
+        });
+      })
+      .then((port: number): void => {
+        this.verdict = 'card-player leg: running on 127.0.0.1:' + port;
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'card-player leg failed: %{public}s',
           err.message ?? 'unknown');
       });
   }
