@@ -459,7 +459,8 @@ final class SessionServe {
         }
     }
 
-    private func deliverRuntime(_ msg: [String: Any]) {
+    /// Internal for the pilot drives: face action events (face.*@1 §4) ride this same bridge.
+    func deliverRuntime(_ msg: [String: Any]) {
         runtime?.deliverRuntime(msg)
     }
 

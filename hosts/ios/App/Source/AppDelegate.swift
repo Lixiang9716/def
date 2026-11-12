@@ -124,7 +124,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                      line: "rt: app launched in session mode (\(surface))", web: false)
             runSession()
         case "official-web", "session-live", "session-write", "next-web",
-             "serve", "card-player", "session-restart":
+             "serve", "card-player", "question-face", "session-restart":
             launchWebDrive(launchMode)
         default:
             runDefaultChain()

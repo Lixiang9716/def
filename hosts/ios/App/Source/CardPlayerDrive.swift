@@ -35,6 +35,12 @@ enum CardPlayerDrive {
         serve.onCardEvent = { [weak surface] msg in
             DispatchQueue.main.async { surface?.handle(msg) }
         }
+        // face.card@1: the card's user actions (button taps, the local
+        // close, drag-end) return to the runtime as card.action events over
+        // the question.answer delivery path — no new channel.
+        surface.postAction = { [weak serve] msg in
+            serve?.deliverRuntime(msg)
+        }
         serve.cardState = { [weak surface] in surface?.snapshot() ?? [:] }
         serve.onRuntimeFailure = { message in
             NSLog("%@", "dsh.session.serve: runtime failed: \(message)")

@@ -166,6 +166,10 @@ extension AppDelegate {
             // PR-1 of the create-approve-hotmount-native loop: a plugin card
             // rendered by the app's OWN chrome (not an HTML page).
             CardPlayerDrive.launch(self)
+        case "question-face":
+            // The face.question@1 pilot leg (R3): the native ask whose
+            // cancel SETTLES the parked turn (outcome:"cancelled").
+            QuestionFaceDrive.launch(self)
         default:
             break
         }

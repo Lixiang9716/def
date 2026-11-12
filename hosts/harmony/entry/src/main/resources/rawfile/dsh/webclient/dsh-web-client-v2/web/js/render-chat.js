@@ -220,7 +220,8 @@ const renderApproval = (item) => {
 /** The in-band question card: the model's ask_user_question rendered where
  * the conversation lives — each question with its option buttons (or a
  * free-text answer); the answers ride dsh-question-answer and the parked
- * turn resumes. */
+ * turn resumes. face.question@1: an option button answers by id, never by
+ * echoed display label (a relabeled option keeps its round-trip). */
 const renderQuestion = (item) => {
   const wrap = el('div', 'item item-question');
   const card = el('div', 'approval-card glass');
@@ -250,7 +251,7 @@ const renderQuestion = (item) => {
       const btn = el('button', 'approval-allow', option.label ?? '');
       btn.type = 'button';
       btn.title = option.description ?? '';
-      btn.addEventListener('click', () => answer([option.label ?? '']));
+      btn.addEventListener('click', () => answer([option.id ?? option.label ?? '']));
       actions.appendChild(btn);
     }
     if ((q.options ?? []).length === 0 || q.multi_select === true) {

@@ -1,32 +1,51 @@
 rt: app launched in card-player mode
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.begin"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.seat.ready","gateway":"gateway@1"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"mount render intent","data":[{"installBus":true}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"chain bus handler","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"on action","data":[{"type":"card.action"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.present"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.present.posted","id":"pomodoro-demo","durationMs":1500000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"outcome":"ok","primitive":"timerSchedule","ts":"2026-10-11T11:12:25Z","caller":"dsh.runtime.scenario","verdict":"granted"}
+dsh.gateway.audit: {"verdict":"granted","ts":"2026-11-12T05:33:57Z","outcome":"ok","caller":"dsh.runtime.scenario","primitive":"timerSchedule"}
 rt: ui-wait card-present
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":1,"remainingMs":1499000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T11:12:26Z","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"primitive":"timerSchedule","verdict":"granted","caller":"dsh.runtime.scenario","outcome":"ok","ts":"2026-11-12T05:33:58Z"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":2,"remainingMs":1498000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T11:12:27Z","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"ts":"2026-11-12T05:33:59Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":3,"remainingMs":1497000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T11:12:28Z","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"ts":"2026-11-12T05:34:00Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":4,"remainingMs":1496000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T11:12:29Z","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"primitive":"timerSchedule","verdict":"granted","caller":"dsh.runtime.scenario","outcome":"ok","ts":"2026-11-12T05:34:01Z"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":5,"remainingMs":1495000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.gateway.audit: {"verdict":"granted","outcome":"ok","ts":"2026-10-11T11:12:30Z","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+dsh.gateway.audit: {"primitive":"timerSchedule","verdict":"granted","caller":"dsh.runtime.scenario","outcome":"ok","ts":"2026-11-12T05:34:02Z"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.complete"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.complete.posted","id":"pomodoro-demo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+dsh.gateway.audit: {"ts":"2026-11-12T05:34:03Z","verdict":"granted","outcome":"ok","primitive":"timerSchedule","caller":"dsh.runtime.scenario"}
+rt: ui-done card-present
+rt: ui-script card-action
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"bus line","data":[{}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"deliver action","data":[{"type":"card.action"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"card action frame","data":[{"id":"pomodoro-demo","action":"button"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"action event","data":[{"type":"card.action","id":"pomodoro-demo"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.action.received","id":"pomodoro-demo","action":"button","actionId":"snooze"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.done","ticks":5}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"scenario.complete","status":"pass"}]}
-rt: ui-done card-present
