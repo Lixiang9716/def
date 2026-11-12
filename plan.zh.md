@@ -15,6 +15,7 @@
   `~/tools/aoci/aoci --repo <root> scope approve --preview-file .aoci/scope-change/activate-1904454454/preview.json --actor <id> --out-file .aoci/scope-change/activate-1904454454/approval.json`
   再 `scope apply --preview-file … --approval-file …`。**agent 永不自行签名**——只能在 owner 明确指示下、以 owner 的身份执行。
 - 批完后 agent 接手：`aoci_maintain` → 为约 27 个源写 FRAS → `node tools/aoci/fras-lint.mjs` 预检 → `aoci_update_entry` → `chore(aoci)` PR。半个会话。关掉 T-0268 第 7 项。规模 S。门 🔒。状态 done（2026-10-21——owner 批准 `activate-1904454454`，收口落地：五个机器批共 61 源撰写，aligned，T-0268 关闭）。
+- **2026-11-12：下一轮积欠同样方式清账**——塌层程序的 managed 变更（P0→R3/R1，#762–#766）落地时该会话 AOCI 工具未接入；#767 关账（14 个机器批共 142 条撰写，drift 归零，verify/check/guide 三绿）。
 
 ## 2. 现在就发（接下来 2–4 周）
 
@@ -171,7 +172,7 @@
 | # | 事项 | 为什么 / 入口 | 规模 | 门 | 状态 |
 |---|---|---|---|---|---|
 | R1 | def bundle 声明:`boot.js` 零 def 插件名——def 在 boot 的产品内容 = 一份清单(`runtime/dsh/upstream/def-bundle.js`,cordis.patch 行语义:toolRows / fileRows / inventoryRows / preset;未来换座 = 改这一份数据)+ 插件包;`boot.js` 变为通用行装载器(逐行动态 import + `ctx.plugin`) | R1 终局判据(T-0291):席位产品内容必须是数据 + 包,换座永不触碰 boot 代码。诚实不对称留作胶水并在声明头注明:`mountGatewayLlm`(传输)、`mountSpine` 服务层、`mountWebPlane`(挂载中注入传输)、anchored-editor 变换;JSON 格式要求以 `.js` 数据模块落地——staging 派生(`tools/check-staging-graph.mjs`)读取字面 `import()` 说明符,与 `config-layer.js` 的 cordis.patch.json 格式注释同一诚实 | M | — | done(2026-11-12——T-0291 席位;挂载集逐一相同:spineEntries 21 与 tool 行集逐字节相同,CLI 腿 `settings.surfaces` 13/13、`upstream.web-boot` 13/13、`upstream.session` 32/32、`session.mock-llm` 23/23;iOS `create.card` 12/12;staging 行重派生——Index.ets / harmony closure-spine / ios RESOURCES 各 +`upstream/def-bundle.js`) |
-| R3 | 原生面载荷:普查 → D5 提案 → 平台中立 render-intent 分发 → 先导接线(iOS 批 1,随后 Android、harmony;每批验收 = 场景腿) | 普查漂移:五个渲染器靠代码对称维持 card/question 形状、零 schema(取消的 ask 永挂——`SessionQuestions.swift:55`);原语载荷面每样只有一句散文(挂载闸的 `message` 键无宿主读——`plugin-mount.js:146` 对 `UIPrimitives.swift:39-41`);#764 收敛的 `presentationMeta`/`presentCall`/`presentResult` 零原生消费者 | M | 🔒(折叠进 data-protocols.md v1.4.0 = owner 拍板) | open(提案 2026-11-12 以 DRAFT 对落地:`contract/proposals/2026-11-12-native-face-schemas.zh.md`;render-intent 分发层、iOS 先导批与 Android/harmony 批随后在 T-0290 席位落地) |
+| R3 | 原生面载荷:普查 → D5 提案 → 平台中立 render-intent 分发 → 先导接线(iOS 批 1,随后 Android、harmony;每批验收 = 场景腿) | 普查漂移:五个渲染器靠代码对称维持 card/question 形状、零 schema(取消的 ask 永挂——`SessionQuestions.swift:55`);原语载荷面每样只有一句散文(挂载闸的 `message` 键无宿主读——`plugin-mount.js:146` 对 `UIPrimitives.swift:39-41`);#764 收敛的 `presentationMeta`/`presentCall`/`presentResult` 零原生消费者 | M | 🔒(折叠进 data-protocols.md v1.4.0 = owner 拍板) | done(实现 2026-11-12——#765 分发层+iOS 先导,#766 Android/harmony 批;data-protocols 折叠留待 Gate 列——owner 拍板) |
 
 ## 附录 A — dsh-desktop-plugins "still staged"（#632 之后）
 
