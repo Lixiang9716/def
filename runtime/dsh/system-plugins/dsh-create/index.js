@@ -107,28 +107,33 @@ const PLUGIN_CREATE_DESCRIPTION = [
   '4. LLM adapters MUST `class X extends LlmAdapter` ("@deepseek-ai/dsh-llm") implementing `async *stream(options)` — the base owns',
   'providerInfo/providerRetryPolicy/listModels/resolveModel/prepareCall; a bare object fails registerAdapter with "not a function".',
   'Register with `ctx.llm.registerAdapter(["your-provider"], adapter)`; every provider HTTP request must carry attributionHeaders().',
-  '5. Cards — `globalThis.__dshBusPost?.(JSON.stringify(msg))`: {type:"card.present", card:{ id — REQUIRED, a missing id is silently',
-  'dropped by every host | kind (only "timer" gets the countdown face; default "info") | title (defaults to id) | subtitle (rendered',
-  'by iOS/Android, not harmony) | durationMs (local countdown anchor) }} — presenting again REPLACES the card, no dismiss first;',
-  '{type:"card.state", id, state:{ remainingMs, label }} re-anchors countdown/label, nothing else is read (hosts tween locally at 250ms,',
-  'so 1Hz patches suffice — never spam); {type:"card.complete", id, message} — iOS/Android auto-dismiss ~2.5s later, harmony keeps the',
-  'card; unknown fields are ignored everywhere, nothing throws.',
+  '5. Cards — the face dispatch layer (`import { renderIntent } from "render-intent.js"; const faces = renderIntent();`):',
+  'faces.presentCard({ id — REQUIRED (a missing id is refused at the layer with one structured warn, never silently dropped) |',
+  'kind — closed set {info, timer} (only "timer" gets the countdown face; unknown kinds degrade to info + one warn) |',
+  'title (defaults to id) | subtitle (rendered by iOS/Android, not harmony) | durationMs (local countdown anchor) |',
+  'actions: [{id, label}] — declarative buttons; the host posts a `card.action` frame back when the user taps one } —',
+  'presenting again REPLACES the card, no dismiss first; faces.cardState(id, { remainingMs, label }) re-anchors',
+  'countdown/label (hosts tween locally at 250ms, so 1Hz patches suffice — never spam); faces.cardComplete(id, message) —',
+  'iOS/Android auto-dismiss ~2.5s later, harmony keeps the card; a locally closed card posts card.action {action:"close"} —',
+  'dismissal authority stays yours (subscribe faces.onAction("card.action", …) to hear it); unknown fields are ignored',
+  'everywhere, nothing throws, schemaVersion rides the layer (absent = legacy = the raw bus rows also still work).',
   'A runnable timer plugin, whole (note the alive flag — the disposer must stop the loop AND the posts):',
   '  import "upstream/shims/timers.js";',
-  '  const post = (m) => globalThis.__dshBusPost?.(JSON.stringify(m));',
+  '  import { renderIntent } from "render-intent.js";',
+  '  const faces = renderIntent();',
   '  export const name = "pomodoro";',
   '  export const apply = (ctx) => {',
   '    const CARD = "create-pomodoro";',
-  '    post({ type: "card.present", card: { id: CARD, kind: "timer", title: "番茄钟", subtitle: "专注 25 分钟", durationMs: 1500000 } });',
+  '    faces.presentCard({ id: CARD, kind: "timer", title: "番茄钟", subtitle: "专注 25 分钟", durationMs: 1500000 });',
   '    ctx.effect(() => {',
   '      let remaining = 1500000, alive = true;',
   '      (async () => {',
   '        while (remaining > 0) {',
   '          await new Promise((r) => setTimeout(r, 1000)); remaining -= 1000;',
   '          if (!alive) return;  // unloaded mid-tick — the disposer stopped us',
-  '          post({ type: "card.state", id: CARD, state: { remainingMs: remaining, label: "剩 " + Math.ceil(remaining / 1000) + " 秒" } });',
+  '          faces.cardState(CARD, { remainingMs: remaining, label: "剩 " + Math.ceil(remaining / 1000) + " 秒" });',
   '        }',
-  '        post({ type: "card.complete", id: CARD, message: "番茄钟完成" });',
+  '        faces.cardComplete(CARD, "番茄钟完成");',
   '      })();',
   '      return () => { alive = false; };  // stops the loop AND any further posts',
   '    });',
@@ -141,16 +146,17 @@ const PLUGIN_CREATE_DESCRIPTION = [
 const generatedIndex = ({ id, title, kind, durationMs }) => `// Authored by the creation turn — a real cordis plugin, mounted LIVE.
 import 'upstream/shims/timers.js';
 import { createLogger } from 'logger.js';
+import { renderIntent } from 'render-intent.js';
 const log = createLogger('plugin.${id}');
-const post = (msg) => globalThis.__dshBusPost?.(JSON.stringify(msg));
+const faces = renderIntent();
 const CARD = 'create-${id}';
 export const name = '${id}';
 export const inject = [];
 export const apply = (ctx) => {
   log.info('e2e', { scenario: 'plugin.${id}', event: 'plugin.running', kind: '${kind}' });
-  post({ type: 'card.present', card: {
+  faces.presentCard({
     id: CARD, kind: '${kind}', title: '${title}',
-    subtitle: '创作插件 · 已在线挂载', durationMs: ${durationMs} } });
+    subtitle: '创作插件 · 已在线挂载', durationMs: ${durationMs} });
   log.info('e2e', { scenario: 'plugin.${id}', event: 'card.posted', id: CARD });
 ${
   kind === 'timer'
@@ -162,15 +168,15 @@ ${
       await new Promise((resolve) => setTimeout(resolve, 1000));
       remaining -= 1000;
       if (!alive) return;
-      post({ type: 'card.state', id: CARD, state: {
-        remainingMs: remaining, label: '剩 ' + Math.ceil(remaining / 1000) + ' 秒' } });
+      faces.cardState(CARD, {
+        remainingMs: remaining, label: '剩 ' + Math.ceil(remaining / 1000) + ' 秒' });
     }
-    post({ type: 'card.complete', id: CARD, message: '${title} 完成' });
+    faces.cardComplete(CARD, '${title} 完成');
   })();`
     : `  const now = new Date();
   const label = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')
     + '-' + String(now.getDate()).padStart(2, '0');
-  post({ type: 'card.state', id: CARD, state: { label } });`
+  faces.cardState(CARD, { label });`
 }
 };
 `;
@@ -217,8 +223,12 @@ const writePackage = async (args, dir) => {
  * registry.installed. Module-level: a pure log mapping, no closure state. */
 const narrateCreateStep = (step, fields) => {
   if (step === 'approved') {
+    // `detail` is the face.approval@1 evidence: the mount gate's request
+    // carried the canonical detail field (face.approval@1 via
+    // render-intent.js — the old `message` key was read by no host).
     log.info('e2e', { scenario: 'create.card', event: 'approval.answered',
-      name: fields.spec, approved: fields.approved === true });
+      name: fields.spec, approved: fields.approved === true,
+      detail: fields.faceDetail === true });
   } else if (step === 'adopted') {
     log.info('e2e', { scenario: 'create.card', event: 'registry.installed',
       name: fields.spec });
