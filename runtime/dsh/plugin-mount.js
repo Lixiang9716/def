@@ -48,6 +48,7 @@
  */
 import { createLogger } from 'logger.js';
 import { fsRead, fsWrite, presentApproval } from 'gateway.js';
+import { approvalPayload, FACE_VERSION } from 'render-intent.js';
 import { workspacePrefix as prefixOf, upsertRegistryRow,
   setRegistryRowEnabled, readWorkspaceRegistryDoc }
   from 'workspace-registry.js';
@@ -136,23 +137,34 @@ const readManifest = async (spec, prefix) => {
   return { manifest };
 };
 
-/** The approval gate + registry upsert (steps: approved → adopted). */
+/** The approval gate + registry upsert (steps: approved → adopted).
+ * face.approval@1 (render-intent.js): the request payload crosses the
+ * dispatch layer — `detail` is the canonical detail field (every host
+ * reads it: iOS UIPrimitives.swift, Android UiPrimitives.kt); the old
+ * `message` key was read by NO host, so the mount gate's detail line never
+ * rendered anywhere. The layer warns on the alias and drops it; the
+ * frozen {approved, remember?} result is untouched. */
 const adoptAfterApproval = async (manifest, spec, prefix, opts) => {
   log.debug('approval gate', { spec });
+  let faceDetail = false;
   const approved = opts.approved === true ? true : await (async () => {
     if (opts.askApproval === false) return true;
-    const verdict = await presentApproval({
+    const { payload: face, degradations } = approvalPayload({
+      schemaVersion: FACE_VERSION,
       title: `挂载插件 ${manifest.name ?? spec} v${manifest.version}?`,
-      message: '该插件由本次会话创作，将以真实代码挂载运行。',
+      detail: '该插件由本次会话创作，将以真实代码挂载运行。',
     });
+    for (const d of degradations) log.warn('approval face degraded', d);
+    faceDetail = typeof face.detail === 'string' && face.detail.length > 0;
+    const verdict = await presentApproval(face);
     return verdict?.approved === true;
   })();
   if (!approved) {
-    opts.onStep?.('approved', { spec, approved: false });
+    opts.onStep?.('approved', { spec, approved: false, faceDetail });
     return refused('approval', spec, 'the user declined the mount');
   }
   log.info('e2e', { scenario: 'plugin.mount', event: 'plugin.mount.approved', spec });
-  opts.onStep?.('approved', { spec, approved: true });
+  opts.onStep?.('approved', { spec, approved: true, faceDetail });
   const registry = await upsertRegistryRow({
     fsRead, fsWrite, path: `${prefix ? prefix + '/' : ''}dsh.plugins/1/registry.json`,
   }, {

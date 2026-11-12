@@ -5,7 +5,8 @@
 # any -dsh-serve argv hits the bootRelease fatalError) on an iOS simulator,
 # waits for the scenario's verdict line in the captured stdout, shots the
 # three evidence faces, and hands the captured log to check.mjs against
-# scenarios/card-player.json (11 pinned events, NO client.selected — the iOS
+# scenarios/card-player.json (12 pinned events — the R3 round adds
+# card.action.received; NO client.selected — the iOS
 # card-player seat is SessionServe+WebBootRuntimeDrive, which emits no E2E
 # record of its own; card-player-android.json's extra client.selected pin is
 # the Android seat's shape, not ours).
@@ -235,10 +236,15 @@ LAUNCHED=0
 while [ "$SECONDS" -lt "$SPRINGBOARD_DEADLINE" ]; do
   : > "$LOG"   # simctl --stdout APPENDS — every retry owns a fresh log
   RC=0
+  # The R3 action round-trip: the scripted seam fires the card's declarative
+  # `snooze` button 1s after card.complete exactly the way a tap would
+  # (CardPlayerSurface.scriptActionIfAsked — the approval seam's shape), so
+  # the card.action.received pin proves the D8 event path with no WDA.
   perl -e 'alarm shift; exec @ARGV' "${DSH_LAUNCH_DEADLINE:-180}" \
     xcrun simctl launch --terminate-running-process \
       --stdout="$LOG_ABS" --stderr="$NSLOG_ABS" \
-      "$UDID" "$APP_BUNDLE_ID" -dsh-mode card-player >/dev/null 2>&1 || RC=$?
+      "$UDID" "$APP_BUNDLE_ID" -dsh-mode card-player \
+      -dsh-script-card-action button:snooze >/dev/null 2>&1 || RC=$?
   if [ "$RC" -eq 0 ]; then
     COLD_DYLD_DEADLINE=$((SECONDS + 15))   # first stdout lines take >10s on a cold dyld
     while [ "$SECONDS" -lt "$COLD_DYLD_DEADLINE" ]; do

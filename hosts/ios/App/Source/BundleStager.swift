@@ -10,6 +10,13 @@ import Foundation
 /// arrays (gen_bundle_header.py), so what the simulator runs is
 /// byte-identical to the checkout.
 enum BundleStager {
+    /// The face dispatch layer (R3 face.*@1): render-intent.js (every native
+    /// render payload crosses it) + its pure core face-schemas.js.
+    private static func stageFaceLayer(under root: URL) throws {
+        try write("render-intent.js", data: resData(dsh_runtime_res_render_intent_js), under: root)
+        try write("face-schemas.js", data: resData(dsh_runtime_res_face_schemas_js), under: root)
+    }
+
     static func stage() throws -> URL {
         let root = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
             .appendingPathComponent("dsh", isDirectory: true)
@@ -18,6 +25,7 @@ enum BundleStager {
         }
         try write("logger.js", data: resData(dsh_runtime_res_logger_js),
                   under: root)
+        try stageFaceLayer(under: root)
         // The workspace plugin's live-mount seam (web-live/plugin-live-mount
         // imports it bundle-root-relative; main's creation-mount chain).
         try write("plugin-mount.js",

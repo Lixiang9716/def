@@ -892,6 +892,11 @@
    "note": "app E2E runner/driver"
   },
   {
+   "path": "test/e2e/run-ios-question-face.sh",
+   "kind": "e2e",
+   "note": "app E2E runner/driver"
+  },
+  {
    "path": "test/e2e/run-ios-session-mock-llm.sh",
    "kind": "e2e",
    "note": "app E2E runner/driver"
@@ -1123,6 +1128,11 @@
   },
   {
    "path": "test/panel/real-runtime/web-write-settings-piai-hook.test.js",
+   "kind": "unit",
+   "note": "panel vitest suite"
+  },
+  {
+   "path": "test/panel/render-intent.test.js",
    "kind": "unit",
    "note": "panel vitest suite"
   },
@@ -2446,6 +2456,15 @@
    "kind": "integration",
    "drivenBy": [
     "runtime/dsh/ci/run-plugin-forms-e2e.sh"
+   ],
+   "orphan": false,
+   "note": ""
+  },
+  {
+   "path": "test/e2e/scenarios/question-face.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "test/e2e/run-ios-question-face.sh"
    ],
    "orphan": false,
    "note": ""

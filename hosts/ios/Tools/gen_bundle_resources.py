@@ -9,6 +9,8 @@ DSH = REPO / "runtime" / "dsh"
 
 RESOURCES = [
     ("logger_js", DSH / "logger.js"),
+    ("render_intent_js", DSH / "render-intent.js"),
+    ("face_schemas_js", DSH / "face-schemas.js"),
     ("plugin_mount_js", DSH / "plugin-mount.js"),
     ("transport_tokens_mjs", DSH / "transport-tokens.mjs"),
     ("receipt_journal_js", DSH / "receipt-journal.js"),
@@ -97,6 +99,7 @@ RESOURCES = [
     ("scenario_upstream_suite_js", DSH / "scenario" / "upstream-suite-leg.js"),
     ("scenario_agent_flow_js", DSH / "scenario" / "agent-flow.js"),
     ("scenario_card_player_js", DSH / "scenario" / "card-player.js"),
+    ("scenario_question_face_js", DSH / "scenario" / "question-face.js"),
     ("scenario_create_card_js", DSH / "scenario" / "create-card.js"),
     ("scenario_create_calendar_live_js", DSH / "scenario" / "create-calendar-live.js"),
     ("scenario_b1_web_live_js", DSH / "web-live" / "officialweb-web-live.js"),

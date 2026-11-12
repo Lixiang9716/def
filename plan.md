@@ -183,6 +183,22 @@ writing rules new code must follow are [doc/writing-method.md](doc/writing-metho
 | P2 | The shell/subprocess collapse audit: `ctx.shell`/`ctx.subprocess` against the emulated-userland primitive family (contract/primitives.md v1.3.0); per-row verdict = seat swap or explicit keep-vendored | The same two-audits pattern the fs note records; the product shell is the outboard dsh-shell-js over the workspace fs face (boot.js import note) | M | — | done (2026-11-12 — both audits dualPlane: false; honest dispositions + doc truthing, see 2026-11-12-p2-shell-subprocess-seam-audit.md) |
 | P3 | Contract slimming + the tool-writing contract upgrade: promote the writing-method conventions to gates where a command can check them (rules 1–8 of doc/writing-method.md carry per-rule gate status) | `gates.json` today gates none of rules 1–7 and only the bookkeeping half of rule 8 (`e2e-matrix`, `test-taxonomy`) | M | 🔒 (which conventions become gates = owner call) | done (2026-11-11 — the contract halves: the slimming proposal `contract/proposals/2026-11-11-gateway-primitive-slimming.md` (annotate the irreducible ABI, deprecate the vacant ishRun/channel rows, fold the served capability-plane rows) + the tool-card contract upgrades over the pinned `defineTool` face (office/appshell/create/plugin-manager-tools/open-design now declare `output.presentationMeta` + `presentCall`/`presentResult`, pure + fail-soft; pinned by `test/panel/tool-card-face.test.js`; the office/appshell/plugin-forms/open-design e2e legs re-run green) — both in the feat/seam-collapse-p2p3 seat; the writing-method→gates promotion stays 🔒 owner call as its own follow-up, see the P3 Agent Note) |
 
+## 14. The native declarative-faces program (R3, 2026-11-12)
+
+Version the render-intent payload plane: give the native faces (the `card.*`
+bus lines, the `question.*` frames, and the request payloads above
+`presentApproval`/`presentPicker`/`notify`) what `surface.ops@1` and
+`a2ui.messages@0.9` already have — a versioned additive schema family, an
+event-sequence action-return contract (D8), and a never-crash/never-silent
+degradation ladder — while the primitives underneath stay irreducible and
+frozen. The corpus is the four-way census (iOS, Android, harmony, producers)
+and the proposal is
+[contract/proposals/2026-11-12-native-face-schemas.md](contract/proposals/2026-11-12-native-face-schemas.md).
+
+| # | Item | Why / entry | Size | Gate | Status |
+|---|---|---|---|---|---|
+| R3 | Native face payloads: census → D5 proposal → platform-neutral render-intent dispatch → pilot wiring (iOS batch 1, then Android, then harmony; each batch's acceptance = scenario legs) | the census drift: five renderers hold the card/question shapes by code symmetry with zero schema (a cancelled ask parks forever — `SessionQuestions.swift:55`); the primitive payload faces are one prose sentence each (the mount gate's `message` key is read by no host — `plugin-mount.js:146` vs `UIPrimitives.swift:39-41`); #764's converged `presentationMeta`/`presentCall`/`presentResult` has zero native consumers | M | 🔒 (fold into data-protocols.md v1.4.0 = owner call) | open (proposal landed 2026-11-12 as the DRAFT pair `contract/proposals/2026-11-12-native-face-schemas.md`; the render-intent dispatch layer, the iOS pilot batch, and the Android/harmony batches follow in the T-0290 seat) |
+
 ## Appendix A — dsh-desktop-plugins "still staged" (post-#632)
 
 | Row | Gap | Note |
