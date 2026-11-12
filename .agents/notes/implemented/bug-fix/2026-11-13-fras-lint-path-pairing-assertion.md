@@ -1,4 +1,9 @@
-# fras-lint gains the path-pairing assertion
+# Agent Note: fras-lint gains the path-pairing assertion
+
+Status: implemented
+Related: T-0294 (the card); the 2026-11-12 AOCI closeout (#767) whose batch
+assembly shaped the failure class; the surprise record
+`fras-lint-precheck-green-means` (this note is the correction of record)
 
 ## Problem
 
