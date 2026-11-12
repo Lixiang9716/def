@@ -34,13 +34,17 @@ shared C spine already proves. It owns, for the rows registered into it:
 - the dispatch function: permission check (the row's flag against the
   host-declared grant set) → handler call → §6 audit record emission →
   settle, in that fixed order;
-- the audit emission: the same metadata-only JSON line the existing
-  hosts emit (`{"audit":"<name>","outcome":"<code>"}`), byte-identical
-  on the CLI seat so the E2E pairing gate reads it unchanged, through a
+- the audit emission: the metadata-only §6 record, through a
   host-settable sink with a stderr default — the exact design
   dsh_socket.c already ships (its `g_audit`/`dsh_socket_audit_set`
   plumbing), whose whole security policy has lived in C since v1.8.0
-  under the jail/fuzz/ASan batteries.
+  under the jail/fuzz/ASan batteries. On the CLI seat the record is the
+  two-key audit-plane line the E2E pairing gate reads here
+  (`{"audit":"<name>","outcome":"<code>"}`), emitted byte-identical to
+  the pre-pilot stream; the platform hosts carry the same §6
+  metadata-only policy on their own richer per-call records
+  (ts/primitive/caller/verdict/outcome — the union both shapes make is
+  the pairing gate's key allowlist).
 
 The pilot family is the timer pair (timerSchedule/timerCancel): the
 simplest audited pair on this seat, and the C-facing ABI is already

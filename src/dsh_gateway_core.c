@@ -31,8 +31,10 @@ static void audit_emit(const char *json_line) {
 }
 
 /* The record: primitive name + outcome code, never payload contents
- * (contract §6). Byte-identical to the line the platform hosts emit —
- * the E2E pairing gate reads this stream unchanged. */
+ * (contract §6). On this seat the two-key audit-plane line is what the
+ * E2E pairing gate reads — emitted byte-identical to the pre-pilot
+ * stream; the platform hosts carry the same §6 policy on their own
+ * richer per-call records. */
 static void audit_record(const char *name, const char *outcome) {
     char line[128];
     snprintf(line, sizeof(line), "{\"audit\":\"%s\",\"outcome\":\"%s\"}",
