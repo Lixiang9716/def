@@ -9,11 +9,12 @@
  * path model (internal canonical form ↔ gateway scope/path), the `path`
  * builtin face, argv flag parsing, and the pure word helpers. It imports
  * nothing from the other applet modules — every dependency arrow in this
- * plugin's applet layer points DOWN into this file.
+ * plugin's applet layer points DOWN into this file (the gateway-address
+ * half of the path model lives in the shared scope-address.js root module).
  */
 
 import { createLogger } from 'logger.js';
-import { GatewayError } from 'gateway.js';
+import { appScopeAddress, scopeRoots, workspacePrefix } from 'scope-address.js';
 
 export const log = createLogger('dsh.shell.js.applets');
 
@@ -74,18 +75,6 @@ export const unavailableRefusal = (error) => {
 // '/' + that (what the path face's resolve returns).
 // ---------------------------------------------------------------------------
 
-const scopeRoots = () => {
-  log.debug('scope roots', {});
-  const workspace = globalThis.__dshProfileCwd;
-  const scopeRoot = globalThis.__dshProfileScopeRoot;
-  if (typeof workspace !== 'string' || typeof scopeRoot !== 'string'
-      || !workspace.startsWith(scopeRoot)) {
-    throw new GatewayError('unavailable', 'shell',
-      'the host granted no scoped workspace (no __dshProfileScopeRoot)');
-  }
-  return { workspace, scopeRoot };
-};
-
 /** Lexical normalization to the canonical workspace-relative form; null
  * escapes the root. Accepts '', 'a/b', './a', '/abs', '..'. */
 export const normalizeInternal = (p) => {
@@ -111,17 +100,16 @@ export const resolveAgainstCwd = (p) => {
 
 /** internal (canonical relative or '/'-absolute) → gateway (scope, path).
  * The workspace prefix inside the 'app' scope is read from the pinned
- * globals — never guessed. */
+ * globals — never guessed (the shared scope-address.js derivation; a host
+ * that granted no scoped workspace refuses GatewayError('unavailable'),
+ * which the executor maps into the exit-2 family above). */
 export const toGateway = (internal) => {
   log.debug('to gateway', { internal });
   const clean = normalizeInternal(internal);
   if (clean === null) {
     throw new ShellRefusal(2, `dsh-shell-js: path '${internal}' escapes the workspace`);
   }
-  const { workspace, scopeRoot } = scopeRoots();
-  const prefix = workspace.slice(scopeRoot.length).replace(/^\/+/, '');
-  const path = prefix.length === 0 ? clean : (clean.length === 0 ? prefix : `${prefix}/${clean}`);
-  return { scope: 'app', path: path === '' ? '.' : path };
+  return appScopeAddress(clean, workspacePrefix(scopeRoots('shell')));
 };
 
 // ---------------------------------------------------------------------------

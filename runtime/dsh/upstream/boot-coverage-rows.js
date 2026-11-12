@@ -140,8 +140,9 @@ export const mountCompositionHostPlane = async (ctx, identity) => {
  * file-reference discovery service (`ctx.fileReferences`,
  * dsh-file-reference-local) — the @-mention lexicon the official composer
  * reads (`fileReferences/list`). Injects `agents` only; its search walks the
- * node:fs/promises shim, i.e. the SAME pinned workspace world the `fs`
- * service serves. */
+ * node:fs/promises shim, i.e. the SAME pinned profile workspace the `fs`
+ * service serves (ctx.fs is the DshFsProvider over the gateway fs primitives;
+ * the node:fs seam mounts the same root). */
 const mountFileReferencePlane = async (ctx) => {
   const FileRefs = await import('@deepseek-ai/dsh-file-reference-local');
   await ctx.plugin(FileRefs.default ?? FileRefs.LocalFileReferenceService, {});

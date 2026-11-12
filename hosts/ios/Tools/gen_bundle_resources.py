@@ -11,6 +11,7 @@ RESOURCES = [
     ("logger_js", DSH / "logger.js"),
     ("render_intent_js", DSH / "render-intent.js"),
     ("face_schemas_js", DSH / "face-schemas.js"),
+    ("scope_address_js", DSH / "scope-address.js"),
     ("plugin_mount_js", DSH / "plugin-mount.js"),
     ("transport_tokens_mjs", DSH / "transport-tokens.mjs"),
     ("receipt_journal_js", DSH / "receipt-journal.js"),

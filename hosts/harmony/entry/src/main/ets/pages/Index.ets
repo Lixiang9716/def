@@ -135,6 +135,7 @@ const BUNDLE_FILES: string[] = [
   'scenario/upstream-suite-leg.js',
   'scenario/upstream-suite-type-world.js',
   'scenario/upstream-test-harness.js',
+  'scope-address.js',
   'sha256.js',
   'surface.js',
   'system-plugins/dsh-appshell/index.js',

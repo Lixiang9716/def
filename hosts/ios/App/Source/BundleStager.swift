@@ -10,11 +10,12 @@ import Foundation
 /// arrays (gen_bundle_header.py), so what the simulator runs is
 /// byte-identical to the checkout.
 enum BundleStager {
-    /// The face dispatch layer (R3 face.*@1): render-intent.js (every native
-    /// render payload crosses it) + its pure core face-schemas.js.
+    /// The face dispatch layer (R3 face.*@1) + the shared gateway-address
+    /// derivation (scope-address.js — imported bare by three consumers).
     private static func stageFaceLayer(under root: URL) throws {
         try write("render-intent.js", data: resData(dsh_runtime_res_render_intent_js), under: root)
         try write("face-schemas.js", data: resData(dsh_runtime_res_face_schemas_js), under: root)
+        try write("scope-address.js", data: resData(dsh_runtime_res_scope_address_js), under: root)
     }
 
     static func stage() throws -> URL {
@@ -23,13 +24,11 @@ enum BundleStager {
         if FileManager.default.fileExists(atPath: root.path) {
             try FileManager.default.removeItem(at: root)
         }
-        try write("logger.js", data: resData(dsh_runtime_res_logger_js),
-                  under: root)
+        try write("logger.js", data: resData(dsh_runtime_res_logger_js), under: root)
         try stageFaceLayer(under: root)
         // The workspace plugin's live-mount seam (web-live/plugin-live-mount
         // imports it bundle-root-relative; main's creation-mount chain).
-        try write("plugin-mount.js",
-                  data: resData(dsh_runtime_res_plugin_mount_js), under: root)
+        try write("plugin-mount.js", data: resData(dsh_runtime_res_plugin_mount_js), under: root)
         // The transport token table the scenarios import beside the logger
         // (createLogger(scenarioModule) resolves bundle-root-relative).
         try write("transport-tokens.mjs",

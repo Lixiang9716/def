@@ -3,15 +3,18 @@
  * upstream/web-write-files.js — the workspaceFiles COVERAGE adapters
  * (decision D9, api-full-coverage work stream): the read family and the
  * `fs/observed` change feed the official page's file sidebar and preview
- * read, answered from the REAL vendored `fs` service (dsh-fs-local) over the
- * pinned workspace world. Semantics mirror the upstream host service at the
+ * read, answered from the mounted `ctx.fs` service — the DshFsProvider
+ * (system-plugins/dsh-fs cordis face) over the gateway fs primitives (the
+ * 2026-11-11 seam collapse; the vendored fs-local rides only the parity/
+ * suite legs). Semantics mirror the upstream host service at the
  * pin (packages/api/workspace-files/src/index.ts): the same caps, the same
  * workspace-file/* error vocabulary, page cutting over streamText. One
  * narrowing is a platform fact, not a behavior change: the mobile world is
- * ONE in-memory root (mountWorkspace, no symlinks) — a path outside the
- * pinned root names NO entry, so the read family answers not-found where the
- * desktop would read a host file, and listings answer outside-workspace via
- * the same vocabulary the upstream confine uses.
+ * ONE pinned profile workspace (no symlink face — the provider's declared
+ * gap) — a path outside the pinned root names NO entry, so the read family
+ * answers not-found where the desktop would read a host file, and listings
+ * answer outside-workspace via the same vocabulary the upstream confine
+ * uses.
  */
 import { remoteError } from 'upstream/web-write.js';
 import { lexical } from 'upstream/shims/fs-workspace.js';
