@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "description": "The capability registry — the one source table the descriptor plane is generated from (contract/proposals/2026-11-13-capability-bus.md, step C). The `rows` carry the per-primitive contract data; the `hosts` carry each host's serve/absent policy (the descriptor lists that existed before the generator, extracted verbatim — same primitive NAMES, richer per-name data). The descriptor blocks in the three hosts are EMITTED from this file by `node tools/check-descriptor-parity.mjs --emit`; `--check` fails on drift. Do not edit the emitted blocks by hand.",
+  "source": {
+    "contract": "contract/primitives.md §2 through v1.11.0 (33 rows) — the stability contract plugins pin against",
+    "capabilityPlane": "contract/proposals/2026-09-30-system-capability-plane.md + the hosts' family-flag tables (13 rows: the camera trio, the BLE family, the mic pair) — proposal-recorded shapes, folded into §2 by the next contract minor",
+    "note": "The v1.12.0 fold (contract/proposals/2026-11-11-gateway-primitive-slimming.md) had NOT landed on origin/main when this table was authored (origin/main at 2e0f429e, the capability-bus D5 draft), so the 33-row v1.11.0 table is the contract source of record here; the capability-plane rows ride as their own origin class. Re-source from §2 when the fold lands.",
+    "auditClassVocabulary": "audited = the row's calls carry the §6 per-call record the audit stream pairs (the mic-plane audit manifests' skip lists name the exception class); unaudited = the timer pair (timerSchedule/timerCancel), whose calls ride the runtime's own re-arm machinery (runtime/dsh/gateway.js, the #397 timer seam) rather than a plugin capability call",
+    "permissionFlagSource": "contract/primitives.md §2 Permission-flag column (+ §5 channel families); the capability-plane rows' family flags (camera/ble/microphone) come from the hosts' family-flag tables (GatewayCore.swift / GatewayCore.kt), which the v1.12.0 fold will freeze into §2",
+    "schemaVersionNote": "the contract schema version the entry speaks — every frozen v1 shape is 1 today; the field exists so a future shape bump can raise it per row"
+  },
+  "rows": [
+    { "name": "fsRead", "origin": "contract", "family": "fs", "permissionFlag": "fsRead", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsWrite", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsScope", "origin": "contract", "family": "fs", "permissionFlag": "fsScope", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "httpFetch", "origin": "contract", "family": "http", "permissionFlag": "httpFetch", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "notify", "origin": "contract", "family": "ui", "permissionFlag": "notify", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "presentApproval", "origin": "contract", "family": "ui", "permissionFlag": "presentApproval", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "presentPicker", "origin": "contract", "family": "ui", "permissionFlag": "presentPicker", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "keychainGet", "origin": "contract", "family": "keychain", "permissionFlag": "keychainGet", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "keychainSet", "origin": "contract", "family": "keychain", "permissionFlag": "keychainSet", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsStat", "origin": "contract", "family": "fs", "permissionFlag": "fsRead", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsList", "origin": "contract", "family": "fs", "permissionFlag": "fsRead", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsMkdir", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsRemove", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsRename", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "wasmRun", "origin": "contract", "family": "wasm", "permissionFlag": "wasm", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "ishRun", "origin": "contract", "family": "ish", "permissionFlag": "ishRun", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "timerSchedule", "origin": "contract", "family": "timer", "permissionFlag": "timer", "auditClass": "unaudited", "schemaVersion": 1 },
+    { "name": "timerCancel", "origin": "contract", "family": "timer", "permissionFlag": "timer", "auditClass": "unaudited", "schemaVersion": 1 },
+    { "name": "deviceInfo", "origin": "contract", "family": "device", "permissionFlag": null, "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "haptic", "origin": "contract", "family": "device", "permissionFlag": "haptic", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "clipboardRead", "origin": "contract", "family": "device", "permissionFlag": "clipboard", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "clipboardWrite", "origin": "contract", "family": "device", "permissionFlag": "clipboard", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "presentShare", "origin": "contract", "family": "device", "permissionFlag": "share", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "keepAwake", "origin": "contract", "family": "device", "permissionFlag": "screen", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "socketListen", "origin": "contract", "family": "socket", "permissionFlag": "socket", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "socketConnect", "origin": "contract", "family": "socket", "permissionFlag": "socket", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "channelOpen", "origin": "contract", "family": "channel", "permissionFlag": "channel", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "channelClose", "origin": "contract", "family": "channel", "permissionFlag": "channel", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "presentSurface", "origin": "contract", "family": "surface", "permissionFlag": "surface", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "surfaceDraw", "origin": "contract", "family": "surface", "permissionFlag": "surface", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "closeSurface", "origin": "contract", "family": "surface", "permissionFlag": "surface", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsPublishAtomic", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "fsSync", "origin": "contract", "family": "fs", "permissionFlag": "fsRead", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "cameraCapture", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "cameraRecordStart", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "cameraRecordStop", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleScanStart", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleScanStop", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleConnect", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleDisconnect", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleRead", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleWrite", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleSubscribe", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleUnsubscribe", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "micStart", "origin": "capability-plane", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "micStop", "origin": "capability-plane", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 }
+  ],
+  "hosts": {
+    "ios": {
+      "descriptor": "hosts/ios/App/Source/Gateway/GatewayCore.swift — the descriptor is built from the registration flow (descriptorRows), so this policy is the reference the gate checks the registration extraction against",
+      "available": [
+        "fsRead", "fsWrite", "fsScope", "fsStat", "fsList", "fsMkdir",
+        "fsRemove", "fsRename", "fsPublishAtomic", "fsSync",
+        "wasmRun", "ishRun",
+        "httpFetch", "notify", "presentApproval", "presentPicker",
+        "keychainGet", "keychainSet",
+        "deviceInfo", "haptic", "clipboardRead", "clipboardWrite",
+        "presentShare", "keepAwake",
+        "cameraCapture",
+        "bleScanStart", "bleScanStop", "bleConnect", "bleDisconnect",
+        "bleRead", "bleWrite", "bleSubscribe", "bleUnsubscribe",
+        "micStart", "micStop",
+        "timerSchedule", "timerCancel"
+      ],
+      "unavailable": ["cameraRecordStart", "cameraRecordStop"]
+    },
+    "android": {
+      "descriptor": "hosts/android/app/src/main/java/com/dshmobile/host/GatewayCore.kt — PRIMITIVES is emitted from policy.available (the gate checks it against the registration extraction); PHASED_ROWS/RETIRED_ROWS stay hand-written (behavioral dispatch lists)",
+      "available": [
+        "fsRead", "fsWrite", "fsScope", "httpFetch", "notify",
+        "presentApproval", "presentPicker", "keychainGet", "keychainSet",
+        "fsStat", "fsList", "fsMkdir", "fsRemove", "fsRename",
+        "fsPublishAtomic", "fsSync",
+        "wasmRun", "timerSchedule", "timerCancel",
+        "deviceInfo", "haptic", "clipboardRead", "clipboardWrite",
+        "presentShare", "keepAwake",
+        "cameraCapture",
+        "bleScanStart", "bleScanStop", "bleConnect", "bleDisconnect",
+        "bleRead", "bleWrite", "bleSubscribe", "bleUnsubscribe",
+        "micStart", "micStop"
+      ],
+      "unavailable": ["cameraRecordStart", "cameraRecordStop", "ishRun"]
+    },
+    "harmony": {
+      "descriptor": "HostPhase.ets BINDING_DESCRIPTOR + gateway_smoke.cpp DSH_BINDING_DESCRIPTOR — both emitted from this policy (the two faces stay in lockstep by construction)",
+      "available": [
+        "fsRead", "fsWrite", "fsScope", "fsPublishAtomic", "fsSync",
+        "httpFetch", "notify",
+        "presentApproval", "presentPicker", "keychainGet", "keychainSet",
+        "timerSchedule", "timerCancel", "presentSurface", "surfaceDraw", "closeSurface",
+        "deviceInfo", "haptic", "clipboardRead", "clipboardWrite", "presentShare",
+        "keepAwake", "cameraCapture", "bleScanStart", "bleScanStop", "bleConnect",
+        "bleDisconnect", "bleRead", "bleWrite", "bleSubscribe", "bleUnsubscribe",
+        "micStart", "micStop"
+      ],
+      "unavailable": [
+        "cameraRecordStart", "cameraRecordStop",
+        "fsStat", "fsList", "fsMkdir", "fsRemove", "fsRename",
+        "wasmRun", "ishRun"
+      ]
+    }
+  }
+}

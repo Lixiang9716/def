@@ -102,7 +102,10 @@ final class GatewaySession {
     /// Descriptor before eval (frozen bridge order), then the bus seam, the
     /// gateway dispatch, the entry eval, and the first pump.
     private func bindAndEval(_ host: OpaquePointer) {
-        dsh_runtime_set_descriptor(host, Self.descriptorJSON)
+        guard let core else { return finish(failOutcome("gateway core missing")) }
+        // the registration-derived descriptor (the phased rows declared
+        // honestly unavailable — the full binding face's posture)
+        dsh_runtime_set_descriptor(host, core.descriptorJSON(declarePhasedUnavailable: true))
         dsh_runtime_set_bus_sink(host, { ud, line in
             guard let ud, let line else { return }
             let session = Unmanaged<GatewaySession>.fromOpaque(ud).takeUnretainedValue()
@@ -348,15 +351,10 @@ final class GatewaySession {
         try notes.write(to: target)
     }
 
-    /// RuntimeDescriptor pre-eval: the full serving table available, the
-    /// capability plane's phased rows unavailable — the honest declaration
-    /// (conformance §7, contract §1).
-    private static let descriptorJSON: String = {
-        GatewayCore.jsonLine([
-            "available": GatewayCore.primitives,
-            "unavailable": GatewayCore.phasedRows,
-        ]) ?? "{}"
-    }()
+    /// RuntimeDescriptor pre-eval: built by GatewayCore from the
+    /// registration flow (descriptorJSON) — the full serving table available,
+    /// the capability plane's phased rows unavailable — the honest declaration
+    /// (conformance §7, contract §1). No hand list here to drift.
 
     private static func parse(_ text: String) -> [String: Any]? {
         guard let data = text.data(using: .utf8) else { return nil }

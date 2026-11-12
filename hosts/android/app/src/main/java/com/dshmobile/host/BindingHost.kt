@@ -52,11 +52,12 @@ class BindingHost internal constructor(
         /** RuntimeDescriptor pre-eval: the full table available, the
          * capability plane's phased rows and the retired ishRun row
          * unavailable — conformance §7 (Android Keystore + SAF + camera2
-         * make the surface real; §7 #1 makes the absence honest). */
-        private val DESCRIPTOR: String = JSONObject()
-            .put("available", JSONArray(GatewayCore.PRIMITIVES))
-            .put("unavailable", JSONArray(GatewayCore.PHASED_ROWS + GatewayCore.RETIRED_ROWS))
-            .toString()
+         * make the surface real; §7 #1 makes the absence honest). Built by
+         * GatewayCore from the serving table + the generated per-entry
+         * facts (the descriptor plane's registration-driven derivation). */
+        private val DESCRIPTOR: String = GatewayCore.descriptorJSON(
+            unavailable = GatewayCore.PHASED_ROWS + GatewayCore.RETIRED_ROWS,
+        )
 
         @Volatile internal var instance: BindingHost? = null
 
