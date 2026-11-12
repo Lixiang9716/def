@@ -347,6 +347,11 @@
    "note": "app-side E2E runner"
   },
   {
+   "path": "hosts/harmony/ci/run-question-face.sh",
+   "kind": "e2e",
+   "note": "app-side E2E runner"
+  },
+  {
    "path": "hosts/harmony/ci/run-create-card.sh",
    "kind": "e2e",
    "note": "app-side E2E runner"
@@ -1405,6 +1410,15 @@
    "path": "tools/test/sweep.test.mjs",
    "kind": "unit",
    "note": "node tooling unit tests"
+  },
+  {
+   "path": "test/e2e/scenarios/question-face-harmony.json",
+   "kind": "e2e",
+   "drivenBy": [
+    "hosts/harmony/ci/run-question-face.sh"
+   ],
+   "orphan": false,
+   "note": ""
   }
  ],
  "scenarios": [

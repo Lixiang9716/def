@@ -28,6 +28,7 @@ export default class EntryAbility extends UIAbility {
     const spec = want.parameters?.['dsh.e2e.spec'];
     const webClient = want.parameters?.['dsh.web.client'];
     const scriptApproval = want.parameters?.['dsh.script.approval'];
+    const scriptQuestion = want.parameters?.['dsh.script.question'];
     const bleMock = want.parameters?.['dsh.e2e.ble.mock'];
     if (bleMock === 'true' || bleMock === true) {
       E2eLeg.setBleMock(true);
@@ -47,6 +48,19 @@ export default class EntryAbility extends UIAbility {
       } else {
         hilog.error(DOMAIN, TAG,
           'unknown dsh.script.approval: %{public}s — a human answers', scriptApproval);
+      }
+    }
+    if (typeof scriptQuestion === 'string' && scriptQuestion.length > 0) {
+      // The scripted-question seam's vocabulary is closed (`cancel` alone —
+      // the approval seam's shape, the Android QuestionDialog twin): an
+      // unknown value fails loud here and stages NOWHERE — the human
+      // answers, a typo must never auto-cancel an ask.
+      if (scriptQuestion === 'cancel') {
+        E2eLeg.setScriptQuestion(scriptQuestion);
+        hilog.info(DOMAIN, TAG, 'script question %{public}s staged at launch', scriptQuestion);
+      } else {
+        hilog.error(DOMAIN, TAG,
+          'unknown dsh.script.question: %{public}s — a human answers', scriptQuestion);
       }
     }
     if (typeof spec === 'string' && spec !== '') {

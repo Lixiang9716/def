@@ -411,6 +411,7 @@ scenario/gateway-bridge-smoke.js
 scenario/harmony-capability-binding.js
 scenario/mic-plane.js
 scenario/parity-projector.js
+scenario/question-face.js
 scenario/session-mock-llm.js
 scenario/surface-pomodoro.js
 scenario/upstream-fake-timers.js

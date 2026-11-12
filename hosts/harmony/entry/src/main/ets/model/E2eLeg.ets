@@ -21,6 +21,7 @@ export class E2eLeg {
   private static spec: string = '';
   private static webClient: string = '';
   private static scriptApproval: string = '';
+  private static scriptQuestion: string = '';
   private static bleMock: boolean = false;
 
   /** The scripted-approval launch want (`--ps dsh.script.approval
@@ -35,6 +36,22 @@ export class E2eLeg {
 
   static getScriptApproval(): string {
     return E2eLeg.scriptApproval;
+  }
+
+  /** The scripted-question launch want (`--ps dsh.script.question cancel`,
+   * the approval seam's shape — the Android QuestionDialog twin): the
+   * question dialog still presents — the native path is exercised — then
+   * settles exactly the way the tapped 取消 would (~350 ms after each
+   * dialog opens). '' (absent) means a human answers; the product default
+   * is unchanged. The vocabulary is closed (`cancel` alone): an unknown
+   * value fails loud at the want's reader (EntryAbility) and never stages —
+   * a typo must never auto-cancel an ask. */
+  static setScriptQuestion(scriptQuestion: string): void {
+    E2eLeg.scriptQuestion = scriptQuestion;
+  }
+
+  static getScriptQuestion(): string {
+    return E2eLeg.scriptQuestion;
   }
 
   /** EntryAbility.onCreate: the BLE face's mock-radio launch parameter

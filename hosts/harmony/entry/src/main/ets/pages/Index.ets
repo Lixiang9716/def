@@ -47,6 +47,7 @@ import { HostPhase, WHALE_WEB_DIR } from '../model/HostPhase';
 import { LlmConfigStaging } from '../model/LlmConfigStaging';
 import { OfficialPhase } from '../model/OfficialPhase';
 import { CardFace, CardActionRow } from '../model/CardFace';
+import { QuestionOptionRow, QuestionRow, QuestionAnswerRow, questionBusFace } from '../model/QuestionDialog';
 import { OfficialServe, NEXT_CLIENT_ROOT } from '../model/OfficialServe';
 import { V2WebPhase } from '../model/V2WebPhase';
 import { ParityMockRoute, PARITY_MOCK_KEY } from '../model/ParityMockRoute';
@@ -68,6 +69,18 @@ const LEG_CAMERA_PLANE: string = 'camera.plane';
 const LEG_PARITY: string = 'upstream.parity';
 const LEG_BLE: string = 'ble.plane';
 const LEG_MIC_PLANE: string = 'mic.plane';
+/** The card.player leg (`--ps dsh.e2e.leg card.player`): the plugin card
+ * face's proof leg. This arm is the REPLAY the gaps salvage named: #464
+ * landed HostPhase.beginCardPlayer, the runner and the manifest but
+ * deliberately dropped the Index.ets divergence ("their gaps-side leg
+ * wiring must be replayed on main's terminal state in a follow-up") — so
+ * the launch died on the unknown-leg fail-loud branch ever since. */
+const LEG_CARD_PLAYER: string = 'card.player';
+/** The question.face leg (`--ps dsh.e2e.leg question.face`; T-0297): the
+ * in-band ask's native-face proof leg — the scenario asks through the REAL
+ * user-questions waterfall, THIS host answers through the native dialog
+ * (the scripted cancel on the drive). */
+const LEG_QUESTION_FACE: string = 'question.face';
 /** The windows-test-plan T4/T5 leg (`--ps dsh.e2e.leg real.agent.loop`):
  * the spine + tools on the STAGED real backend, the probes in-scenario. */
 const LEG_REAL_AGENT: string = 'real.agent.loop';
@@ -123,6 +136,7 @@ const BUNDLE_FILES: string[] = [
   'scenario/llm-live-stream.js',
   'scenario/mic-plane.js',
   'scenario/parity-projector.js',
+  'scenario/question-face.js',
   'scenario/real-agent-loop.js',
   'scenario/real-create.js',
   'scenario/session-mock-llm.js',
@@ -1375,6 +1389,57 @@ struct ApprovalDialog {
   }
 }
 
+// The question face's dialog — face.question@1's renderer, one native
+// dialog per question (the parse/chain/settle lives in
+// model/QuestionDialog.ets). Options render as a button row PER option (the
+// Android sibling's shape — the renderer is not lossy past three options),
+// an option-less ask as free text; 取消 delivers outcome:"cancelled".
+// autoCancel stays off: an outside tap is nothing, never a silent
+// dismissal — the park-forever defect family dies here.
+@CustomDialog
+struct QuestionFaceDialog {
+  controller: CustomDialogController;
+  qid: string = '';
+  header: string = 'def';
+  body: string = '';
+  options: Array<QuestionOptionRow> = [];
+  onOption: (optionId: string) => void = (optionId: string): void => {};
+  onCustom: (text: string) => void = (text: string): void => {};
+  onCancel: () => void = (): void => {};
+  @State customText: string = '';
+
+  build() {
+    Column({ space: 12 }) {
+      Text(this.header).fontSize(18).fontWeight(FontWeight.Bold)
+      if (this.body.length > 0) {
+        Text(this.body).fontSize(14)
+      }
+      if (this.options.length > 0) {
+        ForEach(this.options, (opt: QuestionOptionRow): void => {
+          Button(opt.label).width('100%').onClick((): void => {
+            this.onOption(opt.id);
+            this.controller.close();
+          })
+        }, (opt: QuestionOptionRow): string => opt.id)
+      } else {
+        TextInput({ placeholder: '自己写…', text: this.customText })
+          .onChange((value: string): void => {
+            this.customText = value;
+          })
+        Button('提交').onClick((): void => {
+          this.onCustom(this.customText);
+          this.controller.close();
+        })
+      }
+      Button('取消').onClick((): void => {
+        this.onCancel();
+        this.controller.close();
+      })
+    }
+    .padding(20)
+  }
+}
+
 @Entry
 @Component
 struct Index {
@@ -1513,6 +1578,17 @@ struct Index {
       (title: string, resolve: (approved: boolean) => void): void => {
         this.showApproval(title, resolve);
       });
+    // face.question@1's native face (the drive seat's answer face — the
+    // WebView seat keeps answering in-page): the phase sink's
+    // question.request arms open the question dialog, the answer rides the
+    // bus delivery back to the parked ask. One bus face, registered once;
+    // the chain presents one dialog per question.
+    HostPhase.getInstance().setQuestionPresenter(
+      questionBusFace((question: QuestionRow,
+        onAnswer: (row: QuestionAnswerRow) => void,
+        onCancel: () => void): void => {
+        this.showQuestion(question, onAnswer, onCancel);
+      }));
     this.surfaceInput = (kind: string, x: number, y: number): void => {
       HostPhase.getInstance().onSurfaceTouch(kind, x, y);
       const serve = this.liveServe();
@@ -1572,6 +1648,12 @@ struct Index {
     } else if (leg === LEG_MIC_PLANE) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runMicPlaneLeg();
+    } else if (leg === LEG_CARD_PLAYER) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runCardPlayerLeg();
+    } else if (leg === LEG_QUESTION_FACE) {
+      hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
+      this.runQuestionFaceLeg();
     } else if (leg === LEG_REAL_AGENT) {
       hilog.info(0x0000, TAG, 'leg %{public}s selected at launch', leg);
       this.runRealAgentLeg();
@@ -2089,6 +2171,105 @@ struct Index {
       });
   }
 
+  /** The card.player leg (`card.player`, ONE launch; ci/run-card-player.sh):
+   * the mic-plane leg's headless shape with the card-player scenario as the
+   * entry — no web client mounts, the runner calls nothing per-page; the
+   * card.* bus lines route through CardFace into the PiP face's @State
+   * bindings (the onCardRecord hook), and the verdict is the C
+   * `dsh.runtime.verdict: card.player` line, record by record via the
+   * checker. The gaps-salvage replay this arm completes (see
+   * LEG_CARD_PLAYER). */
+  private runCardPlayerLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const phase = HostPhase.getInstance();
+    phase.setApprovalPresenter((title: string, resolve: (approved: boolean) => void): void => {
+      this.showApproval(title, resolve);
+    });
+    phase.onPhaseComplete = (passed: boolean): void => {
+      this.verdict = (passed ? 'PASS' : 'FAIL') + ' card.player (logs are the verdict)';
+    };
+    // The card face's record hook: bus card.* records route through
+    // CardFace, then this pushes the projection into the PiP @State
+    // bindings (aboutToAppear's OfficialServe hook, mirrored on HostPhase).
+    phase.onCardRecord = (): void => this.refreshCardFace();
+    phase.pageSink = (text: string): void => {
+      this.carrier.sendText(text);
+    };
+    this.carrier.onStaticServed = (path: string): void => {
+      phase.onStaticServed(path);
+    };
+    this.carrier.onWsText = (text: string): void => {
+      phase.onPageText(text);
+    };
+    this.materializeBundle(ctx)
+      .then((root: string): Promise<number> => {
+        this.verdict = 'card-player leg: running...';
+        phase.beginCardPlayer(ctx, root,
+          ctx.cacheDir + '/dsh-card-player-capture.log', fsRoot);
+        return this.carrier.start(CARRIER_BASE_PORT).then((port: number): number => {
+          phase.onCarrierListening(port);
+          phase.evalEntryDirect();
+          return port;
+        });
+      })
+      .then((port: number): void => {
+        this.verdict = 'card-player leg: running on 127.0.0.1:' + port;
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'card-player leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
+  /** The question.face leg (`question.face`, ONE launch; ci/
+   * run-question-face.sh): the card-player leg's headless shape with the
+   * question-face scenario as the entry — no web client mounts; the
+   * scenario boots the spine, parks a REAL ctx.userQuestions ask through
+   * the question bridge, and THIS host answers through the native dialog
+   * (the scripted cancel on the CI drive). The answer's bus delivery
+   * settles the parked turn; the verdict is the scenario's own stream. */
+  private runQuestionFaceLeg(): void {
+    const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const fsRoot: string = ctx.filesDir + '/dsh-fs';
+    const phase = HostPhase.getInstance();
+    phase.setApprovalPresenter((title: string, resolve: (approved: boolean) => void): void => {
+      this.showApproval(title, resolve);
+    });
+    phase.onPhaseComplete = (passed: boolean): void => {
+      this.verdict = (passed ? 'PASS' : 'FAIL') + ' question.face (logs are the verdict)';
+    };
+    phase.pageSink = (text: string): void => {
+      this.carrier.sendText(text);
+    };
+    this.carrier.onStaticServed = (path: string): void => {
+      phase.onStaticServed(path);
+    };
+    this.carrier.onWsText = (text: string): void => {
+      phase.onPageText(text);
+    };
+    this.materializeBundle(ctx)
+      .then((root: string): Promise<number> => {
+        this.verdict = 'question-face leg: running...';
+        phase.beginQuestionFace(ctx, root,
+          ctx.cacheDir + '/dsh-question-face-capture.log', fsRoot);
+        return this.carrier.start(CARRIER_BASE_PORT).then((port: number): number => {
+          phase.onCarrierListening(port);
+          phase.evalEntryDirect();
+          return port;
+        });
+      })
+      .then((port: number): void => {
+        this.verdict = 'question-face leg: running on 127.0.0.1:' + port;
+      })
+      .catch((err: BusinessError): void => {
+        this.verdict = 'FAIL (' + (err.message ?? JSON.stringify(err)) + ')';
+        hilog.error(0x0000, TAG, 'question-face leg failed: %{public}s',
+          err.message ?? 'unknown');
+      });
+  }
+
   private runDevicePlaneLeg(): void {
     const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
     const fsRoot: string = ctx.filesDir + '/dsh-fs';
@@ -2346,6 +2527,43 @@ struct Index {
         hilog.error(0x0000, TAG, 'official phase bootstrap failed: %{public}s',
           err.message ?? 'unknown');
       });
+  }
+
+  /** face.question@1's native face: ONE dialog per question (the chain and
+   * the exactly-once settle live in QuestionFace.run); the scripted-question
+   * seam arms per dialog — the dialog still presents, then settles exactly
+   * the way the tapped 取消 would ~350 ms in (the Android
+   * scriptCancelIfAsked shape; the vocabulary was closed at EntryAbility). */
+  private showQuestion(question: QuestionRow,
+    onAnswer: (row: QuestionAnswerRow) => void, onCancel: () => void): void {
+    const controller: CustomDialogController = new CustomDialogController({
+      builder: QuestionFaceDialog({
+        qid: question.qid,
+        header: question.header,
+        body: question.body,
+        options: question.options,
+        onOption: (optionId: string): void => {
+          onAnswer(new QuestionAnswerRow(question.qid, [optionId], null));
+        },
+        onCustom: (text: string): void => {
+          onAnswer(new QuestionAnswerRow(question.qid, null, text));
+        },
+        onCancel: (): void => {
+          onCancel();
+        }
+      }),
+      autoCancel: false,
+      customStyle: true
+    });
+    controller.open();
+    hilog.info(0x0000, TAG, 'ui-wait question %{public}s', question.qid);
+    if (E2eLeg.getScriptQuestion() === 'cancel') {
+      setTimeout((): void => {
+        hilog.info(0x0000, TAG, 'question script answered cancel');
+        controller.close();
+        onCancel();
+      }, 350);
+    }
   }
 
   private showApproval(title: string, resolve: (approved: boolean) => void): void {

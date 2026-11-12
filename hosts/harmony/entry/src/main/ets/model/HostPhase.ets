@@ -64,6 +64,7 @@ import { CameraPrimitives } from './CameraPrimitives';
 import { BlePrimitives } from './BlePrimitives';
 import { MicPrimitives } from './MicPrimitives';
 import { CardFace } from './CardFace';
+import { QuestionBusFace } from './QuestionDialog';
 import { BuildFlavor } from './BuildFlavor';
 
 const TAG: string = 'dsh.app';
@@ -105,6 +106,14 @@ const ENTRY_PARITY: string = 'scenario/upstream-parity.js';
  * the card.* records route through CardFace into the page's PiP face. */
 const SCENARIO_CARD_PLAYER: string = 'card.player';
 const ENTRY_CARD_PLAYER: string = 'scenario/card-player.js';
+/** The question.face leg (the Android question-face drive's sibling): the
+ * plugin's in-band ask speaks bus lines (question.request) over THIS seat —
+ * the SAME seam the card face uses, and the answer rides the bus delivery
+ * back (question-bridge.js's parked ask resolves through it). No web client
+ * mounts (the scenario drives the spine only); the ask renders through the
+ * NATIVE question dialog Index presents (the face.question@1 renderer). */
+const SCENARIO_QUESTION_FACE: string = 'question.face';
+const ENTRY_QUESTION_FACE: string = 'scenario/question-face.js';
 
 const SCENARIO_DEVICE_PLANE: string = 'harmony.device-plane';
 const ENTRY_DEVICE_PLANE: string = 'scenario/device-plane.js';
@@ -260,6 +269,7 @@ export class HostPhase {
   private cameraPlaneLeg: boolean = false;
   private parityLeg: boolean = false;
   private cardPlayerLeg: boolean = false;
+  private questionFaceLeg: boolean = false;
   private bleLeg: boolean = false;
   private bleMock: boolean = false;
   /** The compact creation-client leg: session-mock-llm over the compact page —
@@ -304,6 +314,17 @@ export class HostPhase {
     this.approvalPresenter = presenter;
     this.device?.setApprovalPresenter(presenter);
   }
+
+  /** Index registers the native question dialog here (face.question@1's
+   * renderer — the same presenter posture as approvals): onBusLine hands
+   * every `question.request` to it, the answer rides the deliver callback
+   * (hostBusDeliver — the deliverRuntime equivalent) back to the parked
+   * ask. */
+  setQuestionPresenter(presenter: QuestionBusFace): void {
+    this.questionPresenter = presenter;
+  }
+
+  private questionPresenter: QuestionBusFace | null = null;
 
   /** Index registers the native surface overlay here (the render surface,
    * contract v1.10.0) — the same presenter posture as approvals. */
@@ -432,6 +453,28 @@ export class HostPhase {
     this.whaleLeg = false;
     this.parityLeg = false;
     this.cardPlayerLeg = true;
+    this.slotAcked = false;
+    this.connectedLogged = false;
+    this.hostInfoDelivered = false;
+    this.start(ctx, bundleRoot, capturePath, fsRoot);
+  }
+
+  /** The question.face leg (ONE launch, its own scenario id): the binding
+   * machinery with the question-face scenario as the entry — the card-player
+   * leg's headless shape (no web client mounts; the runner calls
+   * evalEntryDirect once the carrier is up). The scenario's ask crosses the
+   * __dshBusPost seam into onBusLine, which hands it to the question
+   * presenter (Index's native dialog); the answer rides hostBusDeliver
+   * back. */
+  beginQuestionFace(ctx: common.UIAbilityContext, bundleRoot: string,
+    capturePath: string, fsRoot: string): void {
+    this.scenario = SCENARIO_QUESTION_FACE;
+    this.carrierScenario = SCENARIO_QUESTION_FACE;
+    this.entry = ENTRY_QUESTION_FACE;
+    this.llmLeg = false;
+    this.whaleLeg = false;
+    this.parityLeg = false;
+    this.questionFaceLeg = true;
     this.slotAcked = false;
     this.connectedLogged = false;
     this.hostInfoDelivered = false;
@@ -661,7 +704,7 @@ export class HostPhase {
   onCarrierListening(port: number): void {
     this.carrierPort = port;
     if (this.devicePlaneLeg || this.cameraPlaneLeg || this.parityLeg
-      || this.cardPlayerLeg) {
+      || this.cardPlayerLeg || this.questionFaceLeg) {
       // No web client mounts on this leg (the scenario drives primitives
       // only) — carrier-side selection records would pin records no page
       // produces; the manifest carries the scenario's own records alone.
@@ -893,6 +936,30 @@ export class HostPhase {
       if (this.onCardRecord !== undefined) {
         this.onCardRecord();
       }
+      return;
+    }
+    // The in-band user-questions ask (the question.face leg; Android's
+    // BindingHost.busPosted `question.request` arm, mirrored): the NATIVE
+    // dialog is the device's answer face, presented via the registered
+    // presenter; the answer rides the bus delivery back — the chained
+    // handler on the JS side resolves the bridge's parked ask
+    // (face.question@1's cancel settles it cancelled). The presenter opens
+    // the dialog from this main-thread bus callback the same way the
+    // approval presenter opens from onDispatch.
+    if (msg.type === 'question.request') {
+      const presenter = this.questionPresenter;
+      if (presenter === null) {
+        hilog.error(0x0000, TAG,
+          'phase: question.request with no presenter — refusing (the ask would park forever)');
+        return;
+      }
+      presenter(line, (answerJson: string): void => {
+        const status: number = hostBusDeliver(PHASE_ID, answerJson);
+        if (status < 0) {
+          hilog.error(0x0000, TAG, 'phase: question answer deliver failed');
+        }
+        this.signalComplete(status);
+      });
       return;
     }
     if (msg.type !== 'ws.send' || msg.payload === undefined) {
