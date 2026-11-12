@@ -24,6 +24,7 @@
 #include "dsh_wasm.h" /* the wasm seam (contract v1.2.0): dsh_wasm_run */
 #include "dsh_socket.h" /* the loopback socket seam (contract v1.8.0) */
 #include "dsh_fs_port.h" /* the durable-fs portability layer (contract v1.11.0) */
+#include "dsh_gateway_core.h" /* the C gateway core pilot (timer family) */
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -1505,8 +1506,94 @@ static void smoke_wasm_run(smoke_backend *b, int call_id, const char *args) {
     free(input);
 }
 
+/* ---- the gateway core's timer family (the C-core pilot) -------------------
+ * src/dsh_gateway_core.c owns the trust-root pipeline for these two rows —
+ * permission check → handler call → §6 audit record → settle, in that
+ * order. What lives HERE is the host work the core cannot own: the
+ * CLOCK_MONOTONIC reads and the timer table. Byte-identical behavior to
+ * the if-chain branches this pilot replaced (the E2E pairing gate reads
+ * the same audit stream, the ledger the same payloads). */
+static void smoke_timer_schedule(void *ud, int call_id, const char *args,
+                                 dsh_gateway_reply *reply) {
+    smoke_backend *b = ud;
+    (void)call_id;
+    /* v1.4.0: settle on ARM; the fire arrives later as a timer.fire bridge
+     * event from the quiescent run loop's sleep-to-fire pass. */
+    if (!strstr(args, "\"delayMs\"")) {
+        dsh_gateway_reply_reject(reply, "timerSchedule", "invalid",
+                                 "delayMs missing");
+        return;
+    }
+    int delay = json_int(args, "delayMs", -1);
+    if (delay < 0) {
+        dsh_gateway_reply_reject(reply, "timerSchedule", "invalid",
+                                 "delayMs must be an integer >= 0");
+        return;
+    }
+    if (delay > 2147483647) delay = 2147483647; /* the host clamp */
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    long long at = (long long)now.tv_sec * 1000 + now.tv_nsec / 1000000 + delay;
+    if (b->n_timers >= sizeof(b->timers) / sizeof(b->timers[0])) {
+        dsh_gateway_reply_reject(reply, "timerSchedule", "invalid",
+                                 "timer table full (256 live)");
+        return;
+    }
+    int id = ++b->next_timer_id;
+    b->timers[b->n_timers].id = id;
+    b->timers[b->n_timers].fire_at_ms = at;
+    b->n_timers++;
+    snprintf(reply->json, sizeof(reply->json), "{\"timerId\":%d}", id);
+}
+
+static void smoke_timer_cancel(void *ud, int call_id, const char *args,
+                               dsh_gateway_reply *reply) {
+    smoke_backend *b = ud;
+    (void)call_id;
+    int want = json_int(args, "timerId", 0);
+    int cancelled = 0;
+    for (size_t i = 0; i < b->n_timers; i++) {
+        if (b->timers[i].id == want) {
+            b->timers[i] = b->timers[b->n_timers - 1];
+            b->n_timers--;
+            cancelled = 1;
+            break;
+        }
+    }
+    snprintf(reply->json, sizeof(reply->json), "{\"cancelled\":%s}",
+             cancelled ? "true" : "false");
+}
+
+/* The pilot rows — the capability-registry.json row schema with the timer
+ * pair's registry data verbatim (permissionFlag "timer", auditClass
+ * "unaudited" — the descriptor-plane class; this seat's emission policy
+ * is host-fixed and records every call, §6). Grants are this dev host's
+ * declared families: the descriptor declares the timer rows, so the
+ * "timer" flag is granted (zero-interaction by construction). */
+static const dsh_gateway_row SMOKE_CORE_ROWS[] = {
+    {"timerSchedule", smoke_timer_schedule, "timer", "unaudited", 1},
+    {"timerCancel",   smoke_timer_cancel,   "timer", "unaudited", 1},
+};
+static const char *const SMOKE_CORE_GRANTS[] = {"timer"};
+static dsh_gateway_core g_gateway_core;
+
+/* The core's settle delivery: straight into the runtime queue (the same
+ * call the legacy path's smoke_settle tail makes), failures marked loud. */
+static void smoke_core_settle(void *ud, int call_id, int ok,
+                              const char *payload) {
+    smoke_backend *b = ud;
+    if (dsh_runtime_gateway_settle(b->rt, call_id, ok, payload) == 0) return;
+    b->failed = 1;
+    fprintf(stderr, "smoke: settle failed: %s\n", dsh_runtime_error(b->rt));
+}
+
 static void smoke_serve(smoke_backend *b, int call_id, const char *name,
                         const char *args) {
+    /* The C gateway core pilot: registered rows (currently the timer
+     * family) dispatch through src/dsh_gateway_core.c — permission check,
+     * audit record and settle included. Everything else falls through to
+     * the hand-maintained chain below (the follow-up's migration surface). */
+    if (dsh_gateway_core_dispatch(&g_gateway_core, call_id, name, args)) return;
     smoke_audit_arm(b, call_id, name);
     if (strcmp(name, "fsWrite") == 0) return smoke_fs_write(b, call_id, args);
     if (strcmp(name, "fsPublishAtomic") == 0) return smoke_fs_publish_atomic(b, call_id, args);
@@ -1545,50 +1632,8 @@ static void smoke_serve(smoke_backend *b, int call_id, const char *name,
         snprintf(payload, sizeof(payload), "{\"scope\":\"app\",\"path\":\"%s\"}", b->tmpdir);
         return smoke_settle(b, call_id, 1, payload);
     }
-    if (strcmp(name, "timerSchedule") == 0) {
-        /* v1.4.0: settle on ARM; the fire arrives later as a timer.fire
-         * bridge event from the quiescent run loop's sleep-to-fire pass. */
-        if (!strstr(args, "\"delayMs\"")) {
-            return smoke_reject(b, call_id, "timerSchedule", "invalid",
-                                "delayMs missing");
-        }
-        int delay = json_int(args, "delayMs", -1);
-        if (delay < 0) {
-            return smoke_reject(b, call_id, "timerSchedule", "invalid",
-                                "delayMs must be an integer >= 0");
-        }
-        if (delay > 2147483647) delay = 2147483647; /* the host clamp */
-        struct timespec now;
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        long long at = (long long)now.tv_sec * 1000 + now.tv_nsec / 1000000 + delay;
-        if (b->n_timers >= sizeof(b->timers) / sizeof(b->timers[0])) {
-            return smoke_reject(b, call_id, "timerSchedule", "invalid",
-                                "timer table full (256 live)");
-        }
-        int id = ++b->next_timer_id;
-        b->timers[b->n_timers].id = id;
-        b->timers[b->n_timers].fire_at_ms = at;
-        b->n_timers++;
-        char payload[64];
-        snprintf(payload, sizeof(payload), "{\"timerId\":%d}", id);
-        return smoke_settle(b, call_id, 1, payload);
-    }
-    if (strcmp(name, "timerCancel") == 0) {
-        int want = json_int(args, "timerId", 0);
-        int cancelled = 0;
-        for (size_t i = 0; i < b->n_timers; i++) {
-            if (b->timers[i].id == want) {
-                b->timers[i] = b->timers[b->n_timers - 1];
-                b->n_timers--;
-                cancelled = 1;
-                break;
-            }
-        }
-        char payload[48];
-        snprintf(payload, sizeof(payload), "{\"cancelled\":%s}",
-                 cancelled ? "true" : "false");
-        return smoke_settle(b, call_id, 1, payload);
-    }
+    /* The timer family (timerSchedule/timerCancel) no longer appears here:
+     * the C gateway core pilot dispatches it (see SMOKE_CORE_ROWS above). */
     /* ---- the socket seam (contract v1.8.0) --------------------------------
      * The grant checks LIVE HERE (the serve layer owns the descriptor and the
      * grants; dsh_socket.c enforces the loopback invariant a second time, in
@@ -1854,6 +1899,15 @@ static int spike_run_main(int argc, char **argv) {
     }
     signal(SIGPIPE, SIG_IGN);
     b.http = http;
+    /* The C gateway core pilot: the timer family dispatches through
+     * src/dsh_gateway_core.c (permission check → handler → §6 record →
+     * settle), the grants mirroring this host's descriptor. Wired before
+     * the dispatch registration — smoke_serve consults the core first. */
+    dsh_gateway_core_init(&g_gateway_core, SMOKE_CORE_ROWS,
+                          sizeof(SMOKE_CORE_ROWS) / sizeof(SMOKE_CORE_ROWS[0]),
+                          SMOKE_CORE_GRANTS,
+                          sizeof(SMOKE_CORE_GRANTS) / sizeof(SMOKE_CORE_GRANTS[0]),
+                          &b, smoke_core_settle, &b);
     dsh_runtime_set_gateway_dispatch(b.rt, smoke_on_call, &b);
     dsh_runtime_set_descriptor(b.rt, http
         ? "{\"available\":[\"fsRead\",\"fsWrite\",\"fsScope\",\"fsStat\",\"fsMkdir\",\"fsList\","

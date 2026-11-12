@@ -30,10 +30,16 @@ add_library(dsh-core STATIC
   # dsh_fs_port.c — the durable-fs portability layer (contract v1.11.0):
   # rename-based atomic publish + fsync barriers; the CLI host serves the
   # primitives over it and the HarmonyOS spine reuses it for the app scope.
+  # dsh_gateway_core.c — the C gateway core PILOT (the timer family on the
+  # CLI host): the dispatch pipeline (permission check → handler → §6 audit
+  # record → settle) the per-host gateways hand-maintain today. PILOT scope:
+  # the per-host builds do not compile it yet — the three-host rollout is
+  # the follow-up (see the architecture note of 2026-11-13).
   dsh_runtime_host.c
   dsh_wasm.c
   dsh_socket.c
   dsh_fs_port.c
+  dsh_gateway_core.c
   # The quickjs-ng fork (pin: external/ensure.sh) — exactly the four TUs every
   # proven build compiles; quickjs-libc is deliberately excluded (the rt
   # host provides its own glue, runtime/dsh/README.md "Embedding contract").

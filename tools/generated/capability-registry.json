@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "description": "The capability registry — the one source table the descriptor plane is generated from (contract/proposals/2026-11-13-capability-bus.md, step C). The `rows` carry the per-primitive contract data; the `hosts` carry each host's serve/absent policy (the descriptor lists that existed before the generator, extracted verbatim — same primitive NAMES, richer per-name data). The descriptor blocks in the three hosts are EMITTED from this file by `node tools/check-descriptor-parity.mjs --emit`; `--check` fails on drift. Do not edit the emitted blocks by hand.",
   "source": {
-    "contract": "contract/primitives.md §2 through v1.11.0 (33 rows) — the stability contract plugins pin against",
-    "capabilityPlane": "contract/proposals/2026-09-30-system-capability-plane.md + the hosts' family-flag tables (13 rows: the camera trio, the BLE family, the mic pair) — proposal-recorded shapes, folded into §2 by the next contract minor",
-    "note": "The v1.12.0 fold (contract/proposals/2026-11-11-gateway-primitive-slimming.md) had NOT landed on origin/main when this table was authored (origin/main at 2e0f429e, the capability-bus D5 draft), so the 33-row v1.11.0 table is the contract source of record here; the capability-plane rows ride as their own origin class. Re-source from §2 when the fold lands.",
+    "contract": "contract/primitives.md §2 through v1.12.0 (44 rows) — the stability contract plugins pin against",
+    "capabilityPlane": "contract/proposals/2026-09-30-system-capability-plane.md (2 rows: cameraRecordStart/cameraRecordStop) — proposal-recorded shapes, still unfrozen; the other 11 plane rows (cameraCapture, the eight BLE rows, micStart/micStop) folded into §2 by v1.12.0 and now carry origin contract",
+    "note": "Re-sourced 2026-11-13: the v1.12.0 fold (#772) landed the 11 capability-plane rows in primitives.md §2 (the \"v1.12.0 additions (11)\" table), so this table re-sources them from the contract — origin contract, shapes and permission flags from the §2 rows. The 13-row capability-plane origin class of the first authoring (v1.11.0 era, when the fold had not landed) reduces to the two camera-record rows the fold did not take.",
     "auditClassVocabulary": "audited = the row's calls carry the §6 per-call record the audit stream pairs (the mic-plane audit manifests' skip lists name the exception class); unaudited = the timer pair (timerSchedule/timerCancel), whose calls ride the runtime's own re-arm machinery (runtime/dsh/gateway.js, the #397 timer seam) rather than a plugin capability call",
-    "permissionFlagSource": "contract/primitives.md §2 Permission-flag column (+ §5 channel families); the capability-plane rows' family flags (camera/ble/microphone) come from the hosts' family-flag tables (GatewayCore.swift / GatewayCore.kt), which the v1.12.0 fold will freeze into §2",
+    "permissionFlagSource": "contract/primitives.md §2 Permission-flag column (+ §5 channel families); the folded capability-plane rows' flags (camera/ble/microphone) now read from those §2 rows directly (the five-rule authorization model of the adopted proposal, frozen by v1.12.0)",
     "schemaVersionNote": "the contract schema version the entry speaks — every frozen v1 shape is 1 today; the field exists so a future shape bump can raise it per row"
   },
   "rows": [
@@ -43,19 +43,19 @@
     { "name": "closeSurface", "origin": "contract", "family": "surface", "permissionFlag": "surface", "auditClass": "audited", "schemaVersion": 1 },
     { "name": "fsPublishAtomic", "origin": "contract", "family": "fs", "permissionFlag": "fsWrite", "auditClass": "audited", "schemaVersion": 1 },
     { "name": "fsSync", "origin": "contract", "family": "fs", "permissionFlag": "fsRead", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "cameraCapture", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "cameraCapture", "origin": "contract", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
     { "name": "cameraRecordStart", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
     { "name": "cameraRecordStop", "origin": "capability-plane", "family": "camera", "permissionFlag": "camera", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleScanStart", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleScanStop", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleConnect", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleDisconnect", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleRead", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleWrite", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleSubscribe", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "bleUnsubscribe", "origin": "capability-plane", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "micStart", "origin": "capability-plane", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 },
-    { "name": "micStop", "origin": "capability-plane", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 }
+    { "name": "bleScanStart", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleScanStop", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleConnect", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleDisconnect", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleRead", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleWrite", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleSubscribe", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "bleUnsubscribe", "origin": "contract", "family": "ble", "permissionFlag": "ble", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "micStart", "origin": "contract", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 },
+    { "name": "micStop", "origin": "contract", "family": "microphone", "permissionFlag": "microphone", "auditClass": "audited", "schemaVersion": 1 }
   ],
   "hosts": {
     "ios": {
