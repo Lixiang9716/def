@@ -1,0 +1,24 @@
+{
+  "title": "T-0298 MCP onto devices \u2014 4.1 host staging",
+  "created": "2026-11-12T20:51:59+00:00",
+  "rules": {
+    "hash": "556692558593f0fc57cfe204683dbab194011d21a1090259cdb9d8d680e101fa",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "81b8088528e6025f871510a60d60a8beb69d755ba8b479335a22592fe1b9d286"
+    }
+  },
+  "checklist": [
+    "[x] Stage the 5 MCP npm pins into android stage-spine-closure.sh (npm-face blocks + verify twins)",
+    "[x] Stage the 5 MCP npm pins into harmony vendor-official.sh CLOSURE (harmony-closure.rows)",
+    "[x] Stage the 5 MCP npm pins into ios gen_bundle_header.py (TREES/npm-face embed)",
+    "[x] Dist-trim decision measured + recorded (client 6.5M/core 1.3M)",
+    "[x] gen-staging-emit --emit --check green",
+    "[x] sync android+harmony, check-closures, src/build.sh quickjs-boot-parse green",
+    "[x] mcp-streamable-http E2E leg re-verified",
+    "Agent Note + PR + CI green + squash merge"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0299"
+}
