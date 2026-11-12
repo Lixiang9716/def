@@ -6,8 +6,11 @@
  * search, the queue mutations — plus the honest refusals the narrowing
  * keeps (fork-unavailable with no completed turn, steer on an idle agent,
  * unknown queue items, invalid titles and queries) and the opener gate +
- * the empty preset catalog.
+ * the data-derived preset catalog (T-0299: the wire answer matches the
+ * mounted permissionPresets face, the face matches the data module).
  */
+
+import { DEFAULT_PERMISSION_PRESET, PERMISSION_PRESETS } from 'upstream/permission-presets-data.js';
 
 /** The rename legs: the accepted title lands as the durable session/title
  * event; a TERMINATED OSC sequence strips whole (the session-title
@@ -117,14 +120,23 @@ const queueLegs = async ({ api, demand, demandRefusal, agent, SESSION_ID, create
 };
 
 /** The gate legs: the desktop-opener gate answers false and the preset
- * catalog answers the honest empty table. */
-const gateLegs = async ({ api, demand }) => {
+ * catalog answers the FACE's data-derived table (T-0299) — the wire answer
+ * matches the mounted service exactly, the service's roster matches the
+ * data module, and `current()` resolves the default posture on a fresh log. */
+const gateLegs = async ({ ctx, api, demand, session, SESSION_ID }) => {
   const canOpen = await api['session/canOpenWorkspacePath']({});
   demand(canOpen === false, `canOpenWorkspacePath: ${JSON.stringify(canOpen)}`);
   const catalog = await api['permissionPresets/catalog']({});
-  demand(catalog !== null && typeof catalog === 'object'
-    && Array.isArray(catalog.options) && catalog.options.length === 0,
+  const face = ctx.get('permissionPresets');
+  demand(face !== undefined && catalog !== null && typeof catalog === 'object'
+    && Array.isArray(catalog.options),
     `permissionPresets/catalog: ${JSON.stringify(catalog)}`);
+  demand(JSON.stringify(catalog) === JSON.stringify(face.catalog()),
+    `permissionPresets/catalog face parity: ${JSON.stringify(catalog)}`);
+  const current = face.current(session);
+  demand(JSON.stringify(face.names) === JSON.stringify(Object.keys(PERMISSION_PRESETS))
+    && current === DEFAULT_PERMISSION_PRESET,
+    `permissionPresets face roster/current: ${JSON.stringify(face.names)} / ${String(current)} (session ${SESSION_ID})`);
 };
 
 /** The subagent legs (upstream/web-write-subagents.js), over the REAL
@@ -173,7 +185,7 @@ export const probeSessionLegs = async ({ ctx, api, demand, demandRefusal, log, S
   const removed = await queueLegs({ api, demand, demandRefusal, agent, SESSION_ID,
     createUserMessage });
   await subagentLegs({ ctx, api, demand, demandRefusal, SESSION_ID });
-  gateLegs({ api, demand });
+  gateLegs({ ctx, api, demand, session, SESSION_ID });
   log.info('session legs ok', {
     renamed: renamed.title, paged: full.records.length,
     searchHit: found.items.length, queueAccepted: removed.accepted === true,

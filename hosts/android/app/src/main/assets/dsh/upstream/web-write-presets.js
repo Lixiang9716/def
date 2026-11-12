@@ -41,6 +41,16 @@ export const makeAgentPresetHandlers = (ctx) => {
   };
 };
 
+/** The permissionPresets/catalog read leg: forwards onto the face boot.js
+ * mounted (upstream/boot-permission-presets.js — the data-ized preset
+ * table, T-0299). Absent face = the honest empty table (the historical
+ * shape — never a fabricated roster). */
+export const makePermissionCatalogHandler = (ctx) => async () => {
+  const service = ctx.get('permissionPresets');
+  if (service === undefined) return { options: [] };
+  return service.catalog();
+};
+
 /** The endpointPresets adapter. The desktop keeps this service closed-source,
  * so there is nothing to port (D9 forbids inventing product behavior); what
  * THIS host knows is a platform fact: one model endpoint, the user's staged

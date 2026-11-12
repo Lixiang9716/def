@@ -98,7 +98,7 @@
 | 7.3 | **#267** 主题梯第 2 级：单源 token 机制上的编辑器 | token 在，机制缺 | M | — | open |
 | 7.4 | **#265** Lynx client：宿主侧 `--client` 选择 + 真机像素 | 试点 #248 已落 | M | — | open |
 | 7.5 | 番茄钟尾巴：卡面 JSON 契约；serve 座 app 层缺陷 | #427 遗留 | S | — | open |
-| 7.6 | Desktop-plugins staged-next 账本（附录 A）：fs over gateway scopes + tool-fs-search（ripgrep 二进制）、web fetch + keyed search、tool-ask-user / dsh-user-approval（presetJoin 只在 Harmony）、compaction 宿主接线（serve 席 `options.compaction` + `/compact` UI）、titles(auto) / plan-mode / permission-presets、tool-cordis（需 `cordisInspect` HOST service） | `doc/dsh-desktop-plugins.md` "Still staged" 段 | 合计 M，单行 S | — | open |
+| 7.6 | Desktop-plugins staged-next 账本（附录 A）：fs over gateway scopes + tool-fs-search（ripgrep 二进制）、web fetch + keyed search、tool-ask-user / dsh-user-approval（presetJoin 只在 Harmony）、compaction 宿主接线（serve 席 `options.compaction` + `/compact` UI）、titles(auto) / plan-mode（permission-presets 已落地——数据化 face，T-0299）、tool-cordis（需 `cordisInspect` HOST service） | `doc/dsh-desktop-plugins.md` "Still staged" 段 | 合计 M，单行 S | — | open |
 | 7.7 | Open Design 安装 | 需外部 nexu-io daemon | — | 🔧 | parked |
 
 ## 8. 架构赌注（一个季度；排在 §2 之后）
@@ -182,5 +182,5 @@
 | web fetch + keyed search | `fetch: false`，无 fetch provider over httpFetch | keyless 已在；keyed 是记录的缺口 |
 | tool-ask-user / dsh-user-approval | presetJoin 只在 Harmony；iOS/Android 席未传 | probe 已证 |
 | compaction 宿主接线 | boot 行 CLI 已证；serve 席缺 `options.compaction`；`/compact` UI | known gap 2026-10-12 |
-| titles(auto) / plan-mode / permission-presets | dsh-plan-mode vendored 未挂；titles 未携带；permissionPresets 空表 | 各自独立小活 |
+| titles(auto) / plan-mode | dsh-plan-mode vendored 未挂；titles 未携带 | 各自独立小活（permission-presets 已于 2026-11-13 落地——数据化 face，T-0299；桌面包的 shell/approval 写路径仍是排期缺口） |
 | tool-cordis | 需 vendored cordis-host-runner 的 `cordisInspect` HOST service | 唯一缺 host service 的行 |
