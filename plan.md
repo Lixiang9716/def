@@ -122,7 +122,7 @@ identity is not activated. **27 unindexed sources wait on it** (#632's MCP files
 | 7.3 | **#267** theme ladder rung 2: token editor on the single-source mechanism | Tokens exist, mechanism missing | M | — | open |
 | 7.4 | **#265** Lynx client: host-side `--client` selection + device pixels | Pilot #248 landed | M | — | open |
 | 7.5 | Pomodoro tails: card JSON contract; serve-seat app-layer defect | #427 leftovers | S | — | open |
-| 7.6 | Desktop-plugins staged-next ledger (appendix table): fs over gateway scopes + tool-fs-search (ripgrep binary), web fetch + keyed search, tool-ask-user / dsh-user-approval (presetJoin Harmony-only), compaction host wiring (`options.compaction` on serve seats + `/compact` UI), titles(auto) / plan-mode / permission-presets, tool-cordis (needs `cordisInspect` HOST service) | `doc/dsh-desktop-plugins.md` "Still staged" | M total, per-row S | — | open |
+| 7.6 | Desktop-plugins staged-next ledger (appendix table): fs over gateway scopes + tool-fs-search (ripgrep binary), web fetch + keyed search, tool-ask-user / dsh-user-approval (presetJoin Harmony-only), compaction host wiring (`options.compaction` on serve seats + `/compact` UI), titles(auto) / plan-mode (permission-presets landed 2026-11-13 — the data-ized face, T-0299), tool-cordis (needs `cordisInspect` HOST service) | `doc/dsh-desktop-plugins.md` "Still staged" | M total, per-row S | — | open |
 | 7.7 | Open Design install | Needs external nexu-io daemon | — | 🔧 | parked |
 
 ## 8. Architecture bets (a quarter out; after §2)
