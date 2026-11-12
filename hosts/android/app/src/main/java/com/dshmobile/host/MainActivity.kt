@@ -45,6 +45,7 @@ class MainActivity : Activity() {
         if (intent.getBooleanExtra(EXTRA_SUITE, false)) {
             startBinding(savedInstanceState, parity = true, suite = intent.getStringExtra(EXTRA_SPEC))
         } else if (intent.getBooleanExtra(EXTRA_CREATE_CARD, false)) { startBinding(savedInstanceState, createCard = true)
+        } else if (intent.getBooleanExtra(EXTRA_QUESTION_FACE, false)) { startBinding(savedInstanceState, questionFace = true)
         } else if (intent.getBooleanExtra(EXTRA_PARITY, false)) {
             startBinding(savedInstanceState, parity = true)
         } else if (intent.getBooleanExtra(EXTRA_LLM, false)) {
@@ -155,7 +156,7 @@ class MainActivity : Activity() {
         spikeHost?.onRequestPermissionsResult(requestCode, grantResults)
     }
 
-    private fun startBinding(savedInstanceState: Bundle?, llm: Boolean = false, parity: Boolean = false, suite: String? = null, compact: Boolean = false, devicePlane: Boolean = false, cameraPlane: Boolean = false, ble: Boolean = false, bleMock: Boolean = false, micPlane: Boolean = false, cardPlayer: Boolean = false, createCard: Boolean = false) {
+    private fun startBinding(savedInstanceState: Bundle?, llm: Boolean = false, parity: Boolean = false, suite: String? = null, compact: Boolean = false, devicePlane: Boolean = false, cameraPlane: Boolean = false, ble: Boolean = false, bleMock: Boolean = false, micPlane: Boolean = false, cardPlayer: Boolean = false, questionFace: Boolean = false, createCard: Boolean = false) {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
         }
@@ -185,7 +186,7 @@ class MainActivity : Activity() {
         JsRuntime.post {
             materializeBundle()
             runOnUiThread {
-                spikeHost = startHost(llm, view, parity, suite, compact, devicePlane, cameraPlane, ble, bleMock, micPlane, cardPlayer, createCard)
+                spikeHost = startHost(llm, view, parity, suite, compact, devicePlane, cameraPlane, ble, bleMock, micPlane, cardPlayer, questionFace, createCard)
             }
         }
         view.post { BindingHost.dispatchNotifyResponse(intent) }
@@ -194,8 +195,8 @@ class MainActivity : Activity() {
     /** UI thread: constructs the drive — the real-LLM scenario (llm.live-stream),
      * the compact creation-client mount, or the M4 binding — with the same
      * carrier + WebView flow. */
-    private fun startHost(llm: Boolean, view: WebView, parity: Boolean = false, suite: String? = null, compact: Boolean = false, devicePlane: Boolean = false, cameraPlane: Boolean = false, ble: Boolean = false, bleMock: Boolean = false, micPlane: Boolean = false, cardPlayer: Boolean = false, createCard: Boolean = false): BindingHost =
-        BindingHost.dispatchDrive(this, view, onVerdict = { verdict: String -> verdictView.text = verdict }, suite = suite, parity = parity, compact = compact, devicePlane = devicePlane, cameraPlane = cameraPlane, ble = ble, bleMock = bleMock, micPlane = micPlane, cardPlayer = cardPlayer, llm = llm, createCard = createCard)
+    private fun startHost(llm: Boolean, view: WebView, parity: Boolean = false, suite: String? = null, compact: Boolean = false, devicePlane: Boolean = false, cameraPlane: Boolean = false, ble: Boolean = false, bleMock: Boolean = false, micPlane: Boolean = false, cardPlayer: Boolean = false, questionFace: Boolean = false, createCard: Boolean = false): BindingHost =
+        BindingHost.dispatchDrive(this, view, onVerdict = { verdict: String -> verdictView.text = verdict }, suite = suite, parity = parity, compact = compact, devicePlane = devicePlane, cameraPlane = cameraPlane, ble = ble, bleMock = bleMock, micPlane = micPlane, cardPlayer = cardPlayer, questionFace = questionFace, llm = llm, createCard = createCard)
 
     companion object {
         const val EXTRA_M4 = "dsh.m4"
@@ -213,6 +214,7 @@ class MainActivity : Activity() {
         const val EXTRA_BLE_MOCK = "dsh.blemock"
         const val EXTRA_MIC_PLANE = "dsh.micplane"
         const val EXTRA_CARD_PLAYER = "dsh.cardplayer"
+        const val EXTRA_QUESTION_FACE = "dsh.questionface"
         const val EXTRA_CREATE_CARD = "dsh.createcard"
         const val EXTRA_NEXT = "dsh.next"
         /** The Web Client the release boot serves (string extra; the iOS

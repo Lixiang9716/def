@@ -1,31 +1,49 @@
 --------- beginning of main
-10-11 15:01:27.936 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"card.player","event":"client.selected","client":"dsh-web-client"}]}
-10-11 15:01:27.982 12674 12733 I dsh.serve: origin token=b1f9c4c7c00d732d3273b028cdb220e1 port=44123
-10-11 15:01:28.000 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.begin"}]}
-10-11 15:01:28.001 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.seat.ready","gateway":"gateway@1"}]}
-10-11 15:01:28.002 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.present.posted","id":"pomodoro-demo","durationMs":1500000}]}
-10-11 15:01:28.003 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:28.025 12674 12674 I dsh.runtime.ui: ui-wait card-present
-10-11 15:01:28.979 12674 12757 I dsh.snapshot: {"pageSession":"","claimedEndpoints":[],"muxClaimed":false,"pendingRPC":0,"app":{"scriptApproval":"approve","card":{"attached":true,"visible":true,"id":"pomodoro-demo","title":"番茄时钟 · 专注","kind":"timer"}}}
-10-11 15:01:29.012 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:29.012 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":1,"remainingMs":1499000}]}
-10-11 15:01:29.012 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:30.016 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:30.016 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":2,"remainingMs":1498000}]}
-10-11 15:01:30.016 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:31.018 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:31.018 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":3,"remainingMs":1497000}]}
-10-11 15:01:31.019 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:32.021 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:32.021 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":4,"remainingMs":1496000}]}
-10-11 15:01:32.022 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:33.022 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:33.022 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":5,"remainingMs":1495000}]}
-10-11 15:01:33.023 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-10-11 15:01:33.825 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
-10-11 15:01:33.825 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.complete.posted","id":"pomodoro-demo"}]}
-10-11 15:01:33.825 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.done","ticks":5}]}
-10-11 15:01:33.825 12674 12733 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"scenario.complete","status":"pass"}]}
-10-11 15:01:33.825 12674 12733 I dsh.runtime.result: card.player PASS | quickjs-ng 0.17.0
-10-11 15:01:33.825 12674 12733 I dsh.runtime.result: ALL PASS
-10-11 15:01:33.828 12674 12674 I dsh.runtime.ui: ui-done card-present
+11-12 17:18:47.552  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.carrier","message":"e2e","data":[{"scenario":"card.player","event":"client.selected","client":"dsh-web-client"}]}
+11-12 17:18:47.560  7464  7526 I dsh.serve: origin token=87b0a0294cbaa0f29dad256320b9558f port=37691
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.begin"}]}
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.seat.ready","gateway":"gateway@1"}]}
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"mount render intent","data":[{"installBus":true}]}
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"chain bus handler","data":[{}]}
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"on action","data":[{"type":"card.action"}]}
+11-12 17:18:47.605  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.present"}]}
+11-12 17:18:47.607  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.present.posted","id":"pomodoro-demo","durationMs":1500000}]}
+11-12 17:18:47.607  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:47.620  7464  7464 I dsh.runtime.ui: ui-wait card-present
+11-12 17:18:48.641  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:48.649  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
+11-12 17:18:48.651  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":1,"remainingMs":1499000}]}
+11-12 17:18:48.652  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:48.668  7464  7551 I dsh.snapshot: {"pageSession":"","claimedEndpoints":[],"muxClaimed":false,"pendingRPC":0,"app":{"scriptApproval":"approve","card":{"attached":true,"visible":true,"id":"pomodoro-demo","title":"番茄时钟 · 专注","kind":"timer","subtitle":"25 分钟专注回合","actions":["snooze"]}}}
+11-12 17:18:49.658  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:49.658  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
+11-12 17:18:49.659  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":2,"remainingMs":1498000}]}
+11-12 17:18:49.660  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:50.662  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:50.662  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
+11-12 17:18:50.663  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":3,"remainingMs":1497000}]}
+11-12 17:18:50.663  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:51.664  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:51.664  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
+11-12 17:18:51.664  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":4,"remainingMs":1496000}]}
+11-12 17:18:51.664  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:52.665  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:52.665  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.state"}]}
+11-12 17:18:52.666  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.state.posted","tick":5,"remainingMs":1495000}]}
+11-12 17:18:52.666  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:53.468  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:53.468  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"dispatch","data":[{"type":"card.complete"}]}
+11-12 17:18:53.469  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.complete.posted","id":"pomodoro-demo"}]}
+11-12 17:18:53.470  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
+11-12 17:18:53.478  7464  7464 I dsh.runtime.ui: ui-done card-present
+11-12 17:18:54.482  7464  7464 I dsh.runtime.ui: ui-script card-action
+11-12 17:18:54.486  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"bus line","data":[{}]}
+11-12 17:18:54.491  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"deliver action","data":[{"type":"card.action"}]}
+11-12 17:18:54.491  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"card action frame","data":[{"id":"pomodoro-demo","action":"button"}]}
+11-12 17:18:54.492  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.render-intent","message":"action event","data":[{"type":"card.action","id":"pomodoro-demo"}]}
+11-12 17:18:55.678  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":58}]}
+11-12 17:18:55.679  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.action.received","id":"pomodoro-demo","action":"button","actionId":"snooze"}]}
+11-12 17:18:55.679  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"card.player.done","ticks":5}]}
+11-12 17:18:55.679  7464  7526 I dsh.runtime: dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"card.player","event":"scenario.complete","status":"pass"}]}
+11-12 17:18:55.679  7464  7526 I dsh.runtime.result: card.player PASS | quickjs-ng 0.17.0
+11-12 17:18:55.680  7464  7526 I dsh.runtime.result: ALL PASS

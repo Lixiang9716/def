@@ -531,6 +531,13 @@ export class OfficialServe {
         this.onDispatch(callId, name, args);
       }, scenario);
     this.started = true;
+    // face.card@1: the card face's user acts (the ✕ close, a declarative
+    // button) return as card.action events over this seat's host→runtime
+    // event channel — the deliverRuntimeEvent twin of HostPhase's
+    // deliverEvent (D8: events, never polling).
+    CardFace.actionSink = (eventJson: string): void => {
+      this.deliverRuntimeEvent(eventJson);
+    };
     this.http.settle = (callId: number, ok: boolean, json: string): void => {
       const status: number = hostSettle(2, callId, ok, json);
       if (status < 0) {

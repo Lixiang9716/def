@@ -46,7 +46,7 @@ import { E2eLeg } from '../model/E2eLeg';
 import { HostPhase, WHALE_WEB_DIR } from '../model/HostPhase';
 import { LlmConfigStaging } from '../model/LlmConfigStaging';
 import { OfficialPhase } from '../model/OfficialPhase';
-import { CardFace } from '../model/CardFace';
+import { CardFace, CardActionRow } from '../model/CardFace';
 import { OfficialServe, NEXT_CLIENT_ROOT } from '../model/OfficialServe';
 import { V2WebPhase } from '../model/V2WebPhase';
 import { ParityMockRoute, PARITY_MOCK_KEY } from '../model/ParityMockRoute';
@@ -196,6 +196,7 @@ const BUNDLE_FILES: string[] = [
   'upstream/boot-subagent-rows.js',
   'upstream/boot.js',
   'upstream/credentials-store.js',
+  'upstream/def-bundle.js',
   'upstream/fetch-gateway-bridge.js',
   'upstream/llm-gateway-mount.js',
   'upstream/llm-piai-mount.js',
@@ -1389,11 +1390,13 @@ struct Index {
   @State surfaceTitle: string = '';
   // The native card face (the #452 PiP sibling): the bus card.* records
   // project into these states; a 250 ms tick re-renders the countdown.
+  // face.card@1: the declarative actions project into the button row.
   @State cardVisible: boolean = false;
   @State cardTitle: string = '';
   @State cardTime: string = '';
   @State cardLabel: string = '';
   @State cardIsTimer: boolean = false;
+  @State cardActions: CardActionRow[] = [];
   private surfaceDimsSink: ((dims: SurfaceDims | null) => void) | null = null;
   private surfaceInput: (kind: string, x: number, y: number) => void =
     (kind: string, x: number, y: number): void => {};
@@ -1428,9 +1431,15 @@ struct Index {
   private cardTick: number = -1;
 
   /** Pushes CardFace's projection into the bindings; owns the local tick's
-   * start/stop (visible = ticking). */
+   * start/stop (visible = ticking). face.card@1: the read is faceCard() —
+   * the FULL projected face the page's own bindings render; the previous
+   * snapshot() read was the REDACTED /api/state seam (attached/visible/id
+   * only), so every title/time/label binding below read its own `?? ''` —
+   * the drift this read fixes (the faceCard contract comment names the
+   * page as its consumer). The declarative actions project into the
+   * button row. */
   private refreshCardFace(): void {
-    const snap = CardFace.snapshot()['card'] as Record<string, Object>;
+    const snap = CardFace.faceCard();
     const visible = snap['visible'] === true;
     if (visible && this.cardTick < 0) {
       this.cardTick = setInterval((): void => {
@@ -1449,6 +1458,12 @@ struct Index {
     this.cardTime = String(snap['remainingText'] ?? '');
     this.cardLabel = String(snap['label'] ?? snap['completeMessage'] ?? '');
     this.cardIsTimer = String(snap['kind'] ?? 'info') === 'timer';
+    const rows = snap['actions'] as CardActionRow[] ?? [];
+    const next: CardActionRow[] = [];
+    for (const row of rows) {
+      next.push(new CardActionRow(row.id, row.label));
+    }
+    this.cardActions = next;
   }
 
   private approvalController: CustomDialogController | null = null;
@@ -2555,11 +2570,12 @@ struct Index {
             .fontColor('#6b6b6b')
             .padding({ left: 8, right: 4 })
             .onClick((): void => {
-              // Local close (the #452 semantics): the face hides; the
-              // plugin's dismissal authority is unchanged.
-              this.cardVisible = false;
-              clearInterval(this.cardTick);
-              this.cardTick = -1;
+              // face.card@1 close (the #452 semantics made observable): the
+              // card.action event rides out FIRST (terminal-once per
+              // presented card), then the face hides — dismissal authority
+              // stays the plugin's, and the next card.present re-shows.
+              CardFace.closeByUser();
+              this.refreshCardFace();
             })
         }
         .width('100%')
@@ -2578,6 +2594,27 @@ struct Index {
           .textAlign(TextAlign.Center)
           .margin({ top: 6 })
           .maxLines(3)
+        // face.card@1's declarative actions: one button per {id, label} — a
+        // tap posts the `card.action {action:"button", actionId}` event
+        // (the answer identifies the action by id, never the label).
+        if (this.cardActions.length > 0) {
+          Row() {
+            ForEach(this.cardActions, (action: CardActionRow) => {
+              Button(action.label)
+                .fontSize(13)
+                .fontWeight(FontWeight.Medium)
+                .fontColor('#1a1a1a')
+                .backgroundColor('#E8E6E3')
+                .layoutWeight(1)
+                .margin({ end: 8 })
+                .onClick((): void => {
+                  CardFace.buttonAction(action.id);
+                })
+            }, (action: CardActionRow) => action.id)
+          }
+          .width('100%')
+          .margin({ top: 8 })
+        }
       }
       .alignItems(HorizontalAlign.Start)
       .padding(16)

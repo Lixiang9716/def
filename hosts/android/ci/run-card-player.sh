@@ -50,7 +50,12 @@ adbsh install -r "$APK" >/dev/null || die "adb install failed"
 
 # ---- 3. launch (force-stop first: singleTask delivery to a resident
 #         instance re-runs nothing — the device-plane leg's measured trap) --
-say "3/6 launch (--ez dsh.cardplayer true --es dsh.script.approval approve)"
+# The scripted-action extra (--es dsh.script.card-action button:snooze, the
+# face.card@1 round-trip: 1s after card.complete the declarative 稍后再看
+# button fires exactly the way a tap would and the card.action event
+# crosses back — the manifest pins card.action.received). The scripted-
+# approval extra rides along (the seam answers if an approval ever presents).
+say "3/6 launch (--ez dsh.cardplayer true --es dsh.script.approval approve --es dsh.script.card-action button:snooze)"
 adbsh shell am force-stop $PKG >/dev/null 2>&1 || true
 stop_deadline=$(( $(date +%s) + 30 ))
 while [ -n "$(adbsh shell pidof $PKG 2>/dev/null | tr -d '[:space:]')" ]; do
@@ -61,7 +66,8 @@ done
 adbsh logcat -c
 launch_deadline=$(( $(date +%s) + 60 ))
 until adbsh shell am start -n $PKG/.MainActivity --ez dsh.cardplayer true \
-        --es dsh.script.approval approve >/dev/null 2>&1; do
+        --es dsh.script.approval approve \
+        --es dsh.script.card-action button:snooze >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
@@ -174,7 +180,7 @@ cat > "$OUT/receipt.json" <<EOF
   "udid": "$UDID",
   "runner": "hosts/android/ci/run-card-player.sh",
   "phase": "card.player",
-  "launch": "emulator, --ez dsh.cardplayer true + --es dsh.script.approval approve (Debug)",
+  "launch": "emulator, --ez dsh.cardplayer true + --es dsh.script.approval approve + --es dsh.script.card-action button:snooze (Debug)",
   "tree": "$TREE_LINE",
   "engine": "$(sed -n 's/^PIN=//p' external/ensure.sh)",
   "scenarios": [
