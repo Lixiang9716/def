@@ -42,6 +42,11 @@ MODE=stage
 # (staging skipped) still has them.
 ZOD_SRC=$DSH/../../external/npm/zod@4.4.3
 ZOD_DST=$ASSETS/vendor/npm/zod@4.4.3
+# The MCP streamable-HTTP transport's vendored SDK pins (#632, staged by the
+# T-0298 leg): the asset-relative dir list its stage loop and verify twin
+# share — defined before the staging guard like the zod pair above.
+MCP_PIN_DIRS="vendor/npm/@modelcontextprotocol/client@2.0.0 vendor/npm/@modelcontextprotocol/core@2.0.0 \
+vendor/npm/jose@6.2.3 vendor/npm/eventsource@3.0.7 vendor/npm/pkce-challenge@5.0.1"
 
 # The dsh-shell-js parser closure's staged faces (the formal vendor round,
 # 2026-10-11; shrunk the same date by the hand-written-parser swap, which
@@ -306,6 +311,29 @@ mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1"
 mkdir -p "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data"
 cp "$DSH/../../external/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/.manifest.json" \
     "$ASSETS/vendor/npm/@earendil-works/pi-ai@0.85.1/dist/providers/data/manifest.json"
+
+# The MCP streamable-HTTP transport's vendored SDK (#632's five product pins;
+# T-0298 4.1 host staging): the npm-bridges-pi-ai-all.js rows serve these
+# faces at runtime — client dist/*.mjs (+ core, the _shims/stdio faces) and
+# the jose/eventsource/pkce-challenge dependency faces the ESM graph names
+# bare. The js/mjs/json filter IS the dist trim (the noble/pi-ai find-scan
+# shape — drift-free by construction, a new vendored file joins by existing):
+# the client dist ships .cjs/.d.ts/.map (4.4 MB of maps alone) that never
+# load; the staged face is 1.14 MB. The verify twin below judges it.
+for mcp_pin in $MCP_PIN_DIRS; do
+    say "staging $mcp_pin (runtime js/mjs/json face)"
+    if [ ! -d "$DSH/../../external/npm/${mcp_pin#vendor/npm/}" ]; then
+        echo "::error::stage-spine-closure: the ${mcp_pin##*/} pin is absent — external/ensure-dsh.sh materializes it" >&2
+        exit 1
+    fi
+    mkdir -p "$ASSETS/$mcp_pin"
+    (cd "$DSH/../../external/npm/${mcp_pin#vendor/npm/}" && find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.json' \) ! -name '.*') |
+        while IFS= read -r rel; do
+            rel=${rel#./}
+            mkdir -p "$ASSETS/$mcp_pin/$(dirname "$rel")"
+            cp "$DSH/../../external/npm/${mcp_pin#vendor/npm/}/$rel" "$ASSETS/$mcp_pin/$rel"
+        done
+done
 
 
 # The dsh-shell-js parser closure (the faces above): dir faces ride their
@@ -626,6 +654,18 @@ done
         if [ "$MODE" = "check" ] && ! is_tracked "vendor/npm/zod@4.4.3/$rel"; then note_skip; continue; fi
         cmp -s "$ZOD_SRC/$rel" "$ZOD_DST/$rel" || note_drift "zod/$rel"
     done
+# The MCP SDK's verify twin (the stage loop above): the same find, judged as
+# cmps — the dist/ face is gitignored (untracked, Gradle-materialized: counted
+# SKIPs, never silent), the tracked package.json faces cmp.
+for mcp_pin in $MCP_PIN_DIRS; do
+    (cd "$DSH/../../external/npm/${mcp_pin#vendor/npm/}" && find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.json' \) ! -name '.*') |
+        while IFS= read -r rel; do
+            rel=${rel#./}
+            path="$mcp_pin/$rel"
+            if [ "$MODE" = "check" ] && ! is_tracked "$path"; then note_skip; continue; fi
+            cmp -s "$DSH/../../external/npm/${mcp_pin#vendor/npm/}/$rel" "$ASSETS/$path" || note_drift "$path"
+        done
+done
 (cd "$DSH/upstream" && find . -maxdepth 1 -name '*.js' -type f) |
     while IFS= read -r rel; do
         cmp -s "$DSH/upstream/$rel" "$ASSETS/upstream/$rel" || note_drift "upstream/$rel"
