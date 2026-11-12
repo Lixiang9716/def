@@ -212,5 +212,5 @@ and the proposal is
 | web fetch + keyed search | `fetch: false`, no fetch provider over httpFetch | keyless present; keyed is a recorded gap |
 | tool-ask-user / dsh-user-approval | presetJoin serves Harmony only; iOS/Android seats don't pass it | probe proven |
 | compaction host wiring | boot proven on CLI; serve seats lack `options.compaction`; `/compact` UI | known gap 2026-10-12 |
-| titles(auto) / plan-mode / permission-presets | dsh-plan-mode vendored, not mounted; titles not carried; permissionPresets empty | independent small items |
+| titles(auto) / plan-mode | dsh-plan-mode vendored, not mounted; titles not carried | independent small items (permission-presets landed 2026-11-13 — the data-ized face, T-0299; the desktop package's shell/approval write path stays the staged seam) |
 | tool-cordis | needs the `cordisInspect` HOST service of vendored cordis-host-runner | the only row missing a host service |

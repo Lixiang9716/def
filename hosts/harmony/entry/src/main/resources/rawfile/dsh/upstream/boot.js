@@ -50,6 +50,10 @@ export { joinDefaultPreset } from 'upstream/boot-coverage-rows.js';
 // The COMPACTION row (gated, 2026-10-11): the host-plane token meter plus the
 // vendored compaction-basic engine — only when options.compaction is set.
 import { mountCompactionPlane } from 'upstream/boot-compaction.js';
+// The PERMISSION-PRESETS row (T-0299, unconditional): the seat-local face the
+// vendored subagent's delegation capture reads (`permissionPresets.current()`);
+// the preset table is data (upstream/permission-presets-data.js).
+import { mountPermissionPresets } from 'upstream/boot-permission-presets.js';
 // The spine demand-FACTS (the layer list + the fail-loud demand checks), split
 // out at the file-size gate (2026-10-11) with the compaction row's landing.
 import { MOBILE_LAYERS, MOUNTED_SERVICES, demandServices, demandPresetServices } from 'upstream/boot-demand.js';
@@ -330,6 +334,11 @@ const mountSpine = async (ctx, identity) => {
   await ctx.plugin(SessionProjectionRegistry);
   await ctx.plugin(SettingsMemory);
   await mountSubagentRows(ctx);
+  // The PERMISSION-PRESETS row (T-0299): unconditional — the face IS the
+  // honest spine now (one data-derived posture; the vendored desktop package
+  // needs a confining shell + approval and stays unmounted). Sits beside the
+  // subagent rows: its delegation capture is the service's live consumer.
+  await mountPermissionPresets(ctx);
   await mountToolRows(ctx, identity.cwd);
   // The SKILL row (agent-flow E2E): after the file tools (its
   // discovery prefers the `fs` service) and before the agent loop (the

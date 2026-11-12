@@ -30,7 +30,7 @@ workspace 包**，共 298 个。
 | 会话持久化 | dsh-session-persistence-jsonl（逐字 vendored；桌面的 koffi/flock 原生行由 flock shim + 编译内联的 zstd 应答） | 门控 boot 行，三宿主 serve 席位均接线 `sessionPersistence: true`（#463）；逐宿主验证强制杀死后的重启恢复 |
 | 官方 web 层 | 58 包应用层 + 5 个 shell 静态模块 + 构建出的 SPA | staged 客户端 bundle 在运行时组装，由 carrier 服务 |
 | 镜像 API | api-session-controller、api-settings-controller 的行为 | 写面板（web-write.js）——真正的控制器包未挂载 |
-| Web API（T-0035 + #335） | pluginInventory/list、agentPresets/list\|read\|copy\|deletePreset\|select；pluginManager 的 list 腿与写腿——installBundle\|removeBundle\|setBundleEnabled\|setPluginEnabled\|inspect 走真实 §4 安装管线 + 回执日志 + dsh.plugins/1 注册表（cancelInstall 应答 `not-running`）；会话深页腿（page\|search\|rename\|updateQueue\|fork\|selectModel\|cancel\|delete）、subagents/*、workspaceFiles/*（+ `fs/observed` 流）、marketplace/install、dynamicCordisRunner 各腿、credentials/describe、session/modelCatalog、`permissionPresets/catalog`（诚实空表） | 已认领端点；workspace 层是安全边界（只收裸注册表名） |
+| Web API（T-0035 + #335） | pluginInventory/list、agentPresets/list\|read\|copy\|deletePreset\|select；pluginManager 的 list 腿与写腿——installBundle\|removeBundle\|setBundleEnabled\|setPluginEnabled\|inspect 走真实 §4 安装管线 + 回执日志 + dsh.plugins/1 注册表（cancelInstall 应答 `not-running`）；会话深页腿（page\|search\|rename\|updateQueue\|fork\|selectModel\|cancel\|delete）、subagents/*、workspaceFiles/*（+ `fs/observed` 流）、marketplace/install、dynamicCordisRunner 各腿、credentials/describe、session/modelCatalog、`permissionPresets/catalog`（数据化 face 的目录——能力注册表之上的一种姿态，T-0299） | 已认领端点；workspace 层是安全边界（只收裸注册表名） |
 
 ## 排期中（以 #624 后的 main 为准，2026-10-20 刷新）
 
@@ -122,11 +122,13 @@ workspace 包**，共 298 个。
 - **compaction 宿主接线**——boot 行已由 CLI 证明，但尚无 serve 席位传
   `options.compaction`；`/compact` UI 集成是已登记的已知缺口
   （e2e-matrix，2026-10-12）。
-- **标题（自动）/ plan-mode / permission-presets**——dsh-plan-mode 已
-  vendored 但仅通过加载验证（interactive-circle 探针未挂载它）；标题
-  自动生成未携带（`session/rename` 仅手动）；`permissionPresets/catalog`
-  应答诚实空表（`upstream/web-write.js`），dsh-permission-presets 未
-  vendored。
+- **标题（自动）/ plan-mode**——dsh-plan-mode 已 vendored 但仅通过加载
+  验证（interactive-circle 探针未挂载它）；标题自动生成未携带
+  （`session/rename` 仅手动）。（permission-presets 已于 2026-11-13 移出
+  本清单：席位本地 face `upstream/boot-permission-presets.js` 应答
+  vendored subagent 的委派捕获与数据化的 `permissionPresets/catalog`——
+  桌面包本身仍未 vendored，其受限 shell + approval 写路径是排期中的
+  缺口。）
 - **tool-cordis**——运行时侧两条腿已应答（#335 B3），但该工具的线需要
   仅 vendored cordis-host-runner 提供的 `cordisInspect` HOST 服务
   （`upstream/preset-mobile-rows.js`）。

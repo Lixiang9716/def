@@ -512,6 +512,7 @@ system-plugins/dsh-create/manifest.json
 upstream/boot-compaction.js
 upstream/boot-coverage-rows.js
 upstream/boot-demand.js
+upstream/boot-permission-presets.js
 upstream/boot-session-persistence.js
 upstream/boot-subagent-rows.js
 upstream/boot.js
@@ -526,6 +527,7 @@ upstream/llm-route.js
 upstream/llm-transport.js
 upstream/model-selection-holder.js
 upstream/model-selection-projection.js
+upstream/permission-presets-data.js
 upstream/preset-mobile-rows.js
 upstream/producer-registry.js
 upstream/retry-telemetry.js

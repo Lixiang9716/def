@@ -68,7 +68,7 @@ import { makeSubagentHandlers } from 'upstream/web-write-subagents.js';
 // The preset adapters (agentPresets forwarders + the endpointPresets
 // platform-fact adapter), split out at the code-size gate.
 import {
-  makeAgentPresetHandlers, makeEndpointPresetAdapter,
+  makeAgentPresetHandlers, makeEndpointPresetAdapter, makePermissionCatalogHandler,
 } from 'upstream/web-write-presets.js';
 // The workspace registry adapters (the coverage plane) — the registry's
 // seed lives with them (moved at the code-size gate).
@@ -105,9 +105,9 @@ export const WRITE_ENDPOINTS = [
   // (canOpenWorkspacePath answers false so the page hides the open-in-app
   // asker — openWorkspacePath itself stays unclaimed). The permission
   // 预设 popup's catalog rides here too: the catalog IS the deployment's
-  // configured preset table (interaction/permission-presets
-  // src/index.ts catalog()), this host's composition configures none, and
-  // the honest answer is the empty table — never a fabricated roster.
+  // configured preset table — answered from data by the face boot.js
+  // mounts (upstream/permission-presets-data.js, T-0299). Never a
+  // fabricated roster.
   'session/page', 'session/search', 'session/rename',
   'session/updateQueue', 'session/canOpenWorkspacePath',
   'permissionPresets/catalog',
@@ -404,7 +404,8 @@ const buildApiMap = (ctx, deps, options, ensureNamespaces) => ({
       ...makeSessionRenameHandlers(ctx),
       ...makeSessionQueueHandlers(ctx),
       ...makeSessionOpenerHandlers(),
-      'permissionPresets/catalog': async () => ({ options: [] }),
+      // The preset catalog forwards onto the face boot.js mounted (T-0299).
+      'permissionPresets/catalog': makePermissionCatalogHandler(ctx),
       // The subagent control plane: forwarders onto the vendored runtime
       // (upstream/web-write-subagents.js).
       ...makeSubagentHandlers(ctx),

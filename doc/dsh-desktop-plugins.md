@@ -31,7 +31,7 @@ ToolRuntime, a vendor pin (`vendor/ensure-dsh.sh`) + shim rows
 | Session persistence | dsh-session-persistence-jsonl (verbatim; the desktop's koffi/flock native row answered by the flock shim + compiled-in zstd) | gated boot row, wired `sessionPersistence: true` on all three hosts (#463); force-kill restart proven per host |
 | Official web tier | the 58-package application tier + 5 shell-static modules + the built SPA | staged client bundles composed in-runtime; served by the carrier |
 | Mirrored API | api-session-controller, api-settings-controller behavior | the write surface (web-write.js) — the real controllers stay unmounted |
-| Web API (T-0035 + #335) | pluginInventory/list, agentPresets/list\|read\|copy\|deletePreset\|select; pluginManager list legs AND write legs — installBundle\|removeBundle\|setBundleEnabled\|setPluginEnabled\|inspect over the real §4 pipeline + the receipts journal + the dsh.plugins/1 registry (cancelInstall answers `not-running`); the session deep-page legs (page\|search\|rename\|updateQueue\|fork\|selectModel\|cancel\|delete), subagents/*, workspaceFiles/* (+ the `fs/observed` feed), marketplace/install, the dynamicCordisRunner legs, credentials/describe, session/modelCatalog, `permissionPresets/catalog` (the honest empty table) | claimed endpoints; the workspace tier is the security boundary (bare registry names only) |
+| Web API (T-0035 + #335) | pluginInventory/list, agentPresets/list\|read\|copy\|deletePreset\|select; pluginManager list legs AND write legs — installBundle\|removeBundle\|setBundleEnabled\|setPluginEnabled\|inspect over the real §4 pipeline + the receipts journal + the dsh.plugins/1 registry (cancelInstall answers `not-running`); the session deep-page legs (page\|search\|rename\|updateQueue\|fork\|selectModel\|cancel\|delete), subagents/*, workspaceFiles/* (+ the `fs/observed` feed), marketplace/install, the dynamicCordisRunner legs, credentials/describe, session/modelCatalog, `permissionPresets/catalog` (the data-ized face's catalog — one posture over the capability registry, T-0299) | claimed endpoints; the workspace tier is the security boundary (bare registry names only) |
 
 ## Staged next (refreshed against post-#624 main, 2026-10-20)
 
@@ -133,12 +133,14 @@ re-judged item by item against file-level evidence.
 - **compaction host wiring** — the boot row is CLI-proven, but no serve
   seat passes `options.compaction` yet; `/compact` UI integration is the
   registered known gap (e2e-matrix, 2026-10-12).
-- **titles (auto) / plan-mode / permission-presets** — dsh-plan-mode is
-  vendored and load-verified only (the interactive-circle probe mounts it
-  nowhere); title auto-generation is not carried (`session/rename` is
-  manual only); `permissionPresets/catalog` answers the honest empty
-  table (`upstream/web-write.js`) and dsh-permission-presets is
-  unvendored.
+- **titles (auto) / plan-mode** — dsh-plan-mode is vendored and
+  load-verified only (the interactive-circle probe mounts it nowhere);
+  title auto-generation is not carried (`session/rename` is manual only).
+  (permission-presets left this list 2026-11-13: the seat-local face
+  `upstream/boot-permission-presets.js` answers the vendored subagent's
+  delegation capture and the data-ized `permissionPresets/catalog` — the
+  desktop package itself stays unvendored, its confining-shell +
+  approval write path being the staged seam.)
 - **tool-cordis** — the two runtime-side legs answer (#335 B3), but the
   tool's wire needs the `cordisInspect` HOST service that only the
   vendored cordis-host-runner provides (`upstream/preset-mobile-rows.js`).
