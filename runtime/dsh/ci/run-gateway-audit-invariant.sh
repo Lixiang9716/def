@@ -102,8 +102,9 @@ const strip = (line) => {
     const at = line.indexOf(': ');
     return JSON.parse(line.slice(at + 2));
 };
-const ledger = fs.readFileSync(process.argv[2], 'utf8').split('\n').filter(Boolean)
-    .map(strip).map((env) => env.data[0])
+const scenarioRecords = fs.readFileSync(process.argv[2], 'utf8').split('\n').filter(Boolean)
+    .map(strip).map((env) => env.data[0]);
+const ledger = scenarioRecords
     .filter((r) => r.event === 'audit.probe' || r.event === 'audit.host');
 const lines = fs.readFileSync(process.argv[3], 'utf8').split('\n').filter(Boolean);
 const records = lines.map((l) => JSON.parse(l));
@@ -141,6 +142,31 @@ for (let i = 1; i < ledger.length; i++) {
             + ` position ${pairOf[i - 1]}`);
     }
 }
+
+// Structural audit pairing (the capability-bus descriptor plane): every
+// audited-class entry the descriptor declares must appear paired with its
+// call. The scenario derives the set from the LIVE descriptor and emits it
+// as audit.coverage; this gate re-checks it against the pairing walk
+// independently — a descriptor row the battery never drives is named here.
+const coverage = scenarioRecords.find((r) => r.event === 'audit.coverage');
+if (!coverage) {
+    problems.push('NO COVERAGE RECORD — the scenario emitted no audit.coverage'
+        + ' (the structural pairing leg is missing)');
+} else if (coverage.verdict !== 'complete') {
+    problems.push(`INCOMPLETE COVERAGE — the scenario's own derivation reported`
+        + ` verdict=${coverage.verdict} (uncovered=${coverage.uncovered})`);
+} else {
+    const names = Array.isArray(coverage.entries) ? coverage.entries : [];
+    const coveredBy = (name) => ledger.some((c, i) =>
+        typeof c.primitive === 'string'
+        && (c.primitive === name || c.primitive.startsWith(name + '.'))
+        && pairOf[i] >= 0);
+    const missing = names.filter((n) => !coveredBy(n));
+    if (missing.length > 0) {
+        problems.push(`UNCOVERED DESCRIPTOR ENTRY — declared audited rows with no`
+            + ` paired call: ${missing.join(', ')}`);
+    }
+}
 records.forEach((r, j) => {
     if (!used[j]) problems.push(`ORPHAN RECORD no call claims ${JSON.stringify(r)}`);
 });
@@ -164,6 +190,10 @@ const paired = pairOf.filter((p) => p >= 0).length;
 console.log(`gateway-audit: pairing calls=${ledger.length} records=${records.length}`
     + ` paired=${paired} unpaired=${ledger.length - paired}`
     + ` orphans=${records.length - paired}`);
+if (coverage) {
+    console.log(`gateway-audit: structural pairing declared=${coverage.declared}`
+        + ` audited=${coverage.audited} verdict=${coverage.verdict}`);
+}
 if (problems.length > 0) {
     for (const p of problems) console.error(`gateway-audit: FAIL ${p}`);
     console.error(`gateway-audit: FAIL ${problems.length} pairing violation(s)`

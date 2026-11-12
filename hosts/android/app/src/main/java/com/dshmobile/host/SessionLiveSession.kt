@@ -46,11 +46,10 @@ class SessionLiveSession private constructor(private val activity: Activity) {
         /** The gateway descriptor of the session-live runtime: the spine
          * exercises the gateway (httpFetch for the llm transport), mirroring
          * the iOS drive's gateway wiring; the registered handler set is
-         * fs + httpFetch — anything else settles denied (fail loud). */
-        private val DESCRIPTOR: String = JSONObject()
-            .put("available", JSONArray(GatewayCore.PRIMITIVES))
-            .put("unavailable", JSONArray())
-            .toString()
+         * fs + httpFetch — anything else settles denied (fail loud). Built
+         * by GatewayCore from the serving table + the generated per-entry
+         * facts (the descriptor plane's derivation). */
+        private val DESCRIPTOR: String = GatewayCore.descriptorJSON()
 
         @Volatile private var instance: SessionLiveSession? = null
 

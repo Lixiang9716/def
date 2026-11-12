@@ -85,9 +85,8 @@ final class WebBootRuntimeDrive {
         core.emit = { [weak self] json in
             self?.thread.async { self?.emitEvent(json) }
         }
-        dsh_runtime_set_descriptor(host, GatewayCore.jsonLine([
-            "available": GatewayCore.primitives, "unavailable": [],
-        ]) ?? "{}")
+        dsh_runtime_set_descriptor(
+            host, core.descriptorJSON(declarePhasedUnavailable: false))
         return true
     }
 

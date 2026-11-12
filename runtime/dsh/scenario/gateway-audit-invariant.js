@@ -253,6 +253,34 @@ const unavailableCells = async () => {
   }
 };
 
+/** The structural audit pairing (the capability-bus descriptor plane): the
+ * descriptor's declared rows — available + unavailable — must be covered by
+ * the ledger (a paired call), for every entry the descriptor does not mark
+ * auditClass "unaudited" (the timer pair rides the runtime's own re-arm
+ * machinery, the #397 seam — the mic-plane audit manifests' skip lists are
+ * the precedent). A descriptor without the entries field (the CLI seat's
+ * predates the grammar) defaults every declared row to audited. New rows
+ * join the invariant by EXISTING in the descriptor — the battery must reach
+ * them or this leg names them and goes red. */
+const structuralCoverage = (descriptor) => {
+  const declaredNames = [...descriptor.available, ...descriptor.unavailable];
+  const auditedNames = Array.isArray(descriptor.entries) && descriptor.entries.length > 0
+    ? descriptor.entries.filter((e) => e.auditClass !== 'unaudited').map((e) => e.name)
+    : declaredNames;
+  const covered = (name) => ledger.some((cell) =>
+    cell.primitive === name || cell.primitive.startsWith(`${name}.`));
+  const uncovered = auditedNames.filter((name) => !covered(name));
+  demand(uncovered.length === 0,
+    `descriptor audit coverage incomplete: ${uncovered.join(', ')}`);
+  emit('audit.coverage', {
+    declared: declaredNames.length,
+    audited: auditedNames.length,
+    uncovered: uncovered.length,
+    verdict: 'complete',
+    entries: auditedNames,
+  });
+};
+
 await (async () => {
   if (!globalThis.__dshGatewayNegotiate('gateway@1')) {
     fail('gateway negotiation failed');
@@ -281,6 +309,7 @@ await (async () => {
     audit: 'httpFetch.abort', state: 'accepted', code: null });
   emit('audit.probe', { cell: 'http.abort', primitive: 'httpFetch.abort',
     audit: 'httpFetch.abort', state: 'accepted', code: null });
+  structuralCoverage(descriptor);
   emit('audit.passed', { calls: ledger.length });
   emit('scenario.complete', { status: 'pass' });
   globalThis.__dshComplete(true, 'ok');

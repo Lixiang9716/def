@@ -56,11 +56,13 @@ class OfficialWebSession private constructor(
                 "the next named gap"
 
         /** Compose-only closure: no capability gateway is wired, so nothing is
-         * granted (the scenario never calls a primitive — fail loud if it does). */
-        private val DESCRIPTOR: String = JSONObject()
-            .put("available", JSONArray())
-            .put("unavailable", JSONArray())
-            .toString()
+         * granted (the scenario never calls a primitive — fail loud if it
+         * does). The honest-empty descriptor, built by GatewayCore so the
+         * grammar (the per-entry entries array) stays one shape everywhere. */
+        private val DESCRIPTOR: String = GatewayCore.descriptorJSON(
+            available = emptyList(),
+            unavailable = emptyList(),
+        )
 
         @Volatile private var instance: OfficialWebSession? = null
 

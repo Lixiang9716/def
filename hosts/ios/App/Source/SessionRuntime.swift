@@ -188,7 +188,10 @@ final class SessionRuntime {
     /// dispatch, entry eval, first pump, watchdog. host.info waits for the
     /// mounted + connected Web Client.
     private func bindAndEval(_ host: OpaquePointer) {
-        dsh_runtime_set_descriptor(host, Self.descriptorJSON)
+        guard let core else { return finish(failOutcome("gateway core missing")) }
+        // the registration-derived descriptor (headless face: only what this
+        // core serves is declared available, nothing unavailable)
+        dsh_runtime_set_descriptor(host, core.descriptorJSON(declarePhasedUnavailable: false))
         dsh_runtime_set_bus_sink(host, { ud, line in
             guard let ud, let line else { return }
             let session = Unmanaged<SessionRuntime>.fromOpaque(ud).takeUnretainedValue()
@@ -469,13 +472,9 @@ final class SessionRuntime {
         fflush(stdout)
     }
 
-    /// RuntimeDescriptor pre-eval: the full nine-primitive surface.
-    private static let descriptorJSON: String = {
-        GatewayCore.jsonLine([
-            "available": GatewayCore.primitives,
-            "unavailable": [],
-        ]) ?? "{}"
-    }()
+    /// RuntimeDescriptor pre-eval: built by GatewayCore from the
+    /// registration flow (descriptorJSON) — the headless face declares only
+    /// what this core serves. No hand list here to drift.
 
     private static func parse(_ text: String) -> [String: Any]? {
         guard let data = text.data(using: .utf8) else { return nil }

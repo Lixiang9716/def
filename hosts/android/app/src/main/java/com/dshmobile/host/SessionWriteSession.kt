@@ -45,10 +45,10 @@ class SessionWriteSession private constructor(private val activity: Activity) {
             "runtime (spine + vendored @deepseek-ai/dsh-client-modules)"
 
         /** The session-live drive's gateway descriptor (fs + httpFetch;
-         * anything else settles denied — fail loud). */
-        private val DESCRIPTOR = JSONObject()
-            .put("available", JSONArray(GatewayCore.PRIMITIVES))
-            .put("unavailable", JSONArray()).toString()
+         * anything else settles denied — fail loud). Built by GatewayCore
+         * from the serving table + the generated per-entry facts (the
+         * descriptor plane's derivation). */
+        private val DESCRIPTOR = GatewayCore.descriptorJSON()
 
         @Volatile private var instance: SessionWriteSession? = null
 

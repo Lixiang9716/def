@@ -50,11 +50,10 @@ class SessionPersistRestartSession private constructor(
         private const val ENGINE_LABEL = "quickjs-ng 0.17.0"
 
         /** The gateway descriptor of these runtimes: fs + httpFetch (the
-         * session-live shape); anything else settles denied — fail loud. */
-        private val DESCRIPTOR: String = JSONObject()
-            .put("available", JSONArray(GatewayCore.PRIMITIVES))
-            .put("unavailable", JSONArray())
-            .toString()
+         * session-live shape); anything else settles denied — fail loud.
+         * Built by GatewayCore from the serving table + the generated
+         * per-entry facts (the descriptor plane's derivation). */
+        private val DESCRIPTOR: String = GatewayCore.descriptorJSON()
 
         @Volatile private var instance: SessionPersistRestartSession? = null
 
