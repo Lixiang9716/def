@@ -202,6 +202,7 @@ enum BundleStager {
     private static func writeSpineClosure(_ root: URL) throws {
         try write("upstream/boot.js",
                   data: resData(dsh_runtime_res_upstream_boot_js), under: root)
+        try write("upstream/def-bundle.js", data: resData(dsh_runtime_res_upstream_def_bundle_js), under: root) // The DEF BUNDLE DECLARATION (R1): boot.js's top-level import, every def product row loads from it — missing here killed every boot drive (create.card leg, 2026-11-12; Android/harmony stage it from their mirrors).
         try write("upstream/tool-present.js",
                   data: resData(dsh_runtime_res_upstream_tool_present_js), under: root)
         try write("upstream/settings-memory.js",

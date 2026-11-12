@@ -1,5 +1,7 @@
 # R3 native faces — batches 2/3: the Android + harmony hosts join the face.*@1 renderers
 
+Status: implemented
+
 ## Problem
 
 The R3 proposal (`contract/proposals/2026-11-12-native-face-schemas.md`, DRAFT) left the

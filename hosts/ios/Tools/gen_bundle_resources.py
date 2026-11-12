@@ -52,6 +52,7 @@ RESOURCES = [
     ("npm_plugin_include_js", DSH / ".." / ".." / "external" / "npm" / "@deepseek-ai" / "cordis-plugin-include@1.0.7" / "lib" / "index.js"),
     ("npm_js_yaml_mjs", DSH / ".." / ".." / "external" / "npm" / "js-yaml@4.1.0" / "dist" / "js-yaml.mjs"),
     ("upstream_boot_js", DSH / "upstream" / "boot.js"),
+    ("upstream_def_bundle_js", DSH / "upstream" / "def-bundle.js"),
     ("upstream_wire_logger_js", DSH / "upstream" / "wire-logger.js"),
     ("upstream_llm_route_js", DSH / "upstream" / "llm-route.js"),
     ("upstream_producer_registry_js", DSH / "upstream" / "producer-registry.js"),

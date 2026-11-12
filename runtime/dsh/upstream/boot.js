@@ -53,8 +53,11 @@ import { mountCompactionPlane } from 'upstream/boot-compaction.js';
 // The spine demand-FACTS (the layer list + the fail-loud demand checks), split
 // out at the file-size gate (2026-10-11) with the compaction row's landing.
 import { MOBILE_LAYERS, MOUNTED_SERVICES, demandServices, demandPresetServices } from 'upstream/boot-demand.js';
-// The FIRST ported tool package (D9): its namespace object IS the plugin.
-import * as ToolTodo from '@deepseek-ai/dsh-tool-todo';
+// THE DEF BUNDLE DECLARATION (R1 end-state): every def product row this boot
+// mounts — tool rows, file rows, the spine inventory's def plane, the preset
+// deployment data — is DATA in upstream/def-bundle.js; this file mounts rows
+// and names zero def plugins. The seat switch is an edit of that file.
+import { defBundle, resolveRowConfig } from 'upstream/def-bundle.js';
 // The per-tool-run deadline (#323 ring 1): a wall-clock budget around
 // every dispatch — a tool that never settles fails in-band.
 import * as ToolDeadline from 'upstream/tool-deadline.js';
@@ -72,38 +75,20 @@ import * as RetryTelemetry from 'upstream/retry-telemetry.js';
 // continue (the desktop controller's api-session/error relay + the followup
 // semantics the mobile compose lacked).
 import * as TurnRecovery from 'upstream/turn-recovery.js';
-// The outboard shell tool: ONE bash-subset shell executor over the host's
-// scoped workspace fs face — dsh-shell-js. The seat switch (2026-10-11): it
-// takes the `shell` tool registration the retired dsh-shell-wasm (contract
-// v1.2.0 `wasmRun`) plugin used to hold; its source tree stays under
-// runtime/dsh/system-plugins for workspace installs, but no host stages or
-// mounts it any more (the dsh-shell-ish tree retired outright, 2026-10-14).
-// It is a staged system plugin, not a vendored upstream
-// package: an in-house implementation package is where a host-specific
-// capability belongs (D6) — `system-plugins/dsh-fs` beside it is the same
-// shape. Mounted after `tools`, which its `inject` waits for.
-import * as ShellJs from 'system-plugins/dsh-shell-js/index.js';
-// The Open Design client (the design daemon's REST surface over gateway
-// httpFetch): projects, BYOK generate, artifact save/lint. A host with no
-// configured daemon mounts nothing — the same decline shape as dsh-shell-js
-// against a host with no fs face.
-import * as OpenDesign from 'system-plugins/dsh-open-design/index.js';
-// The PLUGIN-MANAGER row (#346): the plugin_manager tool over the
-// workspace dsh.plugins/1 registry — outboard implementation (D6). The
-// composition's tool-plugin-manager row names the vendored desktop tool
-// whose host face this closure lacks; this row makes its Enabled TRUE.
-// Mounted after `tools` (inject waits for it).
-import * as PluginManagerTools from 'system-plugins/dsh-plugin-manager-tools/index.js';
-import * as DshCreate from 'system-plugins/dsh-create/index.js';
-// The FILE-TOOLS row: upstream's fs tool family over OUR dsh-fs cordis
-// provider (system-plugins/dsh-fs/cordis.js — the fs seam-collapse pilot):
-// the upstream ctx.fs seam served over the gateway fs primitives, with the
-// workspace root as the granted scope's workspace prefix. The npm bridge
-// that registers bare `diff` (tool-fs' structuredPatch dep) is a STATIC
-// import so its body runs at graph load; the tool packages themselves
-// resolve DYNAMICALLY inside mountSpine — quickjs links a static import
-// graph before any module body runs, so a static tool-fs import would
-// demand `diff` before the bridge exists (measured 2026-09-22).
+// The outboard tool rows (shell, open-design client, plugin-manager,
+// create-approve-hotmount, office, the app-shell UI face) and the file-tools
+// family mount FROM THE DECLARATION (upstream/def-bundle.js) — each row one
+// dynamic import + one ctx.plugin, in declaration order (see mountDefRows).
+// They are staged system plugins, not vendored upstream packages: an
+// in-house implementation package is where a host-specific capability
+// belongs (D6).
+// The npm bridge that registers bare `diff` (the vendored editor family's
+// structuredPatch dep) is a STATIC import so its body runs at graph load;
+// the tool packages themselves resolve DYNAMICALLY inside mountSpine —
+// quickjs links a static import graph before any module body runs, so a
+// static editor import would demand `diff` before the bridge exists
+// (measured 2026-09-22). The declaration's dynamic imports inherit the
+// same ordering.
 import 'upstream/shims/npm-bridges.js';
 // The Agent 预设 panel's data source (contract parity with the desktop shell):
 // the REAL upstream services, verbatim — the cordis Loader service (which the
@@ -136,22 +121,26 @@ const pinProfileContainer = (container) => {
  * `<root>/presets/**` and the package-health resolution walks `<root>/
  * node_modules/<pkg>/package.json` from here. A `file:` URL — the shape the
  * presets service documents for `ctx.baseUrl` (a composition's package names
- * resolve against it). */
-export const AGENT_PRESETS_VENDOR_ROOT = '/vendor/dsh/agent-presets@0.1.6-alpha.2';
+ * resolve against it). The deployment preset data itself (root + default) is
+ * declaration data (upstream/def-bundle.js `preset`) — the preset plane's
+ * def-owned choices ride the same bundle everything else does. */
+export const AGENT_PRESETS_VENDOR_ROOT = defBundle.preset.vendorRoot;
 export const AGENT_PRESETS_BASE_URL = `file://${AGENT_PRESETS_VENDOR_ROOT}/`;
 /** The deployment default preset (the shipped roster: cordis/minimal/ptc/
- * standard; the package README's own deployment example pins `standard`). */
-export const AGENT_PRESETS_DEFAULT = 'mobile';
+ * standard). */
+export const AGENT_PRESETS_DEFAULT = defBundle.preset.default;
 
 /** The REAL spine mounts, as plugin-inventory rows (the settings 插件 list's
  * global plane). Every row is answered from live context facts, never from
  * the declaration alone: a spine service is enabled when its service is
  * actually mounted on the context, and a tool plugin is enabled when its
- * tool is actually registered in the tool table (the open-design tool
- * declines to register when the host has no daemon configured — that host
- * sees the row disabled, exactly what the tool layer does). `fiberPhase: 'active'`
+ * tool is actually registered in the tool table (a client tool that declines
+ * to register — the host has no daemon configured, say — shows the row
+ * disabled, exactly what the tool layer does). `fiberPhase: 'active'`
  * names the mounted truth (demandServices proved the spine); a declined
- * plugin carries `null` — it has no fiber. */
+ * plugin carries `null` — it has no fiber. The def-owned rows (their
+ * entryId/moduleName identity data) come from the declaration's
+ * inventoryRows — this file names no def plugin. */
 export const spineInventory = (ctx) => {
   // The tool layer's GLOBAL visibility view — the same resolver the model-
   // facing catalog reads (scoped registrations shadow it; no scope exists at
@@ -168,6 +157,9 @@ export const spineInventory = (ctx) => {
     const registered = visibleTools !== undefined && visibleTools.has(toolName);
     return { entryId, moduleName, enabled: registered, fiberPhase: registered ? 'active' : null };
   };
+  const defRow = (row) => (row.kind === 'tool'
+    ? tool(row.entryId, row.moduleName, row.tool)
+    : service(row.entryId, row.moduleName, row.service));
   return [
     service('session', '@deepseek-ai/dsh-session', 'sessions'),
     service('agent', '@deepseek-ai/dsh-agent', 'agents'),
@@ -178,14 +170,10 @@ export const spineInventory = (ctx) => {
     service('agent-loop', '@deepseek-ai/dsh-agent-loop', 'agentLoop'),
     service('llm', '@deepseek-ai/dsh-llm', 'llm'),
     tool('tool-todo', '@deepseek-ai/dsh-tool-todo', 'todo_write'),
-    tool('shell-js', 'system-plugins/dsh-shell-js', 'jsshell'),
-    tool('open-design', 'system-plugins/dsh-open-design', 'open_design_projects'),
-    tool('tool-plugin-manager', 'system-plugins/dsh-plugin-manager-tools', 'plugin_manager'),
-    // The create-approve-hotmount loop's product face: chat-authored plugin
-    // → native Approve → registry install → LIVE native card (PR-2/3).
-    tool('tool-plugin-create', 'system-plugins/dsh-create', 'plugin_create'),
-    tool('appshell', 'system-plugins/dsh-appshell', 'appshell_render'),
-    service('fs', 'system-plugins/dsh-fs/cordis.js (the gateway-fs FileSystem provider)', 'fs'),
+    // The def tool plane + the fs service row, in the declaration's order
+    // (the create-approve-hotmount loop's product face: chat-authored plugin
+    // → native Approve → registry install → LIVE native card, PR-2/3).
+    ...defBundle.inventoryRows.map(defRow),
     tool('tool-fs', '@deepseek-ai/dsh-tool-fs', 'read'),
     tool('tool-str-replace-editor', '@deepseek-ai/dsh-tool-str-replace-editor', 'str_replace_editor'),
     service('web', '@deepseek-ai/dsh-web', 'web'),
@@ -195,22 +183,34 @@ export const spineInventory = (ctx) => {
   ];
 };
 
-/** The FILE-TOOLS row's mounts (see the import note at the top of this
- * file): OUR dsh-fs cordis provider as the `fs` service (the seam-collapse
- * seat — the vendored fs-local stays in the closure for the parity/suite
- * legs), the file tools into the REAL ToolRuntime (editor via the loop-z3
- * path anchor). The in-memory workspace VFS is retired here with the
- * fs-local seat: no product consumer remains (the workspaceFiles wire
- * reads through ctx.fs). */
-const mountFileTools = async (ctx, cwd) => {
-  const [{ DshFsProvider }, ToolFs, StrReplaceEditor] = await Promise.all([
-    import('system-plugins/dsh-fs/cordis.js'),
-    import('@deepseek-ai/dsh-tool-fs'),
+/** The DEF-BUNDLE loader (R1): each declaration row is ONE mount — the row's
+ * `load` thunk is dynamically imported, `pick` names the export to mount
+ * (absent = the namespace object IS the plugin, the D9 convention), and the
+ * config resolves against the boot identity ("$cwd" → the session cwd; any
+ * other "$name" fails loud, rule 5). The imports settle first, then the
+ * mounts run in declaration order — the historical import-all/then-mount-all
+ * shape, the mount order exactly what it replaced. */
+const mountDefRows = async (ctx, cwd, rows) => {
+  const params = { cwd };
+  const mods = await Promise.all(rows.map((row) => row.load()));
+  for (const [at, row] of rows.entries()) {
+    const plugin = row.pick !== undefined ? mods[at][row.pick] : mods[at];
+    await ctx.plugin(plugin,
+      row.config !== undefined ? resolveRowConfig(row.config, params) : undefined);
+  }
+};
+
+/** The EDITOR row (glue, honestly asymmetric — see the def-bundle header):
+ * the vendored str_replace_editor mounts wrapped in the loop-z3 relative-path
+ * anchor — a plugin TRANSFORM over the module + the boot cwd, so it is a
+ * call, not a spec+config row. Dynamic imports: the bridges ordering, as
+ * above. */
+const mountEditorRow = async (ctx, cwd) => {
+  const [{ anchoredEditorPlugin }, Editor] = await Promise.all([
+    import('upstream/tool-path-anchor.js'),
     import('@deepseek-ai/dsh-tool-str-replace-editor'),
   ]);
-  await ctx.plugin(DshFsProvider, { cwd });
-  await ctx.plugin(ToolFs, {});
-  await ctx.plugin((await import('upstream/tool-path-anchor.js')).anchoredEditorPlugin(StrReplaceEditor, cwd), {});
+  await ctx.plugin(anchoredEditorPlugin(Editor, cwd), {});
 };
 
 /** The SKILL row (2026-09-23, the agent-flow E2E): the upstream skill family
@@ -305,22 +305,20 @@ const mountRecoveryRings = async (ctx) => {
 };
 
 
-/** Ported tool packages (D9): after `tools`; `allowParallelInProgress: false`
- * is the mobile one-agent shape. The OFFICE and WEB rows are dynamic — bare
- * `fflate`/turndown need the bridges body registered first. */
+/** The tool rows (D9): after `tools`; `allowParallelInProgress: false` is the
+ * mobile one-agent shape (declaration data). The office row is dynamic — bare
+ * `fflate`/turndown need the bridges body registered first (the declaration's
+ * dynamic imports inherit that ordering). The mount ORDER is exactly the
+ * historical one: the declaration tool rows → the web plane (glue: the
+ * gateway transport injection + the search-provider registration, see the
+ * def-bundle header) → the declaration file rows (the file-tools family —
+ * the fs provider is the seam-collapse seat, the vendored fs-local stays in
+ * the closure for the parity/suite legs) → the anchored editor (glue). */
 const mountToolRows = async (ctx, cwd) => {
-    await ctx.plugin(ToolTodo, { allowParallelInProgress: false });
-    await ctx.plugin(ShellJs);
-    await ctx.plugin(OpenDesign);
-    await ctx.plugin(PluginManagerTools);
-    await ctx.plugin(DshCreate); // create-approve-hotmount (PR-2/3)
-    await ctx.plugin(await import('system-plugins/dsh-office/index.js'));
-    // The app-shell surface plugin (owner decision 2026-10-18): the spine
-    // offers appshell_render/update/catalog on every seat — one-prompt app
-    // morphing is a product capability, not a scenario-mounted demo.
-    await ctx.plugin(await import('system-plugins/dsh-appshell/index.js'));
-    await mountWebPlane(ctx);
-  await mountFileTools(ctx, cwd);
+  await mountDefRows(ctx, cwd, defBundle.toolRows);
+  await mountWebPlane(ctx);
+  await mountDefRows(ctx, cwd, defBundle.fileRows);
+  await mountEditorRow(ctx, cwd);
 };
 
 const mountSpine = async (ctx, identity) => {
