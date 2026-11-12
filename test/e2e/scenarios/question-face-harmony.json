@@ -1,0 +1,59 @@
+{
+  "scenario": "question.face",
+  "extract": {
+    "prefix": "dsh.runtime.log:"
+  },
+  "expect": [
+    {
+      "event": "question.face.begin",
+      "match": {}
+    },
+    {
+      "event": "question.face.seat.ready",
+      "match": {
+        "gateway": "gateway@1"
+      }
+    },
+    {
+      "event": "question.face.spine.booted",
+      "match": {
+        "sessionId": "s-question-face-0001"
+      }
+    },
+    {
+      "event": "question.face.bridge.mounted",
+      "match": {}
+    },
+    {
+      "event": "question.face.asked",
+      "match": {
+        "questions": 1,
+        "options": "id-label"
+      }
+    },
+    {
+      "event": "question.face.cancelled",
+      "match": {
+        "outcome": "cancelled"
+      }
+    },
+    {
+      "event": "question.face.turn.settled",
+      "match": {
+        "answers": 0
+      }
+    },
+    {
+      "event": "question.face.done",
+      "match": {
+        "outcome": "cancelled"
+      }
+    },
+    {
+      "event": "scenario.complete",
+      "match": {
+        "status": "pass"
+      }
+    }
+  ]
+}

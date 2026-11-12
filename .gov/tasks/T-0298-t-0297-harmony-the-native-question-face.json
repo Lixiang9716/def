@@ -1,0 +1,26 @@
+{
+  "title": "T-0297 harmony \u95ee\u8be2 \u2014 the native question face",
+  "created": "2026-11-12T20:50:58+00:00",
+  "rules": {
+    "hash": "556692558593f0fc57cfe204683dbab194011d21a1090259cdb9d8d680e101fa",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "81b8088528e6025f871510a60d60a8beb69d755ba8b479335a22592fe1b9d286"
+    }
+  },
+  "checklist": [
+    "[x] calibrators read: QuestionDialog.kt, question-bridge.js, data-protocols \u00a711, HostPhase/E2eLeg/Index",
+    "[x] QuestionDialog.ets \u2014 face.question@1 dialog (options buttons, free-text, chained asks, outcome cancelled)",
+    "[x] bus wiring \u2014 question.request opens dialog, question.answer delivered over the bus",
+    "[x] scripted-cancel seam \u2014 --ps dsh.script.question cancel auto-answers after ~350ms",
+    "[x] leg registration \u2014 dsh.e2e.leg question.face in Index.ets",
+    "[x] staging \u2014 question-face.js in harmony rawfile closure (gen-staging-emit + sync harmony)",
+    "[x] test/e2e/scenarios/question-face-harmony.json manifest",
+    "[x] hosts/harmony/ci/run-question-face.sh runner",
+    "[x] gates green locally (code-size, staging-generated, descriptor-parity, commit-format)",
+    "PR opened, CI harmonyos-build watched, squash-merged, worktree removed"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0298"
+}
