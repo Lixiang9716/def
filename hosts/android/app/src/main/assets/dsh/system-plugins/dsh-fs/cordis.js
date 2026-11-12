@@ -14,7 +14,10 @@
  * with fs-local's display paths). processPath returns that absolute form —
  * the path-math anchor the workspaceFiles adapters resolve related files
  * with. The gateway (scope, path) address derives per call from the pinned
- * profile globals — read, never guessed (the dsh-shell-js toGateway rule).
+ * profile globals via the shared scope-address.js derivation — read, never
+ * guessed (the dsh-shell-js toGateway rule), and a host that granted no
+ * scoped workspace refuses loudly (GatewayError('unavailable'), the shell's
+ * posture) instead of degrading to the bare relative spelling.
  *
  * Mutations publish through fsPublishAtomic (contract v1.11.0): ONE host
  * step — same-directory temp → write → fsync → rename → fsync(dir) — the
@@ -43,6 +46,7 @@
 import { createLogger } from 'logger.js';
 import { FileSystem, FsError, FsTargetKey, FsVersion } from '@deepseek-ai/dsh-fs';
 import { fsRead, fsList, fsMkdir } from 'gateway.js';
+import { appScopeAddress, scopeRoots, workspacePrefix } from 'scope-address.js';
 import { fsPublishAtomic } from 'fs-durable.js';
 import {
   DEFAULT_DIFF_BASIS_MAX_BYTES, lexical, versionSignalOf,
@@ -100,18 +104,13 @@ export class DshFsProvider extends FileSystem {
   }
 
   /** The gateway (scope, path) address for a normalized relative key — the
-   * workspace prefix inside the `app` scope rides the pinned globals. */
+   * workspace prefix inside the `app` scope rides the pinned globals (the
+   * shared scope-address.js derivation). Missing/misshapen globals refuse
+   * loudly (GatewayError('unavailable'), the shell's posture) — a config
+   * error is a defect, never a silent empty-prefix degrade. */
   address(rel) {
     log.debug('address', { rel });
-    const workspace = globalThis.__dshProfileCwd;
-    const scopeRoot = globalThis.__dshProfileScopeRoot;
-    let prefix = '';
-    if (typeof workspace === 'string' && typeof scopeRoot === 'string'
-      && workspace.startsWith(scopeRoot)) {
-      prefix = workspace.slice(scopeRoot.length).replace(/^\/+/, '');
-    }
-    const path = prefix.length === 0 ? rel : (rel.length === 0 ? prefix : `${prefix}/${rel}`);
-    return { scope: 'app', path: path === '' ? '.' : path };
+    return appScopeAddress(rel, workspacePrefix(scopeRoots('fs')));
   }
 
   /** fsStat over a relative key, absence-shaped (cordis-io probeStat). */

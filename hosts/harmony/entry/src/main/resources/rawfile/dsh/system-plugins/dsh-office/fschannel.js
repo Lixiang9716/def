@@ -5,29 +5,26 @@
  * dsh-office-tools spoke the desktop `ctx.fs` service (resolve/stat/
  * readBytes/writeText + a sandbox policy); this runtime's equivalent is the
  * contract's fs primitives over the pinned profile workspace — the same
- * scopePathFor mapping dsh-shell-wasm uses (both roots are globals the
- * spine sets; the mapping is read, never guessed). Semantics kept from the
- * port: extension allowlist, the 50 MB file cap, the create-overwrite guard,
- * and lexical escape refusal (the gateway refuses escapes too; naming the
- * path here gives the model a clean error instead of a gateway code).
+ * mapping dsh-shell-wasm used, now the shared scope-address.js derivation
+ * (both roots are globals the spine sets; the mapping is read, never
+ * guessed). Semantics kept from the port: extension allowlist, the 50 MB
+ * file cap, the create-overwrite guard, and lexical escape refusal (the
+ * gateway refuses escapes too; naming the path here gives the model a clean
+ * error instead of a gateway code).
  */
 import { createLogger } from 'logger.js';
-import { fsRead, fsStat, fsWrite, GatewayError } from 'gateway.js';
+import { fsRead, fsStat, fsWrite } from 'gateway.js';
+import { scopeRoots, workspacePrefix } from 'scope-address.js';
 import { MAX_OFFICE_FILE_BYTES } from './shared.js';
 
 const log = createLogger('dsh.office.fs');
 
 /** The workspace-relative path mapped onto the gateway's (scope, path)
- * pair — verbatim from dsh-shell-wasm's scopePathFor. */
+ * pair — the shared scope-address.js derivation (roots + prefix); the join
+ * keeps the office algebra (leading slashes stripped, no '.' sentinel —
+ * byte-identical to the former local copy). */
 export const scopePathFor = (relative) => {
-  const workspace = globalThis.__dshProfileCwd;
-  const scopeRoot = globalThis.__dshProfileScopeRoot;
-  if (typeof workspace !== 'string' || typeof scopeRoot !== 'string'
-      || !workspace.startsWith(scopeRoot)) {
-    throw new GatewayError('unavailable', 'office',
-      'the host granted no scoped workspace (no __dshProfileScopeRoot)');
-  }
-  const prefix = workspace.slice(scopeRoot.length).replace(/^\/+/, '');
+  const prefix = workspacePrefix(scopeRoots('office'));
   const clean = String(relative).replace(/^\/+/, '');
   return { scope: 'app', path: prefix.length > 0 ? `${prefix}/${clean}` : clean };
 };

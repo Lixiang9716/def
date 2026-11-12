@@ -30,7 +30,8 @@ export const wsOutsideRootError = (call, path) => {
   const hint = wsRootHint(path);
   const error = new Error(
     `node:fs.${call}: path '${path}' is outside the writable workspace root and every staged read-only view `
-    + `— the fs backends on this host serve exactly one pinned workspace (mountWorkspace) `
+    + `— the fs backends on this host serve exactly one pinned profile workspace `
+    + `(ctx.fs is the DshFsProvider over the gateway fs primitives; the node:fs seam mounts the same root) `
     + `plus the seeded views (see runtime/dsh/upstream/README.md, FILE-TOOLS row)${hint}`);
   error.code = 'EACCES';
   error.errno = -13;

@@ -186,6 +186,7 @@ logger.js
 plugin-mount.js
 registry.js
 render-intent.js
+scope-address.js
 surface.js
 upstream/shims/buffer.js
 upstream/shims/crypto.js

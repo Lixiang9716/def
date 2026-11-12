@@ -32,6 +32,9 @@ export default defineConfig({
       // The face dispatch layer (R3 face.*@1): the runtime modules the
       // render-intent suite drives (and question-bridge.js imports).
       { find: 'render-intent.js', replacement: fileURLToPath(new URL('../../runtime/dsh/render-intent.js', import.meta.url)) },
+      // The shared gateway-address derivation the shell applets, the fs
+      // provider, and the office fs channel import bare.
+      { find: 'scope-address.js', replacement: fileURLToPath(new URL('../../runtime/dsh/scope-address.js', import.meta.url)) },
       // web-write-plugin-manager imports the live mount chain; the panel
       // suite never mounts (the plugin.forms CLI leg owns that proof), so the
       // stub keeps the graph resolvable and the remove face's live-dispose
