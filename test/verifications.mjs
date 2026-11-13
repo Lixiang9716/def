@@ -252,6 +252,34 @@ export const REGISTRY = [
     ci: '.github/workflows/c-core.yml',
     evidence: ['runtime/dsh/artifacts/macos-cli-mcp-streamable-http/', 'doc/dsh-desktop-plugins.md'],
   },
+  {
+    name: 'mcp-plugin',
+    kind: 'integration',
+    what:
+      'the dsh-mcp system plugin (plan \u00a74.2): def-bundle mount, DSH_MCP_SERVERS config face, ' +
+      'keychain credential face, connect over the vendored transport, listTools registration of ' +
+      'mcp_<server>_<tool>, and callTool forwarding through the REAL ToolRuntime dispatch ' +
+      '(scenario mcp.plugin against a Node mock MCP server on loopback)',
+    countsFrom:
+      'the CLI proof leg — runtime/dsh/ci/run-mcp-plugin-e2e.sh; the count is the leg\u2019s ' +
+      'scenario events (8 mcp.plugin rows) in runtime/dsh/artifacts/macos-cli-mcp-plugin/' +
+      'scenario.jsonl, matched one-to-one against the scenario manifest (verdict.json ' +
+      'expected\u2194logged)',
+    legs: [
+      {
+        id: 'cli',
+        status: 'live',
+        runner:
+          'runtime/dsh/ci/run-mcp-plugin-e2e.sh (the desktop CLI over the REAL gateway ' +
+          'httpFetch; also run by build/build.sh test core)',
+      },
+    ],
+    platform:
+      'the desktop CLI host (committed artifacts from darwin; c-core CI runs the leg on ' +
+      'ubuntu through build/build.sh test core)',
+    ci: '.github/workflows/c-core.yml',
+    evidence: ['runtime/dsh/artifacts/macos-cli-mcp-plugin/', 'doc/dsh-desktop-plugins.md'],
+  },
 ];
 
 const failLoud = (message) => {
