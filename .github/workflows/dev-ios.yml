@@ -292,6 +292,44 @@ jobs:
       # builds itself — the android pin's discipline); the step GATES the
       # pipeline like the android page-open step does: the pin is a product
       # verdict, not best-effort telemetry.
+      #
+      # The Release build's StageOfficialWeb phase needs the official Web
+      # Client trees materialized (dist + client-bundles — untracked,
+      # reproducible, MANIFEST-verified by the two ensure scripts, rule 5:
+      # missing source trees are fatal in Release and named explicitly —
+      # which is exactly how the first run of this leg failed). The cache +
+      # materialize pair below is dev-ios.yml's verbatim of release-ios.yml's
+      # (same keys, so the release pipeline's cache serves this leg too; the
+      # verifiers run either way, so a restored tree is verified, not
+      # trusted).
+      - name: Locate the pnpm store
+        id: pnpm-store
+        run: |
+          set -euo pipefail
+          corepack enable
+          echo "path=$(corepack pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+      - name: Cache the pnpm store
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/build-client-bundles.sh') }}
+      - name: Cache the materialized official web tree
+        uses: actions/cache@v6
+        with:
+          path: |
+            presentation/official-web/dist
+            presentation/official-web/client-bundles/npm
+            presentation/official-web/client-bundles/MANIFEST.sha256.computed
+          key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'test/e2e/ensure-official-dist.sh', 'test/e2e/ensure-client-bundles.sh') }}
+      - name: Materialize the official Web Client the release build embeds
+        env:
+          COREPACK_INTEGRITY_KEYS: '0'
+          NODE_OPTIONS: '--max-old-space-size=3072'
+        run: |
+          set -euo pipefail
+          corepack enable
+          test/e2e/ensure-official-dist.sh
+          test/e2e/ensure-client-bundles.sh
       - name: Build the release sim .app (Release configuration, for the page-open pin)
         run: |
           set -o pipefail
