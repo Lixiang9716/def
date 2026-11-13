@@ -1,0 +1,21 @@
+{
+  "title": "issue 691: iOS interactive cold-boot page-open pin",
+  "created": "2026-11-13T16:12:50+00:00",
+  "rules": {
+    "hash": "10ad25d327c4e7844ac6429d411ce7acb5b34e07afa2bdb0e40b6496aa4e302a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "07392ba878fb4a0d8ebc29545809365171470bb77b878de788ee79e21b7a1127"
+    }
+  },
+  "checklist": [
+    "[x] read android run-page-open.sh + iOS release seat flow",
+    "[x] author hosts/ios/ci/run-page-open.sh mirroring android assertion shape",
+    "green local run with receipt.json under hosts/ios/artifacts/page-open/",
+    "[x] wire leg inside ios-e2e job in dev-ios.yml",
+    "commit, PR, gates green, squash merge"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0302"
+}
