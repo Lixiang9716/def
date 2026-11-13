@@ -16,7 +16,12 @@
  * no server offers no tools):
  *   __dshMcpServers        the host's declaration — an array of
  *                          {name, url, credentialRef?, headerName?}, or
- *   DSH_MCP_SERVERS        the launch environment, the same array as JSON.
+ *   DSH_MCP_SERVERS        the launch environment — EITHER the same array
+ *                          as JSON (the carriers' spelling) OR the
+ *                          quote-free pipe grammar the CLI's --env demands
+ *                          (its injection guard refuses quotes,
+ *                          example/main_cli.c:1865): rows separated by `;`,
+ *                          fields by `|` — `name|url[|credentialRef[|headerName]]`.
  * `credentialRef` names a keychain ref (keychainGet); the resolved secret
  * rides the `headerName` header (default `Authorization`, Bearer-prefixed
  * unless already scheme'd). A configured credential the keychain cannot
@@ -100,12 +105,25 @@ const resolveServers = () => {
   const raw = typeof process !== 'undefined' && typeof process.env?.DSH_MCP_SERVERS === 'string'
     ? process.env.DSH_MCP_SERVERS : '';
   if (raw.trim() === '') return undefined;
-  try {
-    return normalizeServers(JSON.parse(raw), 'DSH_MCP_SERVERS');
-  } catch (error) {
-    log.warn('mcp/config.refused', { source: 'DSH_MCP_SERVERS', reason: String(error?.message ?? error).slice(0, 120) });
-    return [];
+  if (raw.trimStart().startsWith('[')) {
+    try {
+      return normalizeServers(JSON.parse(raw), 'DSH_MCP_SERVERS');
+    } catch (error) {
+      log.warn('mcp/config.refused', { source: 'DSH_MCP_SERVERS', reason: String(error?.message ?? error).slice(0, 120) });
+      return [];
+    }
   }
+  // The quote-free pipe grammar: rows on `;`, fields on `|`. A malformed
+  // row is named and skipped (the same per-row honesty as the JSON tier).
+  const rows = raw.split(';').map((line) => line.split('|').map((field) => field.trim()))
+    .filter((fields) => fields.some((field) => field !== ''))
+    .map((fields) => ({
+      name: fields[0] ?? '',
+      url: fields[1] ?? '',
+      ...(fields[2] ? { credentialRef: fields[2] } : {}),
+      ...(fields[3] ? { headerName: fields[3] } : {}),
+    }));
+  return normalizeServers(rows, 'DSH_MCP_SERVERS');
 };
 
 /** The credential face: keychainGet by ref; the secret rides one header,

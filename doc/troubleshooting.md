@@ -199,6 +199,43 @@ exits 1 naming the offending runtime; the listing is a parameter
 booting anything. Each `test/e2e/run-ios-*.sh` runner calls it one line
 before its boot/install step.
 
+## 9. `build/ensure-seat.sh` materializes the PRIMARY when run from a reset cwd
+
+Paid for twice on 2026-11-14 (seat B's 20-minute cold-gate round trip, then
+the same surprise re-observed on another seat). A worktree seat cut from the
+primary ran `sh build/ensure-seat.sh` with the cwd reset to the repository
+root by an earlier command, and the script happily materialized the PRIMARY
+tree — exit 0, banner "DONE — primary path" — while the seat stayed cold.
+Every later gate in the seat then judged a vendor-less tree and failed with
+misleading cold-seat signatures (`external/` missing, bundle-files red).
+
+The mechanism: `ensure-seat.sh` treats its argument as OPTIONAL and defaults
+to the invoking directory's git toplevel; run from the primary that default
+is the primary, and nothing distinguishes "I meant my seat" from "I meant
+here". Until the script grows a loud guard, the rule is: ALWAYS pass the
+seat path explicitly (`sh build/ensure-seat.sh ../dsh-mobile-<seat>`), and
+after materializing, verify the seat's vendor tree exists before judging
+any gate. No code encodes the guard yet — the fix candidate is a warning
+(or a hard refusal) when no seat argument is given and cwd resolves to the
+primary checkout.
+
+## 10. `am start` with a relative component class breaks when applicationId ≠ namespace
+
+Paid for by the #656 rename's first upgrade-matrix run (2026-11-14): the
+launch died with Android's `Error type 3` (activity class does not exist)
+because every runner used `am start -n com.dshmobile.host/.MainActivity`
+— a RELATIVE component class, which Android resolves against the COMPONENT
+package. After the applicationId moved to `io.github.lixiang9716.def` while
+the Kotlin namespace stayed `com.dshmobile.host`, the relative spelling
+resolves against the NEW package and finds no `.MainActivity` there.
+
+Fix: namespace-qualify the component class in every launch site —
+`am start -n io.github.lixiang9716.def/com.dshmobile.host.MainActivity`.
+Encoded across the `hosts/android/ci/*` and `test/e2e/*` runners in #791
+(29 sites, comment documents the rule at the upgrade-matrix launch site);
+the general law is: whenever applicationId and the Java namespace diverge,
+`am start -n` needs BOTH spelled explicitly, never a relative class.
+
 ## Adding an entry
 
 When a session pays for a new trap, append it here in the same change that
