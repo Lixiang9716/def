@@ -31,7 +31,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_ANDROID_ART:-hosts/android/artifacts/perf-turn-latency}"
 SCEN=test/e2e/scenarios/android-perf-turn-latency.json
 CAPTURE=hosts/android/ci/logcat-capture.sh
@@ -104,7 +104,7 @@ cleanup_capture() { CAPTURE_FILE="$OUT/logs.txt" sh "$CAPTURE" stop >/dev/null 2
 trap 'cleanup_capture' EXIT INT TERM
 
 launch_deadline=$(( $(date +%s) + 60 ))
-until adbsh shell am start -n $PKG/.MainActivity --ez dsh.perfturn true >/dev/null 2>&1; do
+until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.perfturn true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && { cleanup_capture; die "am start kept failing within 60s"; }
     sleep 2
 done

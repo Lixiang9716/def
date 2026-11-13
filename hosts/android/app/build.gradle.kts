@@ -180,7 +180,7 @@ private fun com.android.build.api.dsl.ApplicationExtension.dshSourceSets(
 
 private fun com.android.build.api.dsl.ApplicationExtension.dshDefaultConfig() {
     defaultConfig {
-        applicationId = "com.dshmobile.host"
+        applicationId = "io.github.lixiang9716.def"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

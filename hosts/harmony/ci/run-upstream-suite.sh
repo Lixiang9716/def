@@ -24,7 +24,7 @@ set -eu
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$ROOT"
 
-BUNDLE=com.dshmobile.host
+BUNDLE=io.github.lixiang9716.def
 OUT=${DSH_SUITE_OUT:-hosts/harmony/artifacts/upstream-suite}
 CORPUS="$ROOT/runtime/dsh/upstream-tests"
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap

@@ -86,7 +86,7 @@ Evidence (one run, final code state): `artifacts/m4-host/` — `logs.txt` (logca
   host fopen()s real paths. The repo has no drift-check tool for these copies yet — provenance
   is this paragraph (and the receipt).
 - Capture: every canonical line goes UNMODIFIED to logcat (tag `dsh.runtime`) AND to
-  `filesDir/dsh-capture-<scenario>.log` (pulled via `adb exec-out run-as com.dshmobile.host
+  `filesDir/dsh-capture-<scenario>.log` (pulled via `adb exec-out run-as io.github.lixiang9716.def
   cat ...` — the truncation-proof cross-check); per-scenario verdicts land on tag
   `dsh.runtime.result`, terminated by the `ALL PASS` / `ALL FAIL` line.
 

@@ -235,7 +235,7 @@ const TOKEN_LAYERS = {
   appId: {
     kotlin: 'package declarations + application id reads',
     'ci-config': 'gradle applicationId / workflows adb targets',
-    'shell-runner': "runners' adb am start -n com.dshmobile.host/…",
+    'shell-runner': "runners' adb am start -n io.github.lixiang9716.def/…",
   },
   callerId: {
     'canonical-manifest': "manifest.json id — the gateway caller identity",

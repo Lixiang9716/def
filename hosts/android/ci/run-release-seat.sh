@@ -29,7 +29,7 @@ set -eu
 
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_RELEASE_OUT:-hosts/android/artifacts/release-seat}"
 SERIAL="${DSH_ANDROID_SERIAL:-}"
 SKIP_BUILD=0
@@ -102,7 +102,7 @@ while [ -n "$(adbsh shell pidof $PKG 2>/dev/null | tr -d '[:space:]')" ]; do
 done
 adbsh logcat -c
 launch_deadline=$(( $(date +%s) + 60 ))
-until adbsh shell am start -n $PKG/.MainActivity >/dev/null 2>&1; do
+until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done

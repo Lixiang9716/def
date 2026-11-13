@@ -24,7 +24,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_ANDROID_ART:-hosts/android/artifacts/upgrade-matrix}"
 SCEN=test/e2e/scenarios/android-session-persist-restart.json
 CAPTURE=hosts/android/ci/logcat-capture.sh
@@ -102,9 +102,13 @@ CANARY=$(CAPTURE_FILE="$OUT/logs.txt" sh "$CAPTURE" start dsh.runtime dsh.runtim
 cleanup_capture() { CAPTURE_FILE="$OUT/logs.txt" sh "$CAPTURE" stop >/dev/null 2>&1 || true; }
 trap 'cleanup_capture; restore_probe' EXIT INT TERM
 
+# The two identity roles split here (#656): the component PACKAGE is the
+# applicationId ($PKG), but the activity CLASS lives in the Java/Kotlin
+# namespace (com.dshmobile.host, kept by design) — am resolves a relative
+# class against the package part, so the class must be spelled in full.
 launch() {
     launch_deadline=$(( $(date +%s) + 60 ))
-    until adbsh shell am start -n $PKG/.MainActivity --ez dsh.persistrestart true >/dev/null 2>&1; do
+    until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.persistrestart true >/dev/null 2>&1; do
         [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
         sleep 2
     done

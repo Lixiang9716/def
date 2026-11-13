@@ -42,7 +42,7 @@ cd "$ROOT"
 CLT=${DSH_CLT:-/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools}
 HDC_BIN=${DSH_HDC:-"$CLT/sdk/default/openharmony/toolchains/hdc"}
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap
-BUNDLE=com.dshmobile.host
+BUNDLE=io.github.lixiang9716.def
 BASE=/data/app/el2/100/base/$BUNDLE/haps/entry/cache
 OUT=${1:-${DSH_PARITY_OUT:-hosts/harmony/artifacts/device-parity}}
 GOLDEN="$ROOT/test/e2e/fixtures/upstream-parity-reference.jsonl"

@@ -69,7 +69,7 @@ done
 # reader's initial snapshot, so a PREVIOUS run's buffered
 # `dsh.runtime.result: ALL` can pierce the clear and satisfy this run's wait —
 # both the wait and the truncation judge the canary view only.
-adb shell am force-stop com.dshmobile.host >/dev/null 2>&1 || true
+adb shell am force-stop io.github.lixiang9716.def >/dev/null 2>&1 || true
 STREAM=/tmp/dsh-dsh-stream.txt
 # the completion tag rides its own tag (dsh.runtime.result) — stream both
 # (logcat tag specs are EXACT, -s dsh.runtime alone never sees it)
@@ -77,7 +77,7 @@ CANARY=$("$CAPTURE" start -f "$STREAM" dsh.runtime dsh.runtime.result)
 cleanup() { "$CAPTURE" stop -f "$STREAM" >/dev/null 2>&1 || true; }
 trap cleanup EXIT INT TERM
 deadline=$(( $(date +%s) + 120 ))
-until adb shell am start -n com.dshmobile.host/.MainActivity >/dev/null 2>&1; do
+until adb shell am start -n io.github.lixiang9716.def/com.dshmobile.host.MainActivity >/dev/null 2>&1; do
     if [ "$(date +%s)" -ge "$deadline" ]; then
         echo "::error::am start kept failing within 120s"
         exit 1

@@ -62,7 +62,7 @@ const work = mkdtempSync(join(tmpdir(), 'dsh-drive-official-'));
 // The on-device capture files (run-host-e2e.sh pulls exactly these): the
 // stream-independent surface the terminal wait falls back to.
 const CAPTURE_BASE = args['capture-base'] ??
-  '/data/app/el2/100/base/com.dshmobile.host/haps/entry/cache';
+  '/data/app/el2/100/base/io.github.lixiang9716.def/haps/entry/cache';
 const CAPTURE_FILES = {
   official: `${CAPTURE_BASE}/dsh-official-capture.log`,
   httpfetch: `${CAPTURE_BASE}/dsh-httpfetch-capture.log`,

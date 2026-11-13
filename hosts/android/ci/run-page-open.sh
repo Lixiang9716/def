@@ -28,7 +28,7 @@
 set -eu
 
 APK=${DSH_PAGEOPEN_APK:-hosts/android/app/build/outputs/apk/release/app-release-signed.apk}
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT=${DSH_PAGEOPEN_OUT:-/tmp/dsh-page-open}
 DEADLINE=${DSH_PAGEOPEN_DEADLINE:-120}
 
@@ -61,7 +61,7 @@ adb shell am force-stop $PKG >/dev/null 2>&1 || true
 adb logcat -c
 : > "$OUT/logs.txt"
 say "launching the default seat"
-adb shell am start -n $PKG/.MainActivity >/dev/null
+adb shell am start -n $PKG/com.dshmobile.host.MainActivity >/dev/null
 boot_pid=
 deadline=$(( $(date +%s) + 30 ))
 while [ -z "$boot_pid" ]; do

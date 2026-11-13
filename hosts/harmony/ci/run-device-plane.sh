@@ -15,7 +15,7 @@ CLT=${DSH_CLT:-/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools
 HDC="$CLT/sdk/default/openharmony/toolchains/hdc"
 [ -x "$HDC" ] || HDC=$(find "$CLT" -name hdc -type f | head -1)
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap
-BUNDLE=com.dshmobile.host
+BUNDLE=io.github.lixiang9716.def
 BASE=/data/app/el2/100/base/$BUNDLE/haps/entry/cache
 OUT=hosts/harmony/artifacts/device-plane
 mkdir -p "$OUT/screens"

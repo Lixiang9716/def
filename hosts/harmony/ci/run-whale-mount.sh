@@ -11,7 +11,7 @@ set -eu
 CLT=${HOS_CLT_HOME:-/opt/homebrew/share/harmonyos-commandlinetools/command-line-tools}
 HDC=${HDC_PATH:-$CLT/sdk/default/openharmony/toolchains/hdc}
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap
-BUNDLE=com.dshmobile.host
+BUNDLE=io.github.lixiang9716.def
 BASE=/data/app/el2/100/base/$BUNDLE/haps/entry/cache
 CAPTURE=$BASE/dsh-compact-mount-capture.log
 OUT=${1:-hosts/harmony/artifacts/compact-mount}
