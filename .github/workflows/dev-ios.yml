@@ -271,6 +271,80 @@ jobs:
           fi
           exit "$final_rc"
 
+      # The official seat's page-open pin (#691, the android twin's iOS
+      # sibling): a fresh boot of the DEFAULT seat — the release serving seat
+      # (AppDelegate.bootRelease -> SessionServe, interactive: true) — must
+      # end with the app's own WebView navigating to the carrier origin. The
+      # gate the page open rides — SessionServe.maybeOpenOrigin — needs the
+      # runtime's `web.boot` row AND the bus line `settings.probes.done`; the
+      # android twin caught a3e35d72 dropping that post (the page silently
+      # never opened, zero FAIL lines). Nothing else in CI drives the default
+      # seat — every leg above boots evidence drives (non-interactive
+      # configs) — so this pin is the only guard for the interactive-only
+      # boot-failure class (#686). The seat is RELEASE-flavor only
+      # (BuildFlavor refuses -dsh-mode by fatalError; the plain launch IS the
+      # official serve), so the Release configuration is built here: the step
+      # above builds the debug harness, and StageOfficialWeb embeds the
+      # official dist into Release builds ONLY (debug is a no-op — its
+      # runners stage Documents themselves). gen.sh already ran; this build
+      # rides the same warmed DerivedData cache as the debug build above.
+      # Mechanics live in hosts/ios/ci/run-page-open.sh (this check never
+      # builds itself — the android pin's discipline); the step GATES the
+      # pipeline like the android page-open step does: the pin is a product
+      # verdict, not best-effort telemetry.
+      #
+      # The Release build's StageOfficialWeb phase needs the official Web
+      # Client trees materialized (dist + client-bundles — untracked,
+      # reproducible, MANIFEST-verified by the two ensure scripts, rule 5:
+      # missing source trees are fatal in Release and named explicitly —
+      # which is exactly how the first run of this leg failed). The cache +
+      # materialize pair below is dev-ios.yml's verbatim of release-ios.yml's
+      # (same keys, so the release pipeline's cache serves this leg too; the
+      # verifiers run either way, so a restored tree is verified, not
+      # trusted).
+      - name: Locate the pnpm store
+        id: pnpm-store
+        run: |
+          set -euo pipefail
+          corepack enable
+          echo "path=$(corepack pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+      - name: Cache the pnpm store
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/build-client-bundles.sh') }}
+      - name: Cache the materialized official web tree
+        uses: actions/cache@v6
+        with:
+          path: |
+            presentation/official-web/dist
+            presentation/official-web/client-bundles/npm
+            presentation/official-web/client-bundles/MANIFEST.sha256.computed
+          key: official-web-${{ hashFiles('presentation/official-web/MANIFEST.sha256', 'presentation/official-web/build-upstream.sh', 'presentation/official-web/client-bundles/MANIFEST.sha256', 'presentation/official-web/client-bundles/build-client-bundles.sh', 'presentation/official-web/client-bundles/ROSTER.json', 'test/e2e/ensure-official-dist.sh', 'test/e2e/ensure-client-bundles.sh') }}
+      - name: Materialize the official Web Client the release build embeds
+        env:
+          COREPACK_INTEGRITY_KEYS: '0'
+          NODE_OPTIONS: '--max-old-space-size=3072'
+        run: |
+          set -euo pipefail
+          corepack enable
+          test/e2e/ensure-official-dist.sh
+          test/e2e/ensure-client-bundles.sh
+      - name: Build the release sim .app (Release configuration, for the page-open pin)
+        run: |
+          set -o pipefail
+          cd hosts/ios
+          xcodebuild build \
+            -project DSHHost.xcodeproj \
+            -scheme DSHHost \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath DerivedData \
+            | tail -30
+
+      - name: Run the official seat page-open pin (fresh release boot -> carrier origin)
+        run: sh hosts/ios/ci/run-page-open.sh
+
       # The M2 gateway-binding E2E is UI-driven — permission alert, Files
       # picker, approval dialog, notification banner (see
       # test/e2e/run-ios.sh, which drives it with WebDriverAgent/idb). Hosted
@@ -308,6 +382,7 @@ jobs:
           for f in \
             hosts/ios/artifacts/boot-carrier-dsh/verdict.json \
             hosts/ios/artifacts/boot-carrier-carrier/verdict.json \
+            hosts/ios/artifacts/page-open/receipt.json \
             hosts/ios/artifacts/gateway/verdict.json \
             hosts/ios/artifacts/gateway/verdict-audit.json; do
             name="$(basename "$f")"
@@ -355,6 +430,10 @@ jobs:
             # under these — the flake's evidence rides the same artifact.
             hosts/ios/artifacts/boot-carrier-dsh.attempt1/
             hosts/ios/artifacts/boot-carrier-carrier.attempt1/
+            # The page-open pin's boot window + receipt (#691): the corpus is
+            # the verdict's evidence — a red pin names the failing lines from
+            # it, a green one carries the receipt with the asserted facts.
+            hosts/ios/artifacts/page-open/
             hosts/ios/artifacts/gateway/
             # The JUnit XMLs rode along inside the dirs above already; naming
             # them keeps the annotation contract explicit rather than incidental.
