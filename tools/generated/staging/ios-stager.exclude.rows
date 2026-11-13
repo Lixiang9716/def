@@ -41,16 +41,19 @@ shims_util_types_js
 shims_os_js
 shims_process_js
 shims_dsh_session_persistence_js
-# The device-plane / ble / mcp / plugin-manager-tools system plugins: the
-# first two ride the spine TREES whole-dir mirrors (system-plugins/
-# dsh-device-plane, dsh-ble); the mcp + plugin-manager-tools accessors serve
-# no iOS staging today (their drives live on the other hosts).
+# The device-plane / ble / plugin-manager-tools system plugins: they ride the
+# spine TREES whole-dir mirrors (system-plugins/dsh-device-plane, dsh-ble,
+# dsh-plugin-manager-tools), so their accessors' bytes reach the device
+# another way. The dsh-mcp trio does NOT: #780 mounted the plugin from the
+# def bundle (load: import('system-plugins/dsh-mcp/index.js')) on EVERY spine
+# boot, so the staged tree must carry the files — these rows left the
+# exclude in #691 (the stale "their drives live on the other hosts" decision
+# silently killed every interactive iOS boot after #780: the mount died
+# `cannot load module 'system-plugins/dsh-mcp/index.js'`, invisible in the
+# release log regime, and the page-open pin caught it).
 plugin_device_plane_manifest
 plugin_device_plane_js
 plugin_ble_manifest
 plugin_ble_js
-plugin_mcp_manifest
-plugin_mcp_js
-plugin_mcp_present_js
 plugin_manager_tools_manifest
 plugin_manager_tools_js
