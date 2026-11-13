@@ -23,12 +23,26 @@
  *   are the DECLARED source, in block order (the C arrays and the tree
  *   walk consume that order — a reorder would churn the committed
  *   Generated sources), and the .py blocks are machine-materialized:
- *     ios-RESOURCES.rows   `<suffix>=<rel>` (`repo:` prefix = REPO root)
+ *     ios-RESOURCES.rows   `<suffix>=<rel>` (`repo:` prefix = REPO root,
+ *                          ` -> <dest>` tail = explicit bundle destination)
  *     ios-TREES.rows       `<bundle-rel>=<source-rel>` (DSH-rooted)
  *   Both carry `#` comments (the block prose moved here with the rows).
  *   Coverage (a graph row no RESOURCES row names and no TREES mirror
  *   covers) stays with check-staging's ios surface, blocking in the DAG
  *   ahead of this gate.
+ *
+ * ios BundleStager — the per-file staging table in
+ *   hosts/ios/App/Source/BundleStager.swift (the LAST hand staging list,
+ *   #667). The table DERIVES: every RESOURCES row the hand-owned
+ *   ios-stager.exclude.rows does not claim joins as a (destination,
+ *   accessor) row — default-include, so a new embedded resource stages
+ *   without a stager edit and the forgotten-write class (fs-durable.js,
+ *   strike four) cannot recur. Destinations derive mechanically
+ *   (stageDest) from the source rel; the two agent-presets preset rows
+ *   carry explicit ` -> dest` tails (their DSH-rooted mirror stages INTO
+ *   the vendored package). Spliced between `dsh:stager-rows:begin/end`
+ *   markers in the committed Swift, canonical dest-sorted order (the
+ *   sorted table is THE table).
  *
  * check(dir) — the committed rows files, the host blocks and the
  *   derivation must agree exactly; declared rows must exist on disk; any
@@ -291,15 +305,21 @@ const resourcesBody = (rows) => rows.map((r) => `    (${pyStr(r.suffix)}, ${pyPa
 const treesBody = (rows) => rows.map((r) => `    (${pyStr(r.bundle)}, ${pyPath('DSH', r.source)}),`);
 
 /** The declared ios rows files: RESOURCES `<suffix>=<rel>` (repo: marks a
- * REPO-rooted row), TREES `<bundle>=<source>`; `#` comments ride along. */
+ * REPO-rooted row; an optional ` -> <dest>` tail names the BUNDLE destination
+ * the stager writes the bytes at when it differs from the source rel),
+ * TREES `<bundle>=<source>`; `#` comments ride along. */
 function declaredResources(dir) {
   return declared(dir, 'ios-RESOURCES.rows', 'author it (this '
     + 'consolidation\'s one-time transcription of the committed table)').map((t) => {
     const at = t.indexOf('=');
     if (at < 0) fail(`ios-RESOURCES.rows row lacks suffix=rel: ${t}`);
-    const rel = t.slice(at + 1);
-    const repo = rel.startsWith('repo:');
-    return { suffix: t.slice(0, at), root: repo ? 'REPO' : 'DSH', rel: repo ? rel.slice(5) : rel };
+    const rest = t.slice(at + 1);
+    const arrow = rest.indexOf(' -> ');
+    const src = arrow < 0 ? rest : rest.slice(0, arrow);
+    const dest = arrow < 0 ? null : rest.slice(arrow + 4);
+    const repo = src.startsWith('repo:');
+    return { suffix: t.slice(0, at), root: repo ? 'REPO' : 'DSH', rel: repo ? src.slice(5) : src,
+      dest: dest || null };
   });
 }
 
@@ -367,4 +387,101 @@ export function iosEmit(dir) {
       + 'blocks materialized from the declared rows');
   }
   return did;
+}
+
+// --- ios BundleStager (the per-file staging table) ---------------------------
+
+const IOS_STAGER = 'hosts/ios/App/Source/BundleStager.swift';
+const IOS_STAGER_EXCLUDE = 'ios-stager.exclude.rows';
+const STAGER_BEGIN = '// dsh:stager-rows:begin';
+const STAGER_END = '// dsh:stager-rows:end';
+
+/** The bundle destination a row's bytes stage at, from its SOURCE rel: an
+ * explicit ` -> dest` tail on the row wins (the agent-presets preset tables —
+ * their DSH-rooted mirror stages INTO the vendored package), the relocated
+ * vendored closure remaps external/ → vendor/, the presentation web clients
+ * remap to their bundle-root names (webclient, webclient-mini), and every
+ * other row stages at the rel itself (repo: rows at the stripped rel — the
+ * reviewed repo layout IS the bundle layout). */
+function stageDest(row) {
+  const remap = (prefix, head) => row.rel.startsWith(prefix)
+    ? head + row.rel.slice(prefix.length) : null;
+  return row.dest
+    ?? remap('../../external/', 'vendor/')
+    ?? remap('presentation/web-client-mini/', 'webclient-mini/')
+    ?? remap('presentation/web-client/', 'webclient/')
+    ?? row.rel;
+}
+
+/** The stager's derived (destination, accessor) table: every declared
+ * RESOURCES row the exclude list does not claim, destinations derived
+ * (stageDest), in CANONICAL dest-sorted order — the sorted table is THE
+ * table, on disk and in the spliced Swift alike. An exclude row the store
+ * does not have is structural drift, not silence; so is a destination two
+ * rows derive to. */
+function stagerTable(dir) {
+  const rows = declaredResources(dir);
+  const excluded = declared(dir, IOS_STAGER_EXCLUDE, 'author it (the RESOURCES '
+    + 'rows the stager deliberately does not stage — drive-eval accessors, '
+    + 'spine-tree mirrors)');
+  const unknown = excluded.filter((s) => !rows.some((r) => r.suffix === s));
+  if (unknown.length) {
+    fail(`${IOS_STAGER_EXCLUDE} names rows the store does not have: ${unknown.join(', ')}`);
+  }
+  const excl = new Set(excluded);
+  const table = rows.filter((r) => !excl.has(r.suffix))
+    .map((r) => ({ dest: stageDest(r), accessor: `dsh_runtime_res_${r.suffix}` }))
+    .sort((a, b) => (a.dest < b.dest ? -1 : a.dest > b.dest ? 1 : 0));
+  const dupes = table.filter((r, i) => i && table[i - 1].dest === r.dest).map((r) => r.dest);
+  if (dupes.length) {
+    fail(`the staging table derives two rows per destination: ${[...new Set(dupes)].join(', ')}`);
+  }
+  return table;
+}
+
+/** Swift string literal (staging paths are plain; escape the two breakers
+ * anyway). */
+const swiftStr = (s) => `"${s.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
+
+/** The generated Swift block between the stager markers: the StagedRow table
+ * stage()'s loop walks. One row per line, dest-sorted; the marker lines carry
+ * the enum-body indent. */
+function stagerBlock(table) {
+  return [
+    `    ${STAGER_BEGIN} — generated by tools/gen-staging-emit.mjs from`,
+    '    // tools/generated/staging/ios-RESOURCES.rows minus ios-stager.exclude.rows:',
+    '    // every RESOURCES row the stager stages, as (destination, accessor) pairs.',
+    '    // Do not edit — run `node tools/gen-staging-emit.mjs --emit tools/generated/staging`.',
+    '    private static let stagedRows: [StagedRow] = [',
+    ...table.map((r) => `        StagedRow(dest: ${swiftStr(r.dest)}, accessor: ${r.accessor}),`),
+    '    ]',
+    `    ${STAGER_END}`,
+  ].join('\n');
+}
+
+/** --check half: the committed BundleStager block between the stager markers
+ * must equal the rendered table exactly (a hand-edited row is drift the next
+ * emit re-orders once — the rows store is the only staging decision). */
+export function iosStagerCheck(dir) {
+  const src = readFileSync(join(REPO, IOS_STAGER), 'utf8');
+  const begin = src.indexOf(STAGER_BEGIN);
+  const end = begin < 0 ? -1 : src.indexOf(STAGER_END, begin);
+  if (begin < 0 || end < 0) {
+    fail(`the ${STAGER_BEGIN}/${STAGER_END} markers not found in ${IOS_STAGER}`);
+  }
+  const start = src.lastIndexOf('\n', begin) + 1;
+  const stop = src.indexOf('\n', end) < 0 ? src.length : src.indexOf('\n', end);
+  const want = stagerBlock(stagerTable(dir));
+  const committed = src.slice(start, stop);
+  return { drift: committed === want ? [] : [`${IOS_STAGER} stager-rows block drifted from the rows store`],
+    src, start, stop, want };
+}
+
+/** --emit half: splice the rendered table in place (never the reverse — the
+ * rows store is the hand-owned source). */
+export function iosStagerEmit(dir) {
+  const { drift, src, start, stop, want } = iosStagerCheck(dir);
+  if (!drift.length) return [];
+  writeFileSync(join(REPO, IOS_STAGER), src.slice(0, start) + want + src.slice(stop), 'utf8');
+  return [`ios BundleStager staging table spliced (${stagerTable(dir).length} rows)`];
 }

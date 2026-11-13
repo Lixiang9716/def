@@ -1,0 +1,22 @@
+{
+  "title": "issue #667 seat B: the BundleStager per-file rows become generator-spliced (the last hand staging list retires)",
+  "created": "2026-11-13T16:22:13+00:00",
+  "rules": {
+    "hash": "10ad25d327c4e7844ac6429d411ce7acb5b34e07afa2bdb0e40b6496aa4e302a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "07392ba878fb4a0d8ebc29545809365171470bb77b878de788ee79e21b7a1127"
+    }
+  },
+  "checklist": [
+    "[x] enumerate every BundleStager try write( (accessor, dest) row and confirm rows-store coverage",
+    "[x] gen-staging-emit-hosts.mjs: iOS BundleStager leg derives the (accessor, destRel) table from the rows store and splices BundleStager.swift between dsh:stager-rows markers (--check fails on drift, --emit heals)",
+    "[x] BundleStager.swift iterates the generated table; TREES/webclient trees + Documents spec lift stay programmatic",
+    "[x] compile proof: sh hosts/ios/gen.sh + xcodebuild build -scheme DSHHost (generic/platform=iOS Simulator) exit 0",
+    "[x] gates green: staging-generated --check, staging-check --block harmony,android,ios, closures, gov run",
+    "PR created, gates check green, squash merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0303"
+}

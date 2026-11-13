@@ -25,6 +25,11 @@
  *                                     — the embedder's declared accession
  *                                       table + mirror roots (the py blocks
  *                                       materialize from them)
+ *   ios-stager.exclude.rows           — the RESOURCES rows the BundleStager
+ *                                       deliberately does not stage (the
+ *                                       generated Swift table = store −
+ *                                       exclude, spliced into
+ *                                       BundleStager.swift)
  *   harmony-closure{,-spine,-shelljs}.rows
  *                                     — the vendor-official.sh copy lists:
  *                                       literal policy rows + `@walk` find-
@@ -62,10 +67,12 @@
  * Scope: all three hosts' manifests — harmony's BUNDLE_FILES (the
  * derivation covers it completely), the android stager's scenario/web-live
  * rosters (entry policy + the transitive graph half; mechanics in
- * gen-staging-emit-hosts.mjs), and the ios embedder's RESOURCES/TREES
+ * gen-staging-emit-hosts.mjs), the ios embedder's RESOURCES/TREES
  * (declared rows files; the accessor suffixes are Swift-linked policy no
  * derivation can mint, so there the rows files are the source and the py
- * blocks are materialized). The closure/pin legs
+ * blocks are materialized), and the ios BundleStager's per-file staging
+ * table (RESOURCES − exclude, spliced between the dsh:stager-rows markers —
+ * the last hand staging list retires, #667). The closure/pin legs
  * (gen-staging-emit-closure.mjs) flip the last hand-maintained copy
  * rosters: vendor-official.sh's CLOSURE/SPINE_OURS/SHELLJS_PARSER_FACES
  * blocks (find spans recomputed at emit time against the materialized pin
@@ -84,7 +91,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { walkGraph, inScope } from './check-staging-graph.mjs';
 import { buildHosts } from './check-staging-hosts.mjs';
-import { androidCheck, androidEmit, iosCheck, iosEmit } from './gen-staging-emit-hosts.mjs';
+import { androidCheck, androidEmit, iosCheck, iosEmit, iosStagerCheck, iosStagerEmit } from './gen-staging-emit-hosts.mjs';
 import { closureCheck, closureEmit } from './gen-staging-emit-closure.mjs';
 import { webCheck, webEmit } from './gen-staging-emit-web.mjs';
 
@@ -221,7 +228,7 @@ function main() {
     const ios = iosCheck(dir);
     if (ios.disk.length) fail(`the declared ios rows are structurally broken (no emit can heal them): ${ios.disk.join(' · ')}`);
     const drift = [...harmonyCheck(dir).drift, ...androidCheck(dir).drift, ...ios.drift,
-      ...closureCheck(dir).drift, ...webCheck(dir).drift];
+      ...iosStagerCheck(dir).drift, ...closureCheck(dir).drift, ...webCheck(dir).drift];
     if (drift.length) {
       console.error('gen-staging-emit: the generated manifests drifted — run'
         + ` \`node tools/gen-staging-emit.mjs --emit ${dir}\`, review, commit:`);
@@ -233,7 +240,7 @@ function main() {
       + ` derivations (harmony + android + ios + closure/pin + webclient legs) in ${dir}`);
   } else {
     for (const line of [...harmonyEmit(dir), ...androidEmit(dir), ...iosEmit(dir),
-      ...closureEmit(dir), ...webEmit(dir)]) {
+      ...iosStagerEmit(dir), ...closureEmit(dir), ...webEmit(dir)]) {
       console.log(`gen-staging-emit: ${line}`);
     }
   }

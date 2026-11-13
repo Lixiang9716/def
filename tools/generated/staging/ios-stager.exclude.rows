@@ -1,0 +1,56 @@
+# ios stager EXCLUDE — the ios-RESOURCES.rows rows the BundleStager
+# deliberately does NOT stage as files, keyed by accessor suffix (hand-owned;
+# every row here is a staging decision, reviewable in diffs). Everything else
+# in the store joins the generated BundleStager table automatically — that
+# default-include is the point: a new embedded row stages without a stager
+# edit, so the fs-durable.js strike-four class (a RESOURCES row whose staging
+# write was forgotten) cannot recur. Rows land here only when their bytes
+# reach the device another way; each group names that way. A suffix the store
+# does not have is structural drift (gen-staging-emit --check fails loud).
+# The scenario/web-live entries: their drive runtimes eval these accessors'
+# bytes directly (CarrierRuntime, SessionRuntime, CameraPlaneDrive, ...), and
+# the whole scenario/ + web-live/ dirs ride the spine TREES mirror
+# (scenario=scenario, web-live=web-live) for the graphs that import them.
+scenario_js
+scenario_m2_js
+scenario_device_plane_js
+scenario_ble_plane_js
+scenario_camera_plane_js
+scenario_mic_plane_js
+scenario_m2_session_js
+scenario_carrier_js
+scenario_m2_llm_js
+scenario_m3_fetch_install_js
+scenario_upstream_parity_js
+scenario_upstream_suite_js
+scenario_agent_flow_js
+scenario_card_player_js
+scenario_question_face_js
+scenario_create_card_js
+scenario_create_calendar_live_js
+scenario_b1_web_live_js
+scenario_b3_web_live_js
+scenario_b4_web_live_js
+scenario_session_persist_restart_web_live_js
+scenario_manager_legs_probe_js
+# The upstream/shims faces: the whole upstream/shims dir rides the spine
+# TREES mirror (upstream/shims=upstream/shims) — no Swift consumer reads
+# these accessors' C arrays.
+shims_util_js
+shims_util_types_js
+shims_os_js
+shims_process_js
+shims_dsh_session_persistence_js
+# The device-plane / ble / mcp / plugin-manager-tools system plugins: the
+# first two ride the spine TREES whole-dir mirrors (system-plugins/
+# dsh-device-plane, dsh-ble); the mcp + plugin-manager-tools accessors serve
+# no iOS staging today (their drives live on the other hosts).
+plugin_device_plane_manifest
+plugin_device_plane_js
+plugin_ble_manifest
+plugin_ble_js
+plugin_mcp_manifest
+plugin_mcp_js
+plugin_mcp_present_js
+plugin_manager_tools_manifest
+plugin_manager_tools_js
