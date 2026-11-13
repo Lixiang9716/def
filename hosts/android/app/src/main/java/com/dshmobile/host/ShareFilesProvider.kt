@@ -21,7 +21,7 @@ import java.io.File
 class ShareFilesProvider : ContentProvider() {
 
     companion object {
-        const val AUTHORITY = "com.dshmobile.host.share"
+        const val AUTHORITY = "io.github.lixiang9716.def.share"
         private val lock = Object()
         private var staged: List<File> = emptyList()
 

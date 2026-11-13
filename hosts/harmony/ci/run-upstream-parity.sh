@@ -16,7 +16,7 @@ set -eu
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT"
 
-BUNDLE=com.dshmobile.host
+BUNDLE=io.github.lixiang9716.def
 OUT=${DSH_PARITY_OUT:-hosts/harmony/artifacts/upstream-parity}
 GOLDEN="$ROOT/test/e2e/fixtures/upstream-parity-reference.jsonl"
 HAP=hosts/harmony/entry/build/default/outputs/default/entry-default-unsigned.hap

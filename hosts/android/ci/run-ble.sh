@@ -20,7 +20,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 MODE="${1:-skip}"
 SKIP_BUILD=0
 [ "${2:-}" = "--skip-build" ] && SKIP_BUILD=1
@@ -111,7 +111,7 @@ adbsh logcat -c
 launch_deadline=$(( $(date +%s) + 60 ))
 # EXTRAS is an am flag bundle ("--ez k v ...") — the split is the contract
 # shellcheck disable=SC2086 # intentional word split
-until adbsh shell am start -n "$PKG"/.MainActivity $EXTRAS >/dev/null 2>&1; do
+until adbsh shell am start -n "$PKG"/com.dshmobile.host.MainActivity $EXTRAS >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done

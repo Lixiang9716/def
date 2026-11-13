@@ -37,7 +37,7 @@
 
 ```
 hdc install <hap>                          # 安装
-hdc shell aa start -a EntryAbility -b com.dshmobile.host   # 启动
+hdc shell aa start -a EntryAbility -b io.github.lixiang9716.def   # 启动
 # 就绪轮询(60s 截止,每 5s):
 hdc shell "cat /proc/net/tcp6"             # 找应用的 LISTEN 行
 hdc fport tcp:<P> tcp:<P>                  # 端口转发
@@ -75,7 +75,7 @@ hilog | grep -E "timer|arm"                # 冷启后一次性采样
 
 ## T3 真模型回合(创作链路在 harmony 的首次运行)
 
-步骤:staging 凭证(harmony 应用数据在 `/data/app/el2/100/base/com.dshmobile.host/...`):
+步骤:staging 凭证(harmony 应用数据在 `/data/app/el2/100/base/io.github.lixiang9716.def/...`):
 
 ```
 hdc file send config.json <el2>/files/profiles/default/llm/config.json
@@ -130,7 +130,7 @@ session journal(wire 快照)出现 `turn/end completed`;或页面文本出现收
 5 次冷启循环(同 T1 协议)+ 每轮内存采样:
 
 ```
-hdc shell "hidumper --mem $(pidof com.dshmobile.host)"   # 或 ps -o RSSHLK
+hdc shell "hidumper --mem $(pidof io.github.lixiang9716.def)"   # 或 ps -o RSSHLK
 ```
 
 **预期结果**:5/5 就绪;boot 秒数零方差或小方差(记录分布);无 FAIL 累积;内存无单调增长

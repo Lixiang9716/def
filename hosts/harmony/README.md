@@ -171,7 +171,7 @@ Layout:
 
 - `build-profile.json5` / `hvigorfile.ts` / `oh-package.json5` / `hvigor/` — project level
   (hvigor 6.x, modelVersion 5.0.0, `compatibleSdkVersion: "26.0.0"`).
-- `AppScope/` — app identity (`com.dshmobile.host`).
+- `AppScope/` — app identity (`io.github.lixiang9716.def`).
 - `entry/src/main/cpp/` — the NAPI library (`libdruntime.so`): CMake compiles
   `src/dsh_runtime_host.c`, `gateway_smoke.cpp`, plus the pinned
   quickjs-ng 0.17.0 sources (`dtoa.c libregexp.c libunicode.c quickjs.c`) through
@@ -239,10 +239,10 @@ HDC="$CLT/sdk/default/openharmony/toolchains/hdc"
 "$HDC" shell power-shell wakeup            # unlock the emulator screen first
 "$HDC" shell uinput -T -m 400 1600 400 400 300
 "$HDC" shell hilog -r                      # clear, then launch
-"$HDC" shell aa start -b com.dshmobile.host -a EntryAbility
+"$HDC" shell aa start -b io.github.lixiang9716.def -a EntryAbility
 "$HDC" shell hilog -x | grep dsh.runtime     # four `dsh.runtime.verdict:` lines expected
-"$HDC" file recv /data/app/el2/100/base/com.dshmobile.host/haps/entry/cache/dsh-dsh-capture.log .
-"$HDC" file recv /data/app/el2/100/base/com.dshmobile.host/haps/entry/cache/dsh-host-capture.log .
+"$HDC" file recv /data/app/el2/100/base/io.github.lixiang9716.def/haps/entry/cache/dsh-dsh-capture.log .
+"$HDC" file recv /data/app/el2/100/base/io.github.lixiang9716.def/haps/entry/cache/dsh-host-capture.log .
 "$HDC" shell snapshot_display -f /data/local/tmp/m5-screenshot.jpeg
 "$HDC" file recv /data/local/tmp/m5-screenshot.jpeg .
 

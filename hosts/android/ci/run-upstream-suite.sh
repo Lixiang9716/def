@@ -13,7 +13,7 @@ ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 CAPTURE="$ROOT/hosts/android/ci/logcat-capture.sh"
 cd "$ROOT"
 
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
 CORPUS="$ROOT/runtime/dsh/upstream-tests"
 OUT=${DSH_SUITE_OUT:-hosts/android/artifacts/upstream-suite}
@@ -92,7 +92,7 @@ for spec in $SPECS; do
     cleanup_streamer() { "$CAPTURE" stop -f "$STREAM" >/dev/null 2>&1 || true; }
     trap cleanup_streamer EXIT INT TERM
 
-    adb shell am start -n $PKG/.MainActivity --ez dsh.suite true --es dsh.spec "$spec" >/dev/null 2>&1 \
+    adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.suite true --es dsh.spec "$spec" >/dev/null 2>&1 \
         || { cleanup_streamer; die "am start failed for $spec"; }
 
     timed_out=0

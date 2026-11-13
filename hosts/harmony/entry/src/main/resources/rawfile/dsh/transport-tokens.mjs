@@ -71,7 +71,7 @@ export const TRANSPORT_TOKENS = Object.freeze({
   uiTag: 'dsh.runtime.ui',
   auditLinePrefix: 'dsh.gateway.audit: ',
   scenarioModule: 'dsh.scenario',
-  appId: 'com.dshmobile.host',
+  appId: 'io.github.lixiang9716.def',
   callerId: 'dsh.runtime.scenario',
 });
 

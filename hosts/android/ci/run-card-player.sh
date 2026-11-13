@@ -13,7 +13,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_ANDROID_ART:-hosts/android/artifacts/card-player}"
 SCEN=test/e2e/scenarios
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
@@ -65,7 +65,7 @@ while [ -n "$(adbsh shell pidof $PKG 2>/dev/null | tr -d '[:space:]')" ]; do
 done
 adbsh logcat -c
 launch_deadline=$(( $(date +%s) + 60 ))
-until adbsh shell am start -n $PKG/.MainActivity --ez dsh.cardplayer true \
+until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.cardplayer true \
         --es dsh.script.approval approve \
         --es dsh.script.card-action button:snooze >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"

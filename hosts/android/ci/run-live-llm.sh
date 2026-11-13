@@ -22,7 +22,7 @@ set -eu
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 CAPTURE="$ROOT/hosts/android/ci/logcat-capture.sh"
 cd "$ROOT"
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
 OUT=${DSH_M2_LLM_OUT:-hosts/android/artifacts/llm-live-stream}
 STREAM=$OUT/dsh-llm-live-stream-stream.txt
@@ -85,7 +85,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.llm true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.llm true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done

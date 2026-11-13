@@ -84,7 +84,7 @@ export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetool
 export JAVA_HOME="${JAVA_HOME:-/Library/Java/JavaVirtualMachines/microsoft-17.jdk/Contents/Home}"
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$JAVA_HOME/bin:$PATH"
 IOS_BUNDLE=io.github.lixiang9716.def
-ANDROID_PKG=com.dshmobile.host
+ANDROID_PKG=io.github.lixiang9716.def
 KEEP_GOING="${DSH_MATRIX_KEEP_GOING:-0}"
 STATE="$(mktemp /tmp/dsh-matrix-state.XXXXXX)"
 OVERALL=0
@@ -552,7 +552,7 @@ android_release_leg() {
     adb_of uninstall "$ANDROID_PKG" >/dev/null 2>&1 || true
     adb_of install -r "$signed" >/dev/null 2>&1 || mx_die "install of the signed release copy failed"
     adb_of logcat -c || mx_die "logcat -c failed (the absence assertions need a clean window)"
-    adb_of shell am start -n "$ANDROID_PKG/.MainActivity" >/dev/null || mx_die "am start failed"
+    adb_of shell am start -n "${ANDROID_PKG}/com.dshmobile.host.MainActivity" >/dev/null || mx_die "am start failed"
 
     # Conditions, not clocks: pid -> a uid SELF-CONNECTION (the WebView fetched
     # the loopback carrier) -> the seat answering.
@@ -619,7 +619,7 @@ android_release_leg() {
     # The refusal (rule 5): a drive asked by extra is refused BY NAME.
     adb_of shell am force-stop "$ANDROID_PKG" >/dev/null 2>&1 || true
     adb_of logcat -c || mx_die "logcat -c failed before the refusal probe"
-    adb_of shell am start -n "$ANDROID_PKG/.MainActivity" --ez dsh.llm true >/dev/null \
+    adb_of shell am start -n "${ANDROID_PKG}/com.dshmobile.host.MainActivity" --ez dsh.llm true >/dev/null \
         || mx_die "am start with the drive extra failed to dispatch"
     deadline=$((SECONDS + 60))
     until adb_of logcat -d 2>/dev/null | grep -q "release build: refusing"; do

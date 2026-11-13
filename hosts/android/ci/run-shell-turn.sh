@@ -31,7 +31,7 @@ set -eu
 
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_SHELLTURN_OUT:-hosts/android/artifacts/shell-turn}"
 SERIAL="${DSH_ANDROID_SERIAL:-}"
 SIGNED_APK="${DSH_SHELLTURN_APK:-/tmp/dsh-shell-turn-release.apk}"
@@ -121,7 +121,7 @@ adbsh shell cat "/data/data/$PKG/files/profiles/default/llm/config.json" | grep 
 # ---- 4. launch + wait for the serving line + token ------------------------------
 adbsh shell am force-stop "$PKG" >/dev/null 2>&1 || true
 adbsh logcat -c
-adbsh shell am start -n "$PKG/.MainActivity" >/dev/null
+adbsh shell am start -n "$PKG/com.dshmobile.host.MainActivity" >/dev/null
 say "4/6 launched — polling for the serving line"
 serve_deadline=$(( $(date +%s) + 120 ))
 : > "$OUT/.serve.txt"; mkdir -p "$OUT"

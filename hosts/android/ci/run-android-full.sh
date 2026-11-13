@@ -21,7 +21,7 @@ set -eu
 
 CAPTURE="$(cd "$(dirname "$0")" && pwd)/logcat-capture.sh"
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT=${DSH_M4_OUT:-/tmp}
 SCEN=test/e2e/scenarios
 M4_STREAM=$OUT/dsh-m4-stream.txt
@@ -192,7 +192,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.m4 true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.m4 true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
@@ -282,7 +282,7 @@ cleanup_web() {
 trap cleanup_web EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.web true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.web true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
@@ -364,7 +364,7 @@ cat "$ART/verdict-android-officialweb-mount.json"
 # passed (set -eu) — the green-path emission the known-gaps register names.
 DSH_RECEIPT_HOST="$HOST_LINE" sh test/e2e/write-receipt.sh "$ART" "$SERIAL" \
     "hosts/android/ci/run-android-full.sh" "officialweb-mount" \
-    "am start -n $PKG/.MainActivity --ez dsh.web true" \
+    "am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.web true" \
     android-officialweb-mount
 say "phase 3 complete — evidence under $ART"
 fi
@@ -396,7 +396,7 @@ cleanup_session() {
 trap cleanup_session EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.session true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.session true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
@@ -447,7 +447,7 @@ node test/e2e/check.mjs --manifest $SCEN/android-session-live-read.json \
 cat "$SART/verdict-android-session-live-read.json"
 DSH_RECEIPT_HOST="$HOST_LINE" sh test/e2e/write-receipt.sh "$SART" "$SERIAL" \
     "hosts/android/ci/run-android-full.sh" "session-live-read" \
-    "am start -n $PKG/.MainActivity --ez dsh.session true" \
+    "am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.session true" \
     android-session-live-read
 say "phase 4 complete — evidence under $SART"
 fi
@@ -479,7 +479,7 @@ cleanup_write() {
 trap cleanup_write EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.write true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.write true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
@@ -530,7 +530,7 @@ node test/e2e/check.mjs --manifest $SCEN/android-composer-live-write.json \
 cat "$WART/verdict-android-composer-live-write.json"
 DSH_RECEIPT_HOST="$HOST_LINE" sh test/e2e/write-receipt.sh "$WART" "$SERIAL" \
     "hosts/android/ci/run-android-full.sh" "composer-live-write" \
-    "am start -n $PKG/.MainActivity --ez dsh.write true" \
+    "am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.write true" \
     android-composer-live-write
 say "phase 5 complete — evidence under $WART"
 fi

@@ -46,7 +46,7 @@ Steps (WSL drives hdc.exe; `hdc` below means that interop path):
 
 ```
 hdc install <hap>                          # install
-hdc shell aa start -a EntryAbility -b com.dshmobile.host   # launch
+hdc shell aa start -a EntryAbility -b io.github.lixiang9716.def   # launch
 # readiness poll (60s deadline, every 5s):
 hdc shell "cat /proc/net/tcp6"             # find the app's LISTEN row
 hdc fport tcp:<P> tcp:<P>                  # port forward
@@ -92,7 +92,7 @@ hilog | grep -E "timer|arm"                # one-time sample after cold boot
 ## T3 Real-model turn (the creation loop's first harmony run)
 
 Steps: stage the credential (harmony app data lives under
-`/data/app/el2/100/base/com.dshmobile.host/...`):
+`/data/app/el2/100/base/io.github.lixiang9716.def/...`):
 
 ```
 hdc file send config.json <el2>/files/profiles/default/llm/config.json
@@ -154,7 +154,7 @@ stack may not be challenged). **The defect line = a silent empty success**
 5 cold-boot cycles (the T1 protocol) + a memory sample per round:
 
 ```
-hdc shell "hidumper --mem $(pidof com.dshmobile.host)"   # or ps -o RSSHLK
+hdc shell "hidumper --mem $(pidof io.github.lixiang9716.def)"   # or ps -o RSSHLK
 ```
 
 **Expected results**: 5/5 ready; boot seconds zero-or-small variance

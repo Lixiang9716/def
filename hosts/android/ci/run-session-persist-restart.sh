@@ -25,7 +25,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT="${DSH_ANDROID_ART:-hosts/android/artifacts/session-persist-restart}"
 SCEN=test/e2e/scenarios/android-session-persist-restart.json
 CAPTURE=hosts/android/ci/logcat-capture.sh
@@ -108,7 +108,7 @@ trap 'cleanup_capture' EXIT INT TERM
 
 launch() {
     launch_deadline=$(( $(date +%s) + 60 ))
-    until adbsh shell am start -n $PKG/.MainActivity --ez dsh.persistrestart true >/dev/null 2>&1; do
+    until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.persistrestart true >/dev/null 2>&1; do
         [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
         sleep 2
     done

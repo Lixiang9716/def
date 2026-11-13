@@ -14,7 +14,7 @@
 set -eu
 
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 OUT=${DSH_NEXT_OUT:-hosts/android/artifacts/v2web-mount}
 SCEN=test/e2e/scenarios
 
@@ -70,7 +70,7 @@ run_leg() {
     done
 
     dline=$(( $(date +%s) + 60 ))
-    until adb shell am start -n $PKG/.MainActivity --ez "$extra" true >/dev/null 2>&1; do
+    until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez "$extra" true >/dev/null 2>&1; do
         [ "$(date +%s)" -ge "$dline" ] && die "$leg: am start kept failing within 60s"
         sleep 2
     done

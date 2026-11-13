@@ -35,7 +35,7 @@ set -eu
 
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 cd "$ROOT" || exit 1
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
 OUT="${DSH_CALENDAR_OUT:-hosts/android/artifacts/calendar-live}"
 SERIAL="${DSH_ANDROID_SERIAL:-}"
@@ -194,7 +194,7 @@ while [ -n "$(adbsh shell pidof $PKG 2>/dev/null | tr -d '[:space:]')" ]; do
 done
 adbsh logcat -c
 launch_deadline=$(( $(date +%s) + 60 ))
-until adbsh shell am start -n $PKG/.MainActivity --ez dsh.calendarlive true \
+until adbsh shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.calendarlive true \
         --es dsh.script.approval approve >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$launch_deadline" ] && die "am start kept failing within 60s"
     sleep 2

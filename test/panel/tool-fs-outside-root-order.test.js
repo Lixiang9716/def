@@ -174,14 +174,14 @@ describe('the stat face answers metadata wherever the host holds it (#259, shim-
 // suggestion) is unreachable for model input.
 describe('the model-path anchor (loop-z3, unit)', () => {
   it('passes absolute spellings through byte-identical', () => {
-    const root = '/data/user/0/com.dshmobile.host/files/profiles/default/dsh';
+    const root = '/data/user/0/io.github.lixiang9716.def/files/profiles/default/dsh';
     expect(anchorModelPath(`${root}/plugins/registry.json`, root)).toBe(`${root}/plugins/registry.json`);
     expect(anchorModelPath(`${root}/dsh/../plugins/registry.json`, root))
       .toBe(`${root}/dsh/../plugins/registry.json`);
   });
 
   it('joins relative spellings at the root verbatim (physical .., no normalization)', () => {
-    const root = '/data/user/0/com.dshmobile.host/files/profiles/default/dsh';
+    const root = '/data/user/0/io.github.lixiang9716.def/files/profiles/default/dsh';
     expect(anchorModelPath('dsh/../plugins/registry.json', root))
       .toBe(`${root}/dsh/../plugins/registry.json`);
     expect(anchorModelPath('../../etc/passwd', root)).toBe(`${root}/../../etc/passwd`);

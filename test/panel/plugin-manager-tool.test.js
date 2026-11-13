@@ -27,8 +27,8 @@ const REGISTRY_DOC = {
 };
 
 /** The device seat's geometry: workspace = <scopeRoot>/dsh. */
-const SEAT = { containerRoot: '/data/user/0/com.dshmobile.host/files/profiles/default/dsh',
-  scopeRoot: '/data/user/0/com.dshmobile.host/files/profiles/default' };
+const SEAT = { containerRoot: '/data/user/0/io.github.lixiang9716.def/files/profiles/default/dsh',
+  scopeRoot: '/data/user/0/io.github.lixiang9716.def/files/profiles/default' };
 const SEAT_REGISTRY = 'dsh/plugins/registry.json';
 
 const encode = (text) => new TextEncoder().encode(text);

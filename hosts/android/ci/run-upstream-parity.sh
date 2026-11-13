@@ -19,7 +19,7 @@ ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 CAPTURE="$ROOT/hosts/android/ci/logcat-capture.sh"
 cd "$ROOT"
 
-PKG=com.dshmobile.host
+PKG=io.github.lixiang9716.def
 APK=hosts/android/app/build/outputs/apk/debug/app-debug.apk
 OUT=${DSH_PARITY_OUT:-hosts/android/artifacts/upstream-parity}
 GOLDEN="$ROOT/test/e2e/fixtures/upstream-parity-reference.jsonl"
@@ -69,7 +69,7 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 deadline=$(( $(date +%s) + 60 ))
-until adb shell am start -n $PKG/.MainActivity --ez dsh.parity true >/dev/null 2>&1; do
+until adb shell am start -n $PKG/com.dshmobile.host.MainActivity --ez dsh.parity true >/dev/null 2>&1; do
     [ "$(date +%s)" -ge "$deadline" ] && die "am start kept failing within 60s"
     sleep 2
 done
