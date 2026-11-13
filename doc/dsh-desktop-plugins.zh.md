@@ -26,7 +26,7 @@ workspace 包**，共 298 个。
 | 工具移植 | tool-todo；自研工具行——open-design、plugin-manager（`plugin_manager`）、create（`plugin_create`）、office（OOXML 编写工具）、**mcp（`mcp_<server>_<tool>`——§4.2 客户端插件，骑 #632 传输桥；2026-11-13 落地，T-0301）**；`dsh-shell-js` 自 2026-10-11 起持有 `shell` 席位，`dsh-shell-wasm` 仅为引擎门保留 | ToolRuntime；背后是契约 fs 原语 / `wasmRun`（`dsh-shell-ish` 已随 iSH 引擎于 2026-10 退役） |
 | 技能与交互行 | 技能（dsh-skill + skill-filesystem `watch:false` + tool-skill）；命令（dsh-commands + command-feedback）；目标（dsh-goal + command-goal）；文件引用（dsh-file-reference-local） | 门控 boot 行（`options.skills/commands/goals/fileReferences`）；已接入三宿主的 serve 席位 |
 | Web 面 | dsh-web + tool-web——仅 `web_search`，走无密钥 DuckDuckGo 提供方 | `mountWebPlane` 跑在网关 `httpFetch` 上；`web_fetch` 在 fetch 提供方出现前保持关闭 |
-| MCP client（streamable-HTTP） | @modelcontextprotocol/client + core（连带 jose、eventsource、pkce-challenge） | 产品闭包锚点（`external/ensure-dsh.sh`，2026-10-20）+ `upstream/mcp-http-transport.js` 跑在网关 `httpFetch` 上；仅 CLI 证明——尚未 staged 进三宿主 bundle，也未挂为工具行；stdio 仍排除 |
+| MCP client（streamable-HTTP） | @modelcontextprotocol/client + core（连带 jose、eventsource、pkce-challenge） | 产品闭包锚点（`external/ensure-dsh.sh`，2026-10-20）+ `upstream/mcp-http-transport.js` 跑在网关 `httpFetch` 上；已 staged 进三宿主并挂为 `dsh-mcp` 工具行（`mcp_<server>_<tool>`，#780，T-0301）；stdio 仍排除 |
 | 会话持久化 | dsh-session-persistence-jsonl（逐字 vendored；桌面的 koffi/flock 原生行由 flock shim + 编译内联的 zstd 应答） | 门控 boot 行，三宿主 serve 席位均接线 `sessionPersistence: true`（#463）；逐宿主验证强制杀死后的重启恢复 |
 | 官方 web 层 | 58 包应用层 + 5 个 shell 静态模块 + 构建出的 SPA | staged 客户端 bundle 在运行时组装，由 carrier 服务 |
 | 镜像 API | api-session-controller、api-settings-controller 的行为 | 写面板（web-write.js）——真正的控制器包未挂载 |
@@ -98,9 +98,11 @@ workspace 包**，共 298 个。
   `upstream/fetch-gateway-bridge.js` 的导出）；CLI 证据
   `runtime/dsh/artifacts/macos-cli-mcp-streamable-http/`（腿
   `runtime/dsh/ci/run-mcp-streamable-http-e2e.sh`，`build.sh test core`）。
-  剩余边界：宿主闭包 staging（iOS TREES / harmony CLOSURE / android pin
-  行 + `build/build.sh sync`）与 MCP 工具行挂载是下一步——client 今日仅是
-  产品闭包/CLI 面；stdio 传输仍留在物理不可能集（见下）。
+  剩余边界：已于 2026-11-13 关闭（#780，T-0301）——`dsh-mcp` 系统插件从
+  def bundle 挂载工具（`mcp_<server>_<tool>`），harmony 把传输桥+插件三件套
+  stage 进 CLOSURE/BUNDLE_FILES，iOS 嵌入四条 RESOURCES 行，android 镜像
+  插件目录，CLI 插件腿 `runtime/dsh/ci/run-mcp-plugin-e2e.sh` 证明全链
+  （`build.sh test core`）；stdio 传输仍留在物理不可能集（见下）。
 
 ### 仍在排期
 
