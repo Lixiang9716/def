@@ -113,6 +113,15 @@ const callTool = (id, params) => {
     if (typeof args.a !== 'number' || typeof args.b !== 'number') {
       return json(200, rpcError(id, INVALID_PARAMS, 'add: arguments.a and arguments.b must be numbers'));
     }
+    // The MCP tool-error shape (isError + content, NOT a JSON-RPC error):
+    // one probe-safe trigger (0+0) the T-0269 manifest never dials — the
+    // dsh-mcp plugin's server-side error-forwarding leg drives exactly this.
+    if (args.a === 0 && args.b === 0) {
+      return json(200, rpcResult(id, {
+        isError: true,
+        content: [{ type: 'text', text: 'the mock refuses to add nothing' }],
+      }));
+    }
     return json(200, rpcResult(id, { content: [{ type: 'text', text: String(args.a + args.b) }] }));
   }
   return json(200, rpcError(id, INVALID_PARAMS, `Unknown tool: ${String(name)}`));

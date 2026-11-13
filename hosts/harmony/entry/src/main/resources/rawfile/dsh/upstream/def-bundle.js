@@ -75,6 +75,8 @@ export const defBundle = {
       load: () => import('system-plugins/dsh-shell-js/index.js') },
     { id: 'open-design',
       load: () => import('system-plugins/dsh-open-design/index.js') },
+    { id: 'mcp',
+      load: () => import('system-plugins/dsh-mcp/index.js') },
     { id: 'tool-plugin-manager',
       load: () => import('system-plugins/dsh-plugin-manager-tools/index.js') },
     { id: 'tool-plugin-create',
@@ -101,6 +103,12 @@ export const defBundle = {
       moduleName: 'system-plugins/dsh-shell-js', tool: 'jsshell' },
     { kind: 'tool', entryId: 'open-design',
       moduleName: 'system-plugins/dsh-open-design', tool: 'open_design_projects' },
+    // No inventory row for dsh-mcp (plan §4.2): its tools register DYNAMICALLY
+    // per connected server (mcp_<server>_<tool>), so the inventory mapper's
+    // exact-name `visibleTools.has(tool)` check has no stable name to test —
+    // a wildcard row would answer enabled=false forever (a lie). The plugin
+    // still mounts and serves the model; its settings-screen row lands with
+    // the server-management surface (v2).
     { kind: 'tool', entryId: 'tool-plugin-manager',
       moduleName: 'system-plugins/dsh-plugin-manager-tools', tool: 'plugin_manager' },
     { kind: 'tool', entryId: 'tool-plugin-create',

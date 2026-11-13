@@ -1,0 +1,16 @@
+{
+  "host": "darwin-cli (Darwin 27.0.0 arm64)",
+  "engine": "quickjs-ng",
+  "engineVersion": "0.17.0",
+  "upstream": "@modelcontextprotocol/client@2.0.0 + @modelcontextprotocol/core@2.0.0 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
+  "scenario": "mcp.plugin",
+  "mock": "runtime/dsh/ci/mock-mcp-server.mjs (node-side, zero-dependency Streamable HTTP MCP server on real loopback TCP; its per-request telemetry is mock-server-stdout.txt)",
+  "checker": "test/e2e/scenarios/mcp-plugin.json",
+  "events": 13,
+  "proves": [
+    "the dsh-mcp plugin mounts from the def bundle on the REAL mobile profile: the boot's own boot.js path loads the plugin row, the plugin's async apply runs to completion before bootUpstream settles, and the registered tools are visible to the REAL registry",
+    "the config face works on the env tier: DSH_MCP_SERVERS (JSON roster with a credentialRef) is read through the launch env, and the credential face round-trips through the REAL gateway keychain (set → get → identical bytes) before the connect",
+    "the connect is composition, not a fork: upstream/mcp-http-transport.js (T-0269) hands the vendored StreamableHTTPClientTransport the gateway fetch, the initialize handshake and tools/list are the library's own wire shapes, and the mock's session-id discipline holds on every post-initialize dial",
+    "listTools registers mcp_<server>_<tool> names into ctx.tools and the tool runs forward callTool through the REAL ToolRuntime dispatch (D8): echo round-trips the text, add returns the server's sum, and the server's own -32602 refusal arrives as the tool's structured {ok:false} outcome — forwarded, never thrown, never guessed"
+  ]
+}

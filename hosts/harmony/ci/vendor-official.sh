@@ -509,6 +509,9 @@ system-plugins/dsh-appshell/lib/vnode.js
 system-plugins/dsh-appshell/manifest.json
 system-plugins/dsh-create/index.js
 system-plugins/dsh-create/manifest.json
+system-plugins/dsh-mcp/index.js
+system-plugins/dsh-mcp/manifest.json
+system-plugins/dsh-mcp/present.js
 upstream/boot-compaction.js
 upstream/boot-coverage-rows.js
 upstream/boot-demand.js
@@ -525,6 +528,7 @@ upstream/llm-read-idle.js
 upstream/llm-retry-pacing.js
 upstream/llm-route.js
 upstream/llm-transport.js
+upstream/mcp-http-transport.js
 upstream/model-selection-holder.js
 upstream/model-selection-projection.js
 upstream/permission-presets-data.js
