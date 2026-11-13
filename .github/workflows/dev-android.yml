@@ -228,7 +228,7 @@ jobs:
       # AVD carries no grant state).
       - name: Run the full runner's phases 2-5 (binding + official mount + occlusion probe + live read/write)
         run: |
-          adb shell pm grant com.dshmobile.host android.permission.CAMERA 2>/dev/null \
+          adb shell pm grant io.github.lixiang9716.def android.permission.CAMERA 2>/dev/null \
             || echo "CAMERA grant skipped (already granted)"
           DSH_PHASES=2,3,4,5 DSH_WEB_ART=/tmp/dsh-full-web DSH_SESSION_ART=/tmp/dsh-full-session DSH_WRITE_ART=/tmp/dsh-full-write \
             bash hosts/android/ci/run-android-full.sh

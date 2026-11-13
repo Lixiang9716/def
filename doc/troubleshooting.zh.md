@@ -166,6 +166,37 @@ carries libswiftWebKit"），读 `xcrun simctl list -j devices` 并以点名
 拒绝路径无需启动任何东西即可断言。每个 `test/e2e/run-ios-*.sh` runner
 在自己的 boot/install 步骤之前一行调用它。
 
+## 9. cwd 被重置后跑 `build/ensure-seat.sh`，物化的是主树而不是席位
+
+2026-11-14 付了两次学费（席位 B 一次 20 分钟的冷门红往返，随后另一席再次
+撞见）。从主树切的 worktree 席位在一条前置命令把 cwd 重置回仓库根之后跑
+了 `sh build/ensure-seat.sh`，脚本心满意足地物化了主树 —— exit 0、横幅
+"DONE — primary path" —— 而席位本身还是冷的。之后席位里的每一道门都在
+判一棵无 vendor 的树，报出误导性的冷席签名（`external/` 缺失、
+bundle-files 红）。
+
+机理：`ensure-seat.sh` 的席位参数是可选的，缺省取「调用目录所在的 git
+toplevel」；从主树里跑，这个缺省就是主树，没有任何东西能区分「我是想
+物化我的席位」和「我就是想物化这里」。在脚本长出大声守卫之前，铁律是：
+永远显式传席位路径（`sh build/ensure-seat.sh ../dsh-mobile-<seat>`），
+物化完先验证席位的 vendor 树存在再判任何门。尚无代码承载该守卫 ——
+修复候选是「无席位参数且 cwd 解析到主 checkout 时告警（或硬拒绝）」。
+
+## 10. applicationId ≠ namespace 时 `am start` 的相对组件类会炸
+
+#656 改名的第一次升级矩阵腿付的学费（2026-11-14）：launch 死于 Android
+的 `Error type 3`（activity 类不存在），因为所有 runner 都在用
+`am start -n com.dshmobile.host/.MainActivity` —— 相对组件类，Android
+会拿组件包去解析。applicationId 移到 `io.github.lixiang9716.def` 而
+Kotlin namespace 仍是 `com.dshmobile.host` 之后，相对拼写会拿新包解析，
+那里并没有 `.MainActivity`。
+
+修法：每个 launch 点都把组件类命名空间写全 ——
+`am start -n io.github.lixiang9716.def/com.dshmobile.host.MainActivity`。
+#791 已在 `hosts/android/ci/*` 与 `test/e2e/*` 各 runner 落地（29 处，
+升级矩阵 launch 点有注释写明规则）；一般规律：applicationId 与 Java
+namespace 分道之后，`am start -n` 必须两侧全拼，绝不写相对类。
+
 ## 如何追加条目
 
 某个会话为新的陷阱付了学费，就在修复或记录它的同一个变更里追加到这里：
