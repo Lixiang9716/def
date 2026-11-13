@@ -21,13 +21,15 @@
 set -eu
 
 SEAT=""
+SEAT_GIVEN=0
 VERIFY=0
 for arg in "$@"; do
     case "$arg" in
         --verify) VERIFY=1 ;;
         -h|--help) echo "usage: $0 [--verify] [seat-path]"; exit 0 ;;
         *) [ -z "$SEAT" ] || { echo "ensure-seat: one seat-path at most (got '$SEAT' and '$arg')" >&2; exit 2; }
-           SEAT="$arg" ;;
+           SEAT="$arg"
+           SEAT_GIVEN=1 ;;
     esac
 done
 [ -n "$SEAT" ] || SEAT="$(pwd)"
@@ -42,6 +44,16 @@ SCRIPT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 COMMON_DIR="$(git -C "$SEAT" rev-parse --git-common-dir)"
 case "$COMMON_DIR" in /*) ;; *) COMMON_DIR="$SEAT/$COMMON_DIR" ;; esac
 PRIMARY="$(dirname "$(cd "$COMMON_DIR" && pwd)")"
+
+# The paid-for trap (troubleshooting.md entry 9): with the cwd reset to the
+# primary, the default seat IS the primary — the rsync no-ops, the script
+# exits 0, and the caller believes a worktree seat was materialized while it
+# stayed cold. Materializing the primary itself is legitimate (a fresh clone
+# uses this default), so the guard warns loudly instead of refusing.
+if [ "$SEAT_GIVEN" -eq 0 ] && [ "$SEAT" = "$PRIMARY" ]; then
+    echo "ensure-seat: WARNING — no seat-path given and cwd resolves to the PRIMARY checkout" >&2
+    echo "ensure-seat: WARNING — materializing $PRIMARY itself; if you meant a worktree seat, pass its path: sh build/ensure-seat.sh ../dsh-mobile-<seat>" >&2
+fi
 
 # The seat's own manifest when it has one (the branch carrying this script);
 # otherwise the script's own checkout — a seat on an older branch is
