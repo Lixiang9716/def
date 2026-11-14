@@ -1,4 +1,5 @@
-// dsh:logging-exempt (boot module; logging happens through the mounted logger)
+// dsh:logging-exempt (boot module; the row itself stays silent — the one
+// logging surface is surfaceFlushFailures' warn, wired through createLogger)
 /**
  * upstream/boot-session-persistence.js — the SESSION-PERSISTENCE row (the
  * resume leg): the VENDORED @deepseek-ai/dsh-session-persistence-jsonl
@@ -36,13 +37,83 @@
  * intrinsics); the desktop snapshot corpora pin 'none'.
  */
 
+/** The container root the backend's raw `node:fs` world writes under (the
+ * default journal root is `<profileCwd>/dsh/sessions` — inside the profile
+ * container, the host's unit of writability). Null when no container is
+ * pinned (nothing to arm). Pure so the panel suite can pin the decision. */
+export const backendWorkspaceRoot = (profileCwd = globalThis.__dshProfileCwd) => {
+  const container = String(profileCwd ?? '').replace(/\/+$/, '');
+  return container.startsWith('/') && container.length > 1 ? container : null;
+};
+
+/** Re-arm the fs shims' writable-workspace VFS at the profile container
+ * (#790 root-cause fix). The vendored backend's durable journal I/O rides
+ * the RAW `node:fs/promises` faces (mkdir/open/writeFile/sync/link/rm over
+ * `<root>/dsh/sessions`), which this host serves through the workspace half
+ * of the fs shims (upstream/shims/fs-workspace*.js). #762's fs seam-collapse
+ * retired that VFS from the product boot ("no product consumer remains" —
+ * the ctx.fs provider over the gateway primitives replaced fs-local) — but
+ * this gated row IS the remaining consumer: with no workspace mounted, every
+ * lease acquisition's mkdir threw "path outside the writable workspace
+ * root", flushAll rejected with the AggregateError, and both the scenario's
+ * explicit flush and the exit teardown failed. Arming here keeps the
+ * ungated boots byte-identical to the post-#762 shape (the gate is default
+ * off) while restoring the world the backend was written against; the VFS's
+ * write-through mirror is what puts the journal on the REAL container disk
+ * (the cross-restart contract the e2e legs prove). A pre-mounted workspace
+ * whose root already covers the container (the suite legs' own mount) is
+ * kept untouched; anything else is (re)pinned at the container. */
+export const armWorkspaceForBackend = async () => {
+  const container = backendWorkspaceRoot();
+  if (container === null) return false;
+  if (globalThis.__DSH_WORKSPACE_FS__?.root === container) return false;
+  const { mountWorkspace } = await import('upstream/shims/fs-workspace.js');
+  mountWorkspace(container);
+  return true;
+};
+
+/** Wrap the mounted backend's `flush` face so the per-writer causes reach
+ * the log (#790's surfacing fix): flushAll() aggregates the failing writers'
+ * errors into one AggregateError whose ONLY surviving surface was the
+ * aggregate `.message` ("session-persistence-jsonl flush failed") — the
+ * actual cause (e.g. the fs world's refusal) was invisible everywhere,
+ * diagnosis impossible. warn survives the release L4 strip. The rejection
+ * itself is rethrown unchanged — the callers' failure surfaces stay. */
+export const surfaceFlushFailures = (backend, log) => {
+  const raw = backend?.flush?.bind(backend);
+  if (typeof raw !== 'function') return backend;
+  backend.flush = async (...args) => {
+    try {
+      return await raw(...args);
+    } catch (error) {
+      const causes = Array.isArray(error?.errors) && error.errors.length > 0 ? error.errors : [error];
+      for (const cause of causes) {
+        log.warn('session-persistence flush failed', {
+          backend: backend.name,
+          cause: cause?.message ?? String(cause),
+          code: cause?.code,
+          stack: cause?.stack,
+        });
+      }
+      throw error;
+    }
+  };
+  return backend;
+};
+
 /** Mount the JSONL backend with the caller's (or defaulted) config. */
 export const mountSessionPersistence = async (ctx, config) => {
+  await armWorkspaceForBackend();
   const Backend = (await import('@deepseek-ai/dsh-session-persistence-jsonl')).default;
   await ctx.plugin(Backend, {
     root: config.root ?? `${globalThis.__dshProfileCwd}/dsh/sessions`,
     ...(config.compression === undefined ? {} : { compression: config.compression }),
   });
+  // The one logging surface of this row (see surfaceFlushFailures): the
+  // dynamic import keeps the module graph free — the panel suite imports
+  // this file directly under plain node.
+  const { createLogger } = await import('logger.js');
+  surfaceFlushFailures(ctx.get('sessionPersistence'), createLogger('dsh.session-persistence'));
   installDiskFullSentinel(ctx);
   // The real-fs write path (#571's root cure, gated): when armed, the
   // journal's real-disk copy is republished ATOMICALLY at every turn

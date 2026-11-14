@@ -1,7 +1,8 @@
 {
   "scenario": "resource.starvation",
   "extract": {
-    "prefix": "dsh.runtime.log:"
+    "prefix": "dsh.runtime.log:",
+    "skip": ["heap.starve.begin", "heap.starve.oom", "heap.starve.verdict"]
   },
   "expect": [
     {

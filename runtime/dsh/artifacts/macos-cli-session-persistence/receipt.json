@@ -1,7 +1,7 @@
 {
   "host": "darwin-cli (Darwin 27.0.0 arm64)",
   "engine": "quickjs-ng",
-  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by runtime/dsh/vendor/ensure-dsh.sh)",
+  "upstream": "@deepseek-ai/dsh-session-persistence-jsonl@0.1.6-alpha.2 (vendored verbatim, tgz sha256-pinned by external/ensure-dsh.sh)",
   "scenario": "session.persistence",
   "proves": [
     "the gated boot row (options.sessionPersistence, default off) mounts the vendored JSONL backend under the sessionPersistence service key before the agent loop",
@@ -10,8 +10,8 @@
     "process 2 on the SAME container: the config-driven start RESUMES the stored session — the restored seed carries turn 1 and its assistant message, no 'cannot resume' error anywhere",
     "the second mock turn CONTINUES the journal across the restart: turn/start 1 and 2 in one log, turnBoundary.lastTurn == 2"
   ],
-  "events": { "create": 11, "resume": 11 },
-  "artifactSample": "0 /tmp/dsh-session-persist.O5TVB5/dsh/sessions/--tmp-dsh-session-persist.O5TVB5--/s-persist-0001/session.lock",
-  "container": "/tmp/dsh-session-persist.O5TVB5",
+  "events": { "create": 12, "resume": 12 },
+  "artifactSample": "0 /tmp/dsh-session-persist.AmTHRS/dsh/sessions/--tmp-dsh-session-persist.AmTHRS--/s-persist-0001/session.lock",
+  "container": "/tmp/dsh-session-persist.AmTHRS",
   "exitCode": 0
 }

@@ -1,22 +1,26 @@
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"main begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.mcp","message":"no MCP server configured; no mcp_* tools are offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/tmp/dsh-midturn.NOkU1u"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
@@ -29,7 +33,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/booted","leg":"kill","containerRoot":"/tmp/dsh-midturn.B62XMy"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/booted","leg":"kill","containerRoot":"/tmp/dsh-midturn.NOkU1u"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"kill leg begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait configured begin","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/service","name":"session-persistence-jsonl","key":"sessionPersistence"}]}
@@ -45,7 +49,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:54408/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61347/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
@@ -71,26 +75,30 @@ dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:13","buffered":0}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"midturn/durable","sizeBytes":9713,"streamOpen":true}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"midturn/durable","sizeBytes":13126,"streamOpen":true}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"main begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.mcp","message":"no MCP server configured; no mcp_* tools are offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/tmp/dsh-midturn.NOkU1u"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
@@ -104,7 +112,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-e
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/booted","leg":"resume","containerRoot":"/tmp/dsh-midturn.B62XMy"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/booted","leg":"resume","containerRoot":"/tmp/dsh-midturn.NOkU1u"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"resume leg begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"wait configured begin","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"persistence/service","name":"session-persistence-jsonl","key":"sessionPersistence"}]}
@@ -117,7 +125,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:54408/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61347/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
@@ -187,7 +195,7 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"midturn/continued","restoredEvents":11,"appended":9,"totalEvents":20,"lastTurn":2}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"midturn/artifact","sizeBytes":19224,"events":20}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"midturn/artifact","sizeBytes":26053,"events":20}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.persistence.midturn","event":"upstream/completed","status":"pass","leg":"resume","backend":"vendored session-persistence-jsonl"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":10}]}
