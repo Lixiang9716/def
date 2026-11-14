@@ -135,5 +135,6 @@ jobs:
         # the gateway fixtures had drifted behind their manifests for weeks
         # because this self-test was manually-runnable only; it now runs on
         # every PR. Pure synthetic fixtures: no vendored closure, no
-        # simulator, node + python3 + bash only.
-        run: sh test/e2e/selftest.sh
+        # simulator, node + python3 + bash only. bash, never sh — the script
+        # is `#!/usr/bin/env bash` (`BASH_SOURCE`, pipefail; #301's dash trap).
+        run: bash test/e2e/selftest.sh
