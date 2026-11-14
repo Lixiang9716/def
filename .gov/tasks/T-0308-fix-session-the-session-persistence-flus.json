@@ -1,0 +1,22 @@
+{
+  "title": "fix(session): the session-persistence flush fails on main \u2014 #790 root cause + row-15 tail",
+  "created": "2026-11-14T05:30:42+00:00",
+  "rules": {
+    "hash": "10ad25d327c4e7844ac6429d411ce7acb5b34e07afa2bdb0e40b6496aa4e302a",
+    "files": {
+      ".gov/rules.md": "fee05360fdafcd6272964a3a51a19a2c28a55e3a633743bbeac15e54298e11eb",
+      "gates.json": "07392ba878fb4a0d8ebc29545809365171470bb77b878de788ee79e21b7a1127"
+    }
+  },
+  "checklist": [
+    "Root cause named to the line and fixed in our glue layer (vendored bytes untouched, D6)",
+    "CLI leg green: run-session-persistence-e2e.sh exits 0 with a refreshed receipt.json",
+    "Restart family legs green: midturn + multi-stress e2e (manifest drift surfaced by the fix corrected)",
+    "Android emulator row-15: run-upgrade-matrix.sh receipt refreshed (or honest blocker reported)",
+    "Panel suite green including the new flush-surface unit pin",
+    "gov run green; PR opened, gates check green, squash-merged"
+  ],
+  "status": "open",
+  "receipt": null,
+  "id": "T-0308"
+}

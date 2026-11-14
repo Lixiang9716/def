@@ -1,22 +1,27 @@
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"main begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+{"audit":"fsScope.resolve","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.mcp","message":"no MCP server configured; no mcp_* tools are offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/tmp/dsh-multistress.cB6FZ9"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
@@ -28,8 +33,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot ro
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+{"audit":"fsRead","outcome":"io"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/booted","leg":"drive","containerRoot":"/tmp/dsh-multistress.qkJMx4"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/booted","leg":"drive","containerRoot":"/tmp/dsh-multistress.cB6FZ9"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"drive leg begin","data":[]}
 dsh.runtime.log: {"level":"warn","module":"cordis:agent-presets","message":"agent \"s-stress-beta\" was published without joining an agent preset; its tools, prompt sections, and skill catalog resolve against the empty global layer (join through AgentPresets.mount() or composeFrom() in the agent factory setup)","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/created","sessionId":"s-stress-beta"}]}
@@ -59,40 +65,62 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:24","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -152,10 +180,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":24}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:29","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -215,10 +248,15 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":29}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:34","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -288,11 +326,11 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"warn","module":"cordis:agent-presets","message":"agent \"s-stress-delta\" was published without joining an agent preset; its tools, prompt sections, and skill catalog resolve against the empty global layer (join through AgentPresets.mount() or composeFrom() in the agent factory setup)","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/created","sessionId":"s-stress-delta"}]}
@@ -307,83 +345,182 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":34}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:133","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -443,7 +580,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":133}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:135","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -503,15 +642,26 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":135}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:146","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -577,77 +727,228 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":146}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:297","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":804}]}
@@ -672,34 +973,119 @@ dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"end"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"todo_write","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"step budget check","data":[{"tool":"todo_write","stepCount":0,"STEP_BUDGET":150}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline armed","data":[{"tool":"todo_write","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"todo_write","budgetMs":120000}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"tool deadline disarmed (done)","data":[{"tool":"todo_write","budget":120000}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":297}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:381","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -759,25 +1145,80 @@ dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":381}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":35}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":34}]}
@@ -813,40 +1254,66 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:462","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -906,7 +1373,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":462}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:464","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -966,7 +1435,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":464}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:466","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -1026,7 +1497,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":466}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:468","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -1089,116 +1562,313 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/durable","sessions":4,"artifacts":["s-stress-alpha","s-stress-beta","s-stress-delta","s-stress-gamma"]}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-alpha","turns":3,"toolRounds":0,"events":27,"lastTurn":3,"sizeBytes":10957}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-beta","turns":3,"toolRounds":0,"events":27,"lastTurn":3,"sizeBytes":10916}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-gamma","turns":3,"toolRounds":1,"events":33,"lastTurn":3,"sizeBytes":11416}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-delta","turns":2,"toolRounds":0,"events":19,"lastTurn":2,"sizeBytes":10688}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-alpha","turns":3,"toolRounds":0,"events":27,"lastTurn":3,"sizeBytes":14393}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-beta","turns":3,"toolRounds":0,"events":27,"lastTurn":3,"sizeBytes":14349}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-gamma","turns":3,"toolRounds":1,"events":33,"lastTurn":3,"sizeBytes":14833}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/session.summary","sessionId":"s-stress-delta","turns":2,"toolRounds":0,"events":19,"lastTurn":2,"sizeBytes":14112}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"upstream/completed","status":"pass","leg":"drive","sessions":4,"turns":11,"backend":"vendored session-persistence-jsonl"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":468}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
 rt: PASS (complete=1 pass=1)
-dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"main begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"boot phase begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsScope.resolve"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":30}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm/runtime","provider":"mock","model":"mock-1","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
+{"audit":"fsScope.resolve","outcome":"ok"}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm.producer.bound","id":"mock:loopback","face":"llm","kind":"mock","provider":"mock","model":"mock-1","userEndpoint":false,"reason":"no-credential-fallback"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"llm/runtime","provider":"mock","model":"mock-1","kind":"mock","reason":"no-credential-fallback","service":"vendored @deepseek-ai/dsh-llm LlmRuntime (adapter registry)","transport":"gateway httpFetch → loopback chat-completions mock server","userAgent":"deepseek-harness/0.1.6-alpha.2 (+https://github.com/deepseek-ai/deepseek-harness)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"upstream/profile","profile":"mobile","root":"empty (patch layers compose over it)","upstream":"0.1.6-alpha.2 (vendored verbatim, sha256-pinned)","layers":["session","agent","system-prompt","tools","session-projection","settings","agent-loop"]}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.tool-deadline","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.tool-deadline","message":"tool deadline mounted","data":[{"budgetMs":120000}]}
-dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":22}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.shell.js.parser","message":"lexical resolve","data":[{"fromDir":"system-plugins/dsh-shell-js","request":"../../vendor"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.shell.js","message":"dsh-shell-js tools registered","data":[{"applets":23}]}
 dsh.runtime.log: {"level":"info","module":"dsh.openDesign","message":"no Open Design daemon configured; the open_design tools are not offered","data":[]}
+dsh.runtime.log: {"level":"info","module":"dsh.mcp","message":"no MCP server configured; no mcp_* tools are offered","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.pluginManagerTools","message":"plugin_manager registered","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.create","message":"plugin_create registered (spine captured)","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.word","message":"word tools registering","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.office.excel","message":"excel tools registering","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.office","message":"office tools registered","data":[{"count":8}]}
+dsh.runtime.log: {"level":"info","module":"dsh.appshell","message":{"event":"appshell.mode","mode":"real"},"data":[]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"mountWebPlane","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"createKeylessSearchProvider","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"web.searchKeyless","message":"resolveSearchConfig","data":[{"declared":false}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.fs.cordis","message":"construct","data":[{"cwd":"/tmp/dsh-multistress.cB6FZ9"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"budget parse","data":[{}]}
 dsh.runtime.log: {"level":"info","module":"dsh.turn-watchdog","message":"turn watchdog mounted","data":[{"budgetMs":300000,"feeds":["session/event","agent/status","agent/assistant-stream"],"assistantStreamFeed":"semantic-only (text/tool-call frames; reasoning & markers excluded)"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.retry-telemetry","message":"llm retry telemetry mounted","data":[{"on":"session/event llm/retry → one release-visible warn per scheduled attempt"}]}
@@ -1211,8 +1881,9 @@ dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"boot ro
 dsh.runtime.log: {"level":"debug","module":"dsh.plugin-mount","message":"mount-enabled-registry begin","data":[{}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"fsRead","data":[{"scope":"app","path":"dsh.plugins/1/registry.json"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"fsRead"}]}
+{"audit":"fsRead","outcome":"io"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway error","data":[{"code":"io","primitive":"fsRead"}]}
-dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/booted","leg":"recover","containerRoot":"/tmp/dsh-multistress.qkJMx4"}]}
+dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/booted","leg":"recover","containerRoot":"/tmp/dsh-multistress.cB6FZ9"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"recover leg begin","data":[]}
 dsh.runtime.log: {"level":"debug","module":"dsh.scenario","message":"recover seeds begin","data":[]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"session.multi.stress","event":"stress/resumed","sessionId":"s-stress-alpha","restoredEvents":28,"turns":3,"tail":"session/end-seed"}]}
@@ -1231,13 +1902,21 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:10","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -1302,36 +1981,70 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":10}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:44","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -1396,36 +2109,90 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":44}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:98","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":167}]}
@@ -1490,36 +2257,90 @@ dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.turn-watchdog","message":"stream frame classify","data":[{"frameType":"start"}]}
-dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:53722/chat/completions","method":"POST"}]}
+dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"httpFetch","data":[{"url":"http://127.0.0.1:61848/chat/completions","method":"POST"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"httpFetch"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":32}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":98}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"httpFetch","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerSchedule"}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body chunk wait","data":[{"bodyId":"body:152","buffered":0}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":168}]}
@@ -1584,23 +2405,92 @@ dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway event","data":[{"chars":33}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"body stream event","data":[{"event":"http.end","bodyId":152}]}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"stream wake","data":[]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
 dsh.runtime.log: {"level":"debug","module":"dsh.gateway","message":"gateway call","data":[{"name":"timerCancel"}]}
+{"audit":"timerSchedule","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
+{"audit":"timerCancel","outcome":"ok"}
 rt: PASS (complete=1 pass=1)

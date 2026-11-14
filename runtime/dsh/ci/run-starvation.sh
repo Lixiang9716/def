@@ -44,6 +44,13 @@ case "$ART" in
     /tmp/*) echo "run-starvation: --art-dir must not be under /tmp (evidence lives with the repo)" >&2; exit 2 ;;
 esac
 case "$ART" in /*) ;; *) ART="$PWD/$ART" ;; esac
+# Evidence hygiene (#790 seat): the one-to-one checker verifies ONE run's
+# stream, but the per-leg greps APPEND to scenario.jsonl — a committed
+# previous run's lines prefix the stream and desync the match (a re-run
+# failed against its own stale prefix while the leg itself passed). Each
+# run owns its evidence: truncate at start, like the family's other
+# runners overwrite their logs.
+: > "$ART/scenario.jsonl"
 
 echo "== 1 build + mock =="
 sh ../../external/ensure.sh > /dev/null
