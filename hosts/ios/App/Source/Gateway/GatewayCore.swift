@@ -465,11 +465,33 @@ final class GatewayCore {
         return formatter.string(from: date)
     }
 
+    /// The last automation marker this process emitted, for the #806 parked-leg
+    /// name: a watchdog that fires mid-scenario can now say WHICH wait was
+    /// open — or that none ever landed (the park is before any UI surface).
+    /// Diagnostics only: never read by the checkers, never part of the frozen
+    /// ui-wait/ui-done vocabulary.
+    private static let markerLock = NSLock()
+    private static var lastUiMarker: String?
+
     /// stdout automation marker (NOT the canonical stream) for the E2E
     /// driver: "rt: ui-wait <name>" before an automatable surface,
     /// "rt: ui-done <name>" once it resolves.
     static func uiMarker(_ name: String, _ phase: String) {
+        markerLock.lock()
+        lastUiMarker = "\(name)/\(phase)"
+        markerLock.unlock()
         print("rt: ui-\(phase) \(name)")
         fflush(stdout)
+    }
+
+    /// The watchdog's parked-leg suffix: " (last ui marker: picker/wait)" when
+    /// a marker was seen, " (no ui marker seen — parked before any UI surface)"
+    /// when the park predates every marker.
+    static func lastUiMarkerNote() -> String {
+        markerLock.lock()
+        let note = lastUiMarker.map { " (last ui marker: \($0))" }
+            ?? " (no ui marker seen — parked before any UI surface)"
+        markerLock.unlock()
+        return note
     }
 }

@@ -6,6 +6,13 @@
 数据来自已提交的 artifacts 目录。由
 [test/e2e/matrix.mjs](../test/e2e/matrix.mjs) 机器校验。
 
+> **时效性**：2026-11-14（#806）——iOS m2 gateway 行自 #666 以来首次真跑
+> 复绿：#655/#656 身份改名后，电池的 picker walk 一直盯着改名前的 app 瓦片
+> 标签（"DSH Dsh"），场景在 `ui-wait picker` 等到 watchdog。walk 现在跟
+> `def` 瓦片；`hosts/ios/artifacts/gateway` 以绿跑刷新（gateway.binding
+> 26/26、gateway.audit 24/24——该行旧的 16/16 + 19/19 计数在本次刷新之前
+> 就已落后于已提交 receipt，即已知的 #633 类）。
+>
 > **时效性**：2026-10-21（#633）——下面三张表从 `node test/e2e/matrix.mjs
 > --out`（机器清单）再生，清掉本页积欠的文档漂移：24 行清单仍指向 #402 改名
 > 前的 `runtime/spike/artifacts/` 路径（2026-10-07 起树改为 `runtime/dsh/`），
@@ -500,7 +507,7 @@ repeat 匹配，`logged` 是 capture 的记录条数而非匹配条数。
 | `hosts/ios/artifacts/composer-live-write` | iOS | composer.live-write 46/46 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/create-card` | iOS | create.card 12/12 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/device-plane` | iOS | device.plane 16/16, device.plane.audit 14/23 | ✓ | ✓ | ✓ | 6 |
-| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 7 |
+| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 24/24, gateway.binding 26/26 | ✓ | ✓ | ✓ | 6 |
 | `hosts/ios/artifacts/install-full-cycle` | iOS | install.carrier-evidence 11/11, install.from-http 46/46 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/ios-live-test/A-ui/nextweb-mount` | iOS | nextweb.mount 25/25 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/ios-live-test/A-ui/whale-mount` | iOS | session.mock-llm 23/23, whale.mount 7/7 | ✓ | ✓ | ✓ | 3 |

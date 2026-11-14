@@ -291,6 +291,7 @@ final class GatewaySession {
                 guard let self, !self.finished else { return }
                 let message = "gateway watchdog: scenario did not complete in "
                     + "\(Self.watchdogSeconds)s"
+                    + GatewayCore.lastUiMarkerNote()
                 self.finish(self.failOutcome(message))
             }
         }

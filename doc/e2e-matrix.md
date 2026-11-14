@@ -6,6 +6,15 @@ Consolidated acceptance evidence for every E2E claim across the four hosts
 (iOS, Android, HarmonyOS, macOS CLI), built from the committed artifacts
 dirs. Machine-checked by [test/e2e/matrix.mjs](../test/e2e/matrix.mjs).
 
+> **Currency**: 2026-11-14 (#806) — the iOS m2 gateway row is re-proven live
+> for the first time since #666: the battery's picker walk had been stuck on
+> the pre-rename app-tile label ("DSH Dsh") since the #655/#656 identity
+> rename, and the scenario parked at `ui-wait picker` until the watchdog.
+> The walk follows the `def` tile now; `hosts/ios/artifacts/gateway` is
+> refreshed from the green run (gateway.binding 26/26, gateway.audit 24/24 —
+> the row's old 16/16 + 19/19 counts were stale against the committed
+> receipt even before this refresh, the known #633 class).
+
 > **Currency**: 2026-10-21 (#633) — the three tables below are regenerated
 > from `node test/e2e/matrix.mjs --out` (the machine inventory), closing the
 > doc-drift class this page had accrued: 24 inventory rows still pointed at
@@ -595,7 +604,7 @@ present. `shots` = PNG count (all magic-verified except where noted).
 | `hosts/ios/artifacts/composer-live-write` | iOS | composer.live-write 46/46 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/create-card` | iOS | create.card 12/12 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/device-plane` | iOS | device.plane 16/16, device.plane.audit 14/23 | ✓ | ✓ | ✓ | 6 |
-| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 16/16, gateway.binding 19/19 | ✓ | ✓ | ✓ | 7 |
+| `hosts/ios/artifacts/gateway` | iOS | boot.verification 8/8, carrier.loopback 7/7, gateway.audit 24/24, gateway.binding 26/26 | ✓ | ✓ | ✓ | 6 |
 | `hosts/ios/artifacts/install-full-cycle` | iOS | install.carrier-evidence 11/11, install.from-http 46/46 | ✓ | ✓ | ✓ | 3 |
 | `hosts/ios/artifacts/ios-live-test/A-ui/nextweb-mount` | iOS | nextweb.mount 25/25 | ✓ | ✓ | ✓ | 2 |
 | `hosts/ios/artifacts/ios-live-test/A-ui/whale-mount` | iOS | session.mock-llm 23/23, whale.mount 7/7 | ✓ | ✓ | ✓ | 3 |
