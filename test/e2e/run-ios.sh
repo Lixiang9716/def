@@ -152,7 +152,14 @@ ui_find() {
 
 tap_label() { # LABEL FX FY [TIMEOUT]
   local x y; read -r x y <<<"$(ui_find "$1" "$2" "$3" "${4:-3}")"
-  log "tap '$1' at ($x,$y)"; idb ui tap --udid "$UDID" "$x" "$y" >/dev/null
+  log "tap '$1' at ($x,$y)"
+  # rc check (#806 ask 2): a rejected tap is a silent park until the watchdog
+  # — name it here. The caller decides tolerance; this only makes the miss
+  # visible instead of swallowing it.
+  if ! idb ui tap --udid "$UDID" "$x" "$y" >/dev/null; then
+    log "FAIL: tap '$1' rejected by idb at ($x,$y) — leg cannot complete"
+    return 1
+  fi
 }
 
 wait_line() { # PATTERN TIMEOUT_SECONDS — poll the log for a marker
@@ -312,13 +319,17 @@ drive_picker() { # Files sheet; the walk is BROWSE-based, label-addressed via
   # (matrix attempts 4-7 + the standalone discriminators, 2026-09-30: not
   # found at file age ~2, ~5, ~26 minutes; the one green search rode an
   # ~11-minute-old file). The browse hierarchy reads the filesystem DIRECTLY
-  # (verified live by the probe walk: 浏览 tab → DSH Dsh → gateway-e2e →
-  # the notes cell, every hop visible in WDA's tree), so there is no index
+  # (verified live by the probe walk: 浏览 tab → the app's tile → gateway-e2e
+  # → the notes cell, every hop visible in WDA's tree), so there is no index
   # to wait for and no pre-launch settle to bet. The ~0.15s press on the
   # notes cell = select+confirm in one gesture; `ui-done picker` is (prefix-agnostic)
   # the verdict marker. Labels tried in the runtime's language first (浏览/
   # 我的iPhone on this zh sim), then English — the hop CELLS (gateway-e2e,
-  # notes) are locale-neutral names.
+  # notes) are locale-neutral names. The APP TILE is the D19 identity "def"
+  # since #655/#656 — the pre-rename walk looked for "DSH Dsh" and the sheet
+  # shows "def" + the stale pre-rename "DSH Spike" provider; the walk taps
+  # the CURRENT name first and keeps the legacy spellings as fallbacks
+  # (2026-11-14, #806: the stale label was the park's root cause).
   log "driving Files picker (browse walk: tab -> app -> gateway-e2e -> notes)"
   shot 04-picker-sheet
   wait_sheet || true   # cold Files daemon presents the sheet late — detect, don't race
@@ -332,17 +343,24 @@ drive_picker() { # Files sheet; the walk is BROWSE-based, label-addressed via
     if wda_find_tap "gateway-e2e" 0.1; then
       walked=1; break
     fi
-    # The browse root: location list (我的 iPhone / DSH Dsh) OR the app's
-    # Documents (the sheet remembers its last location) — walk whichever shows.
+    # The browse root: the location list (我的 iPhone) holding the app's tile,
+    # OR the app's Documents directly (the sheet remembers its last location)
+    # — walk whichever shows. The app tile is "def" since #655/#656; the
+    # legacy provider spellings stay as fallbacks (a stale pre-rename
+    # container may still be listed alongside).
     wda_find_tap "我的iPhone" 0.1 || wda_find_tap "My iPhone" 0.1 || true
     sleep 3
     if wda_find_tap "gateway-e2e" 0.1; then walked=1; break; fi
-    wda_find_tap "DSH Dsh" 0.1 || true
+    wda_find_tap "def" 0.1 || wda_find_tap "DSH Dsh" 0.1 || wda_find_tap "DSH Spike" 0.1 || true
     sleep 3
     if wda_find_tap "gateway-e2e" 0.1; then walked=1; break; fi
     sleep 4   # let the listing settle before retrying the walk
   done
-  [ "$walked" -eq 1 ] || { shot 08-picker-done; log "browse walk could not reach gateway-e2e"; return 0; }
+  # The walk's failure IS the leg's failure (#806 ask 2): returning 0 here
+  # let the scenario park at ui-wait picker until the watchdog (180s) and the
+  # verdict said nothing about WHY. Fail loud instead, naming the leg and
+  # pointing at the sheet screenshots.
+  [ "$walked" -eq 1 ] || { shot 08-picker-done; die "picker browse walk could not reach gateway-e2e after 2 attempts — the scenario would park at ui-wait picker (see screens/04-picker-sheet.png, screens/08-picker-done.png)"; }
   sleep 3   # the folder's content grid loads a beat after the push
   shot 05-picker-search   # historical name: the folder-content frame (notes cell visible)
   for _ in 1 2 3; do
@@ -355,6 +373,7 @@ drive_picker() { # Files sheet; the walk is BROWSE-based, label-addressed via
     sleep 2
   done
   shot 08-picker-done
+  die "notes cell tap exhausted (3 tries, no ui-done picker) — the grid rendered but the select+confirm press never settled; the scenario would park at ui-wait picker (see screens/05-picker-search.png, screens/08-picker-done.png)"
 }
 
 # ---- 1-4. vendor, build, boot, install, launch -----------------------------
@@ -472,13 +491,25 @@ TAIL_PID=$!
 # SIGKILLed runner skips it — that is exactly what the lock catches next run).
 trap 'kill $TAIL_PID 2>/dev/null || true; [ -n "${WDA_PID:-}" ] && kill "$WDA_PID" 2>/dev/null; exec 3<&- 2>/dev/null || true; rm -f "$FIFO" "$ART/.ax.json" "$LOCK"' EXIT
 exec 3<"$FIFO"
+# The parked-leg ledger (#806): the watchdog names no leg, so the runner
+# tracks the last rt: ui-wait marker it saw and names it on deadline — a
+# deadline with a marker names THAT leg; a deadline without any marker says
+# the scenario parked BEFORE any UI surface (gateway/host class, not driver
+# class). Second case arm on purpose: macOS bash 3.2 has no ;;& fallthrough.
+LAST_UI=""
+LAST_UI_AT=""
 while true; do
   if IFS= read -r -t 5 line <&3; then
     case "$line" in
       *"ui-wait notification-permission"*)
         shot 01-notification-permission
         sleep 1.5   # alert presentation completes before the press lands
-        wda_click "允许" || wda_click "Allow" || idb ui tap --udid "$UDID" "${PT_ALLOW[@]}" --duration 0.15 || true ;;
+        wda_click "允许" || wda_click "Allow" || idb ui tap --udid "$UDID" "${PT_ALLOW[@]}" --duration 0.15 || true
+        # Post-tap state check (#806 ask 2): a missed alert tap parks the
+        # scenario at this leg until the watchdog — fail loud HERE, naming
+        # the leg and the three tap shapes that were tried.
+        wait_line "ui-done notification-permission" 5 \
+          || die "notification-permission tap missed (允许/Allow/PT_ALLOW) — the alert is still up and the scenario would park at ui-wait notification-permission" ;;
       *"dsh.runtime.log:"*"notify.scheduled"*)
         log "notify.scheduled seen -> HOME (background)"; idb ui button --udid "$UDID" HOME >/dev/null ;;
       *"ui-wait notification-banner"*) drive_banner ;;
@@ -489,9 +520,16 @@ while true; do
       *"rt: sequence boot="*)
         log "terminal marker: $line"; break ;;
     esac
+    case "$line" in
+      *"rt: ui-wait "*) LAST_UI="${line##*rt: ui-wait }"; LAST_UI_AT="$SECONDS" ;;
+    esac
   fi
   if [ "$SECONDS" -ge "$DEADLINE" ]; then
-    fail_deadline "900s deadline — 'rt: sequence boot=' never appeared"
+    if [ -n "$LAST_UI" ]; then
+      fail_deadline "parked at UI leg '$LAST_UI' (marker ${LAST_UI_AT}s, $((SECONDS - LAST_UI_AT))s ago, no settle since) — 'rt: sequence boot=' never appeared"
+    else
+      fail_deadline "no rt: ui-wait marker EVER landed — the scenario parked BEFORE any UI surface (presentPicker/approval never presented: gateway/host class, not driver class); 'rt: sequence boot=' never appeared"
+    fi
   fi
 done
 exec 3<&-; { kill "$TAIL_PID" && wait "$TAIL_PID"; } 2>/dev/null || true

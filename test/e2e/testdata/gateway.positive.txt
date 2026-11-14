@@ -1,12 +1,12 @@
 # Synthetic E2E log fixtures (test/e2e/selftest.sh) — deterministic.
-# Positive fixture: BOTH m2 checkers pass on this one file. Rows 0-14 of the
-# gateway.binding sequence and rows 0-13 of the audit stream are REAL records
-# from the 2026-11-14 m2 capture (hosts/ios/artifacts/gateway, #786 regen;
-# audit ts scrubbed), carried in capture order. The UI-interactive tail
-# (picker/scope/approval/keychain/notify legs) is hand-carried from the
-# previous fixture — this environment has no idb driver, so the live battery
-# parks at the picker; payloads pin the current manifests. Noise lines
-# (dsh:, ui-wait/ui-done markers) prove the scenario filter skips them.
+# Positive fixture: BOTH m2 checkers pass on this one file. EVERY row is a
+# REAL record from the 2026-11-14 m2 captures, carried in capture order:
+# rows 0-14 from the #786 regen capture, the UI-interactive tail (picker/
+# scope/approval/keychain/notify legs) from hosts/ios/artifacts/
+# gateway-806-drive2 — the first live-green battery since #666 (#806 fixed
+# the picker walk's stale app-tile label). Audit ts scrubbed to the fixed
+# stamp sequence. Noise lines (dsh:, ui-wait/ui-done markers) prove the
+# scenario filter skips them.
 dsh: app launched, driving boot.verification then carrier.loopback
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"gateway.negotiated","version":"gateway@1"}]}
 dsh.runtime.log: {"level":"info","module":"dsh.scenario","message":"e2e","data":[{"scenario":"gateway.binding","event":"descriptor.declared","available":37,"unavailable":2}]}
