@@ -129,3 +129,11 @@ jobs:
         # annotation — the dev-harmonyos for-attempt precedent, so
         # ci-verdict only ever sees the final attempt.
         run: node tools/test/flake-retry.mjs -- sh tools/test/run-tools-tests.sh
+      - name: Run the e2e checker self-test
+        # Rule 6 (.gov/rules.md): a gate that never fails is vacuous — the
+        # checker's rejection proofs must stay provable, not rot. #786 found
+        # the gateway fixtures had drifted behind their manifests for weeks
+        # because this self-test was manually-runnable only; it now runs on
+        # every PR. Pure synthetic fixtures: no vendored closure, no
+        # simulator, node + python3 + bash only.
+        run: sh test/e2e/selftest.sh
