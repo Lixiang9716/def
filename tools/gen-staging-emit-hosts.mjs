@@ -307,8 +307,10 @@ const treesBody = (rows) => rows.map((r) => `    (${pyStr(r.bundle)}, ${pyPath('
 /** The declared ios rows files: RESOURCES `<suffix>=<rel>` (repo: marks a
  * REPO-rooted row; an optional ` -> <dest>` tail names the BUNDLE destination
  * the stager writes the bytes at when it differs from the source rel),
- * TREES `<bundle>=<source>`; `#` comments ride along. */
-function declaredResources(dir) {
+ * TREES `<bundle>=<source>`; `#` comments ride along. Exported for
+ * check-staging's stager face (#798): the guard maps exclude accessors to
+ * paths through the SAME declared store the emitted table derives from. */
+export function declaredResources(dir) {
   return declared(dir, 'ios-RESOURCES.rows', 'author it (this '
     + 'consolidation\'s one-time transcription of the committed table)').map((t) => {
     const at = t.indexOf('=');
@@ -402,8 +404,10 @@ const STAGER_END = '// dsh:stager-rows:end';
  * vendored closure remaps external/ → vendor/, the presentation web clients
  * remap to their bundle-root names (webclient, webclient-mini), and every
  * other row stages at the rel itself (repo: rows at the stripped rel — the
- * reviewed repo layout IS the bundle layout). */
-function stageDest(row) {
+ * reviewed repo layout IS the bundle layout). Exported for check-staging's
+ * stager face (#798) — the guard must judge the SAME destination the emitted
+ * table stages at, never a re-derived copy that could drift. */
+export function stageDest(row) {
   const remap = (prefix, head) => row.rel.startsWith(prefix)
     ? head + row.rel.slice(prefix.length) : null;
   return row.dest

@@ -14,7 +14,10 @@
 // for-in lists: scenario/web-live/dsh/npm/faces × stage/verify + the mirror
 // needles), gen_bundle_resources.py (RESOURCES with prose comments) +
 // gen_bundle_header.py (TREES with a comprehension + `] + [` continuation,
-// ZOD_FILES).
+// ZOD_FILES) + the BundleStager stager face's declared stores
+// (tools/generated/staging/: ios-RESOURCES.rows, the accessor→path mapping
+// the #798 guard joins the exclude store through, and
+// ios-stager.exclude.rows — `#` prose + rows in both).
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -24,6 +27,8 @@ import { fileURLToPath } from 'node:url';
 export const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const TOOL_FILES = [
   'check-staging.mjs', 'check-staging-graph.mjs', 'check-staging-hosts.mjs',
+  // the #798 stager face + the emitter whose stageDest the guard imports
+  'check-staging-stager.mjs', 'gen-staging-emit-hosts.mjs',
 ];
 export const VER = '0.1.6-alpha.2';
 export const ZOD_PIN = 'vendor/npm/zod@4.4.3';
@@ -242,6 +247,39 @@ function genBundleResourcesPy() {
   ].join('\n');
 }
 
+/** The declared ios RESOURCES rows store (`<suffix>=<rel>`, `repo:` marks a
+ * REPO-rooted row, ` -> dest` names a bundle override): the accessor→path
+ * mapping the #798 guard joins the exclude store through — the same store
+ * gen-staging-emit's stagerTable derives the BundleStager table from. */
+function stagerResourcesRows() {
+  return [
+    '# fixture: the declared RESOURCES rows — one per gen_bundle_resources.py row.',
+    'logger_js=logger.js',
+    'leg_a_js=scenario/leg-a.js',
+    'suite_leg_js=scenario/upstream-suite-leg.js',
+    'webclient_src=repo:presentation/web-client/index.html',
+    '',
+  ].join('\n');
+}
+
+/** The BundleStager exclude store (the #798 third ios staging face): the two
+ * green shapes the guard must NOT flag — suite_leg_js is graph-reached but
+ * the scenario TREES mirror stages its bytes anyway (the real store's
+ * scenario/web-live/shims/plugin rows), and logger_js is embedded but
+ * nothing imports it (dead embedded bytes, a different concern). */
+function stagerExcludeRows() {
+  return [
+    '# fixture: the BundleStager exclude face — accessor suffixes, # prose rides.',
+    '# suite_leg_js: graph-reached, but the whole-dir scenario TREES mirror',
+    '# stages the bytes another way (the real store\u2019s covered-rows shape).',
+    'suite_leg_js',
+    '# logger_js: embedded, excluded, and never graph-reached — dead embedded',
+    '# bytes are a different concern, out of the #798 guard\u2019s scope.',
+    'logger_js',
+    '',
+  ].join('\n');
+}
+
 // --- extra pin-tree files (existence + extension filters) --------------------
 
 // Dsh-relative files that exist ONLY so manifest rows pass the stale check
@@ -373,6 +411,8 @@ export function buildGreenFixture() {
   fx.write('hosts/android/ci/stage-spine-closure.sh', stageSpineClosureSh());
   fx.write('hosts/ios/Tools/gen_bundle_header.py', genBundleHeaderPy());
   fx.write('hosts/ios/Tools/gen_bundle_resources.py', genBundleResourcesPy());
+  fx.write('tools/generated/staging/ios-RESOURCES.rows', stagerResourcesRows());
+  fx.write('tools/generated/staging/ios-stager.exclude.rows', stagerExcludeRows());
   mirrorRawfileBundle(fx);
   return fx;
 }
