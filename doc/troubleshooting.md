@@ -236,6 +236,27 @@ Encoded across the `hosts/android/ci/*` and `test/e2e/*` runners in #791
 the general law is: whenever applicationId and the Java namespace diverge,
 `am start -n` needs BOTH spelled explicitly, never a relative class.
 
+## 11. A seat's base drifts behind origin/main mid-task — ghost diffs, then an aborted ff-merge
+
+Paid for twice in the 2026-11-14 minesweep fleet (seat C, and again when
+#792 landed mid-flight under two seats). A seat cut at `origin/main` keeps
+working while a sibling seat's PR merges; origin/main advances but the seat
+never revisits its base. The first symptom is rarely "main moved": it is a
+DIRTY DIFF on a file the seat never touched (main's content now differs from
+the seat's) and one aborted fast-forward, and only then does the operator
+derive "main moved under your seat" from `git ls-tree`.
+
+The mechanism: `ensure-seat.sh` materializes ONCE at cut time and never
+revisits the base — materialization and base-currency are two different
+facts, and until #811 nothing named the second one. Fix: ensure-seat now
+prints one note when the seat's merge-base with the LOCAL `refs/remotes/
+origin/main` ref is behind it — "note — origin/main is at <sha>, this seat
+is based on <sha>; rebase before merging" (build/ensure-seat.sh, the block
+after the cwd-default guard). It reads the local ref only — the script
+stays offline by design, so the note is as fresh as the last fetch. The
+working rule stands: rebase before merging, every PR, no exceptions
+(DIRTY = zero checks).
+
 ## Adding an entry
 
 When a session pays for a new trap, append it here in the same change that

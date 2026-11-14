@@ -197,6 +197,23 @@ Kotlin namespace 仍是 `com.dshmobile.host` 之后，相对拼写会拿新包�
 升级矩阵 launch 点有注释写明规则）；一般规律：applicationId 与 Java
 namespace 分道之后，`am start -n` 必须两侧全拼，绝不写相对类。
 
+## 11. 席位的 base 在任务中途落后于 origin/main —— 幽灵 diff,然后一次 ff-merge 失败
+
+2026-11-14 排雷舰队付了两次学费（席位 C，以及 #792 在两个席位工作期间
+落地的那次）。从 `origin/main` 切出的席位继续干活时，兄弟席位的 PR 并入
+main；origin/main 前进了，席位从不回访自己的 base。第一症状很少是「main
+动了」：而是席位从未碰过的文件出现 DIRTY DIFF（main 的内容与席位不同了）
+加一次 aborted fast-forward，然后操作者才从 `git ls-tree` 推导出「main 在
+你席位底下动了」。
+
+机理：`ensure-seat.sh` 只在切割时物化一次、从不回访 base —— 物化与
+base 新鲜度是两个不同的事实，#811 之前没有任何东西点名后者。修法：
+ensure-seat 现在会在席位的 merge-base 落后于本地 `refs/remotes/origin/main`
+ref 时打一行 note —— "note — origin/main is at <sha>, this seat is based
+on <sha>; rebase before merging"（build/ensure-seat.sh，cwd 缺省守卫之后
+的那段）。只读本地 ref —— 脚本按设计离线，所以 note 的新鲜度等于上次
+fetch。工作纪律不变：合并前必 rebase，每个 PR，无例外（DIRTY = 零检查）。
+
 ## 如何追加条目
 
 某个会话为新的陷阱付了学费，就在修复或记录它的同一个变更里追加到这里：
