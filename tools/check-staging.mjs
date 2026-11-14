@@ -30,7 +30,14 @@
  *       the host's staging (an exact hand row or a whole-dir mirror the
  *       host's stager actually performs);
  *   (b) manifest → disk: every hand row must name a file that exists
- *       (stale rows — the list remembering a file the tree renamed).
+ *       (stale rows — the list remembering a file the tree renamed);
+ *   (c) stager exclude (#798, ios only): the BundleStager's own exclude
+ *       policy (tools/generated/staging/ios-stager.exclude.rows) is the
+ *       third ios staging face — an embedded (RESOURCES) row the store
+ *       excludes whose file is graph-reached while no TREES mirror root
+ *       covers its source path is a BLINDSPOT finding: the bytes are in the
+ *       binary but no stager writes them, so the import dies at link time
+ *       on device (the #691 dsh-mcp class; see check-staging-stager.mjs).
  *
  * usage: node tools/check-staging.mjs [--host harmony|android|ios]
  *                                     [--block harmony,android,ios] [--json]
@@ -50,14 +57,16 @@
  * Layout: the import-graph walker lives in check-staging-graph.mjs, the
  * three host manifest adapters (Index.ets rows, the android stage script's
  * copy blocks, the ios py RESOURCES/TREES lists) plus the host wiring in
- * check-staging-hosts.mjs; this file is the CLI — arg parsing,
+ * check-staging-hosts.mjs, and the BundleStager-exclude face (#798) in
+ * check-staging-stager.mjs; this file is the CLI — arg parsing,
  * orchestration, report/JSON emission. The split exists only for the
- * code-size gate; the three files together are this one tool.
+ * code-size gate; the files together are this one tool.
  */
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO, DSH, inScope, walkGraph } from './check-staging-graph.mjs';
 import { fail, buildHosts } from './check-staging-hosts.mjs';
+import { readStagerFace, stagerBlindSpots } from './check-staging-stager.mjs';
 
 // --- the check --------------------------------------------------------------
 
@@ -111,16 +120,20 @@ function checkSurface(surfaces, surface, scoped, reached) {
   return sres;
 }
 
-function checkHost(host) {
+function checkHost(host, stagerFace) {
   const g = collectHostGraph(host);
   const result = {
     host: host.label, roots: g.roots.length, reached: g.reached.size,
     scopedReached: g.scoped.length, skippedBare: g.skippedBare.size,
     brokenEdges: g.brokenEdges, missingRoots: g.missingRoots, surfaces: [],
+    stagerBlindSpots: [],
     reachedFiles: g.reachedFiles,
   };
   for (const surface of Object.values(host.surfaces)) {
     result.surfaces.push(checkSurface(host.surfaces, surface, g.scoped, g.reached));
+  }
+  if (host.stager) {
+    result.stagerBlindSpots = stagerBlindSpots(stagerFace.resRows, host.stager.mirrorRoots, stagerFace.exclude, g.reached);
   }
   return result;
 }
@@ -128,11 +141,12 @@ function checkHost(host) {
 // --- report -----------------------------------------------------------------
 
 /** Findings that count against one host: coverage gaps on verdict surfaces,
- * stale rows everywhere, broken edges, missing roots — the same set the
- * per-host failing logic below has always covered, now counted so warn
- * mode can surface it as a number and --block can judge it. */
+ * stale rows everywhere, broken edges, missing roots, stager-exclude
+ * blindspots (#798) — the same set the per-host failing logic below has
+ * always covered, now counted so warn mode can surface it as a number and
+ * --block can judge it. */
 function hostFindings(r) {
-  let n = r.brokenEdges.length + r.missingRoots.length;
+  let n = r.brokenEdges.length + r.missingRoots.length + r.stagerBlindSpots.length;
   for (const s of r.surfaces) n += (s.advisory ? 0 : s.gaps.length) + s.stale.length;
   return n;
 }
@@ -169,6 +183,9 @@ function humanReport(results, blocked) {
       }
       if (!s.gaps.length && !s.stale.length) lines.push('  clean');
     }
+    for (const b of r.stagerBlindSpots) {
+      lines.push(`  BLINDSPOT ${b.file} (accessor ${b.suffix}) — reached via ${b.via} (${b.kind}) — embedded (RESOURCES ${b.source}), excluded by the BundleStager, no TREES mirror covers it: import-link death on device`);
+    }
     if (r.missingRoots.length) {
       lines.push(`  MISSING ROOTS (staged scenario entry does not exist): ${r.missingRoots.join(', ')}`);
     }
@@ -204,6 +221,11 @@ function parseArgs(argv) {
 function main() {
   const only = parseArgs(process.argv.slice(2));
   const hosts = buildHosts();
+  // The BundleStager exclude (#798): the rows-store mapping plus the parsed,
+  // referent-checked exclude store — parsed eagerly beside buildHosts, so a
+  // face this gate cannot judge fails loud before any check runs, whatever
+  // --host selected.
+  const stagerFace = readStagerFace();
   const selected = only['--host']
     ? [only['--host']]
     : Object.keys(hosts);
@@ -215,7 +237,7 @@ function main() {
     if (!hosts[h]) fail(`unknown --block host '${h}' (expected harmony|android|ios)`);
   }
   const results = selected.map((h) => {
-    const r = checkHost(hosts[h]);
+    const r = checkHost(hosts[h], stagerFace);
     r.mode = blocked.has(h) ? 'blocking' : 'warn';
     r.findings = hostFindings(r);
     return r;

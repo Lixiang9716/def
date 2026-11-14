@@ -7,13 +7,11 @@
  *   harmony — Index.ets BUNDLE_FILES rows (primary, stale-judged against the
  *             committed rawfile/dsh tree) + ci/vendor-official.sh
  *             CLOSURE/SPINE_OURS (advisory);
- *   android — ci/stage-spine-closure.sh scenario/web-live hand lists +
- *             whole-dir mirrors;
- *   ios     — Tools/gen_bundle_resources.py RESOURCES hand rows (split out of
- *             the header at the size gate) + header TREES mirror roots.
+ *   android — ci/stage-spine-closure.sh scenario/web-live hand lists + whole-dir mirrors;
+ *   ios     — RESOURCES hand rows + TREES mirrors + the stager exclude face (check-staging-stager.mjs).
  *
- * Split out of check-staging.mjs purely for the code-size gate; the three
- * files together are one tool — see the CLI's header for the full contract.
+ * Split out of check-staging.mjs purely for the code-size gate; the files
+ * together are one tool — see the CLI's header for the full contract.
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, relative as relPath } from 'node:path';
@@ -375,7 +373,8 @@ function iosSurface() {
 
 // --- host wiring ------------------------------------------------------------
 
-const mirrorCovers = (rel, roots) =>
+/** Whole-dir mirror coverage (exported for check-staging-stager.mjs's #798 guard). */
+export const mirrorCovers = (rel, roots) =>
   roots.some((r) => (r.endsWith('/**')
     ? rel.startsWith(r.slice(0, -2))
     : rel === r || rel.startsWith(`${r}/`)));
@@ -452,8 +451,7 @@ function androidHost(android) {
 function iosHost(ios) {
   return {
     label: 'ios',
-    // scenario/ and web-live/ ride whole-dir trees, so EVERY on-disk entry
-    // is one the ios embed stages; root the walk at them all.
+    // scenario/ and web-live/ ride whole-dir trees, so EVERY on-disk entry is one the ios embed stages.
     roots: (surfaces) => [
       'upstream/boot.js', 'upstream/web-boot.js', 'scenario/upstream-suite-leg.js',
       ...surfaces.primary.mirrorRoots
@@ -480,6 +478,9 @@ function iosHost(ios) {
           mirrorCovers(rel, surface.mirrorRoots.map((r) => r.rel)),
       },
     },
+    // The BundleStager exclude face's TREES half (#798); the store + the
+    // rows-store mapping live in check-staging-stager.mjs.
+    stager: { mirrorRoots: ios.mirrorRoots },
   };
 }
 

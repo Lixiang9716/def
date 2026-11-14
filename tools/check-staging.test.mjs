@@ -42,6 +42,7 @@ describe('check-staging on the green fixture (happy path)', () => {
       expect(host.findings, host.host).toBe(0);
       expect(host.brokenEdges, host.host).toEqual([]);
       expect(host.missingRoots, host.host).toEqual([]);
+      expect(host.stagerBlindSpots, host.host).toEqual([]);
       for (const surface of host.surfaces) {
         expect(surface.gaps, `${host.host}/${surface.label}`).toEqual([]);
         expect(surface.stale, `${host.host}/${surface.label}`).toEqual([]);
@@ -155,6 +156,68 @@ describe('check-staging counterexamples: graph and surface verdicts', () => {
     expect(primary.gaps).toEqual([]);
     expect(data.ok).toBe(true);
     expect(data.results[0].findings).toBe(0);
+  });
+});
+
+describe('check-staging counterexamples: the BundleStager exclude blindspot (#798)', () => {
+  it('excluded ∧ graph-reached ∧ no TREES mirror → BLINDSPOT finding, exit 1 blocked on ios', () => {
+    const fx = freshFixture();
+    // The #691/#780 class: logger_js is fixture-excluded while nothing
+    // imports logger.js (dead bytes); one import edge makes it live — now
+    // the embedder embeds the bytes, the stager declines to write them, no
+    // TREES mirror carries them, and every gate used to stay green.
+    fx.writeSpike('upstream/helper.js', "import { log } from '../logger.js';\nimport './extra.js';\n");
+    const blocked = fx.run('check-staging.mjs', ['--block', 'ios']);
+    expect(blocked.status).toBe(1);
+    expect(blocked.stdout).toContain('BLINDSPOT logger.js (accessor logger_js)');
+    expect(blocked.stdout).toContain('reached via upstream/helper.js:1 (import-from)');
+    expect(blocked.stdout).toContain('staging-check: FAIL');
+    const data = fx.json('check-staging.mjs', ['--block', 'ios']).data;
+    const ios = data.results.find((h) => h.host === 'ios');
+    expect(ios.stagerBlindSpots).toEqual([{
+      suffix: 'logger_js', file: 'logger.js', source: 'logger.js',
+      via: 'upstream/helper.js:1', kind: 'import-from',
+    }]);
+    // the blindspot is the ios host's ONLY finding (the surface itself stays
+    // clean: the row IS embedded; only the stager write is missing)
+    expect(ios.findings).toBe(1);
+    // warn mode counts the same finding without failing
+    const warn = fx.json('check-staging.mjs').data;
+    expect(warn.ok).toBe(true);
+    expect(warn.results.find((h) => h.host === 'ios').stagerBlindSpots.length).toBe(1);
+  });
+});
+
+describe('check-staging green shapes: the BundleStager exclude face (#798)', () => {
+  it('excluded ∧ covered by a TREES mirror → ok (the real store\u2019s shape)', () => {
+    const fx = freshFixture();
+    // Non-vacuous: suite_leg_js IS excluded AND graph-reached; the whole-dir
+    // scenario TREES mirror stages its bytes, so no finding.
+    const ios = fx.json('check-staging.mjs', ['--host', 'ios']).data.results[0];
+    expect(ios.reachedFiles).toContain('scenario/upstream-suite-leg.js');
+    expect(ios.stagerBlindSpots).toEqual([]);
+    expect(ios.findings).toBe(0);
+  });
+
+  it('excluded ∧ NOT graph-reached → ok (dead embedded bytes are a different concern)', () => {
+    const fx = freshFixture();
+    // Non-vacuous: logger_js is excluded and embedded, but nothing imports
+    // logger.js — out of the guard\u2019s scope, no finding.
+    const ios = fx.json('check-staging.mjs', ['--host', 'ios']).data.results[0];
+    expect(ios.reachedFiles).not.toContain('logger.js');
+    expect(ios.stagerBlindSpots).toEqual([]);
+  });
+
+  it('an exclude row no RESOURCES row embeds → structural drift, exit 2', () => {
+    const fx = freshFixture();
+    // The exclude store names an accessor the embedder dropped: the two
+    // faces drifted apart — fail loud like gen-staging-emit's stagerTable.
+    const store = 'tools/generated/staging/ios-stager.exclude.rows';
+    fx.write(store, `${fx.read(store)}\nplugin_ghost_js\n`);
+    const r = fx.run('check-staging.mjs', ['--block', 'ios']);
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain('plugin_ghost_js');
+    expect(r.stderr).toContain('ios-stager.exclude.rows');
   });
 });
 
