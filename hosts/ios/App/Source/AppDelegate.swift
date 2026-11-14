@@ -281,47 +281,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     /// A boot that cannot finish leaves the user looking at nothing. Name the
     /// failure on screen — the same strings the Console carries, so the two
     /// channels agree — instead of a white screen that reads as "loading".
-    private func showBootFailure(_ reason: String) {
+    /// Internal: the serving boot (AppDelegate+ServingBoot) names its
+    /// scenario-settle failures here too.
+    func showBootFailure(_ reason: String) {
         guard let label = bootOverlayLabel else { return }
         label.text = "启动失败：\(reason)"
         label.textColor = .systemRed
-    }
-
-    /// The user-facing serving boot: the `SessionServe` seat, with NO hooks
-    /// assigned — the serving facts go nowhere, and the user drives the page.
-    /// The seat is the same one `composer.live-write` verifies, so the path the
-    /// manifest proves and the path a user runs cannot drift apart.
-    func runServingBoot() {
-        let serve = SessionServe(
-            credential: SessionServe.loadCredential(),
-            interactive: true)
-        self.serve = serve
-        serve.onOrigin = { [weak self] origin in
-            self?.webView?.load(URLRequest(url: origin))
-        }
-        // A plugin's live card renders in the app's OWN chrome (PR-1): the
-        // serve/release seats surface the card.* bus lines natively.
-        let surface = CardPlayerSurface()
-        cardSurface = surface
-        serve.onCardEvent = { [weak surface] msg in
-            DispatchQueue.main.async { surface?.handle(msg) }
-        }
-        serve.cardState = { [weak surface] in surface?.snapshot() ?? [:] }
-        if let host = webView?.superview {
-            surface.attach(to: host)
-        }
-        // A failure here leaves an inert page, indistinguishable from an
-        // idle one — say so on BOTH channels (screen + warn-keeping log).
-        serve.onRuntimeFailure = { [weak self] message in
-            NSLog("%@", "dsh.session.serve: runtime failed: \(message)")
-            DispatchQueue.main.async { self?.showBootFailure(message) }
-        }
-        do {
-            try serve.start()
-        } catch {
-            NSLog("%@", "dsh.session.serve: bootstrap failed: \(error)")
-            showBootFailure("\(error)")
-        }
     }
 
     /// The on-device session: the scenario runs behind the mounted Web
