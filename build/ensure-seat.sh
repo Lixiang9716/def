@@ -55,6 +55,22 @@ if [ "$SEAT_GIVEN" -eq 0 ] && [ "$SEAT" = "$PRIMARY" ]; then
     echo "ensure-seat: WARNING — materializing $PRIMARY itself; if you meant a worktree seat, pass its path: sh build/ensure-seat.sh ../dsh-mobile-<seat>" >&2
 fi
 
+# The seat-lifecycle trap (troubleshooting.md entry 11, #811): a sibling
+# seat's PR can land while this seat works. Materialization happens once at
+# cut time and never revisits the base, so a drifted seat shows a ghost dirty
+# diff on files it never touched, plus one aborted ff-merge, before the
+# operator derives "main moved under your seat" from git ls-tree. One note —
+# read from the LOCAL origin/main ref only: the script is offline by design
+# (the primary is the one source), so this compares against whatever the last
+# fetch left; it names the drift, it does not fetch.
+MAIN_REF="$(git -C "$SEAT" rev-parse --verify --quiet refs/remotes/origin/main || true)"
+if [ -n "$MAIN_REF" ]; then
+    SEAT_BASE="$(git -C "$SEAT" merge-base "$MAIN_REF" HEAD 2>/dev/null || true)"
+    if [ -n "$SEAT_BASE" ] && [ "$SEAT_BASE" != "$MAIN_REF" ]; then
+        echo "ensure-seat: note — origin/main is at $MAIN_REF, this seat is based on $SEAT_BASE; rebase before merging" >&2
+    fi
+fi
+
 # The seat's own manifest when it has one (the branch carrying this script);
 # otherwise the script's own checkout — a seat on an older branch is
 # materialized against the newest inventory, not left red on a missing file.
